@@ -1,0 +1,19 @@
+{
+  "name": "orison-worker",
+  "version": "1.0.0",
+  "description": "Orison - Time-lock encryption on Cloudflare Workers",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "webpack watch",
+    "build": "webpack",
+    "deploy": "npm run build && wrangler deploy"
+  },
+  "dependencies": {
+    "big-integer": "^1.6.52",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "webpack": "^5.90.0",
+    "webpack-cli": "^5.1.4"
+  }
+}
