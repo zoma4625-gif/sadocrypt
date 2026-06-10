@@ -1,0 +1,34 @@
+name: Deploy to Cloudflare Pages
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.14'
+
+      - name: Install dependencies
+        run: |
+          python3 -m venv venv2
+          source venv2/bin/activate
+          pip install -r requirements.txt
+
+      - name: Build and deploy to Cloudflare Pages
+        uses: cloudflare/pages-action@v3
+        with:
+          project-name: sadocrypt
+          token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
