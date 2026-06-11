@@ -990,16 +990,20 @@ async function run(){
     x=(x*x)%N;
 
     if(i%UPDATE_INTERVAL===0n&&i>0n){
-      const pct=Number(i)*100/totalNum;
-      document.getElementById('cur').textContent=i.toLocaleString('ja-JP');
+      // i+1 で完了済みイテレーション数として計算
+      const done=i+1n;
+      const pct=Number(done)*100/totalNum;
+      document.getElementById('cur').textContent=done.toLocaleString('ja-JP');
       document.getElementById('pbar').style.width=pct.toFixed(1)+'%';
       // UIスレッドを解放（フリーズ防止）
       await new Promise(r=>setTimeout(r,0));
     }
   }
 
+  // 確実に100%表示を反映してから結果へ遷移
   document.getElementById('cur').textContent=total.toLocaleString('ja-JP');
   document.getElementById('pbar').style.width='100%';
+  await new Promise(r=>setTimeout(r,50));
 
   const xFinalHex=x.toString(16);
 
