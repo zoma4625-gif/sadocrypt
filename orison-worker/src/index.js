@@ -489,133 +489,181 @@ const HTML_ENCRYPT = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>sadocrypt</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>Sadocrypt</title>
+<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600&family=Google+Sans+Text:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{
-  --bg:#0a0a0a;
-  --surface:#111;
-  --surface2:#161616;
-  --border:rgba(255,255,255,.07);
-  --border2:rgba(255,255,255,.12);
-  --text:#f0f0f0;
-  --muted:rgba(255,255,255,.35);
-  --dim:rgba(255,255,255,.18);
-  --accent:#4ade80;
-  --accent-dim:rgba(74,222,128,.12);
-  --radius:14px
+  --bg:#f8f9fa;
+  --surface:#fff;
+  --surface2:#f1f3f4;
+  --border:#e0e0e0;
+  --border-focus:#1a73e8;
+  --text:#202124;
+  --muted:#5f6368;
+  --dim:#9aa0a6;
+  --accent:#1a73e8;
+  --accent-hover:#1557b0;
+  --accent-light:#e8f0fe;
+  --radius:12px;
+  --font:'DM Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif
 }
-body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh}
+body{font-family:var(--font);background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh}
 
 /* ── Top bar ── */
-.topbar{position:fixed;top:0;left:0;right:0;height:52px;display:flex;align-items:center;padding:0 24px;z-index:100;border-bottom:1px solid var(--border)}
-.topbar-logo{display:flex;align-items:baseline;gap:0;user-select:none}
-.topbar-logo .sado{font-size:15px;font-weight:600;letter-spacing:.5px;color:var(--text)}
-.topbar-logo .crypt{font-size:11px;font-weight:400;color:var(--muted);letter-spacing:.5px}
+.topbar{
+  position:fixed;top:0;left:0;right:0;height:56px;
+  display:flex;align-items:center;padding:0 24px;
+  z-index:100;background:var(--surface);
+  border-bottom:1px solid var(--border)
+}
+.topbar-logo{display:flex;align-items:baseline;gap:0;user-select:none;text-decoration:none}
+.topbar-logo .sado{
+  font-family:var(--font);
+  font-size:18px;font-weight:600;
+  letter-spacing:-.3px;color:var(--text)
+}
+.topbar-logo .crypt{
+  font-family:var(--font);
+  font-size:13px;font-weight:400;
+  color:var(--muted);letter-spacing:0
+}
 
 /* ── Main layout ── */
-.main{max-width:480px;margin:0 auto;padding:88px 20px 60px}
+.main{max-width:520px;margin:0 auto;padding:80px 20px 60px}
 
-/* ── Section heading ── */
-.section-label{font-size:10px;font-weight:500;letter-spacing:2.5px;text-transform:uppercase;color:var(--dim);margin-bottom:20px}
+/* ── Page title ── */
+.page-title{
+  font-size:24px;font-weight:500;
+  color:var(--text);margin-bottom:6px;
+  letter-spacing:-.3px
+}
+.page-sub{
+  font-size:14px;color:var(--muted);
+  margin-bottom:28px;font-weight:400
+}
 
 /* ── Card ── */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px}
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:28px 24px;
+  box-shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04)
+}
 
 /* ── Form groups ── */
-.grp{margin-bottom:18px}
-.grp:last-of-type{margin-bottom:0}
-.grp label{display:block;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.5px;margin-bottom:8px;text-transform:uppercase}
+.grp{margin-bottom:20px}
+.grp label{
+  display:block;font-size:13px;font-weight:500;
+  color:var(--muted);margin-bottom:8px
+}
 .grp textarea,.grp input,.grp select{
   width:100%;padding:12px 14px;
-  background:var(--surface2);
-  border:1px solid var(--border);
-  border-radius:10px;
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:8px;
   color:var(--text);
   font-size:14px;
-  font-family:inherit;
+  font-family:var(--font);
   outline:none;
-  transition:border-color .2s;
+  transition:border-color .15s,box-shadow .15s;
   -webkit-appearance:none
 }
-.grp textarea{resize:none;min-height:88px;line-height:1.6}
-.grp textarea:focus,.grp input:focus,.grp select:focus{border-color:var(--border2)}
+.grp textarea{resize:none;min-height:96px;line-height:1.6}
+.grp textarea:focus,.grp input:focus,.grp select:focus{
+  border-color:var(--border-focus);
+  box-shadow:0 0 0 3px rgba(26,115,232,.12)
+}
 .grp textarea::placeholder,.grp input::placeholder{color:var(--dim)}
-.row{display:flex;gap:8px}
+.row{display:flex;gap:10px}
 .row>*:first-child{flex:2}.row>*:last-child{flex:1}
-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='rgba(255,255,255,.3)' d='M5 6L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer}
+select{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%235f6368' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;
+  padding-right:32px;cursor:pointer
+}
 
 /* ── Divider ── */
 .sep{height:1px;background:var(--border);margin:20px 0}
 
 /* ── Button ── */
 .btn{
-  width:100%;padding:13px;
-  border:none;border-radius:10px;
-  font-size:13px;font-weight:500;font-family:inherit;
-  cursor:pointer;transition:opacity .2s,transform .15s;
-  letter-spacing:.3px;
-  background:var(--accent);color:#000
+  width:100%;padding:12px 24px;
+  border:none;border-radius:8px;
+  font-size:14px;font-weight:500;font-family:var(--font);
+  cursor:pointer;transition:background .15s,box-shadow .15s;
+  letter-spacing:.1px;
+  background:var(--accent);color:#fff
 }
-.btn:hover:not(:disabled){opacity:.88;transform:translateY(-1px)}
-.btn:disabled{opacity:.3;cursor:not-allowed;transform:none}
+.btn:hover:not(:disabled){background:var(--accent-hover);box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
 
 /* ── Result ── */
-.result-wrap{margin-top:16px;animation:fadeup .35s ease}
-@keyframes fadeup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.result-label{font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.result-wrap{margin-top:20px;animation:fadeup .3s ease}
+@keyframes fadeup{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.result-chip{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--accent-light);color:var(--accent);
+  font-size:11px;font-weight:500;letter-spacing:.5px;
+  text-transform:uppercase;padding:4px 10px;border-radius:20px;
+  margin-bottom:12px
+}
 .result-url{
   display:block;width:100%;
   padding:12px 14px;
   background:var(--surface2);
-  border:1px solid var(--border);
-  border-radius:10px;
-  font-family:'SF Mono','Fira Code',monospace;
+  border:1.5px solid var(--border);
+  border-radius:8px;
+  font-family:'Roboto Mono','SF Mono',monospace;
   font-size:12px;color:var(--text);
-  word-break:break-all;line-height:1.6;
-  cursor:text;
-  user-select:all;
-  outline:none;
-  resize:none;
-  transition:border-color .2s
+  word-break:break-all;line-height:1.7;
+  cursor:text;user-select:all;
+  outline:none;resize:none;
+  transition:border-color .15s
 }
-.result-url:focus{border-color:var(--border2)}
-.result-hint{font-size:11px;color:var(--dim);margin-top:8px;text-align:center}
+.result-url:focus{border-color:var(--border-focus)}
+.result-hint{font-size:12px;color:var(--dim);margin-top:6px;text-align:center}
 .copy-btn{
   width:100%;margin-top:10px;padding:10px;
-  border:1px solid var(--border);border-radius:10px;
+  border:1.5px solid var(--border);border-radius:8px;
   background:transparent;color:var(--muted);
-  font-size:12px;font-family:inherit;font-weight:500;
-  cursor:pointer;transition:all .2s;letter-spacing:.3px
+  font-size:13px;font-family:var(--font);font-weight:500;
+  cursor:pointer;transition:all .15s
 }
-.copy-btn:hover{border-color:var(--border2);color:var(--text)}
-.copy-btn.copied{color:var(--accent);border-color:rgba(74,222,128,.3)}
+.copy-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
+.copy-btn.copied{color:var(--accent);border-color:var(--accent);background:var(--accent-light)}
 
 /* ── Loading ── */
-.loading{display:flex;align-items:center;gap:10px;padding:16px 0;color:var(--muted);font-size:12px}
-.spinner{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--border);border-top-color:var(--accent);animation:spin .7s linear infinite;flex-shrink:0}
+.loading{display:flex;align-items:center;gap:10px;padding:16px 0;color:var(--muted);font-size:13px}
+.spinner{
+  width:16px;height:16px;border-radius:50%;
+  border:2px solid var(--border);border-top-color:var(--accent);
+  animation:spin .7s linear infinite;flex-shrink:0
+}
 @keyframes spin{to{transform:rotate(360deg)}}
 
 /* ── Error ── */
-.error-msg{font-size:12px;color:rgba(255,100,100,.7);padding:12px 0;text-align:center}
+.error-msg{font-size:13px;color:#d93025;padding:12px 0;text-align:center}
 
 /* ── Footer ── */
-.footer{text-align:center;padding:40px 0 0;font-size:10px;color:var(--dim);letter-spacing:2px;text-transform:uppercase}
+.footer{text-align:center;padding:36px 0 0;font-size:11px;color:var(--dim);letter-spacing:.5px}
 
-@media(max-width:480px){.main{padding:80px 16px 48px}.card{padding:22px 18px}}
+@media(max-width:480px){.main{padding:72px 16px 48px}.card{padding:22px 18px}}
 </style>
 </head>
 <body>
 
 <header class=topbar>
-  <div class=topbar-logo>
+  <a class=topbar-logo href="/">
     <span class=sado>Sado</span><span class=crypt>crypt</span>
-  </div>
+  </a>
 </header>
 
 <main class=main>
-  <div class=section-label>Encrypt</div>
+  <h1 class=page-title>暗号化</h1>
+  <p class=page-sub>テキストやURLを時間ロック暗号化します</p>
   <div class=card>
     <form id=f>
       <div class=grp>
@@ -634,13 +682,11 @@ select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/
           </select>
         </div>
       </div>
-      <div style="margin-top:20px">
-        <button type=submit class=btn id=btn>暗号化してURLを生成</button>
-      </div>
+      <button type=submit class=btn id=btn>暗号化してURLを生成</button>
     </form>
     <div id=res></div>
   </div>
-  <div class=footer>sadocrypt &middot; time-lock encryption</div>
+  <div class=footer>Sadocrypt &middot; time-lock encryption</div>
 </main>
 
 <script>
@@ -744,7 +790,7 @@ document.getElementById('f').onsubmit=async function(e){
     const shareUrl=location.origin+'/s/'+d.id;
     out.innerHTML=
       '<div class=result-wrap>'+
-      '<div class=result-label>URL generated</div>'+
+      '<div class=result-chip>&#x2713; URL generated</div>'+
       '<textarea class=result-url id=rurl readonly onclick="this.select()">'+shareUrl+'</textarea>'+
       '<div class=result-hint>クリックで全選択</div>'+
       '<button class=copy-btn id=cbtn onclick="copyUrl()">コピー</button>'+
@@ -758,7 +804,7 @@ function copyUrl(){
   if(!el)return;
   navigator.clipboard.writeText(el.value).then(()=>{
     const btn=document.getElementById('cbtn');
-    btn.textContent='コピーしました';btn.classList.add('copied');
+    btn.textContent='コピーしました ✓';btn.classList.add('copied');
     setTimeout(()=>{btn.textContent='コピー';btn.classList.remove('copied');},2000);
   });
 }
