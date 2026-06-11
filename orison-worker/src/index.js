@@ -699,15 +699,38 @@ const HTML_DECRYPT = `<!DOCTYPE html>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#000;color:#fff;font-family:'Inter',-apple-system,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center}
-.c{text-align:center}
-.spin{width:64px;height:64px;margin:0 auto 24px;position:relative}
-svg{animation:r 1.2s linear infinite;width:64px;height:64px}
-circle{fill:none;stroke:rgba(255,255,255,.8);stroke-width:3;stroke-linecap:round;stroke-dasharray:150;stroke-dashoffset:30;animation:t 1.2s ease-in-out infinite}
-@keyframes r{100%{transform:rotate(360deg)}}
-@keyframes t{0%{stroke-dashoffset:150}50%{stroke-dashoffset:30}100%{stroke-dashoffset:150}}
-.l{font-size:14px;letter-spacing:2px;color:rgba(255,255,255,.5);margin-bottom:12px}
-.h{font-family:monospace;font-size:13px;color:rgba(255,255,255,.4);line-height:1.8}
-.h span{color:rgba(255,255,255,.7)}
+.c{text-align:center;padding:24px}
+
+/* スピナー: 複数ドットが円形に回転 */
+.spin-ring{width:72px;height:72px;margin:0 auto 28px;position:relative}
+.spin-ring span{
+  position:absolute;width:8px;height:8px;border-radius:50%;
+  background:rgba(255,255,255,.15);
+  top:50%;left:50%;transform-origin:0 0;
+}
+.spin-ring span:nth-child(1){transform:rotate(0deg) translate(28px,-4px);animation:fade-dot 1.2s linear infinite 0s}
+.spin-ring span:nth-child(2){transform:rotate(45deg) translate(28px,-4px);animation:fade-dot 1.2s linear infinite .15s}
+.spin-ring span:nth-child(3){transform:rotate(90deg) translate(28px,-4px);animation:fade-dot 1.2s linear infinite .3s}
+.spin-ring span:nth-child(4){transform:rotate(135deg) translate(28px,-4px);animation:fade-dot 1.2s linear infinite .45s}
+.spin-ring span:nth-child(5){transform:rotate(180deg) translate(28px,-4px);animation:fade-dot 1.2s linear infinite .6s}
+.spin-ring span:nth-child(6){transform:rotate(225deg) translate(28px,-4px);animation:fade-dot 1.2s linear infinite .75s}
+.spin-ring span:nth-child(7){transform:rotate(270deg) translate(28px,-4px);animation:fade-dot 1.2s linear infinite .9s}
+.spin-ring span:nth-child(8){transform:rotate(315deg) translate(28px,-4px);animation:fade-dot 1.2s linear infinite 1.05s}
+@keyframes fade-dot{
+  0%,100%{background:rgba(255,255,255,.15)}
+  0%{background:rgba(255,255,255,.9)}
+  50%{background:rgba(255,255,255,.15)}
+}
+
+/* プログレスバー */
+.prog-wrap{width:240px;margin:16px auto 0;height:2px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden}
+.prog-bar{height:2px;background:rgba(255,255,255,.4);border-radius:2px;width:0%;transition:width .4s ease}
+
+.l{font-size:13px;letter-spacing:2px;color:rgba(255,255,255,.4);margin-bottom:10px;text-transform:uppercase}
+.h{font-family:monospace;font-size:14px;color:rgba(255,255,255,.35);line-height:2;margin-top:8px}
+.h .num{color:rgba(255,255,255,.75);font-size:16px}
+.h .unit{font-size:11px;color:rgba(255,255,255,.3);margin-left:2px;letter-spacing:1px}
+
 .done{display:none}
 .done .ck{width:64px;height:64px;margin:0 auto 24px;border-radius:50%;border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:24px;color:rgba(255,255,255,.6)}
 .done .l{color:rgba(255,255,255,.4)}
@@ -722,9 +745,17 @@ circle{fill:none;stroke:rgba(255,255,255,.8);stroke-width:3;stroke-linecap:round
 <body>
 <div class=c>
 <div id=stl>
-<div class=spin><svg viewBox="0 0 64 64"><circle cx=32 cy=32 r=28/></svg></div>
-<div class=l>復号中...</div>
-<div class=h><span id=cur>0</span> / <span id=total>-</span></div>
+  <div class=spin-ring>
+    <span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span>
+  </div>
+  <div class=l>復号中...</div>
+  <div class=h>
+    <span class=num id=cur>0</span><span class=unit>hash</span>
+    &nbsp;/&nbsp;
+    <span class=num id=total>-</span><span class=unit>hash</span>
+  </div>
+  <div class=prog-wrap><div class=prog-bar id=pbar></div></div>
 </div>
 <div id=std class=done>
 <div class=ck>&#x2713;</div>
@@ -741,11 +772,6 @@ circle{fill:none;stroke:rgba(255,255,255,.8);stroke-width:3;stroke-linecap:round
 const P=__PUZZLE__;
 const CACHE_KEY='sadocrypt_cache_'+P.id;
 
-function modPow(b,e,m){
-  if(m===1n)return 0n;let r=1n;b=((b%m)+m)%m;
-  while(e>0n){if(e&1n)r=(r*b)%m;e>>=1n;b=(b*b)%m}
-  return r;
-}
 function hexToUint8(h){
   if(h.length%2)h='0'+h;
   const b=new Uint8Array(h.length/2);
@@ -778,19 +804,32 @@ async function run(){
   }
 
   // 2乗チェーン計算（ブラウザで逐次実行）
+  // x = x² mod N を cc 回繰り返す（modPowではなく直接計算）
   let x=x0;
   const total=cc;
-  const updateInterval=1000n;
+  const totalNum=Number(total);
+
+  // UI初期化
+  document.getElementById('total').textContent=total.toLocaleString('ja-JP');
+
+  // UI更新間隔: 約100msごとに更新（setTimeout(0)のオーバーヘッドを最小化）
+  const UPDATE_INTERVAL=5000n;
+  let lastYield=performance.now();
+
   for(let i=0n;i<total;i++){
-    x=modPow(x,2n,N);
-    if(i%updateInterval===0n){
-      document.getElementById('cur').textContent=i.toLocaleString();
-      document.getElementById('total').textContent=total.toLocaleString();
+    x=(x*x)%N;
+
+    if(i%UPDATE_INTERVAL===0n&&i>0n){
+      const pct=Number(i)*100/totalNum;
+      document.getElementById('cur').textContent=i.toLocaleString('ja-JP');
+      document.getElementById('pbar').style.width=pct.toFixed(1)+'%';
+      // UIスレッドを解放（フリーズ防止）
       await new Promise(r=>setTimeout(r,0));
     }
   }
-  document.getElementById('cur').textContent=total.toLocaleString();
-  document.getElementById('total').textContent=total.toLocaleString();
+
+  document.getElementById('cur').textContent=total.toLocaleString('ja-JP');
+  document.getElementById('pbar').style.width='100%';
 
   const xFinalHex=x.toString(16);
 
