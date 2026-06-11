@@ -1,11 +1,15 @@
 name = "orison"
 main = "src/index.js"
 compatibility_date = "2024-02-01"
-
 routes = [
-  { pattern = "sadocrypt.com", custom_domain = true }
+  { pattern = "sadocrypt.com", custom_domain = true },
+  { pattern = "dev.sadocrypt.com", custom_domain = true }
 ]
 
 [[kv_namespaces]]
 binding = "PUZZLES"
 id = "b973caae74e74b2fb2f603c0d4bbbea5"
+
+[dev]
+port = 5002
+local_protocol = "http"

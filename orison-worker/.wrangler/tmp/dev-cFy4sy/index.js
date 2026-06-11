@@ -1,150 +1,90 @@
-/**
- * sadocrypt.com - Cloudflare Worker
- *
- * 設計思想（CLAUDE.md準拠）:
- * - 暗号化: クライアントサイドJS（ブラウザ）で完結
- * - 復号（2乗チェーン計算）: ブラウザJSで実行
- * - 検算・保管: Cloudflare Workers（このファイル）で実行
- * - サーバーには平文・秘密鍵を一切送らない
- */
+var __defProp = Object.defineProperty;
+var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
-import { v4 as uuidv4 } from 'uuid';
-
-// ============================================================
-// 暗号コア（BigInt版）- サーバー側暗号化用
-// ============================================================
-
-// Miller-Rabin素数判定
-function isPrime(n, iterations = 20) {
-    if (n < 2n) return false;
-    if (n === 2n || n === 3n) return true;
-    if (n % 2n === 0n) return false;
-
-    let s = 0n;
-    let d = n - 1n;
-    while (d % 2n === 0n) {
-        s++;
-        d /= 2n;
+// .wrangler/tmp/bundle-bDYHon/checked-fetch.js
+var urls = /* @__PURE__ */ new Set();
+function checkURL(request, init) {
+  const url = request instanceof URL ? request : new URL(
+    (typeof request === "string" ? new Request(request, init) : request).url
+  );
+  if (url.port && url.port !== "443" && url.protocol === "https:") {
+    if (!urls.has(url.toString())) {
+      urls.add(url.toString());
+      console.warn(
+        `WARNING: known issue with \`fetch()\` requests to custom HTTPS ports in published Workers:
+ - ${url.toString()} - the custom port will be ignored when the Worker is published using the \`wrangler deploy\` command.
+`
+      );
     }
+  }
+}
+__name(checkURL, "checkURL");
+globalThis.fetch = new Proxy(globalThis.fetch, {
+  apply(target, thisArg, argArray) {
+    const [request, init] = argArray;
+    checkURL(request, init);
+    return Reflect.apply(target, thisArg, argArray);
+  }
+});
 
-    for (let i = 0; i < iterations; i++) {
-        const a = randomBigInt(2n, n - 2n);
-        let x = modPow(a, d, n);
-        if (x === 1n || x === n - 1n) continue;
-        let broken = false;
-        for (let j = 0n; j < s - 1n; j++) {
-            x = modPow(x, 2n, n);
-            if (x === n - 1n) { broken = true; break; }
-        }
-        if (!broken) return false;
+// node_modules/uuid/dist/esm-browser/rng.js
+var getRandomValues;
+var rnds8 = new Uint8Array(16);
+function rng() {
+  if (!getRandomValues) {
+    getRandomValues = typeof crypto !== "undefined" && crypto.getRandomValues && crypto.getRandomValues.bind(crypto);
+    if (!getRandomValues) {
+      throw new Error("crypto.getRandomValues() not supported. See https://github.com/uuidjs/uuid#getrandomvalues-not-supported");
     }
-    return true;
+  }
+  return getRandomValues(rnds8);
 }
+__name(rng, "rng");
 
-// べき乗剰余: (base^exp) % mod
-function modPow(base, exp, mod) {
-    if (mod === 1n) return 0n;
-    let result = 1n;
-    base = ((base % mod) + mod) % mod;
-    while (exp > 0n) {
-        if (exp & 1n) result = (result * base) % mod;
-        exp >>= 1n;
-        base = (base * base) % mod;
+// node_modules/uuid/dist/esm-browser/stringify.js
+var byteToHex = [];
+for (let i = 0; i < 256; ++i) {
+  byteToHex.push((i + 256).toString(16).slice(1));
+}
+function unsafeStringify(arr, offset = 0) {
+  return byteToHex[arr[offset + 0]] + byteToHex[arr[offset + 1]] + byteToHex[arr[offset + 2]] + byteToHex[arr[offset + 3]] + "-" + byteToHex[arr[offset + 4]] + byteToHex[arr[offset + 5]] + "-" + byteToHex[arr[offset + 6]] + byteToHex[arr[offset + 7]] + "-" + byteToHex[arr[offset + 8]] + byteToHex[arr[offset + 9]] + "-" + byteToHex[arr[offset + 10]] + byteToHex[arr[offset + 11]] + byteToHex[arr[offset + 12]] + byteToHex[arr[offset + 13]] + byteToHex[arr[offset + 14]] + byteToHex[arr[offset + 15]];
+}
+__name(unsafeStringify, "unsafeStringify");
+
+// node_modules/uuid/dist/esm-browser/native.js
+var randomUUID = typeof crypto !== "undefined" && crypto.randomUUID && crypto.randomUUID.bind(crypto);
+var native_default = {
+  randomUUID
+};
+
+// node_modules/uuid/dist/esm-browser/v4.js
+function v4(options, buf, offset) {
+  if (native_default.randomUUID && !buf && !options) {
+    return native_default.randomUUID();
+  }
+  options = options || {};
+  const rnds = options.random || (options.rng || rng)();
+  rnds[6] = rnds[6] & 15 | 64;
+  rnds[8] = rnds[8] & 63 | 128;
+  if (buf) {
+    offset = offset || 0;
+    for (let i = 0; i < 16; ++i) {
+      buf[offset + i] = rnds[i];
     }
-    return result;
+    return buf;
+  }
+  return unsafeStringify(rnds);
 }
+__name(v4, "v4");
+var v4_default = v4;
 
-// 最大公約数
-function gcd(a, b) {
-    a = a < 0n ? -a : a;
-    b = b < 0n ? -b : b;
-    while (b) {
-        [a, b] = [b, a % b];
-    }
-    return a;
-}
-
-// 暗号論的乱数BigInt [min, max]
-function randomBigInt(min, max) {
-    const range = max - min + 1n;
-    const bits = range.toString(2).length;
-    let result;
-    do {
-        result = 0n;
-        for (let i = 0; i < bits; i += 32) {
-            const chunk = crypto.getRandomValues(new Uint32Array(1))[0];
-            result = (result << 32n) | BigInt(chunk);
-        }
-        result = result & ((1n << BigInt(bits)) - 1n);
-    } while (result >= range);
-    return result + min;
-}
-
-// 指定ビット数の素数生成
-function generateLargePrime(bits) {
-    while (true) {
-        let n = 0n;
-        for (let i = 0; i < bits; i += 32) {
-            const chunk = crypto.getRandomValues(new Uint32Array(1))[0];
-            n = (n << 32n) | BigInt(chunk);
-        }
-        n |= (1n << BigInt(bits - 1)) | 1n;
-        n &= (1n << BigInt(bits)) - 1n;
-        if (isPrime(n, 15)) return n;
-    }
-}
-
-// 初期値 x0 生成（暗号論的乱数使用）
-function generateX0(N) {
-    while (true) {
-        const x0 = randomBigInt(2n, N - 2n);
-        if (gcd(x0, N) === 1n) return x0;
-    }
-}
-
-// 高速スキップ（Carmichael関数使用）- サーバー側のみ使用
-function fastForwardChain(x0, chainCount, p, q, N) {
-    const lambda = lcm(p - 1n, q - 1n);
-    const exponent = modPow(2n, BigInt(chainCount), lambda);
-    return modPow(x0, exponent, N);
-}
-
-function lcm(a, b) {
-    return (a / gcd(a, b)) * b;
-}
-
-function arrayToHex(arr) {
-    return Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-function hexToUint8(hex) {
-    const u = new Uint8Array(Math.ceil(hex.length / 2));
-    for (let i = 0; i < u.length; i++) u[i] = parseInt(hex.substr(i * 2, 2), 16);
-    return u;
-}
-
-// AES-256-CBC 暗号化（Hex返却）
-async function aesEncrypt(data, xFinal) {
-    const hex = xFinal.toString(16);
-    const bytes = hexToUint8(hex.length % 2 === 0 ? hex : '0' + hex);
-    const hash = await crypto.subtle.digest('SHA-256', bytes);
-    const key = await crypto.subtle.importKey('raw', hash, { name: 'AES-CBC' }, false, ['encrypt']);
-    const iv = crypto.getRandomValues(new Uint8Array(16));
-    const encoded = new TextEncoder().encode(data);
-    const ciphertext = await crypto.subtle.encrypt({ name: 'AES-CBC', iv }, key, encoded);
-    return { iv: arrayToHex(iv), ct: arrayToHex(new Uint8Array(ciphertext)) };
-}
-
-// ============================================================
-// HTML テンプレート
-// ============================================================
-
-const HTML_BENCHMARK = `<!DOCTYPE html>
+// src/index.js
+var HTML_BENCHMARK = `<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>sadocrypt — ベンチマーク</title>
+<title>sadocrypt \u2014 \u30D9\u30F3\u30C1\u30DE\u30FC\u30AF</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -195,93 +135,93 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:var(--bg);color:va
   <div class=header>
     <div class=mark>&#x229E;</div>
     <div class=title><strong>sado</strong>crypt</div>
-    <p class=sub>2乗チェーン ベンチマーク — 500万回試行</p>
+    <p class=sub>2\u4E57\u30C1\u30A7\u30FC\u30F3 \u30D9\u30F3\u30C1\u30DE\u30FC\u30AF \u2014 500\u4E07\u56DE\u8A66\u884C</p>
   </div>
 
-  <!-- 実行前 -->
+  <!-- \u5B9F\u884C\u524D -->
   <div id=pre-card class=card>
     <div class=card-label>Benchmark</div>
     <div class=stat-row>
-      <span class=stat-label>試行回数</span>
-      <span class=stat-val>5,000,000 回</span>
+      <span class=stat-label>\u8A66\u884C\u56DE\u6570</span>
+      <span class=stat-val>5,000,000 \u56DE</span>
     </div>
     <div class=stat-row>
-      <span class=stat-label>アルゴリズム</span>
-      <span class=stat-val>x² mod N（BigInt）</span>
+      <span class=stat-label>\u30A2\u30EB\u30B4\u30EA\u30BA\u30E0</span>
+      <span class=stat-val>x\xB2 mod N\uFF08BigInt\uFF09</span>
     </div>
     <div class=stat-row>
-      <span class=stat-label>モジュラスサイズ</span>
+      <span class=stat-label>\u30E2\u30B8\u30E5\u30E9\u30B9\u30B5\u30A4\u30BA</span>
       <span class=stat-val>1024 bit</span>
     </div>
     <div class=stat-row>
-      <span class=stat-label>並列化</span>
-      <span class="stat-val dim">不可（逐次計算）</span>
+      <span class=stat-label>\u4E26\u5217\u5316</span>
+      <span class="stat-val dim">\u4E0D\u53EF\uFF08\u9010\u6B21\u8A08\u7B97\uFF09</span>
     </div>
-    <button id=start-btn class="btn primary" onclick="startBenchmark()">計測開始</button>
+    <button id=start-btn class="btn primary" onclick="startBenchmark()">\u8A08\u6E2C\u958B\u59CB</button>
   </div>
 
-  <!-- 実行中 -->
+  <!-- \u5B9F\u884C\u4E2D -->
   <div id=running-card class="card hidden">
-    <div class=card-label>計測中...</div>
+    <div class=card-label>\u8A08\u6E2C\u4E2D...</div>
     <div class=spin-wrap>
       <div class=spinner></div>
-      <span id=run-status>準備中...</span>
+      <span id=run-status>\u6E96\u5099\u4E2D...</span>
     </div>
     <div class=progress-wrap>
       <div class=progress-bar-bg><div id=pbar class=progress-bar></div></div>
       <div id=plabel class=progress-label>0 / 5,000,000</div>
     </div>
     <div class=stat-row>
-      <span class=stat-label>経過時間</span>
-      <span class=stat-val><span id=elapsed-time>0.00</span> 秒</span>
+      <span class=stat-label>\u7D4C\u904E\u6642\u9593</span>
+      <span class=stat-val><span id=elapsed-time>0.00</span> \u79D2</span>
     </div>
     <div class=stat-row>
-      <span class=stat-label>現在の速度</span>
-      <span class=stat-val><span id=cur-speed>—</span> 回/秒</span>
+      <span class=stat-label>\u73FE\u5728\u306E\u901F\u5EA6</span>
+      <span class=stat-val><span id=cur-speed>\u2014</span> \u56DE/\u79D2</span>
     </div>
   </div>
 
-  <!-- 結果 -->
+  <!-- \u7D50\u679C -->
   <div id=result-card class="card hidden">
-    <div class=card-label>結果</div>
+    <div class=card-label>\u7D50\u679C</div>
     <div class=result-grid>
       <div class="result-box accent">
-        <div class=val id=res-time>—</div>
-        <div class=lbl>実測時間（秒）</div>
+        <div class=val id=res-time>\u2014</div>
+        <div class=lbl>\u5B9F\u6E2C\u6642\u9593\uFF08\u79D2\uFF09</div>
       </div>
       <div class=result-box>
-        <div class=val id=res-speed>—</div>
-        <div class=lbl>回/秒</div>
+        <div class=val id=res-speed>\u2014</div>
+        <div class=lbl>\u56DE/\u79D2</div>
       </div>
       <div class=result-box>
-        <div class=val id=res-1sec>—</div>
-        <div class=lbl>1秒あたり</div>
+        <div class=val id=res-1sec>\u2014</div>
+        <div class=lbl>1\u79D2\u3042\u305F\u308A</div>
       </div>
       <div class=result-box>
-        <div class=val id=res-1min>—</div>
-        <div class=lbl>1分あたり</div>
+        <div class=val id=res-1min>\u2014</div>
+        <div class=lbl>1\u5206\u3042\u305F\u308A</div>
       </div>
     </div>
     <div style="margin-top:20px">
       <div class=stat-row>
-        <span class=stat-label>試行回数</span>
-        <span class=stat-val>5,000,000 回</span>
+        <span class=stat-label>\u8A66\u884C\u56DE\u6570</span>
+        <span class=stat-val>5,000,000 \u56DE</span>
       </div>
       <div class=stat-row>
-        <span class=stat-label>平均タイム / 1回</span>
-        <span class=stat-val><span id=res-avg>—</span> μs</span>
+        <span class=stat-label>\u5E73\u5747\u30BF\u30A4\u30E0 / 1\u56DE</span>
+        <span class=stat-val><span id=res-avg>\u2014</span> \u03BCs</span>
       </div>
       <div class=stat-row>
-        <span class=stat-label>モジュラスサイズ</span>
+        <span class=stat-label>\u30E2\u30B8\u30E5\u30E9\u30B9\u30B5\u30A4\u30BA</span>
         <span class=stat-val>1024 bit</span>
       </div>
     </div>
-    <button class="btn primary" style="margin-top:20px" onclick="startBenchmark()">再計測</button>
+    <button class="btn primary" style="margin-top:20px" onclick="startBenchmark()">\u518D\u8A08\u6E2C</button>
   </div>
 
-  <!-- 計測履歴 -->
+  <!-- \u8A08\u6E2C\u5C65\u6B74 -->
   <div id=history-card class="card hidden">
-    <div class=card-label>計測履歴</div>
+    <div class=card-label>\u8A08\u6E2C\u5C65\u6B74</div>
     <div id=history-list class=history></div>
   </div>
 
@@ -290,7 +230,7 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:var(--bg);color:va
 
 <script>
 // ============================================================
-// 2乗チェーン ベンチマーク（BigInt版）
+// 2\u4E57\u30C1\u30A7\u30FC\u30F3 \u30D9\u30F3\u30C1\u30DE\u30FC\u30AF\uFF08BigInt\u7248\uFF09
 // ============================================================
 
 const TRIAL_COUNT = 5_000_000n;
@@ -380,38 +320,38 @@ async function startBenchmark() {
   if (isRunning) return;
   isRunning = true;
 
-  // UI切り替え
+  // UI\u5207\u308A\u66FF\u3048
   document.getElementById('pre-card').classList.add('hidden');
   document.getElementById('result-card').classList.add('hidden');
   document.getElementById('running-card').classList.remove('hidden');
-  document.getElementById('run-status').textContent = '素数生成中...';
+  document.getElementById('run-status').textContent = '\u7D20\u6570\u751F\u6210\u4E2D...';
   document.getElementById('pbar').style.width = '0%';
   document.getElementById('plabel').textContent = '0 / 5,000,000';
-  document.getElementById('cur-speed').textContent = '—';
+  document.getElementById('cur-speed').textContent = '\u2014';
   document.getElementById('elapsed-time').textContent = '0.00';
 
   await new Promise(r => setTimeout(r, 0));
 
-  // 1024bit素数ペア生成（実際のsadocryptと同じ条件）
+  // 1024bit\u7D20\u6570\u30DA\u30A2\u751F\u6210\uFF08\u5B9F\u969B\u306Esadocrypt\u3068\u540C\u3058\u6761\u4EF6\uFF09
   const halfBits = MODULUS_BITS / 2;
   const p = generatePrime(halfBits);
   const q = generatePrime(halfBits);
   const N = p * q;
 
-  // x0生成
+  // x0\u751F\u6210
   let x0;
   while (true) {
     x0 = randomBigInt(2n, N - 2n);
     if (gcd(x0, N) === 1n) break;
   }
 
-  document.getElementById('run-status').textContent = '計測中...';
+  document.getElementById('run-status').textContent = '\u8A08\u6E2C\u4E2D...';
 
-  // 経過時間タイマー開始
+  // \u7D4C\u904E\u6642\u9593\u30BF\u30A4\u30DE\u30FC\u958B\u59CB
   startTime = performance.now();
   elapsedTimer = setInterval(updateElapsed, 100);
 
-  // 2乗チェーン 500万回
+  // 2\u4E57\u30C1\u30A7\u30FC\u30F3 500\u4E07\u56DE
   let x = x0;
   const total = TRIAL_COUNT;
   const updateEvery = 50_000n;
@@ -447,7 +387,7 @@ async function startBenchmark() {
   const speed = Math.round(Number(total) / totalSec);
   const avgUs = (totalMs * 1000 / Number(total)).toFixed(3);
 
-  // 結果表示
+  // \u7D50\u679C\u8868\u793A
   document.getElementById('running-card').classList.add('hidden');
   document.getElementById('result-card').classList.remove('hidden');
 
@@ -457,7 +397,7 @@ async function startBenchmark() {
   document.getElementById('res-1min').textContent = fmt(speed * 60);
   document.getElementById('res-avg').textContent = avgUs;
 
-  // 履歴追加
+  // \u5C65\u6B74\u8FFD\u52A0
   runHistory.push({ sec: totalSec, speed });
   renderHistory();
 
@@ -471,20 +411,15 @@ function renderHistory() {
   list.innerHTML = runHistory.map((r, i) =>
     '<div class=history-item>' +
     '<span class=run-num>#' + (i + 1) + '</span>' +
-    '<span class=run-speed>' + fmt(r.speed) + ' 回/秒</span>' +
-    '<span class=run-time>' + r.sec.toFixed(3) + ' 秒</span>' +
+    '<span class=run-speed>' + fmt(r.speed) + ' \u56DE/\u79D2</span>' +
+    '<span class=run-time>' + r.sec.toFixed(3) + ' \u79D2</span>' +
     '</div>'
   ).reverse().join('');
 }
-</script>
+<\/script>
 </body>
 </html>`;
-
-// ============================================================
-// HTML テンプレート
-// ============================================================
-
-const HTML_ENCRYPT = `<!DOCTYPE html>
+var HTML_ENCRYPT = `<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -541,31 +476,31 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 <div class=header>
 <div class=mark>&#x229E;</div>
 <div class=title><strong>sado</strong>crypt</div>
-<p class=tag>情報に「かけた時間」という重みを</p>
+<p class=tag>\u60C5\u5831\u306B\u300C\u304B\u3051\u305F\u6642\u9593\u300D\u3068\u3044\u3046\u91CD\u307F\u3092</p>
 </div>
 <div class=card>
 <div class=card-label>Encrypt</div>
 <form id=f>
 <div class=grp>
-  <label>保護するテキスト・URL</label>
-  <textarea name=content placeholder="https://example.com/secret&#10;または任意のテキスト" required></textarea>
+  <label>\u4FDD\u8B77\u3059\u308B\u30C6\u30AD\u30B9\u30C8\u30FBURL</label>
+  <textarea name=content placeholder="https://example.com/secret&#10;\u307E\u305F\u306F\u4EFB\u610F\u306E\u30C6\u30AD\u30B9\u30C8" required></textarea>
 </div>
-<div class=grp><label>復号時間</label><div class=row><input type=number name=tv value=10 min=1><select name=tu><option value=s selected>秒</option><option value=m>分</option><option value=h>時間</option></select></div></div>
-<button type=submit class=btn id=btn>暗号化してURLを生成</button>
+<div class=grp><label>\u5FA9\u53F7\u6642\u9593</label><div class=row><input type=number name=tv value=10 min=1><select name=tu><option value=s selected>\u79D2</option><option value=m>\u5206</option><option value=h>\u6642\u9593</option></select></div></div>
+<button type=submit class=btn id=btn>\u6697\u53F7\u5316\u3057\u3066URL\u3092\u751F\u6210</button>
 </form>
 <div id=res></div>
 </div>
 <div class=divider>sadocrypt</div>
 <div class=about>
-<p>Orisonは、情報に「かけた時間」という重みを与えます。<br>暗号化は一瞬。復号には、あなたが決めた時間だけかかる。</p>
+<p>Orison\u306F\u3001\u60C5\u5831\u306B\u300C\u304B\u3051\u305F\u6642\u9593\u300D\u3068\u3044\u3046\u91CD\u307F\u3092\u4E0E\u3048\u307E\u3059\u3002<br>\u6697\u53F7\u5316\u306F\u4E00\u77AC\u3002\u5FA9\u53F7\u306B\u306F\u3001\u3042\u306A\u305F\u304C\u6C7A\u3081\u305F\u6642\u9593\u3060\u3051\u304B\u304B\u308B\u3002</p>
 <div class=orn>&#x2022; &#x2022; &#x2022;</div>
-<p class=prayer>どうか、自分のコンテンツが<br>それに見合った時間の流れ、密度の中で見出されますように。</p>
+<p class=prayer>\u3069\u3046\u304B\u3001\u81EA\u5206\u306E\u30B3\u30F3\u30C6\u30F3\u30C4\u304C<br>\u305D\u308C\u306B\u898B\u5408\u3063\u305F\u6642\u9593\u306E\u6D41\u308C\u3001\u5BC6\u5EA6\u306E\u4E2D\u3067\u898B\u51FA\u3055\u308C\u307E\u3059\u3088\u3046\u306B\u3002</p>
 </div>
 <div class=footer>sadocrypt.com &middot; time-lock encryption</div>
 </div>
 <script>
 // ============================================================
-// クライアントサイド暗号化（CLAUDE.md準拠: 暗号化はブラウザJSで完結）
+// \u30AF\u30E9\u30A4\u30A2\u30F3\u30C8\u30B5\u30A4\u30C9\u6697\u53F7\u5316\uFF08CLAUDE.md\u6E96\u62E0: \u6697\u53F7\u5316\u306F\u30D6\u30E9\u30A6\u30B6JS\u3067\u5B8C\u7D50\uFF09
 // ============================================================
 
 function modPow(base, exp, mod) {
@@ -620,17 +555,17 @@ function hexToUint8(h){
 function arrayToHex(a){return Array.from(a).map(b=>b.toString(16).padStart(2,'0')).join('');}
 
 async function encryptContent(content, targetSeconds) {
-  // 1. 素数ペア生成（約512ビット = 約300桁）
+  // 1. \u7D20\u6570\u30DA\u30A2\u751F\u6210\uFF08\u7D04512\u30D3\u30C3\u30C8 = \u7D04300\u6841\uFF09
   const bits = 512;
   const p = generatePrime(bits);
   const q = generatePrime(bits);
   const N = p * q;
 
-  // 2. x0生成（暗号論的乱数）
+  // 2. x0\u751F\u6210\uFF08\u6697\u53F7\u8AD6\u7684\u4E71\u6570\uFF09
   let x0;
   while(true){x0=randomBigInt(2n,N-2n);if(gcd(x0,N)===1n)break;}
 
-  // 3. ベンチマーク（実際のNで速度測定）
+  // 3. \u30D9\u30F3\u30C1\u30DE\u30FC\u30AF\uFF08\u5B9F\u969B\u306EN\u3067\u901F\u5EA6\u6E2C\u5B9A\uFF09
   const testCount = 5000n;
   const t0 = performance.now();
   let xb = x0;
@@ -638,15 +573,15 @@ async function encryptContent(content, targetSeconds) {
   const elapsed = (performance.now()-t0)/1000;
   const speed = Number(testCount)/elapsed;
 
-  // 4. チェーン回数計算
+  // 4. \u30C1\u30A7\u30FC\u30F3\u56DE\u6570\u8A08\u7B97
   const chainCount = Math.floor(targetSeconds * speed * 0.8);
 
-  // 5. Carmichaelスキップで x_final を高速計算
+  // 5. Carmichael\u30B9\u30AD\u30C3\u30D7\u3067 x_final \u3092\u9AD8\u901F\u8A08\u7B97
   const lambda = lcm(p-1n, q-1n);
   const exponent = modPow(2n, BigInt(chainCount), lambda);
   const xFinal = modPow(x0, exponent, N);
 
-  // 6. AES-256-CBC 暗号化
+  // 6. AES-256-CBC \u6697\u53F7\u5316
   const xHex = xFinal.toString(16);
   const xBytes = hexToUint8(xHex);
   const hash = await crypto.subtle.digest('SHA-256', xBytes);
@@ -670,27 +605,26 @@ document.getElementById('f').onsubmit=async function(e){
   const out=document.getElementById('res'),btn=document.getElementById('btn'),fd=new FormData(this);
   let s=parseInt(fd.get('tv')),u=fd.get('tu');
   if(u==='m')s*=60;if(u==='h')s*=3600;
-  btn.disabled=true;btn.textContent='暗号化中...';
-  out.innerHTML='<div class=result><div class=loading><div class=spinner></div>素数生成・暗号化中（ブラウザで処理）...</div></div>';
+  btn.disabled=true;btn.textContent='\u6697\u53F7\u5316\u4E2D...';
+  out.innerHTML='<div class=result><div class=loading><div class=spinner></div>\u7D20\u6570\u751F\u6210\u30FB\u6697\u53F7\u5316\u4E2D\uFF08\u30D6\u30E9\u30A6\u30B6\u3067\u51E6\u7406\uFF09...</div></div>';
   try{
-    // クライアントサイドで暗号化
+    // \u30AF\u30E9\u30A4\u30A2\u30F3\u30C8\u30B5\u30A4\u30C9\u3067\u6697\u53F7\u5316
     const enc = await encryptContent(fd.get('content'), s);
 
-    // サーバーにはパズルデータ（平文なし）のみ送信
+    // \u30B5\u30FC\u30D0\u30FC\u306B\u306F\u30D1\u30BA\u30EB\u30C7\u30FC\u30BF\uFF08\u5E73\u6587\u306A\u3057\uFF09\u306E\u307F\u9001\u4FE1
     const r=await fetch('/api/save',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({x0:enc.x0,N:enc.N,cc:enc.chainCount,iv:enc.iv,ct:enc.ct,target_seconds:s})});
     const d=await r.json();
     if(d.error){out.innerHTML='<div class=result><div class=error>'+d.error+'</div></div>';return;}
     const shareUrl=location.origin+'/s/'+d.id;
-    out.innerHTML='<div class=result><div class=r-icon>&#x229E;</div><div class=r-label>URL generated</div><div class=r-url onclick="navigator.clipboard.writeText(this.textContent)">'+shareUrl+'</div><div class=r-hint>クリックでコピー &middot; 約'+enc.actualSeconds+'秒で復号</div></div>';
+    out.innerHTML='<div class=result><div class=r-icon>&#x229E;</div><div class=r-label>URL generated</div><div class=r-url onclick="navigator.clipboard.writeText(this.textContent)">'+shareUrl+'</div><div class=r-hint>\u30AF\u30EA\u30C3\u30AF\u3067\u30B3\u30D4\u30FC &middot; \u7D04'+enc.actualSeconds+'\u79D2\u3067\u5FA9\u53F7</div></div>';
   }catch(e){out.innerHTML='<div class=result><div class=error>'+e.message+'</div></div>';}
-  btn.disabled=false;btn.textContent='暗号化してURLを生成';
+  btn.disabled=false;btn.textContent='\u6697\u53F7\u5316\u3057\u3066URL\u3092\u751F\u6210';
 };
-</script>
+<\/script>
 </body>
 </html>`;
-
-const HTML_DECRYPT = `<!DOCTYPE html>
+var HTML_DECRYPT = `<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
@@ -723,17 +657,17 @@ circle{fill:none;stroke:rgba(255,255,255,.8);stroke-width:3;stroke-linecap:round
 <div class=c>
 <div id=stl>
 <div class=spin><svg viewBox="0 0 64 64"><circle cx=32 cy=32 r=28/></svg></div>
-<div class=l>復号中...</div>
+<div class=l>\u5FA9\u53F7\u4E2D...</div>
 <div class=h><span id=cur>0</span> / <span id=total>-</span></div>
 </div>
 <div id=std class=done>
 <div class=ck>&#x2713;</div>
-<div class=l>復号完了</div>
+<div class=l>\u5FA9\u53F7\u5B8C\u4E86</div>
 <div class=nt>&#x25BC;</div>
 </div>
 <div id=ste class=err>
 <div class=x>&#x2715;</div>
-<div class=l id=em>エラー</div>
+<div class=l id=em>\u30A8\u30E9\u30FC</div>
 </div>
 <div id=rtxt class=result-text></div>
 </div>
@@ -765,7 +699,7 @@ async function decryptWithXFinal(xFinalHex){
 async function run(){
   const N=BigInt(P.N),x0=BigInt(P.x0),cc=BigInt(P.cc);
 
-  // キャッシュ確認（localStorageにx_finalがあればスキップ）
+  // \u30AD\u30E3\u30C3\u30B7\u30E5\u78BA\u8A8D\uFF08localStorage\u306Bx_final\u304C\u3042\u308C\u3070\u30B9\u30AD\u30C3\u30D7\uFF09
   const cached=localStorage.getItem(CACHE_KEY);
   if(cached){
     try{
@@ -777,7 +711,7 @@ async function run(){
     }
   }
 
-  // 2乗チェーン計算（ブラウザで逐次実行）
+  // 2\u4E57\u30C1\u30A7\u30FC\u30F3\u8A08\u7B97\uFF08\u30D6\u30E9\u30A6\u30B6\u3067\u9010\u6B21\u5B9F\u884C\uFF09
   let x=x0;
   const total=cc;
   const updateInterval=1000n;
@@ -794,7 +728,7 @@ async function run(){
 
   const xFinalHex=x.toString(16);
 
-  // localStorageにキャッシュ保存
+  // localStorage\u306B\u30AD\u30E3\u30C3\u30B7\u30E5\u4FDD\u5B58
   try{localStorage.setItem(CACHE_KEY,xFinalHex);}catch(e){}
 
   const content=await decryptWithXFinal(xFinalHex);
@@ -819,188 +753,306 @@ run().catch(e=>{
   document.getElementById('ste').style.display='block';
   document.getElementById('em').textContent='Error: '+e.message;
 });
-</script>
+<\/script>
 </body>
 </html>`;
-
-// ============================================================
-// Worker Router
-// ============================================================
-
-/**
- * POST /api/save
- * クライアントサイドで暗号化済みのパズルデータを保存する
- * サーバーは平文・秘密鍵を受け取らない（CLAUDE.md準拠）
- */
 async function handleSave(request, env) {
-    try {
-        const { x0, N, cc, iv, ct, target_seconds } = await request.json();
-        if (!x0 || !N || !cc || !iv || !ct) {
-            return new Response(JSON.stringify({ error: 'パラメータが不足しています' }), {
-                status: 400, headers: { 'Content-Type': 'application/json' }
-            });
-        }
-
-        const puzzleId = uuidv4().slice(0, 8);
-
-        // 有効期限: 復号時間 + 1ヶ月（CLAUDE.md準拠）
-        // target_seconds が送られてきた場合はそれを復号時間として使用する
-        // 送られてこない場合は cc（チェーン回数）から推定する
-        const decryptSeconds = target_seconds > 0
-            ? Math.ceil(target_seconds)
-            : Math.ceil(Number(cc) / 500000);
-        const oneMonth = 30 * 24 * 60 * 60; // 2,592,000秒
-        const ttl = decryptSeconds + oneMonth;
-
-        // 有効期限の絶対時刻（Unix秒）をデータにも保存しておく
-        const expiresAt = Math.floor(Date.now() / 1000) + ttl;
-
-        const puzzleData = {
-            id: puzzleId,
-            x0: x0,
-            N: N,
-            cc: cc,
-            iv: iv,
-            ct: ct,
-            target_seconds: target_seconds || 0,
-            created: Date.now(),
-            expires_at: expiresAt  // 有効期限（Unix秒）
-        };
-
-        // Cloudflare KV の expirationTtl で自動削除を設定
-        // TTL の最小値は 60 秒なので、それ以下にならないよう保証する
-        const safeTtl = Math.max(ttl, 60);
-        await env.PUZZLES.put(puzzleId, JSON.stringify(puzzleData), { expirationTtl: safeTtl });
-
-        return new Response(JSON.stringify({ id: puzzleId }), {
-            headers: { 'Content-Type': 'application/json' }
-        });
-
-    } catch (e) {
-        return new Response(JSON.stringify({ error: e.message }), {
-            status: 500, headers: { 'Content-Type': 'application/json' }
-        });
+  try {
+    const { x0, N, cc, iv, ct, target_seconds } = await request.json();
+    if (!x0 || !N || !cc || !iv || !ct) {
+      return new Response(JSON.stringify({ error: "\u30D1\u30E9\u30E1\u30FC\u30BF\u304C\u4E0D\u8DB3\u3057\u3066\u3044\u307E\u3059" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" }
+      });
     }
+    const puzzleId = v4_default().slice(0, 8);
+    const decryptSeconds = target_seconds > 0 ? Math.ceil(target_seconds) : Math.ceil(Number(cc) / 5e5);
+    const oneMonth = 30 * 24 * 60 * 60;
+    const ttl = decryptSeconds + oneMonth;
+    const expiresAt = Math.floor(Date.now() / 1e3) + ttl;
+    const puzzleData = {
+      id: puzzleId,
+      x0,
+      N,
+      cc,
+      iv,
+      ct,
+      target_seconds: target_seconds || 0,
+      created: Date.now(),
+      expires_at: expiresAt
+      // 有効期限（Unix秒）
+    };
+    const safeTtl = Math.max(ttl, 60);
+    await env.PUZZLES.put(puzzleId, JSON.stringify(puzzleData), { expirationTtl: safeTtl });
+    return new Response(JSON.stringify({ id: puzzleId }), {
+      headers: { "Content-Type": "application/json" }
+    });
+  } catch (e) {
+    return new Response(JSON.stringify({ error: e.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" }
+    });
+  }
 }
-
-/**
- * POST /api/encrypt (後方互換: 旧APIを維持しつつ新方式に誘導)
- * ※ 新方式では暗号化はクライアントサイドで行うため、このエンドポイントは非推奨
- */
+__name(handleSave, "handleSave");
 async function handleEncryptLegacy(request, env) {
-    return new Response(JSON.stringify({
-        error: 'このAPIは廃止されました。暗号化はブラウザ側で行ってください。'
-    }), { status: 410, headers: { 'Content-Type': 'application/json' } });
+  return new Response(JSON.stringify({
+    error: "\u3053\u306EAPI\u306F\u5EC3\u6B62\u3055\u308C\u307E\u3057\u305F\u3002\u6697\u53F7\u5316\u306F\u30D6\u30E9\u30A6\u30B6\u5074\u3067\u884C\u3063\u3066\u304F\u3060\u3055\u3044\u3002"
+  }), { status: 410, headers: { "Content-Type": "application/json" } });
 }
-
-/**
- * GET /s/:id
- * 共有URLの復号ページを返す
- */
-// 有効期限切れエラーページ HTML
+__name(handleEncryptLegacy, "handleEncryptLegacy");
 function buildExpiredHtml() {
-    return '<!DOCTYPE html><html lang=ja><head><meta charset=UTF-8><title>sadocrypt</title>' +
-        '<style>body{background:#000;color:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif}' +
-        '.c{text-align:center}.m{font-size:28px;margin-bottom:12px}h1{font-size:13px;font-weight:400;margin-bottom:8px}p{font-size:11px;color:rgba(255,255,255,.2)}</style>' +
-        '<body><div class=c><div class=m>&#x229E;</div><h1>このパズルは存在しないか、有効期限が切れています</h1>' +
-        '<p>The puzzle does not exist or has expired.</p></div></body></html>';
+  return "<!DOCTYPE html><html lang=ja><head><meta charset=UTF-8><title>sadocrypt</title><style>body{background:#000;color:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif}.c{text-align:center}.m{font-size:28px;margin-bottom:12px}h1{font-size:13px;font-weight:400;margin-bottom:8px}p{font-size:11px;color:rgba(255,255,255,.2)}</style><body><div class=c><div class=m>&#x229E;</div><h1>\u3053\u306E\u30D1\u30BA\u30EB\u306F\u5B58\u5728\u3057\u306A\u3044\u304B\u3001\u6709\u52B9\u671F\u9650\u304C\u5207\u308C\u3066\u3044\u307E\u3059</h1><p>The puzzle does not exist or has expired.</p></div></body></html>";
 }
-
+__name(buildExpiredHtml, "buildExpiredHtml");
 async function handleSharedPuzzle(request, env, puzzleId) {
-    const data = await env.PUZZLES.get(puzzleId);
-    if (!data) {
-        return new Response(buildExpiredHtml(),
-            { status: 404, headers: { 'Content-Type': 'text/html;charset=utf-8' } }
-        );
+  const data = await env.PUZZLES.get(puzzleId);
+  if (!data) {
+    return new Response(
+      buildExpiredHtml(),
+      { status: 404, headers: { "Content-Type": "text/html;charset=utf-8" } }
+    );
+  }
+  const puzzle = JSON.parse(data);
+  if (puzzle.expires_at) {
+    const nowSec = Math.floor(Date.now() / 1e3);
+    if (nowSec > puzzle.expires_at) {
+      await env.PUZZLES.delete(puzzleId);
+      return new Response(
+        buildExpiredHtml(),
+        { status: 410, headers: { "Content-Type": "text/html;charset=utf-8" } }
+      );
     }
-
-    const puzzle = JSON.parse(data);
-
-    // 二重チェック: expires_at フィールドがある場合はサーバー側でも期限を確認する
-    // （Cloudflare KV の TTL 削除は最大60秒の遅延があるため）
-    if (puzzle.expires_at) {
-        const nowSec = Math.floor(Date.now() / 1000);
-        if (nowSec > puzzle.expires_at) {
-            // 期限切れ: KV から明示的に削除してエラーを返す
-            await env.PUZZLES.delete(puzzleId);
-            return new Response(buildExpiredHtml(),
-                { status: 410, headers: { 'Content-Type': 'text/html;charset=utf-8' } }
-            );
-        }
-    }
-
-    const puzzleJSON = JSON.stringify({
-        id: puzzleId,
-        x0: puzzle.x0,
-        N: puzzle.N,
-        cc: puzzle.cc,
-        iv: puzzle.iv,
-        ct: puzzle.ct
-    });
-    const html = HTML_DECRYPT.replace('__PUZZLE__', puzzleJSON);
-
-    return new Response(html, {
-        headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-store' }
-    });
+  }
+  const puzzleJSON = JSON.stringify({
+    id: puzzleId,
+    x0: puzzle.x0,
+    N: puzzle.N,
+    cc: puzzle.cc,
+    iv: puzzle.iv,
+    ct: puzzle.ct
+  });
+  const html = HTML_DECRYPT.replace("__PUZZLE__", puzzleJSON);
+  return new Response(html, {
+    headers: { "Content-Type": "text/html;charset=utf-8", "Cache-Control": "no-store" }
+  });
 }
-
-// ============================================================
-// Main Handler
-// ============================================================
-
-export default {
-    async fetch(request, env, ctx) {
-        const url = new URL(request.url);
-        const path = url.pathname;
-
-        // CORS preflight
-        if (request.method === 'OPTIONS') {
-            return new Response(null, {
-                headers: {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'GET, POST',
-                    'Access-Control-Allow-Headers': 'Content-Type'
-                }
-            });
+__name(handleSharedPuzzle, "handleSharedPuzzle");
+var src_default = {
+  async fetch(request, env, ctx) {
+    const url = new URL(request.url);
+    const path = url.pathname;
+    if (request.method === "OPTIONS") {
+      return new Response(null, {
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Access-Control-Allow-Methods": "GET, POST",
+          "Access-Control-Allow-Headers": "Content-Type"
         }
-
-        try {
-            // パズル保存API（新方式: クライアントサイド暗号化済みデータを保存）
-            if (path === '/api/save' && request.method === 'POST') {
-                return await handleSave(request, env);
-            }
-
-            // 旧暗号化API（廃止）
-            if (path === '/api/encrypt' && request.method === 'POST') {
-                return await handleEncryptLegacy(request, env);
-            }
-
-            // 共有URL
-            if (path.startsWith('/s/')) {
-                const puzzleId = path.slice(3);
-                return await handleSharedPuzzle(request, env, puzzleId);
-            }
-
-            // ベンチマークページ
-            if (path === '/benchmark') {
-                return new Response(HTML_BENCHMARK, {
-                    headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-store' }
-                });
-            }
-
-            // トップページ
-            if (path === '/' || path === '') {
-                return new Response(HTML_ENCRYPT, {
-                    headers: { 'Content-Type': 'text/html;charset=utf-8' }
-                });
-            }
-
-            return new Response('Not Found', { status: 404 });
-
-        } catch (e) {
-            return new Response(JSON.stringify({ error: e.message }), {
-                status: 500, headers: { 'Content-Type': 'application/json' }
-            });
-        }
+      });
     }
+    try {
+      if (path === "/api/save" && request.method === "POST") {
+        return await handleSave(request, env);
+      }
+      if (path === "/api/encrypt" && request.method === "POST") {
+        return await handleEncryptLegacy(request, env);
+      }
+      if (path.startsWith("/s/")) {
+        const puzzleId = path.slice(3);
+        return await handleSharedPuzzle(request, env, puzzleId);
+      }
+      if (path === "/benchmark") {
+        return new Response(HTML_BENCHMARK, {
+          headers: { "Content-Type": "text/html;charset=utf-8", "Cache-Control": "no-store" }
+        });
+      }
+      if (path === "/" || path === "") {
+        return new Response(HTML_ENCRYPT, {
+          headers: { "Content-Type": "text/html;charset=utf-8" }
+        });
+      }
+      return new Response("Not Found", { status: 404 });
+    } catch (e) {
+      return new Response(JSON.stringify({ error: e.message }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
+  }
 };
+
+// ../../../.local/share/fnm/node-versions/v24.16.0/installation/lib/node_modules/wrangler/templates/middleware/middleware-ensure-req-body-drained.ts
+var drainBody = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx) => {
+  try {
+    return await middlewareCtx.next(request, env);
+  } finally {
+    try {
+      if (request.body !== null && !request.bodyUsed) {
+        const reader = request.body.getReader();
+        while (!(await reader.read()).done) {
+        }
+      }
+    } catch (e) {
+      console.error("Failed to drain the unused request body.", e);
+    }
+  }
+}, "drainBody");
+var middleware_ensure_req_body_drained_default = drainBody;
+
+// ../../../.local/share/fnm/node-versions/v24.16.0/installation/lib/node_modules/wrangler/templates/middleware/middleware-miniflare3-json-error.ts
+function reduceError(e) {
+  return {
+    name: e?.name,
+    message: e?.message ?? String(e),
+    stack: e?.stack,
+    cause: e?.cause === void 0 ? void 0 : reduceError(e.cause)
+  };
+}
+__name(reduceError, "reduceError");
+var jsonError = /* @__PURE__ */ __name(async (request, env, _ctx, middlewareCtx) => {
+  try {
+    return await middlewareCtx.next(request, env);
+  } catch (e) {
+    const error = reduceError(e);
+    return Response.json(error, {
+      status: 500,
+      headers: { "MF-Experimental-Error-Stack": "true" }
+    });
+  }
+}, "jsonError");
+var middleware_miniflare3_json_error_default = jsonError;
+
+// .wrangler/tmp/bundle-bDYHon/middleware-insertion-facade.js
+var __INTERNAL_WRANGLER_MIDDLEWARE__ = [
+  middleware_ensure_req_body_drained_default,
+  middleware_miniflare3_json_error_default
+];
+var middleware_insertion_facade_default = src_default;
+
+// ../../../.local/share/fnm/node-versions/v24.16.0/installation/lib/node_modules/wrangler/templates/middleware/common.ts
+var __facade_middleware__ = [];
+function __facade_register__(...args) {
+  __facade_middleware__.push(...args.flat());
+}
+__name(__facade_register__, "__facade_register__");
+function __facade_invokeChain__(request, env, ctx, dispatch, middlewareChain) {
+  const [head, ...tail] = middlewareChain;
+  const middlewareCtx = {
+    dispatch,
+    next(newRequest, newEnv) {
+      return __facade_invokeChain__(newRequest, newEnv, ctx, dispatch, tail);
+    }
+  };
+  return head(request, env, ctx, middlewareCtx);
+}
+__name(__facade_invokeChain__, "__facade_invokeChain__");
+function __facade_invoke__(request, env, ctx, dispatch, finalMiddleware) {
+  return __facade_invokeChain__(request, env, ctx, dispatch, [
+    ...__facade_middleware__,
+    finalMiddleware
+  ]);
+}
+__name(__facade_invoke__, "__facade_invoke__");
+
+// .wrangler/tmp/bundle-bDYHon/middleware-loader.entry.ts
+var __Facade_ScheduledController__ = class ___Facade_ScheduledController__ {
+  constructor(scheduledTime, cron, noRetry) {
+    this.scheduledTime = scheduledTime;
+    this.cron = cron;
+    this.#noRetry = noRetry;
+  }
+  static {
+    __name(this, "__Facade_ScheduledController__");
+  }
+  #noRetry;
+  noRetry() {
+    if (!(this instanceof ___Facade_ScheduledController__)) {
+      throw new TypeError("Illegal invocation");
+    }
+    this.#noRetry();
+  }
+};
+function wrapExportedHandler(worker) {
+  if (__INTERNAL_WRANGLER_MIDDLEWARE__ === void 0 || __INTERNAL_WRANGLER_MIDDLEWARE__.length === 0) {
+    return worker;
+  }
+  for (const middleware of __INTERNAL_WRANGLER_MIDDLEWARE__) {
+    __facade_register__(middleware);
+  }
+  const fetchDispatcher = /* @__PURE__ */ __name(function(request, env, ctx) {
+    if (worker.fetch === void 0) {
+      throw new Error("Handler does not export a fetch() function.");
+    }
+    return worker.fetch(request, env, ctx);
+  }, "fetchDispatcher");
+  return {
+    ...worker,
+    fetch(request, env, ctx) {
+      const dispatcher = /* @__PURE__ */ __name(function(type, init) {
+        if (type === "scheduled" && worker.scheduled !== void 0) {
+          const controller = new __Facade_ScheduledController__(
+            Date.now(),
+            init.cron ?? "",
+            () => {
+            }
+          );
+          return worker.scheduled(controller, env, ctx);
+        }
+      }, "dispatcher");
+      return __facade_invoke__(request, env, ctx, dispatcher, fetchDispatcher);
+    }
+  };
+}
+__name(wrapExportedHandler, "wrapExportedHandler");
+function wrapWorkerEntrypoint(klass) {
+  if (__INTERNAL_WRANGLER_MIDDLEWARE__ === void 0 || __INTERNAL_WRANGLER_MIDDLEWARE__.length === 0) {
+    return klass;
+  }
+  for (const middleware of __INTERNAL_WRANGLER_MIDDLEWARE__) {
+    __facade_register__(middleware);
+  }
+  return class extends klass {
+    #fetchDispatcher = /* @__PURE__ */ __name((request, env, ctx) => {
+      this.env = env;
+      this.ctx = ctx;
+      if (super.fetch === void 0) {
+        throw new Error("Entrypoint class does not define a fetch() function.");
+      }
+      return super.fetch(request);
+    }, "#fetchDispatcher");
+    #dispatcher = /* @__PURE__ */ __name((type, init) => {
+      if (type === "scheduled" && super.scheduled !== void 0) {
+        const controller = new __Facade_ScheduledController__(
+          Date.now(),
+          init.cron ?? "",
+          () => {
+          }
+        );
+        return super.scheduled(controller);
+      }
+    }, "#dispatcher");
+    fetch(request) {
+      return __facade_invoke__(
+        request,
+        this.env,
+        this.ctx,
+        this.#dispatcher,
+        this.#fetchDispatcher
+      );
+    }
+  };
+}
+__name(wrapWorkerEntrypoint, "wrapWorkerEntrypoint");
+var WRAPPED_ENTRY;
+if (typeof middleware_insertion_facade_default === "object") {
+  WRAPPED_ENTRY = wrapExportedHandler(middleware_insertion_facade_default);
+} else if (typeof middleware_insertion_facade_default === "function") {
+  WRAPPED_ENTRY = wrapWorkerEntrypoint(middleware_insertion_facade_default);
+}
+var middleware_loader_entry_default = WRAPPED_ENTRY;
+export {
+  __INTERNAL_WRANGLER_MIDDLEWARE__,
+  middleware_loader_entry_default as default
+};
+//# sourceMappingURL=index.js.map
