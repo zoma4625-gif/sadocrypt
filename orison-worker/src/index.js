@@ -489,80 +489,160 @@ const HTML_ENCRYPT = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>sadocrypt.com</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
+<title>sadocrypt</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#faf9f6;--card:#fff;--text:#1d1b1a;--soft:#8a8680;--dim:#b5b1ab;--border:#e8e5e0;--accent:#5a7a6a;--light:#eaf1ed;--radius:20px}
-body{font-family:'Inter','Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;line-height:1.6}
-.container{max-width:520px;margin:0 auto;padding:48px 24px}
-.header{text-align:center;margin-bottom:48px}
-.mark{width:56px;height:56px;margin:0 auto 20px;background:var(--light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--accent)}
-.title{font-size:24px;font-weight:350;letter-spacing:6px;text-transform:uppercase;color:var(--text);margin-bottom:10px}
-.title strong{font-weight:600;letter-spacing:4px}
-.tag{font-size:13px;color:var(--soft);font-weight:300;letter-spacing:0.8px;line-height:1.8}
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:36px 28px;box-shadow:0 2px 16px rgba(0,0,0,0.03)}
-.card-label{font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:24px}
-.grp{margin-bottom:20px}
-.grp label{display:block;font-size:12px;font-weight:500;color:var(--soft);letter-spacing:.5px;margin-bottom:8px}
-.grp input,.grp select,.grp textarea{width:100%;padding:14px 16px;background:var(--bg);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:.3s}
-.grp textarea{resize:vertical;min-height:80px;line-height:1.5}
-.grp input:focus,.grp select:focus,.grp textarea:focus{border-color:#9a9aa0;box-shadow:0 0 0 3px rgba(0,0,0,0.03)}
-.grp input::placeholder,.grp textarea::placeholder{color:var(--dim)}
-.row{display:flex;gap:10px}
+:root{
+  --bg:#0a0a0a;
+  --surface:#111;
+  --surface2:#161616;
+  --border:rgba(255,255,255,.07);
+  --border2:rgba(255,255,255,.12);
+  --text:#f0f0f0;
+  --muted:rgba(255,255,255,.35);
+  --dim:rgba(255,255,255,.18);
+  --accent:#4ade80;
+  --accent-dim:rgba(74,222,128,.12);
+  --radius:14px
+}
+body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh}
+
+/* ── Top bar ── */
+.topbar{position:fixed;top:0;left:0;right:0;height:52px;display:flex;align-items:center;padding:0 24px;z-index:100;border-bottom:1px solid var(--border)}
+.topbar-logo{display:flex;align-items:baseline;gap:0;user-select:none}
+.topbar-logo .sado{font-size:15px;font-weight:600;letter-spacing:.5px;color:var(--text)}
+.topbar-logo .crypt{font-size:11px;font-weight:400;color:var(--muted);letter-spacing:.5px}
+
+/* ── Main layout ── */
+.main{max-width:480px;margin:0 auto;padding:88px 20px 60px}
+
+/* ── Section heading ── */
+.section-label{font-size:10px;font-weight:500;letter-spacing:2.5px;text-transform:uppercase;color:var(--dim);margin-bottom:20px}
+
+/* ── Card ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px}
+
+/* ── Form groups ── */
+.grp{margin-bottom:18px}
+.grp:last-of-type{margin-bottom:0}
+.grp label{display:block;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.5px;margin-bottom:8px;text-transform:uppercase}
+.grp textarea,.grp input,.grp select{
+  width:100%;padding:12px 14px;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  color:var(--text);
+  font-size:14px;
+  font-family:inherit;
+  outline:none;
+  transition:border-color .2s;
+  -webkit-appearance:none
+}
+.grp textarea{resize:none;min-height:88px;line-height:1.6}
+.grp textarea:focus,.grp input:focus,.grp select:focus{border-color:var(--border2)}
+.grp textarea::placeholder,.grp input::placeholder{color:var(--dim)}
+.row{display:flex;gap:8px}
 .row>*:first-child{flex:2}.row>*:last-child{flex:1}
-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238a8680' d='M6 8L0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;cursor:pointer}
-.btn{width:100%;padding:16px;border:none;border-radius:12px;font-size:14px;font-weight:500;font-family:inherit;cursor:pointer;transition:.3s;letter-spacing:.5px;background:var(--accent);color:#fff}
-.btn:hover{background:#4d6a5a;transform:translateY(-1px)}
-.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
-.result{margin-top:24px;padding:24px;border-radius:12px;background:var(--bg);border:1px solid var(--border);text-align:center;animation:fade .5s ease}
-@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.r-icon{font-size:28px;margin-bottom:12px;opacity:.8}
-.r-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:12px;font-weight:500}
-.r-url{word-break:break-all;background:var(--card);padding:14px 18px;border-radius:8px;border:1px solid var(--border);margin:8px 0;cursor:pointer;font-family:monospace;font-size:14px}
-.r-url:hover{border-color:#ccc9c4}
-.r-hint{font-size:12px;color:var(--dim);margin-top:8px}
-.loading{display:flex;align-items:center;justify-content:center;gap:12px;padding:20px;color:var(--soft);font-size:13px}
-.spinner{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);border-top-color:var(--accent);animation:spin .8s linear infinite}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='rgba(255,255,255,.3)' d='M5 6L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;cursor:pointer}
+
+/* ── Divider ── */
+.sep{height:1px;background:var(--border);margin:20px 0}
+
+/* ── Button ── */
+.btn{
+  width:100%;padding:13px;
+  border:none;border-radius:10px;
+  font-size:13px;font-weight:500;font-family:inherit;
+  cursor:pointer;transition:opacity .2s,transform .15s;
+  letter-spacing:.3px;
+  background:var(--accent);color:#000
+}
+.btn:hover:not(:disabled){opacity:.88;transform:translateY(-1px)}
+.btn:disabled{opacity:.3;cursor:not-allowed;transform:none}
+
+/* ── Result ── */
+.result-wrap{margin-top:16px;animation:fadeup .35s ease}
+@keyframes fadeup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.result-label{font-size:10px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.result-url{
+  display:block;width:100%;
+  padding:12px 14px;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  font-family:'SF Mono','Fira Code',monospace;
+  font-size:12px;color:var(--text);
+  word-break:break-all;line-height:1.6;
+  cursor:text;
+  user-select:all;
+  outline:none;
+  resize:none;
+  transition:border-color .2s
+}
+.result-url:focus{border-color:var(--border2)}
+.result-hint{font-size:11px;color:var(--dim);margin-top:8px;text-align:center}
+.copy-btn{
+  width:100%;margin-top:10px;padding:10px;
+  border:1px solid var(--border);border-radius:10px;
+  background:transparent;color:var(--muted);
+  font-size:12px;font-family:inherit;font-weight:500;
+  cursor:pointer;transition:all .2s;letter-spacing:.3px
+}
+.copy-btn:hover{border-color:var(--border2);color:var(--text)}
+.copy-btn.copied{color:var(--accent);border-color:rgba(74,222,128,.3)}
+
+/* ── Loading ── */
+.loading{display:flex;align-items:center;gap:10px;padding:16px 0;color:var(--muted);font-size:12px}
+.spinner{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--border);border-top-color:var(--accent);animation:spin .7s linear infinite;flex-shrink:0}
 @keyframes spin{to{transform:rotate(360deg)}}
-.error{color:#c0392b;font-size:13px;text-align:center;padding:12px}
-.divider{display:flex;align-items:center;gap:16px;margin:40px 0 24px;color:var(--dim);font-size:11px;letter-spacing:1.5px;text-transform:uppercase}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
-.about{text-align:center;padding:8px 0}
-.about p{font-size:13px;color:var(--soft);font-weight:300;line-height:2}
-.about .orn{color:var(--dim);font-size:16px;margin:16px 0;letter-spacing:8px}
-.about .prayer{font-style:italic;color:var(--soft);font-size:12px;line-height:1.9;max-width:400px;margin:0 auto}
-.footer{text-align:center;padding:48px 0 24px;font-size:10px;color:var(--dim);letter-spacing:2px;text-transform:uppercase}
-@media(max-width:480px){.container{padding:32px 16px}.card{padding:28px 20px}}
+
+/* ── Error ── */
+.error-msg{font-size:12px;color:rgba(255,100,100,.7);padding:12px 0;text-align:center}
+
+/* ── Footer ── */
+.footer{text-align:center;padding:40px 0 0;font-size:10px;color:var(--dim);letter-spacing:2px;text-transform:uppercase}
+
+@media(max-width:480px){.main{padding:80px 16px 48px}.card{padding:22px 18px}}
 </style>
 </head>
 <body>
-<div class=container>
-<div class=header>
-<div class=mark>&#x229E;</div>
-<div class=title><strong>sado</strong>crypt</div>
-<p class=tag>情報に「かけた時間」という重みを</p>
-</div>
-<div class=card>
-<div class=card-label>Encrypt</div>
-<form id=f>
-<div class=grp>
-  <label>保護するテキスト・URL</label>
-  <textarea name=content placeholder="https://example.com/secret&#10;または任意のテキスト" required></textarea>
-</div>
-<div class=grp><label>復号時間</label><div class=row><input type=number name=tv value=10 min=1><select name=tu><option value=s selected>秒</option><option value=m>分</option><option value=h>時間</option></select></div></div>
-<button type=submit class=btn id=btn>暗号化してURLを生成</button>
-</form>
-<div id=res></div>
-</div>
-<div class=divider>sadocrypt</div>
-<div class=about>
-<p>Orisonは、情報に「かけた時間」という重みを与えます。<br>暗号化は一瞬。復号には、あなたが決めた時間だけかかる。</p>
-<div class=orn>&#x2022; &#x2022; &#x2022;</div>
-<p class=prayer>どうか、自分のコンテンツが<br>それに見合った時間の流れ、密度の中で見出されますように。</p>
-</div>
-<div class=footer>sadocrypt.com &middot; time-lock encryption</div>
-</div>
+
+<header class=topbar>
+  <div class=topbar-logo>
+    <span class=sado>Sado</span><span class=crypt>crypt</span>
+  </div>
+</header>
+
+<main class=main>
+  <div class=section-label>Encrypt</div>
+  <div class=card>
+    <form id=f>
+      <div class=grp>
+        <label>保護するテキスト・URL</label>
+        <textarea name=content placeholder="https://example.com/secret または任意のテキスト" required></textarea>
+      </div>
+      <div class=sep></div>
+      <div class=grp>
+        <label>復号にかかる時間</label>
+        <div class=row>
+          <input type=number name=tv value=10 min=1>
+          <select name=tu>
+            <option value=s selected>秒</option>
+            <option value=m>分</option>
+            <option value=h>時間</option>
+          </select>
+        </div>
+      </div>
+      <div style="margin-top:20px">
+        <button type=submit class=btn id=btn>暗号化してURLを生成</button>
+      </div>
+    </form>
+    <div id=res></div>
+  </div>
+  <div class=footer>sadocrypt &middot; time-lock encryption</div>
+</main>
+
 <script>
 // ============================================================
 // クライアントサイド暗号化（CLAUDE.md準拠: 暗号化はブラウザJSで完結）
@@ -619,35 +699,22 @@ function hexToUint8(h){
 }
 function arrayToHex(a){return Array.from(a).map(b=>b.toString(16).padStart(2,'0')).join('');}
 
-// ベンチマーク実測値（sadocrypt.com/benchmark による計測）
-// 500万回あたり13.29秒 → 約376,223回/秒
 const BENCHMARK_SPEED = 376223;
-
-// 解読時間（秒）からチェーン回数を計算する関数
 function calcChainCount(targetSeconds) {
   return Math.floor(targetSeconds * BENCHMARK_SPEED);
 }
 
 async function encryptContent(content, targetSeconds) {
-  // 1. 素数ペア生成（1024bit × 2 = 2048bit N）
   const bits = 1024;
   const p = generatePrime(bits);
   const q = generatePrime(bits);
   const N = p * q;
-
-  // 2. x0生成（暗号論的乱数）
   let x0;
   while(true){x0=randomBigInt(2n,N-2n);if(gcd(x0,N)===1n)break;}
-
-  // 3. チェーン回数計算（ベンチマーク実測値ベース）
   const chainCount = calcChainCount(targetSeconds);
-
-  // 4. Carmichaelスキップで x_final を高速計算
   const lambda = lcm(p-1n, q-1n);
   const exponent = modPow(2n, BigInt(chainCount), lambda);
   const xFinal = modPow(x0, exponent, N);
-
-  // 5. AES-256-GCM 暗号化
   const xHex = xFinal.toString(16);
   const xBytes = hexToUint8(xHex);
   const hash = await crypto.subtle.digest('SHA-256', xBytes);
@@ -655,13 +722,9 @@ async function encryptContent(content, targetSeconds) {
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const encoded = new TextEncoder().encode(content);
   const ciphertext = await crypto.subtle.encrypt({name:'AES-GCM',iv,tagLength:128}, key, encoded);
-
   return {
-    x0: x0.toString(),
-    N: N.toString(),
-    chainCount,
-    iv: arrayToHex(iv),
-    ct: arrayToHex(new Uint8Array(ciphertext))
+    x0: x0.toString(), N: N.toString(), chainCount,
+    iv: arrayToHex(iv), ct: arrayToHex(new Uint8Array(ciphertext))
   };
 }
 
@@ -671,21 +734,34 @@ document.getElementById('f').onsubmit=async function(e){
   let s=parseInt(fd.get('tv')),u=fd.get('tu');
   if(u==='m')s*=60;if(u==='h')s*=3600;
   btn.disabled=true;btn.textContent='暗号化中...';
-  out.innerHTML='<div class=result><div class=loading><div class=spinner></div>素数生成・暗号化中（ブラウザで処理）...</div></div>';
+  out.innerHTML='<div class=loading><div class=spinner></div>素数生成・暗号化中...</div>';
   try{
-    // クライアントサイドで暗号化
     const enc = await encryptContent(fd.get('content'), s);
-
-    // サーバーにはパズルデータ（平文なし）のみ送信
     const r=await fetch('/api/save',{method:'POST',headers:{'Content-Type':'application/json'},
       body:JSON.stringify({x0:enc.x0,N:enc.N,cc:enc.chainCount,iv:enc.iv,ct:enc.ct,target_seconds:s})});
     const d=await r.json();
-    if(d.error){out.innerHTML='<div class=result><div class=error>'+d.error+'</div></div>';return;}
+    if(d.error){out.innerHTML='<div class=error-msg>'+d.error+'</div>';return;}
     const shareUrl=location.origin+'/s/'+d.id;
-    out.innerHTML='<div class=result><div class=r-icon>&#x229E;</div><div class=r-label>URL generated</div><div class=r-url onclick="navigator.clipboard.writeText(this.textContent)">'+shareUrl+'</div><div class=r-hint>クリックでコピー</div></div>';
-  }catch(e){out.innerHTML='<div class=result><div class=error>'+e.message+'</div></div>';}
+    out.innerHTML=
+      '<div class=result-wrap>'+
+      '<div class=result-label>URL generated</div>'+
+      '<textarea class=result-url id=rurl readonly onclick="this.select()">'+shareUrl+'</textarea>'+
+      '<div class=result-hint>クリックで全選択</div>'+
+      '<button class=copy-btn id=cbtn onclick="copyUrl()">コピー</button>'+
+      '</div>';
+  }catch(err){out.innerHTML='<div class=error-msg>'+err.message+'</div>';}
   btn.disabled=false;btn.textContent='暗号化してURLを生成';
 };
+
+function copyUrl(){
+  const el=document.getElementById('rurl');
+  if(!el)return;
+  navigator.clipboard.writeText(el.value).then(()=>{
+    const btn=document.getElementById('cbtn');
+    btn.textContent='コピーしました';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='コピー';btn.classList.remove('copied');},2000);
+  });
+}
 </script>
 </body>
 </html>`;
