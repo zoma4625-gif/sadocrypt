@@ -619,6 +619,15 @@ function hexToUint8(h){
 }
 function arrayToHex(a){return Array.from(a).map(b=>b.toString(16).padStart(2,'0')).join('');}
 
+// ベンチマーク実測値（sadocrypt.com/benchmark による計測）
+// 500万回あたり約4.24秒 → 約1,179,742回/秒
+const BENCHMARK_SPEED = 1179742;
+
+// 解読時間（秒）からチェーン回数を計算する関数
+function calcChainCount(targetSeconds) {
+  return Math.floor(targetSeconds * BENCHMARK_SPEED);
+}
+
 async function encryptContent(content, targetSeconds) {
   // 1. 素数ペア生成（約512ビット = 約300桁）
   const bits = 512;
@@ -630,23 +639,15 @@ async function encryptContent(content, targetSeconds) {
   let x0;
   while(true){x0=randomBigInt(2n,N-2n);if(gcd(x0,N)===1n)break;}
 
-  // 3. ベンチマーク（実際のNで速度測定）
-  const testCount = 5000n;
-  const t0 = performance.now();
-  let xb = x0;
-  for(let i=0n;i<testCount;i++) xb=modPow(xb,2n,N);
-  const elapsed = (performance.now()-t0)/1000;
-  const speed = Number(testCount)/elapsed;
+  // 3. チェーン回数計算（ベンチマーク実測値ベース）
+  const chainCount = calcChainCount(targetSeconds);
 
-  // 4. チェーン回数計算
-  const chainCount = Math.floor(targetSeconds * speed * 0.8);
-
-  // 5. Carmichaelスキップで x_final を高速計算
+  // 4. Carmichaelスキップで x_final を高速計算
   const lambda = lcm(p-1n, q-1n);
   const exponent = modPow(2n, BigInt(chainCount), lambda);
   const xFinal = modPow(x0, exponent, N);
 
-  // 6. AES-256-CBC 暗号化
+  // 5. AES-256-CBC 暗号化
   const xHex = xFinal.toString(16);
   const xBytes = hexToUint8(xHex);
   const hash = await crypto.subtle.digest('SHA-256', xBytes);
@@ -660,8 +661,7 @@ async function encryptContent(content, targetSeconds) {
     N: N.toString(),
     chainCount,
     iv: arrayToHex(iv),
-    ct: arrayToHex(new Uint8Array(ciphertext)),
-    actualSeconds: Math.floor(chainCount / speed)
+    ct: arrayToHex(new Uint8Array(ciphertext))
   };
 }
 
@@ -682,7 +682,7 @@ document.getElementById('f').onsubmit=async function(e){
     const d=await r.json();
     if(d.error){out.innerHTML='<div class=result><div class=error>'+d.error+'</div></div>';return;}
     const shareUrl=location.origin+'/s/'+d.id;
-    out.innerHTML='<div class=result><div class=r-icon>&#x229E;</div><div class=r-label>URL generated</div><div class=r-url onclick="navigator.clipboard.writeText(this.textContent)">'+shareUrl+'</div><div class=r-hint>クリックでコピー &middot; 約'+enc.actualSeconds+'秒で復号</div></div>';
+    out.innerHTML='<div class=result><div class=r-icon>&#x229E;</div><div class=r-label>URL generated</div><div class=r-url onclick="navigator.clipboard.writeText(this.textContent)">'+shareUrl+'</div><div class=r-hint>クリックでコピー</div></div>';
   }catch(e){out.innerHTML='<div class=result><div class=error>'+e.message+'</div></div>';}
   btn.disabled=false;btn.textContent='暗号化してURLを生成';
 };
