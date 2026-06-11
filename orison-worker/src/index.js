@@ -136,6 +136,36 @@ async function aesEncrypt(data, xFinal) {
 }
 
 // ============================================================
+// 湯呑みアイコン（SVG favicon用 data URI）
+// ============================================================
+const YUNOMI_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- 湯気 -->
+  <path d="M22 18 Q24 10 22 4" fill="none" stroke="#b0b0b0" stroke-width="1.5" stroke-linecap="round" opacity=".5">
+    <animate attributeName="d" values="M22 18 Q24 10 22 4;M22 18 Q20 10 22 4;M22 18 Q24 10 22 4" dur="2.5s" repeatCount="indefinite"/>
+  </path>
+  <path d="M30 16 Q32 8 30 2" fill="none" stroke="#b0b0b0" stroke-width="1.5" stroke-linecap="round" opacity=".4">
+    <animate attributeName="d" values="M30 16 Q32 8 30 2;M30 16 Q28 8 30 2;M30 16 Q32 8 30 2" dur="3s" repeatCount="indefinite"/>
+  </path>
+  <path d="M38 18 Q40 10 38 4" fill="none" stroke="#b0b0b0" stroke-width="1.5" stroke-linecap="round" opacity=".45">
+    <animate attributeName="d" values="M38 18 Q40 10 38 4;M38 18 Q36 10 38 4;M38 18 Q40 10 38 4" dur="2.8s" repeatCount="indefinite"/>
+  </path>
+  <!-- 湯呑み本体 -->
+  <path d="M14 22 L14 52 Q14 60 22 60 L38 60 Q46 60 46 52 L46 22 Z" fill="#f5f0e8" stroke="#8a7e6b" stroke-width="1.5"/>
+  <!-- 藍色の帯模様 -->
+  <rect x="14" y="34" width="32" height="6" fill="#2c4a7c" opacity=".7" rx="0"/>
+  <!-- 帯の中の和柄（青海波風） -->
+  <circle cx="20" cy="37" r="2" fill="none" stroke="#4a6fa5" stroke-width=".7" opacity=".6"/>
+  <circle cx="26" cy="37" r="2" fill="none" stroke="#4a6fa5" stroke-width=".7" opacity=".6"/>
+  <circle cx="32" cy="37" r="2" fill="none" stroke="#4a6fa5" stroke-width=".7" opacity=".6"/>
+  <circle cx="38" cy="37" r="2" fill="none" stroke="#4a6fa5" stroke-width=".7" opacity=".6"/>
+  <circle cx="44" cy="37" r="2" fill="none" stroke="#4a6fa5" stroke-width=".7" opacity=".6"/>
+  <!-- お茶の水面 -->
+  <ellipse cx="30" cy="24" rx="14" ry="3" fill="#7a9e5a" opacity=".35"/>
+</svg>`;
+
+const YUNOMI_FAVICON = `data:image/svg+xml,${encodeURIComponent(YUNOMI_SVG)}`;
+
+// ============================================================
 // HTML テンプレート
 // ============================================================
 
@@ -145,6 +175,7 @@ const HTML_BENCHMARK = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>sadocrypt — ベンチマーク</title>
+<link rel="icon" href="${YUNOMI_FAVICON}">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -490,6 +521,7 @@ const HTML_ENCRYPT = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Sadocrypt</title>
+<link rel="icon" href="${YUNOMI_FAVICON}">
 <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600&family=Google+Sans+Text:wght@400;500&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -518,7 +550,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);-webkit-font
   z-index:100;background:var(--surface);
   border-bottom:1px solid var(--border)
 }
-.topbar-logo{display:flex;align-items:baseline;gap:0;user-select:none;text-decoration:none}
+.topbar-logo{display:flex;align-items:center;gap:8px;user-select:none;text-decoration:none}
+.topbar-logo .yunomi-icon{width:28px;height:28px;flex-shrink:0}
+.topbar-logo .logo-text{display:flex;align-items:baseline;gap:0}
 .topbar-logo .sado{
   font-family:var(--font);
   font-size:18px;font-weight:600;
@@ -657,7 +691,20 @@ select{
 
 <header class=topbar>
   <a class=topbar-logo href="/">
-    <span class=sado>Sado</span><span class=crypt>crypt</span>
+    <svg class=yunomi-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+      <path d="M22 18 Q24 10 22 4" fill="none" stroke="#9aa0a6" stroke-width="1.5" stroke-linecap="round" opacity=".5"><animate attributeName="d" values="M22 18 Q24 10 22 4;M22 18 Q20 10 22 4;M22 18 Q24 10 22 4" dur="2.5s" repeatCount="indefinite"/></path>
+      <path d="M30 16 Q32 8 30 2" fill="none" stroke="#9aa0a6" stroke-width="1.5" stroke-linecap="round" opacity=".4"><animate attributeName="d" values="M30 16 Q32 8 30 2;M30 16 Q28 8 30 2;M30 16 Q32 8 30 2" dur="3s" repeatCount="indefinite"/></path>
+      <path d="M38 18 Q40 10 38 4" fill="none" stroke="#9aa0a6" stroke-width="1.5" stroke-linecap="round" opacity=".45"><animate attributeName="d" values="M38 18 Q40 10 38 4;M38 18 Q36 10 38 4;M38 18 Q40 10 38 4" dur="2.8s" repeatCount="indefinite"/></path>
+      <path d="M14 22 L14 52 Q14 60 22 60 L38 60 Q46 60 46 52 L46 22 Z" fill="#f5f0e8" stroke="#8a7e6b" stroke-width="1.5"/>
+      <rect x="14" y="34" width="32" height="6" fill="#2c4a7c" opacity=".7" rx="0"/>
+      <circle cx="20" cy="37" r="2" fill="none" stroke="#4a6fa5" stroke-width=".7" opacity=".6"/>
+      <circle cx="26" cy="37" r="2" fill="none" stroke="#4a6fa5" stroke-width=".7" opacity=".6"/>
+      <circle cx="32" cy="37" r="2" fill="none" stroke="#4a6fa5" stroke-width=".7" opacity=".6"/>
+      <circle cx="38" cy="37" r="2" fill="none" stroke="#4a6fa5" stroke-width=".7" opacity=".6"/>
+      <circle cx="44" cy="37" r="2" fill="none" stroke="#4a6fa5" stroke-width=".7" opacity=".6"/>
+      <ellipse cx="30" cy="24" rx="14" ry="3" fill="#7a9e5a" opacity=".35"/>
+    </svg>
+    <span class=logo-text><span class=sado>Sado</span><span class=crypt>crypt</span></span>
   </a>
 </header>
 
@@ -818,6 +865,7 @@ const HTML_DECRYPT = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>sadocrypt.com</title>
+<link rel="icon" href="${YUNOMI_FAVICON}">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#000;color:#fff;font-family:'Inter',-apple-system,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center}
@@ -1061,6 +1109,7 @@ async function handleEncryptLegacy(request, env) {
 // 有効期限切れエラーページ HTML
 function buildExpiredHtml() {
     return '<!DOCTYPE html><html lang=ja><head><meta charset=UTF-8><title>sadocrypt</title>' +
+        '<link rel="icon" href="' + YUNOMI_FAVICON + '">' +
         '<style>body{background:#000;color:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif}' +
         '.c{text-align:center}.m{font-size:28px;margin-bottom:12px}h1{font-size:13px;font-weight:400;margin-bottom:8px}p{font-size:11px;color:rgba(255,255,255,.2)}</style>' +
         '<body><div class=c><div class=m>&#x229E;</div><h1>このパズルは存在しないか、有効期限が切れています</h1>' +
