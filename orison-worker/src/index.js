@@ -1,14 +1,17 @@
 /**
  * sadocrypt.com - Cloudflare Worker
- * 
- * 公開URL共有と暗号化：Worker上で高速処理（Carmichaelスキップ）
- * 復号計算：ブラウザ側（JavaScript BigInt）で実行、ユーザーは待つ
+ *
+ * 設計思想（CLAUDE.md準拠）:
+ * - 暗号化: クライアントサイドJS（ブラウザ）で完結
+ * - 復号（2乗チェーン計算）: ブラウザJSで実行
+ * - 検算・保管: Cloudflare Workers（このファイル）で実行
+ * - サーバーには平文・秘密鍵を一切送らない
  */
 
 import { v4 as uuidv4 } from 'uuid';
 
 // ============================================================
-// 暗号コア（BigInt版）
+// 暗号コア（BigInt版）- サーバー側暗号化用
 // ============================================================
 
 // Miller-Rabin素数判定
@@ -28,11 +31,12 @@ function isPrime(n, iterations = 20) {
         const a = randomBigInt(2n, n - 2n);
         let x = modPow(a, d, n);
         if (x === 1n || x === n - 1n) continue;
+        let broken = false;
         for (let j = 0n; j < s - 1n; j++) {
             x = modPow(x, 2n, n);
-            if (x === n - 1n) break;
-            if (j === s - 2n) return false;
+            if (x === n - 1n) { broken = true; break; }
         }
+        if (!broken) return false;
     }
     return true;
 }
@@ -60,7 +64,7 @@ function gcd(a, b) {
     return a;
 }
 
-// ランダムなBigInt [min, max]
+// 暗号論的乱数BigInt [min, max]
 function randomBigInt(min, max) {
     const range = max - min + 1n;
     const bits = range.toString(2).length;
@@ -79,72 +83,34 @@ function randomBigInt(min, max) {
 // 指定ビット数の素数生成
 function generateLargePrime(bits) {
     while (true) {
-        // ランダムな奇数を生成
         let n = 0n;
         for (let i = 0; i < bits; i += 32) {
             const chunk = crypto.getRandomValues(new Uint32Array(1))[0];
             n = (n << 32n) | BigInt(chunk);
         }
-        // 最上位ビットと最下位ビットをセット
         n |= (1n << BigInt(bits - 1)) | 1n;
-        // 上位数ビットをマスク
         n &= (1n << BigInt(bits)) - 1n;
-
-        if (isPrime(n, 15)) {
-            return n;
-        }
+        if (isPrime(n, 15)) return n;
     }
 }
 
-// RSAモジュラス生成（デフォルト128ビット×2 = 256ビット合成数）
-// Cloudflare Workers の CPU 制限（10ms）に収まるよう小さめに設定
-function generateRSAmodulus(bits = 128) {
-    console.log(`素数生成中（${bits}ビット）...`);
-    const p = generateLargePrime(bits);
-    const q = generateLargePrime(bits);
-    const N = p * q;
-
-    return { p, q, N };
-}
-
-// 初期値 x0 生成
+// 初期値 x0 生成（暗号論的乱数使用）
 function generateX0(N) {
     while (true) {
         const x0 = randomBigInt(2n, N - 2n);
-        if (gcd(x0, N) === 1n) {
-            return x0;
-        }
+        if (gcd(x0, N) === 1n) return x0;
     }
 }
 
-// 高速スキップ（Carmichael関数使用）
+// 高速スキップ（Carmichael関数使用）- サーバー側のみ使用
 function fastForwardChain(x0, chainCount, p, q, N) {
-    const phi = (p - 1n) * (q - 1n);
-    const exponent = modPow(2n, BigInt(chainCount), phi);
+    const lambda = lcm(p - 1n, q - 1n);
+    const exponent = modPow(2n, BigInt(chainCount), lambda);
     return modPow(x0, exponent, N);
 }
 
-// 逐次2乗チェーン（ブラウザ側で使用）
-function squareChain(x0, N, count) {
-    let x = x0;
-    for (let i = 0n; i < count; i++) {
-        x = modPow(x, 2n, N);
-    }
-    return x;
-}
-
-// x_final → AES-256 鍵
-async function xFinalToAESKey(xFinal) {
-    const hex = xFinal.toString(16);
-    const bytes = new Uint8Array(Math.ceil(hex.length / 2));
-    for (let i = 0; i < bytes.length; i++) {
-        bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
-    }
-    const hash = await crypto.subtle.digest('SHA-256', bytes);
-    const key = await crypto.subtle.importKey(
-        'raw', hash, { name: 'AES-CBC' }, false, ['encrypt', 'decrypt']
-    );
-    return key;
+function lcm(a, b) {
+    return (a / gcd(a, b)) * b;
 }
 
 function arrayToHex(arr) {
@@ -158,77 +124,20 @@ function hexToUint8(hex) {
 }
 
 // AES-256-CBC 暗号化（Hex返却）
-async function aesEncrypt(data, key) {
+async function aesEncrypt(data, xFinal) {
+    const hex = xFinal.toString(16);
+    const bytes = hexToUint8(hex.length % 2 === 0 ? hex : '0' + hex);
+    const hash = await crypto.subtle.digest('SHA-256', bytes);
+    const key = await crypto.subtle.importKey('raw', hash, { name: 'AES-CBC' }, false, ['encrypt']);
     const iv = crypto.getRandomValues(new Uint8Array(16));
     const encoded = new TextEncoder().encode(data);
-    const ciphertext = await crypto.subtle.encrypt(
-        { name: 'AES-CBC', iv }, key, encoded
-    );
-    return { iv: arrayToHex(iv), ciphertext: arrayToHex(new Uint8Array(ciphertext)) };
+    const ciphertext = await crypto.subtle.encrypt({ name: 'AES-CBC', iv }, key, encoded);
+    return { iv: arrayToHex(iv), ct: arrayToHex(new Uint8Array(ciphertext)) };
 }
-
-// AES-256-CBC 復号
-async function aesDecrypt(ivHex, ctHex, key) {
-    const iv = hexToUint8(ivHex);
-    const ciphertext = hexToUint8(ctHex);
-    const decrypted = await crypto.subtle.decrypt(
-        { name: 'AES-CBC', iv }, key, ciphertext
-    );
-    return new TextDecoder().decode(decrypted);
-}
-
-// ベンチマーク（小さいNで速度測定）
-function benchmarkChainSpeed(count) {
-    const p = 982451653n;  // 素数
-    const q = 982451737n;  // 素数
-    const N = p * q;
-    const x0 = 123456789n;
-
-    const start = Date.now();
-    const x = squareChain(x0, N, count);
-    const elapsed = (Date.now() - start) / 1000;
-    const speed = Math.floor(count / elapsed);
-
-    console.log(`ベンチマーク: ${count}回を${elapsed.toFixed(2)}秒、速度: ${speed} 回/秒`);
-    return speed;
-}
-
-// URL暗号化（高速版）
-async function encryptURL(url, chainCount, p, q, N, x0) {
-    console.log(`高速スキップ: ${chainCount}回分を一発計算`);
-    const xFinal = fastForwardChain(x0, chainCount, p, q, N);
-    const key = await xFinalToAESKey(xFinal);
-    const { iv, ciphertext } = await aesEncrypt(url, key);
-    const encryptedURL = `sadocrypt:${iv}:${ciphertext}`;
-    return encryptedURL;
-}
-
-// URL復号（ブラウザ用）
-async function decryptURL(encryptedURL, x0, N, chainCount) {
-    const parts = encryptedURL.split(':');
-    if (parts[0] !== 'sadocrypt') throw new Error('Invalid format');
-    const iv = parts[1];
-    const ct = parts.slice(2).join(':');
-
-    const xFinal = squareChain(x0, N, BigInt(chainCount));
-    const hex = xFinal.toString(16);
-    const bytes = new Uint8Array(Math.ceil(hex.length / 2));
-    for (let i = 0; i < bytes.length; i++) {
-        bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
-    }
-    const hash = await crypto.subtle.digest('SHA-256', bytes);
-    const key = await crypto.subtle.importKey(
-        'raw', hash, { name: 'AES-CBC' }, false, ['decrypt']
-    );
-    return await aesDecrypt(iv, ct, key);
-}
-
 
 // ============================================================
-// Workder Router & HTML
+// HTML テンプレート
 // ============================================================
-
-// KV: PUZZLES バインドを想定
 
 const HTML_ENCRYPT = `<!DOCTYPE html>
 <html lang="ja">
@@ -248,12 +157,13 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:var(--bg);color:va
 .title strong{font-weight:600;letter-spacing:4px}
 .tag{font-size:13px;color:var(--soft);font-weight:300;letter-spacing:0.8px;line-height:1.8}
 .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:36px 28px;box-shadow:0 2px 16px rgba(0,0,0,0.03)}
-.label{font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:24px}
+.card-label{font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--dim);margin-bottom:24px}
 .grp{margin-bottom:20px}
 .grp label{display:block;font-size:12px;font-weight:500;color:var(--soft);letter-spacing:.5px;margin-bottom:8px}
-.grp input,.grp select{width:100%;padding:14px 16px;background:var(--bg);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:.3s}
-.grp input:focus,.grp select:focus{border-color:#9a9aa0;box-shadow:0 0 0 3px rgba(0,0,0,0.03)}
-.grp input::placeholder{color:var(--dim)}
+.grp input,.grp select,.grp textarea{width:100%;padding:14px 16px;background:var(--bg);border:1px solid var(--border);border-radius:12px;color:var(--text);font-size:15px;font-family:inherit;outline:none;transition:.3s}
+.grp textarea{resize:vertical;min-height:80px;line-height:1.5}
+.grp input:focus,.grp select:focus,.grp textarea:focus{border-color:#9a9aa0;box-shadow:0 0 0 3px rgba(0,0,0,0.03)}
+.grp input::placeholder,.grp textarea::placeholder{color:var(--dim)}
 .row{display:flex;gap:10px}
 .row>*:first-child{flex:2}.row>*:last-child{flex:1}
 select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%238a8680' d='M6 8L0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;cursor:pointer}
@@ -289,32 +199,147 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 <p class=tag>情報に「かけた時間」という重みを</p>
 </div>
 <div class=card>
-<div class=label>Encrypt</div>
+<div class=card-label>Encrypt</div>
 <form id=f>
-<div class=grp><label>保護するURL</label><input type=text name=url placeholder="https://example.com/secret" required></div>
+<div class=grp>
+  <label>保護するテキスト・URL</label>
+  <textarea name=content placeholder="https://example.com/secret&#10;または任意のテキスト" required></textarea>
+</div>
 <div class=grp><label>復号時間</label><div class=row><input type=number name=tv value=10 min=1><select name=tu><option value=s selected>秒</option><option value=m>分</option><option value=h>時間</option></select></div></div>
 <button type=submit class=btn id=btn>暗号化してURLを生成</button>
 </form>
 <div id=res></div>
 </div>
+<div class=divider>sadocrypt</div>
+<div class=about>
+<p>Orisonは、情報に「かけた時間」という重みを与えます。<br>暗号化は一瞬。復号には、あなたが決めた時間だけかかる。</p>
+<div class=orn>&#x2022; &#x2022; &#x2022;</div>
+<p class=prayer>どうか、自分のコンテンツが<br>それに見合った時間の流れ、密度の中で見出されますように。</p>
+</div>
 <div class=footer>sadocrypt.com &middot; time-lock encryption</div>
 </div>
 <script>
+// ============================================================
+// クライアントサイド暗号化（CLAUDE.md準拠: 暗号化はブラウザJSで完結）
+// ============================================================
+
+function modPow(base, exp, mod) {
+  if(mod===1n)return 0n;
+  let r=1n;base=((base%mod)+mod)%mod;
+  while(exp>0n){if(exp&1n)r=(r*base)%mod;exp>>=1n;base=(base*base)%mod}
+  return r;
+}
+
+function gcd(a,b){a=a<0n?-a:a;b=b<0n?-b:b;while(b){[a,b]=[b,a%b]}return a;}
+function lcm(a,b){return(a/gcd(a,b))*b;}
+
+function randomBigInt(min,max){
+  const range=max-min+1n,bits=range.toString(2).length;
+  let r;
+  do{
+    r=0n;
+    for(let i=0;i<bits;i+=32){const c=crypto.getRandomValues(new Uint32Array(1))[0];r=(r<<32n)|BigInt(c);}
+    r=r&((1n<<BigInt(bits))-1n);
+  }while(r>=range);
+  return r+min;
+}
+
+function isPrime(n,k=15){
+  if(n<2n)return false;if(n===2n||n===3n)return true;if(n%2n===0n)return false;
+  let s=0n,d=n-1n;while(d%2n===0n){s++;d/=2n;}
+  for(let i=0;i<k;i++){
+    const a=randomBigInt(2n,n-2n);let x=modPow(a,d,n);
+    if(x===1n||x===n-1n)continue;
+    let ok=false;
+    for(let j=0n;j<s-1n;j++){x=modPow(x,2n,n);if(x===n-1n){ok=true;break;}}
+    if(!ok)return false;
+  }
+  return true;
+}
+
+function generatePrime(bits){
+  while(true){
+    let n=0n;
+    for(let i=0;i<bits;i+=32){const c=crypto.getRandomValues(new Uint32Array(1))[0];n=(n<<32n)|BigInt(c);}
+    n|=(1n<<BigInt(bits-1))|1n;n&=(1n<<BigInt(bits))-1n;
+    if(isPrime(n))return n;
+  }
+}
+
+function hexToUint8(h){
+  if(h.length%2)h='0'+h;
+  const b=new Uint8Array(h.length/2);
+  for(let i=0;i<b.length;i++)b[i]=parseInt(h.substr(i*2,2),16);
+  return b;
+}
+function arrayToHex(a){return Array.from(a).map(b=>b.toString(16).padStart(2,'0')).join('');}
+
+async function encryptContent(content, targetSeconds) {
+  // 1. 素数ペア生成（約512ビット = 約300桁）
+  const bits = 512;
+  const p = generatePrime(bits);
+  const q = generatePrime(bits);
+  const N = p * q;
+
+  // 2. x0生成（暗号論的乱数）
+  let x0;
+  while(true){x0=randomBigInt(2n,N-2n);if(gcd(x0,N)===1n)break;}
+
+  // 3. ベンチマーク（実際のNで速度測定）
+  const testCount = 5000n;
+  const t0 = performance.now();
+  let xb = x0;
+  for(let i=0n;i<testCount;i++) xb=modPow(xb,2n,N);
+  const elapsed = (performance.now()-t0)/1000;
+  const speed = Number(testCount)/elapsed;
+
+  // 4. チェーン回数計算
+  const chainCount = Math.floor(targetSeconds * speed * 0.8);
+
+  // 5. Carmichaelスキップで x_final を高速計算
+  const lambda = lcm(p-1n, q-1n);
+  const exponent = modPow(2n, BigInt(chainCount), lambda);
+  const xFinal = modPow(x0, exponent, N);
+
+  // 6. AES-256-CBC 暗号化
+  const xHex = xFinal.toString(16);
+  const xBytes = hexToUint8(xHex);
+  const hash = await crypto.subtle.digest('SHA-256', xBytes);
+  const key = await crypto.subtle.importKey('raw', hash, {name:'AES-CBC'}, false, ['encrypt']);
+  const iv = crypto.getRandomValues(new Uint8Array(16));
+  const encoded = new TextEncoder().encode(content);
+  const ciphertext = await crypto.subtle.encrypt({name:'AES-CBC',iv}, key, encoded);
+
+  return {
+    x0: x0.toString(),
+    N: N.toString(),
+    chainCount,
+    iv: arrayToHex(iv),
+    ct: arrayToHex(new Uint8Array(ciphertext)),
+    actualSeconds: Math.floor(chainCount / speed)
+  };
+}
+
 document.getElementById('f').onsubmit=async function(e){
-e.preventDefault();
-const out=document.getElementById('res'),btn=document.getElementById('btn'),fd=new FormData(this);
-let s=parseInt(fd.get('tv')),u=fd.get('tu');
-if(u==='m')s*=60;if(u==='h')s*=3600;
-btn.disabled=true;btn.textContent='暗号化中...';
-out.innerHTML='<div class=result><div class=loading><div class=spinner></div>素数生成中...</div></div>';
-try{
-const r=await fetch('/api/encrypt',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:fd.get('url'),target_seconds:s})});
-const d=await r.json();
-if(d.error){out.innerHTML='<div class=result><div class=error>'+d.error+'</div></div>';return;}
-const u=location.origin+'/s/'+d.id;
-out.innerHTML='<div class=result><div class=r-icon>&#x229E;</div><div class=r-label>URL generated</div><div class=r-url onclick="navigator.clipboard.writeText(this.textContent)">'+u+'</div><div class=r-hint>クリックでコピー &middot; 約'+d.actual_seconds+'秒で復号</div></div>';
-}catch(e){out.innerHTML='<div class=result><div class=error>'+e.message+'</div></div>';}
-btn.disabled=false;btn.textContent='暗号化してURLを生成';
+  e.preventDefault();
+  const out=document.getElementById('res'),btn=document.getElementById('btn'),fd=new FormData(this);
+  let s=parseInt(fd.get('tv')),u=fd.get('tu');
+  if(u==='m')s*=60;if(u==='h')s*=3600;
+  btn.disabled=true;btn.textContent='暗号化中...';
+  out.innerHTML='<div class=result><div class=loading><div class=spinner></div>素数生成・暗号化中（ブラウザで処理）...</div></div>';
+  try{
+    // クライアントサイドで暗号化
+    const enc = await encryptContent(fd.get('content'), s);
+
+    // サーバーにはパズルデータ（平文なし）のみ送信
+    const r=await fetch('/api/save',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({x0:enc.x0,N:enc.N,cc:enc.chainCount,iv:enc.iv,ct:enc.ct,target_seconds:s})});
+    const d=await r.json();
+    if(d.error){out.innerHTML='<div class=result><div class=error>'+d.error+'</div></div>';return;}
+    const shareUrl=location.origin+'/s/'+d.id;
+    out.innerHTML='<div class=result><div class=r-icon>&#x229E;</div><div class=r-label>URL generated</div><div class=r-url onclick="navigator.clipboard.writeText(this.textContent)">'+shareUrl+'</div><div class=r-hint>クリックでコピー &middot; 約'+enc.actualSeconds+'秒で復号</div></div>';
+  }catch(e){out.innerHTML='<div class=result><div class=error>'+e.message+'</div></div>';}
+  btn.disabled=false;btn.textContent='暗号化してURLを生成';
 };
 </script>
 </body>
@@ -331,13 +356,13 @@ const HTML_DECRYPT = `<!DOCTYPE html>
 body{background:#000;color:#fff;font-family:'Inter',-apple-system,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center}
 .c{text-align:center}
 .spin{width:64px;height:64px;margin:0 auto 24px;position:relative}
-svg{animation:r 1.2s linear infinite}
+svg{animation:r 1.2s linear infinite;width:64px;height:64px}
 circle{fill:none;stroke:rgba(255,255,255,.8);stroke-width:3;stroke-linecap:round;stroke-dasharray:150;stroke-dashoffset:30;animation:t 1.2s ease-in-out infinite}
 @keyframes r{100%{transform:rotate(360deg)}}
 @keyframes t{0%{stroke-dashoffset:150}50%{stroke-dashoffset:30}100%{stroke-dashoffset:150}}
 .l{font-size:14px;letter-spacing:2px;color:rgba(255,255,255,.5);margin-bottom:12px}
-.h{font-family:monospace;font-size:11px;color:rgba(255,255,255,.25)}
-.h span{color:rgba(255,255,255,.4)}
+.h{font-family:monospace;font-size:13px;color:rgba(255,255,255,.4);line-height:1.8}
+.h span{color:rgba(255,255,255,.7)}
 .done{display:none}
 .done .ck{width:64px;height:64px;margin:0 auto 24px;border-radius:50%;border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:24px;color:rgba(255,255,255,.6)}
 .done .l{color:rgba(255,255,255,.4)}
@@ -346,14 +371,15 @@ circle{fill:none;stroke:rgba(255,255,255,.8);stroke-width:3;stroke-linecap:round
 .err{display:none}
 .err .x{width:64px;height:64px;margin:0 auto 24px;border-radius:50%;border:2px solid rgba(255,68,68,.2);display:flex;align-items:center;justify-content:center;font-size:24px;color:rgba(255,68,68,.5)}
 .err .l{color:rgba(255,68,68,.4)}
+.result-text{display:none;max-width:480px;margin:0 auto;padding:24px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:12px;font-size:14px;line-height:1.8;word-break:break-all;color:rgba(255,255,255,.8)}
 </style>
 </head>
 <body>
 <div class=c>
 <div id=stl>
 <div class=spin><svg viewBox="0 0 64 64"><circle cx=32 cy=32 r=28/></svg></div>
-<div class=l>採掘中...</div>
-<div class=h><span id=pt>0</span> / <span id=tc>0</span> hashes</div>
+<div class=l>復号中...</div>
+<div class=h><span id=cur>0</span> / <span id=total>-</span></div>
 </div>
 <div id=std class=done>
 <div class=ck>&#x2713;</div>
@@ -364,55 +390,89 @@ circle{fill:none;stroke:rgba(255,255,255,.8);stroke-width:3;stroke-linecap:round
 <div class=x>&#x2715;</div>
 <div class=l id=em>エラー</div>
 </div>
+<div id=rtxt class=result-text></div>
 </div>
 <script>
 const P=__PUZZLE__;
-const N=BigInt(P.N),x0=BigInt(P.x0),cc=BigInt(P.cc);
+const CACHE_KEY='sadocrypt_cache_'+P.id;
 
 function modPow(b,e,m){
-if(m===1n)return 0n;let r=1n;b=((b%m)+m)%m;
-while(e>0n){if(e&1n)r=(r*b)%m;e>>=1n;b=(b*b)%m}
-return r;
+  if(m===1n)return 0n;let r=1n;b=((b%m)+m)%m;
+  while(e>0n){if(e&1n)r=(r*b)%m;e>>=1n;b=(b*b)%m}
+  return r;
+}
+function hexToUint8(h){
+  if(h.length%2)h='0'+h;
+  const b=new Uint8Array(h.length/2);
+  for(let i=0;i<b.length;i++)b[i]=parseInt(h.substr(i*2,2),16);
+  return b;
 }
 
-function hexToBuf(h){
-const b=new Uint8Array(Math.ceil(h.length/2));
-for(let i=0;i<b.length;i++)b[i]=parseInt(h.substr(i*2,2),16);
-return b;
-}
+function isURL(s){try{new URL(s);return true;}catch{return false;}}
 
+async function decryptWithXFinal(xFinalHex){
+  const hash=await crypto.subtle.digest('SHA-256',hexToUint8(xFinalHex));
+  const key=await crypto.subtle.importKey('raw',hash,{name:'AES-CBC'},false,['decrypt']);
+  const dec=await crypto.subtle.decrypt({name:'AES-CBC',iv:hexToUint8(P.iv)},key,hexToUint8(P.ct));
+  return new TextDecoder().decode(dec);
+}
 
 async function run(){
-let x=x0;
-const total=cc;
-for(let i=0n;i<total;i++){
-x=modPow(x,2n,N);
-if(i%10000n===0n){
-document.getElementById('pt').textContent=i.toLocaleString();
-await new Promise(r=>setTimeout(r,0));
-}
-}
-document.getElementById('pt').textContent=total.toLocaleString();
-document.getElementById('tc').textContent=total.toLocaleString();
+  const N=BigInt(P.N),x0=BigInt(P.x0),cc=BigInt(P.cc);
 
-const hex=x.toString(16);
-const hash=await crypto.subtle.digest('SHA-256',hexToBuf(hex));
-const key=await crypto.subtle.importKey('raw',hash,{name:'AES-CBC'},false,['decrypt']);
-const iv=hexToBuf(P.iv);
-const ct=hexToBuf(P.ct);
-console.log('x_hex first40:',hex.substring(0,40));
-console.log('iv length:',iv.length,'ct length:',ct.length);
-const dec=await crypto.subtle.decrypt({name:'AES-CBC',iv},key,ct);
-const url=new TextDecoder().decode(dec).replace(/\x00+$/,'');
+  // キャッシュ確認（localStorageにx_finalがあればスキップ）
+  const cached=localStorage.getItem(CACHE_KEY);
+  if(cached){
+    try{
+      const content=await decryptWithXFinal(cached);
+      showResult(content);
+      return;
+    }catch(e){
+      localStorage.removeItem(CACHE_KEY);
+    }
+  }
 
-document.getElementById('stl').style.display='none';
-document.getElementById('std').style.display='block';
-setTimeout(()=>{window.location.href=url;},2000);
+  // 2乗チェーン計算（ブラウザで逐次実行）
+  let x=x0;
+  const total=cc;
+  const updateInterval=1000n;
+  for(let i=0n;i<total;i++){
+    x=modPow(x,2n,N);
+    if(i%updateInterval===0n){
+      document.getElementById('cur').textContent=i.toLocaleString();
+      document.getElementById('total').textContent=total.toLocaleString();
+      await new Promise(r=>setTimeout(r,0));
+    }
+  }
+  document.getElementById('cur').textContent=total.toLocaleString();
+  document.getElementById('total').textContent=total.toLocaleString();
+
+  const xFinalHex=x.toString(16);
+
+  // localStorageにキャッシュ保存
+  try{localStorage.setItem(CACHE_KEY,xFinalHex);}catch(e){}
+
+  const content=await decryptWithXFinal(xFinalHex);
+  showResult(content);
 }
+
+function showResult(content){
+  document.getElementById('stl').style.display='none';
+  if(isURL(content)){
+    document.getElementById('std').style.display='block';
+    setTimeout(()=>{window.location.href=content;},2000);
+  }else{
+    document.getElementById('std').style.display='block';
+    const rtxt=document.getElementById('rtxt');
+    rtxt.style.display='block';
+    rtxt.textContent=content;
+  }
+}
+
 run().catch(e=>{
-document.getElementById('stl').style.display='none';
-document.getElementById('ste').style.display='block';
-document.getElementById('em').innerHTML='Error: '+e.message+'<br>cc='+cc+'<br>cc type='+typeof cc;
+  document.getElementById('stl').style.display='none';
+  document.getElementById('ste').style.display='block';
+  document.getElementById('em').textContent='Error: '+e.message;
 });
 </script>
 </body>
@@ -422,86 +482,121 @@ document.getElementById('em').innerHTML='Error: '+e.message+'<br>cc='+cc+'<br>cc
 // Worker Router
 // ============================================================
 
-async function handleEncrypt(request, env) {
+/**
+ * POST /api/save
+ * クライアントサイドで暗号化済みのパズルデータを保存する
+ * サーバーは平文・秘密鍵を受け取らない（CLAUDE.md準拠）
+ */
+async function handleSave(request, env) {
     try {
-        const { url, target_seconds } = await request.json();
-        if (!url) return new Response(JSON.stringify({ error: 'URLを入力してください' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+        const { x0, N, cc, iv, ct, target_seconds } = await request.json();
+        if (!x0 || !N || !cc || !iv || !ct) {
+            return new Response(JSON.stringify({ error: 'パラメータが不足しています' }), {
+                status: 400, headers: { 'Content-Type': 'application/json' }
+            });
+        }
 
-        const start = Date.now();
-
-        // 1. 固定の小さい素数を使用（CPU制限対策）
-        const p = 982451653n;
-        const q = 982451737n;
-        const N = p * q;
-        const x0 = generateX0(N);
-
-        // 2. ベンチマークなし - 固定速度を使用（CPU制限対策）
-        // Cloudflare Workers の CPU 制限（10ms）に収まるよう計算を最小化
-        // 実測値: 約 500,000 回/秒 と仮定
-        const actualSpeed = 500000;
-
-        // 3. チェーン回数計算
-        const margin = 0.8;
-        const chainCount = Math.floor(target_seconds * actualSpeed * margin);
-
-        // 4. 暗号化（高速）
-        const encryptedURL = await encryptURL(url, chainCount, p, q, N, x0);
-
-        // 5. IVと暗号文を抽出
-        const parts = encryptedURL.split(':');
-        const iv = parts[1];
-        const ct = parts.slice(2).join(':');
-
-        // 6. KVに保存
         const puzzleId = uuidv4().slice(0, 8);
+
+        // 有効期限: 復号時間 + 1ヶ月（CLAUDE.md準拠）
+        // target_seconds が送られてきた場合はそれを復号時間として使用する
+        // 送られてこない場合は cc（チェーン回数）から推定する
+        const decryptSeconds = target_seconds > 0
+            ? Math.ceil(target_seconds)
+            : Math.ceil(Number(cc) / 500000);
+        const oneMonth = 30 * 24 * 60 * 60; // 2,592,000秒
+        const ttl = decryptSeconds + oneMonth;
+
+        // 有効期限の絶対時刻（Unix秒）をデータにも保存しておく
+        const expiresAt = Math.floor(Date.now() / 1000) + ttl;
+
         const puzzleData = {
-            x0: x0.toString(),
-            N: N.toString(),
-            cc: chainCount,
+            id: puzzleId,
+            x0: x0,
+            N: N,
+            cc: cc,
             iv: iv,
             ct: ct,
+            target_seconds: target_seconds || 0,
             created: Date.now(),
-            done: false,
-            url: url
+            expires_at: expiresAt  // 有効期限（Unix秒）
         };
-        await env.PUZZLES.put(puzzleId, JSON.stringify(puzzleData), { expirationTtl: 86400 * 7 });
 
-        const elapsed = (Date.now() - start) / 1000;
+        // Cloudflare KV の expirationTtl で自動削除を設定
+        // TTL の最小値は 60 秒なので、それ以下にならないよう保証する
+        const safeTtl = Math.max(ttl, 60);
+        await env.PUZZLES.put(puzzleId, JSON.stringify(puzzleData), { expirationTtl: safeTtl });
 
-        return new Response(JSON.stringify({
-            id: puzzleId,
-            chain_count: chainCount,
-            actual_seconds: Math.floor(chainCount / actualSpeed),
-            speed: actualSpeed,
-            elapsed: elapsed
-        }), { headers: { 'Content-Type': 'application/json' } });
+        return new Response(JSON.stringify({ id: puzzleId }), {
+            headers: { 'Content-Type': 'application/json' }
+        });
 
     } catch (e) {
-        return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+        return new Response(JSON.stringify({ error: e.message }), {
+            status: 500, headers: { 'Content-Type': 'application/json' }
+        });
     }
+}
+
+/**
+ * POST /api/encrypt (後方互換: 旧APIを維持しつつ新方式に誘導)
+ * ※ 新方式では暗号化はクライアントサイドで行うため、このエンドポイントは非推奨
+ */
+async function handleEncryptLegacy(request, env) {
+    return new Response(JSON.stringify({
+        error: 'このAPIは廃止されました。暗号化はブラウザ側で行ってください。'
+    }), { status: 410, headers: { 'Content-Type': 'application/json' } });
+}
+
+/**
+ * GET /s/:id
+ * 共有URLの復号ページを返す
+ */
+// 有効期限切れエラーページ HTML
+function buildExpiredHtml() {
+    return '<!DOCTYPE html><html lang=ja><head><meta charset=UTF-8><title>sadocrypt</title>' +
+        '<style>body{background:#000;color:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif}' +
+        '.c{text-align:center}.m{font-size:28px;margin-bottom:12px}h1{font-size:13px;font-weight:400;margin-bottom:8px}p{font-size:11px;color:rgba(255,255,255,.2)}</style>' +
+        '<body><div class=c><div class=m>&#x229E;</div><h1>このパズルは存在しないか、有効期限が切れています</h1>' +
+        '<p>The puzzle does not exist or has expired.</p></div></body></html>';
 }
 
 async function handleSharedPuzzle(request, env, puzzleId) {
     const data = await env.PUZZLES.get(puzzleId);
     if (!data) {
-        return new Response('<!DOCTYPE html><html lang=ja><head><meta charset=UTF-8><title>sadocrypt</title><style>body{background:#000;color:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif}.c{text-align:center}.m{font-size:28px;margin-bottom:12px}h1{font-size:13px;font-weight:400}}</style><body><div class=c><div class=m>&#x229E;</div><h1>このパズルは存在しません</h1></div></body></html>', { status: 404, headers: { 'Content-Type': 'text/html;charset=utf-8' } });
+        return new Response(buildExpiredHtml(),
+            { status: 404, headers: { 'Content-Type': 'text/html;charset=utf-8' } }
+        );
     }
 
     const puzzle = JSON.parse(data);
 
-    // HTML生成（puzzle dataを埋め込む）
-    const puzzleJSON = JSON.stringify({ x0: puzzle.x0, N: puzzle.N, cc: puzzle.cc, iv: puzzle.iv, ct: puzzle.ct });
-    let html = HTML_DECRYPT.replace('__PUZZLE__', puzzleJSON);
-
-    return new Response(html, { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Access-Control-Allow-Origin': '*' } });
-}
-
-async function handleApiPuzzle(request, env, puzzleId) {
-    const data = await env.PUZZLES.get(puzzleId);
-    if (!data) {
-        return new Response(JSON.stringify({ error: 'Not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
+    // 二重チェック: expires_at フィールドがある場合はサーバー側でも期限を確認する
+    // （Cloudflare KV の TTL 削除は最大60秒の遅延があるため）
+    if (puzzle.expires_at) {
+        const nowSec = Math.floor(Date.now() / 1000);
+        if (nowSec > puzzle.expires_at) {
+            // 期限切れ: KV から明示的に削除してエラーを返す
+            await env.PUZZLES.delete(puzzleId);
+            return new Response(buildExpiredHtml(),
+                { status: 410, headers: { 'Content-Type': 'text/html;charset=utf-8' } }
+            );
+        }
     }
-    return new Response(data, { headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' } });
+
+    const puzzleJSON = JSON.stringify({
+        id: puzzleId,
+        x0: puzzle.x0,
+        N: puzzle.N,
+        cc: puzzle.cc,
+        iv: puzzle.iv,
+        ct: puzzle.ct
+    });
+    const html = HTML_DECRYPT.replace('__PUZZLE__', puzzleJSON);
+
+    return new Response(html, {
+        headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-store' }
+    });
 }
 
 // ============================================================
@@ -516,14 +611,23 @@ export default {
         // CORS preflight
         if (request.method === 'OPTIONS') {
             return new Response(null, {
-                headers: { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Methods': 'GET, POST', 'Access-Control-Allow-Headers': 'Content-Type' }
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Methods': 'GET, POST',
+                    'Access-Control-Allow-Headers': 'Content-Type'
+                }
             });
         }
 
         try {
-            // 暗号化API
+            // パズル保存API（新方式: クライアントサイド暗号化済みデータを保存）
+            if (path === '/api/save' && request.method === 'POST') {
+                return await handleSave(request, env);
+            }
+
+            // 旧暗号化API（廃止）
             if (path === '/api/encrypt' && request.method === 'POST') {
-                return await handleEncrypt(request, env);
+                return await handleEncryptLegacy(request, env);
             }
 
             // 共有URL
@@ -532,110 +636,19 @@ export default {
                 return await handleSharedPuzzle(request, env, puzzleId);
             }
 
-            // パズルデータ取得API
-            if (path.startsWith('/api/puzzle/')) {
-                const puzzleId = path.slice(12);
-                return await handleApiPuzzle(request, env, puzzleId);
-            }
-
-            // 検証: 実際のパズルデータでCarmichael vs 逐次2乗を比較
-            if (path.startsWith('/api/verify/')) {
-                const puzzleId = path.slice(12);
-                const data = await env.PUZZLES.get(puzzleId);
-                if (!data) return new Response(JSON.stringify({ error: 'not found' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
-                const puzzle = JSON.parse(data);
-                const x0v = BigInt(puzzle.x0);
-                const Nv = BigInt(puzzle.N);
-                const ccv = puzzle.cc;
-                // 逐次2乗（小さい回数だけテスト）
-                let xIter = x0v;
-                const testCount = Math.min(ccv, 100);
-                for (let i = 0; i < testCount; i++) xIter = modPow(xIter, 2n, Nv);
-                return new Response(JSON.stringify({
-                    cc: ccv, x0: puzzle.x0.substring(0, 20) + '...', N: puzzle.N.substring(0, 20) + '...',
-                    iter100: xIter.toString(16).substring(0, 40) + '...'
-                }), { headers: { 'Content-Type': 'application/json' } });
-            }
-
-            // テスト: サーバー内ラウンドトリップ検証
-            if (path === '/api/roundtrip') {
-                const p = 982451653n;
-                const q = 982451737n;
-                const N = p * q;
-                const x0 = 123456789n;
-                const chainCount = 1000;
-                const testURL = 'https://example.com/test';
-
-                // 暗号化（Carmichaelスキップ）
-                const phi = (p - 1n) * (q - 1n);
-                const exponent = modPow(2n, BigInt(chainCount), phi);
-                const xFinalEnc = modPow(x0, exponent, N);
-
-                // 復号（逐次2乗）
-                let xFinalDec = x0;
-                for (let i = 0; i < chainCount; i++) xFinalDec = modPow(xFinalDec, 2n, N);
-
-                const keysMatch = xFinalEnc === xFinalDec;
-
-                // AES暗号化
-                const hex = xFinalEnc.toString(16);
-                const bytes = new Uint8Array(Math.ceil(hex.length / 2));
-                for (let i = 0; i < bytes.length; i++) bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
-                const hash = await crypto.subtle.digest('SHA-256', bytes);
-                const key = await crypto.subtle.importKey('raw', hash, { name: 'AES-CBC' }, false, ['encrypt', 'decrypt']);
-                const iv = crypto.getRandomValues(new Uint8Array(16));
-                const encoded = new TextEncoder().encode(testURL);
-                const ciphertext = await crypto.subtle.encrypt({ name: 'AES-CBC', iv }, key, encoded);
-
-                // 復号
-                const keyDec = await crypto.subtle.importKey('raw', hash, { name: 'AES-CBC' }, false, ['decrypt']);
-                const decrypted = await crypto.subtle.decrypt({ name: 'AES-CBC', iv }, keyDec, ciphertext);
-                const decryptedURL = new TextDecoder().decode(decrypted);
-
-                return new Response(JSON.stringify({
-                    keysMatch,
-                    decryptMatch: decryptedURL === testURL,
-                    decryptedURL
-                }), { headers: { 'Content-Type': 'application/json' } });
-            }
-
-            // テスト: Carmichael vs 逐次2乗の一致確認
-            if (path === '/api/test') {
-                const p = 982451653n;
-                const q = 982451737n;
-                const N = p * q;
-                const x0 = 123456789n;
-                const chainCount = 1000;
-
-                // Carmichael skip
-                const phi = (p - 1n) * (q - 1n);
-                const exponent = modPow(2n, BigInt(chainCount), phi);
-                const xCarmichael = modPow(x0, exponent, N);
-
-                // 逐次2乗
-                let xIter = x0;
-                for (let i = 0; i < chainCount; i++) {
-                    xIter = modPow(xIter, 2n, N);
-                }
-
-                const match = xCarmichael === xIter;
-                return new Response(JSON.stringify({
-                    match,
-                    xCarmichael: xCarmichael.toString(16).substring(0, 40) + '...',
-                    xIter: xIter.toString(16).substring(0, 40) + '...',
-                    chainCount
-                }), { headers: { 'Content-Type': 'application/json' } });
-            }
-
             // トップページ
             if (path === '/' || path === '') {
-                return new Response(HTML_ENCRYPT, { headers: { 'Content-Type': 'text/html;charset=utf-8' } });
+                return new Response(HTML_ENCRYPT, {
+                    headers: { 'Content-Type': 'text/html;charset=utf-8' }
+                });
             }
 
             return new Response('Not Found', { status: 404 });
 
         } catch (e) {
-            return new Response(JSON.stringify({ error: e.message }), { status: 500, headers: { 'Content-Type': 'application/json' } });
+            return new Response(JSON.stringify({ error: e.message }), {
+                status: 500, headers: { 'Content-Type': 'application/json' }
+            });
         }
     }
 };
