@@ -1,34 +1,30 @@
-name: Deploy to Cloudflare Pages
+name: Deploy to Cloudflare Workers
 
 on:
   push:
-    branches:
-      - master
-  pull_request:
     branches:
       - master
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    name: Deploy
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: '3.14'
+          node-version: '20'
 
       - name: Install dependencies
-        run: |
-          python3 -m venv venv2
-          source venv2/bin/activate
-          pip install -r requirements.txt
+        working-directory: orison-worker
+        run: npm install
 
-      - name: Build and deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v3
-        with:
-          project-name: sadocrypt
-          token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      - name: Deploy with Wrangler
+        working-directory: orison-worker
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
