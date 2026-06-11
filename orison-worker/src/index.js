@@ -195,7 +195,7 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:var(--bg);color:va
   <div class=header>
     <div class=mark>&#x229E;</div>
     <div class=title><strong>sado</strong>crypt</div>
-    <p class=sub>2乗チェーン ベンチマーク — 500万回試行</p>
+    <p class=sub>2乗チェーン ベンチマーク — 2048bit / 500万回試行</p>
   </div>
 
   <!-- 実行前 -->
@@ -211,7 +211,7 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:var(--bg);color:va
     </div>
     <div class=stat-row>
       <span class=stat-label>モジュラスサイズ</span>
-      <span class=stat-val>1024 bit</span>
+      <span class=stat-val>2048 bit</span>
     </div>
     <div class=stat-row>
       <span class=stat-label>並列化</span>
@@ -273,7 +273,7 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:var(--bg);color:va
       </div>
       <div class=stat-row>
         <span class=stat-label>モジュラスサイズ</span>
-        <span class=stat-val>1024 bit</span>
+        <span class=stat-val>2048 bit</span>
       </div>
     </div>
     <button class="btn primary" style="margin-top:20px" onclick="startBenchmark()">再計測</button>
@@ -294,7 +294,7 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:var(--bg);color:va
 // ============================================================
 
 const TRIAL_COUNT = 5_000_000n;
-const MODULUS_BITS = 1024;
+const MODULUS_BITS = 2048;
 
 function modPow(base, exp, mod) {
   if (mod === 1n) return 0n;
@@ -392,7 +392,7 @@ async function startBenchmark() {
 
   await new Promise(r => setTimeout(r, 0));
 
-  // 1024bit素数ペア生成（実際のsadocryptと同じ条件）
+  // 2048bit素数ペア生成（実際のsadocryptと同じ条件）
   const halfBits = MODULUS_BITS / 2;
   const p = generatePrime(halfBits);
   const q = generatePrime(halfBits);
@@ -629,8 +629,8 @@ function calcChainCount(targetSeconds) {
 }
 
 async function encryptContent(content, targetSeconds) {
-  // 1. 素数ペア生成（約512ビット = 約300桁）
-  const bits = 512;
+  // 1. 素数ペア生成（1024bit × 2 = 2048bit N）
+  const bits = 1024;
   const p = generatePrime(bits);
   const q = generatePrime(bits);
   const N = p * q;
