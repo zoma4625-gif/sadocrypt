@@ -123,15 +123,15 @@ function hexToUint8(hex) {
     return u;
 }
 
-// AES-256-CBC 暗号化（Hex返却）
+// AES-256-GCM 暗号化（Hex返却）
 async function aesEncrypt(data, xFinal) {
     const hex = xFinal.toString(16);
     const bytes = hexToUint8(hex.length % 2 === 0 ? hex : '0' + hex);
     const hash = await crypto.subtle.digest('SHA-256', bytes);
-    const key = await crypto.subtle.importKey('raw', hash, { name: 'AES-CBC' }, false, ['encrypt']);
-    const iv = crypto.getRandomValues(new Uint8Array(16));
+    const key = await crypto.subtle.importKey('raw', hash, { name: 'AES-GCM' }, false, ['encrypt']);
+    const iv = crypto.getRandomValues(new Uint8Array(12));
     const encoded = new TextEncoder().encode(data);
-    const ciphertext = await crypto.subtle.encrypt({ name: 'AES-CBC', iv }, key, encoded);
+    const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv, tagLength: 128 }, key, encoded);
     return { iv: arrayToHex(iv), ct: arrayToHex(new Uint8Array(ciphertext)) };
 }
 
@@ -620,8 +620,8 @@ function hexToUint8(h){
 function arrayToHex(a){return Array.from(a).map(b=>b.toString(16).padStart(2,'0')).join('');}
 
 // ベンチマーク実測値（sadocrypt.com/benchmark による計測）
-// 500万回あたり約4.24秒 → 約1,179,742回/秒
-const BENCHMARK_SPEED = 1179742;
+// 500万回あたり13.29秒 → 約376,223回/秒
+const BENCHMARK_SPEED = 376223;
 
 // 解読時間（秒）からチェーン回数を計算する関数
 function calcChainCount(targetSeconds) {
@@ -647,14 +647,14 @@ async function encryptContent(content, targetSeconds) {
   const exponent = modPow(2n, BigInt(chainCount), lambda);
   const xFinal = modPow(x0, exponent, N);
 
-  // 5. AES-256-CBC 暗号化
+  // 5. AES-256-GCM 暗号化
   const xHex = xFinal.toString(16);
   const xBytes = hexToUint8(xHex);
   const hash = await crypto.subtle.digest('SHA-256', xBytes);
-  const key = await crypto.subtle.importKey('raw', hash, {name:'AES-CBC'}, false, ['encrypt']);
-  const iv = crypto.getRandomValues(new Uint8Array(16));
+  const key = await crypto.subtle.importKey('raw', hash, {name:'AES-GCM'}, false, ['encrypt']);
+  const iv = crypto.getRandomValues(new Uint8Array(12));
   const encoded = new TextEncoder().encode(content);
-  const ciphertext = await crypto.subtle.encrypt({name:'AES-CBC',iv}, key, encoded);
+  const ciphertext = await crypto.subtle.encrypt({name:'AES-GCM',iv,tagLength:128}, key, encoded);
 
   return {
     x0: x0.toString(),
@@ -757,8 +757,8 @@ function isURL(s){try{new URL(s);return true;}catch{return false;}}
 
 async function decryptWithXFinal(xFinalHex){
   const hash=await crypto.subtle.digest('SHA-256',hexToUint8(xFinalHex));
-  const key=await crypto.subtle.importKey('raw',hash,{name:'AES-CBC'},false,['decrypt']);
-  const dec=await crypto.subtle.decrypt({name:'AES-CBC',iv:hexToUint8(P.iv)},key,hexToUint8(P.ct));
+  const key=await crypto.subtle.importKey('raw',hash,{name:'AES-GCM'},false,['decrypt']);
+  const dec=await crypto.subtle.decrypt({name:'AES-GCM',iv:hexToUint8(P.iv),tagLength:128},key,hexToUint8(P.ct));
   return new TextDecoder().decode(dec);
 }
 
