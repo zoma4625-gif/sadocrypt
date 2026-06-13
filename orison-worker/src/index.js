@@ -669,6 +669,34 @@ select{
 .copy-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-light)}
 .copy-btn.copied{color:var(--accent);border-color:var(--accent);background:var(--accent-light)}
 
+/* ── URL wrapper with hover copy icon ── */
+.url-wrap{position:relative;margin-top:0}
+.url-wrap .hover-copy{
+  position:absolute;top:8px;right:8px;
+  width:32px;height:32px;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:6px;cursor:pointer;
+  opacity:0;transition:opacity .15s,background .15s,border-color .15s;
+  pointer-events:none
+}
+.url-wrap:hover .hover-copy{opacity:1;pointer-events:auto}
+.hover-copy:hover{background:var(--accent-light);border-color:var(--accent)}
+.hover-copy svg{width:16px;height:16px;stroke:var(--muted);transition:stroke .15s}
+.hover-copy:hover svg{stroke:var(--accent)}
+/* tooltip */
+.hover-copy{position:absolute}
+.hover-copy::after{
+  content:'コピー';
+  position:absolute;top:calc(100% + 4px);left:50%;transform:translateX(-50%);
+  background:rgba(0,0,0,.75);color:#fff;
+  font-size:11px;white-space:nowrap;
+  padding:3px 7px;border-radius:4px;
+  opacity:0;pointer-events:none;transition:opacity .15s;
+  font-family:var(--font)
+}
+.hover-copy:hover::after{opacity:1}
+
 /* ── Loading ── */
 .loading{display:flex;align-items:center;gap:10px;padding:16px 0;color:var(--muted);font-size:13px}
 .spinner{
@@ -838,9 +866,15 @@ document.getElementById('f').onsubmit=async function(e){
     out.innerHTML=
       '<div class=result-wrap>'+
       '<div class=result-chip>&#x2713; URL generated</div>'+
+      '<div class=url-wrap>'+
       '<textarea class=result-url id=rurl readonly onclick="this.select()">'+shareUrl+'</textarea>'+
+      '<button class=hover-copy onclick="copyUrl()" title="コピー">'+
+      '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+
+      '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>'+
+      '</svg>'+
+      '</button>'+
+      '</div>'+
       '<div class=result-hint>クリックで全選択</div>'+
-      '<button class=copy-btn id=cbtn onclick="copyUrl()">コピー</button>'+
       '</div>';
   }catch(err){out.innerHTML='<div class=error-msg>'+err.message+'</div>';}
   btn.disabled=false;btn.textContent='暗号化してURLを生成';
@@ -850,9 +884,13 @@ function copyUrl(){
   const el=document.getElementById('rurl');
   if(!el)return;
   navigator.clipboard.writeText(el.value).then(()=>{
-    const btn=document.getElementById('cbtn');
-    btn.textContent='コピーしました ✓';btn.classList.add('copied');
-    setTimeout(()=>{btn.textContent='コピー';btn.classList.remove('copied');},2000);
+    const hc=document.querySelector('.hover-copy');
+    if(hc){
+      const orig=hc.innerHTML;
+      hc.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      hc.style.opacity='1';hc.style.pointerEvents='none';
+      setTimeout(()=>{hc.innerHTML=orig;hc.style.opacity='';hc.style.pointerEvents='';},2000);
+    }
   });
 }
 </script>
