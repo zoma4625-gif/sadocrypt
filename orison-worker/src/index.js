@@ -1231,20 +1231,19 @@ body{
 .enc-done.visible{display:flex}
 @keyframes done-fadein{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
 
+/* 暗号化完了チェックマーク: 緑塗りつぶし円＋黒抜きチェック（力強い見た目） */
 .enc-check{
   width:72px;height:72px;
   border-radius:50%;
-  border:2px solid rgba(0,255,140,0.4);
+  background:#00ff8c;
   display:flex;align-items:center;justify-content:center;
-  font-size:28px;
-  color:#00ff8c;
-  text-shadow:0 0 20px rgba(0,255,140,0.8);
-  box-shadow:0 0 30px rgba(0,255,140,0.2);
+  box-shadow:0 0 28px rgba(0,255,140,0.6);
   animation:check-glow 1.5s ease-in-out infinite;
 }
+.enc-check svg{display:block;width:40px;height:40px;}
 @keyframes check-glow{
-  0%,100%{box-shadow:0 0 20px rgba(0,255,140,0.2)}
-  50%{box-shadow:0 0 40px rgba(0,255,140,0.5)}
+  0%,100%{box-shadow:0 0 20px rgba(0,255,140,0.4)}
+  50%{box-shadow:0 0 40px rgba(0,255,140,0.8)}
 }
 
 .enc-done-title{
@@ -1441,12 +1440,21 @@ body{
   <!-- グリッチ演出レイヤー -->
   <div class="enc-glitch-layer"></div>
   <div class="enc-inner" id="enc-spin-area">
-    <div class="enc-status" id="enc-status-label">ENCRYPTING</div>
+    <!-- ステータス部分: 小ラベル(ENCRYPTING)＋大テキスト(暗号化しています...) -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
+      <div class="enc-status" id="enc-status-label">ENCRYPTING</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:15px;letter-spacing:2px;color:rgba(0,255,140,0.85)">暗号化しています...</div>
+    </div>
     <canvas id="enc-canvas"></canvas>
     <div class="enc-log" id="enc-log"></div>
   </div>
   <div class="enc-done" id="enc-done-area">
-    <div class="enc-check">&#x2713;</div>
+      <div class="enc-check">
+        <!-- 緑塗りつぶし円＋黒抜きチェック（力強い見た目） -->
+        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polyline points="7,21 17,31 33,12" stroke="#000" stroke-width="3.5" stroke-linecap="square" stroke-linejoin="miter"/>
+        </svg>
+      </div>
     <div class="enc-done-title">暗号化が完了しました</div>
     <div class="enc-done-sub">URL GENERATED</div>
   </div>
@@ -2260,6 +2268,8 @@ body{
   border-radius:14px;
   width:100%;
   max-width:480px;
+  /* スピナー表示中のサイズを基準に固定（復号中→完了で枠が変わらない） */
+  min-height:360px;
   padding:40px 32px 36px;
   text-align:center;
   overflow:hidden;
@@ -2312,6 +2322,8 @@ body{
   position:relative;
   width:80px;
   height:80px;
+  /* 完了時も高さを保持してレイアウトが詰まらないようにする */
+  flex-shrink:0;
   margin:0 auto 24px;
 }
 
@@ -2331,23 +2343,37 @@ body{
 .dec-done.visible{display:flex}
 @keyframes dec-done-fadein{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
 
-/* 復号完了ラベル（スピナーの下に表示） */
+/* 復号完了ラベル（dec-status-wrapと同じ位置に重ねるため不要になったが互換のため残す） */
 .dec-done-label-wrap{
-  margin-top:8px;
-  font-size:11px;
-  letter-spacing:3px;
-  color:rgba(0,255,140,0.6);
-  text-transform:uppercase;
-  text-align:center;
+  display:none !important;
 }
 
-/* 復号中テキスト */
-.dec-label{
-  font-size:12px;
-  letter-spacing:4px;
-  color:rgba(0,255,140,0.6);
-  text-transform:uppercase;
+/* ステータステキストラッパー（復号中・完了で同一要素を使い位置を固定） */
+.dec-status-wrap{
   margin-bottom:16px;
+  /* 高さを固定して完了時も詰まらないようにする */
+  min-height:44px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+}
+
+/* 小ラベル（DECRYPTING / DECRYPTED） */
+.dec-status-sub{
+  font-size:10px;
+  letter-spacing:3px;
+  color:rgba(0,255,140,0.5);
+  text-transform:uppercase;
+}
+
+/* メインテキスト（復号しています... / 復号完了） */
+.dec-label{
+  font-size:15px;
+  letter-spacing:2px;
+  color:rgba(0,255,140,0.85);
+  font-weight:normal;
 }
 
 /* ハッシュカウンタ（緑発光） */
@@ -2399,21 +2425,23 @@ body{
    完了・エラー状態
    ============================================================ */
 .dec-done{display:none}
+/* チェックマーク: 緑塗りつぶし円＋黒抜きチェック（力強い見た目） */
 .dec-done .dec-ck{
   width:64px;height:64px;
-  margin:0 auto 20px;
+  margin:0 auto;
   border-radius:50%;
-  border:2px solid rgba(0,255,140,0.4);
+  background:#00ff8c;
   display:flex;align-items:center;justify-content:center;
-  font-size:24px;
-  color:#00ff8c;
-  text-shadow:0 0 20px rgba(0,255,140,0.8);
-  box-shadow:0 0 30px rgba(0,255,140,0.2);
+  box-shadow:0 0 28px rgba(0,255,140,0.6);
   animation:dec-ck-glow 1.5s ease-in-out infinite;
 }
+.dec-done .dec-ck svg{
+  display:block;
+  width:34px;height:34px;
+}
 @keyframes dec-ck-glow{
-  0%,100%{box-shadow:0 0 20px rgba(0,255,140,0.2)}
-  50%{box-shadow:0 0 40px rgba(0,255,140,0.5)}
+  0%,100%{box-shadow:0 0 20px rgba(0,255,140,0.4)}
+  50%{box-shadow:0 0 40px rgba(0,255,140,0.8)}
 }
 .dec-done .dec-done-label{
   font-size:12px;
@@ -2549,14 +2577,22 @@ body{
       <canvas id="dec-canvas"></canvas>
       <!-- 復号完了チェックマーク（スピナーが消えた位置に重ねて表示） -->
       <div class="dec-done" id="dec-done">
-        <div class="dec-ck">&#x2713;</div>
+        <div class="dec-ck">
+          <!-- 緑塗りつぶし円＋黒抜きチェック（力強い見た目） -->
+          <svg viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <polyline points="6,18 14,26 28,10" stroke="#000" stroke-width="3" stroke-linecap="square" stroke-linejoin="miter"/>
+          </svg>
+        </div>
       </div>
     </div>
-    <!-- 復号完了ラベル（スピナーラッパーの外・下に表示） -->
+    <!-- 復号完了ラベル（dec-done-label-wrapは非表示、dec-status-wrapで管理） -->
     <div class="dec-done-label-wrap" id="dec-done-label-wrap" style="display:none">復号完了</div>
 
-    <!-- 復号中ラベル -->
-    <div class="dec-label" id="dec-label">復号中...</div>
+    <!-- ステータステキスト（復号中・完了で同一要素を使い位置を固定） -->
+    <div class="dec-status-wrap" id="dec-status-wrap">
+      <div class="dec-status-sub" id="dec-status-sub">DECRYPTING</div>
+      <div class="dec-label" id="dec-label">復号しています...</div>
+    </div>
 
     <!-- ハッシュカウンタ -->
     <div class="dec-hash">
@@ -2790,12 +2826,11 @@ function showResult(decBuf){
   // スピナーがいた位置（dec-spinner-wrap）にチェックマークを重ねて表示
   const doneEl=document.getElementById('dec-done');
   doneEl.classList.add('visible');
-  // 復号中ラベルを非表示
+  // ステータステキストを「復号完了」に切り替え（同一要素のテキストを差し替えて位置を固定）
+  const statusSubEl=document.getElementById('dec-status-sub');
+  if(statusSubEl) statusSubEl.textContent='DECRYPTED';
   const labelEl=document.getElementById('dec-label');
-  if(labelEl) labelEl.style.display='none';
-  // 復号完了ラベルを表示
-  const doneLabelEl=document.getElementById('dec-done-label-wrap');
-  if(doneLabelEl) doneLabelEl.style.display='block';
+  if(labelEl) labelEl.textContent='復号完了';
   // 600ms後に結果カードを表示
   setTimeout(function(){
     renderResult(decBuf);
