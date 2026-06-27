@@ -738,6 +738,23 @@ const HEADER_JS = `// ==========================================================
 })();`;
 
 // ============================================================
+// 共通フッター部品
+// ============================================================
+
+const FOOTER = `<footer style="width:100%;background:#000;border-top:1px solid rgba(0,255,140,.1)">
+  <div style="max-width:700px;margin:0 auto;padding:60px 24px 0;text-align:center">
+    <a href="/" class="brake-logo" style="font-size:1.6rem;margin-bottom:32px;text-decoration:none;color:inherit;display:inline-block">Brake<span class="brake-dot">.</span></a>
+    <div style="display:flex;flex-wrap:wrap;gap:40px;justify-content:center;margin-bottom:40px">
+      <a href="/#howto" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">使い方</a>
+      <a href="/time-lock" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">仕組み</a>
+      <a href="/#privacy" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">プライバシーポリシー</a>
+      <a href="mailto:info@sadocrypt.com" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">お問い合わせ</a>
+    </div>
+  </div>
+  <div style="max-width:700px;margin:0 auto;padding:24px 24px 40px;border-top:1px solid rgba(0,255,140,.1);text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(0,255,140,.75);letter-spacing:.15em;text-transform:uppercase;text-shadow:0 0 8px rgba(0,255,140,.5)">© 2026 Brake. &middot; TIME-LOCK ENCRYPTION</div>
+</footer>`;
+
+// ============================================================
 // HTML テンプレート（タイムロック解説ページ）
 // ============================================================
 
@@ -747,7 +764,7 @@ const HTML_TIME_LOCK = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Brake. – タイムロック暗号とは</title>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#000;color:#fff;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;}
@@ -788,18 +805,7 @@ ${HEADER_HTML}
 </main>
 
 <!-- フッター -->
-<footer style="width:100%;background:#000;border-top:1px solid rgba(0,255,140,.1)">
-  <div style="max-width:700px;margin:0 auto;padding:60px 24px 0;text-align:center">
-    <a href="/" class="brake-logo" style="font-size:1.6rem;margin-bottom:32px;text-decoration:none;color:inherit;display:inline-block">Brake<span class="brake-dot">.</span></a>
-    <div style="display:flex;flex-wrap:wrap;gap:40px;justify-content:center;margin-bottom:40px">
-      <a href="/#howto" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">使い方</a>
-      <a href="/time-lock" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">仕組み</a>
-      <a href="/#privacy" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">プライバシーポリシー</a>
-      <a href="mailto:info@sadocrypt.com" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">お問い合わせ</a>
-    </div>
-  </div>
-  <div style="max-width:700px;margin:0 auto;padding:24px 24px 40px;border-top:1px solid rgba(0,255,140,.1);text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(0,255,140,.75);letter-spacing:.15em;text-transform:uppercase;text-shadow:0 0 8px rgba(0,255,140,.5)">© 2026 Brake. &middot; TIME-LOCK ENCRYPTION</div>
-</footer>
+${FOOTER}
 
 <script>
 ${HEADER_JS}
@@ -2006,18 +2012,7 @@ ${HEADER_HTML}
 <!-- ============================================================
      7. フッター
      ============================================================ -->
-<footer style="width:100%;background:#000;border-top:1px solid rgba(0,255,140,.1)">
-  <div style="max-width:700px;margin:0 auto;padding:60px 24px 0;text-align:center">
-    <a href="/" class="brake-logo" style="font-size:1.6rem;margin-bottom:32px;text-decoration:none;color:inherit;display:inline-block">Brake<span class="brake-dot">.</span></a>
-    <div style="display:flex;flex-wrap:wrap;gap:40px;justify-content:center;margin-bottom:40px">
-      <a href="#howto" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">使い方</a>
-      <a href="/time-lock" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">仕組み</a>
-      <a href="#privacy" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">プライバシーポリシー</a>
-      <a href="mailto:info@sadocrypt.com" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">お問い合わせ</a>
-    </div>
-  </div>
-  <div style="max-width:700px;margin:0 auto;padding:24px 24px 40px;border-top:1px solid rgba(0,255,140,.1);text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(0,255,140,.75);letter-spacing:.15em;text-transform:uppercase;text-shadow:0 0 8px rgba(0,255,140,.5)">© 2026 Brake. &middot; TIME-LOCK ENCRYPTION</div>
-</footer>
+${FOOTER}
 
 <script>
 // ============================================================
