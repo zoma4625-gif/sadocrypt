@@ -136,36 +136,6 @@ async function aesEncrypt(data, xFinal) {
 }
 
 // ============================================================
-// 湯呑みアイコン（SVG favicon用 data URI）
-// ============================================================
-const YUNOMI_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- 湯気 -->
-  <path d="M22 18 Q24 10 22 4" fill="none" stroke="#b0b0b0" stroke-width="1.5" stroke-linecap="round" opacity=".5">
-    <animate attributeName="d" values="M22 18 Q24 10 22 4;M22 18 Q20 10 22 4;M22 18 Q24 10 22 4" dur="2.5s" repeatCount="indefinite"/>
-  </path>
-  <path d="M30 16 Q32 8 30 2" fill="none" stroke="#b0b0b0" stroke-width="1.5" stroke-linecap="round" opacity=".4">
-    <animate attributeName="d" values="M30 16 Q32 8 30 2;M30 16 Q28 8 30 2;M30 16 Q32 8 30 2" dur="3s" repeatCount="indefinite"/>
-  </path>
-  <path d="M38 18 Q40 10 38 4" fill="none" stroke="#b0b0b0" stroke-width="1.5" stroke-linecap="round" opacity=".45">
-    <animate attributeName="d" values="M38 18 Q40 10 38 4;M38 18 Q36 10 38 4;M38 18 Q40 10 38 4" dur="2.8s" repeatCount="indefinite"/>
-  </path>
-  <!-- 湯呑み本体 -->
-  <path d="M14 22 L14 52 Q14 60 22 60 L38 60 Q46 60 46 52 L46 22 Z" fill="#f5f0e8" stroke="#8a7e6b" stroke-width="1.5"/>
-  <!-- 藍色の帯模様 -->
-  <rect x="14" y="34" width="32" height="6" fill="#2c4a7c" opacity=".7" rx="0"/>
-  <!-- 帯の中の和柄（青海波風） -->
-  <circle cx="20" cy="37" r="2" fill="none" stroke="#4a6fa5" stroke-width=".7" opacity=".6"/>
-  <circle cx="26" cy="37" r="2" fill="none" stroke="#4a6fa5" stroke-width=".7" opacity=".6"/>
-  <circle cx="32" cy="37" r="2" fill="none" stroke="#4a6fa5" stroke-width=".7" opacity=".6"/>
-  <circle cx="38" cy="37" r="2" fill="none" stroke="#4a6fa5" stroke-width=".7" opacity=".6"/>
-  <circle cx="44" cy="37" r="2" fill="none" stroke="#4a6fa5" stroke-width=".7" opacity=".6"/>
-  <!-- お茶の水面 -->
-  <ellipse cx="30" cy="24" rx="14" ry="3" fill="#7a9e5a" opacity=".35"/>
-</svg>`;
-
-const YUNOMI_FAVICON = `data:image/svg+xml,${encodeURIComponent(YUNOMI_SVG)}`;
-
-// ============================================================
 // HTML テンプレート
 // ============================================================
 
@@ -174,8 +144,8 @@ const HTML_BENCHMARK = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>sadocrypt — ベンチマーク</title>
-<link rel="icon" href="${YUNOMI_FAVICON}">
+<title>Brake. – ベンチマーク</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -520,199 +490,236 @@ const HTML_ENCRYPT = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Sadocrypt</title>
-<link rel="icon" href="${YUNOMI_FAVICON}">
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@900&display=swap" rel="stylesheet">
+<title>Brake. – 時間鍵ファイル暗号化サービス</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@600&family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-  background:#fff;
-  color:#1a1a18;
+  background:#000;
+  color:#fff;
   -webkit-font-smoothing:antialiased;
   min-height:100vh;
   display:flex;
   flex-direction:column;
   align-items:center;
-  padding:0 0 60px;
+  padding:0;
 }
 
 /* ============================================================
-   1. タイトルカード（黒・独立カード）
+   Brake. ロゴ共通
    ============================================================ */
-.title-card{
-  position:relative;
-  background:#000;
-  margin:18px;
-  border-radius:14px;
-  width:calc(100% - 36px);
-  max-width:600px;
-  padding:40px 32px 36px;
-  text-align:center;
-  overflow:hidden;
-}
+.brake-logo{font-family:'Orbitron',sans-serif;font-weight:900;color:#fff;letter-spacing:.02em;line-height:1}
+.brake-dot{color:#00ff8c;text-shadow:0 0 10px rgba(0,255,140,.6)}
 
-/* スキャンライン */
-.title-card::before{
-  content:'';
-  position:absolute;inset:0;
-  background:repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 3px,
-    rgba(255,255,255,0.015) 3px,
-    rgba(255,255,255,0.015) 4px
-  );
+/* ============================================================
+   ヒーロー: 黒背景 + CRT走査線 + ビネット
+   ============================================================ */
+.hero{
+  position:relative;
+  width:100%;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  background:#000;
+}
+.hero-canvas{ position:absolute; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+.hero-scanlines{
+  position:absolute;
+  inset:0;
   pointer-events:none;
   z-index:0;
+  overflow:hidden;
 }
-
-/* L字コーナーマーカー */
-.corner{position:absolute;width:18px;height:18px;opacity:0.6}
-.corner::before,.corner::after{content:'';position:absolute;background:#00ff8c}
-.corner-tl{top:10px;left:10px}
-.corner-tl::before{top:0;left:0;width:2px;height:18px}
-.corner-tl::after{top:0;left:0;width:18px;height:2px}
-.corner-tr{top:10px;right:10px}
-.corner-tr::before{top:0;right:0;width:2px;height:18px}
-.corner-tr::after{top:0;right:0;width:18px;height:2px}
-.corner-bl{bottom:10px;left:10px}
-.corner-bl::before{bottom:0;left:0;width:2px;height:18px}
-.corner-bl::after{bottom:0;left:0;width:18px;height:2px}
-.corner-br{bottom:10px;right:10px}
-.corner-br::before{bottom:0;right:0;width:2px;height:18px}
-.corner-br::after{bottom:0;right:0;width:18px;height:2px}
-
-/* カード内コンテンツ */
-.title-card-inner{position:relative;z-index:1}
-
-/* 1. システムラベル */
-.sys-label{
-  font-family:'Share Tech Mono',monospace;
-  font-size:11px;
-  color:rgba(0,255,140,0.7);
-  letter-spacing:3px;
-  text-transform:uppercase;
-  margin-bottom:20px;
-}
-
-/* 2. SADOCRYPT タイトル */
-.title-main{
-  position:relative;
-  display:inline-block;
-  font-family:'Orbitron',sans-serif;
-  font-weight:900;
-  font-size:clamp(36px,8vw,64px);
-  letter-spacing:2px;
-  margin-bottom:20px;
-  line-height:1;
-}
-.title-main .sado{color:#fff}
-.title-main .crypt{
-  color:#00ff8c;
-  text-shadow:0 0 18px rgba(0,255,140,0.8),0 0 36px rgba(0,255,140,0.4);
-}
-
-/* グリッチレイヤー（タイトルのみ） */
-.title-main::before,
-.title-main::after{
-  content:attr(data-text);
+.hero-vignette{
   position:absolute;
-  top:0;left:0;
+  inset:0;
+  background:radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.75) 100%);
+  pointer-events:none;
+  z-index:1;
+}
+.hero-header{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:900;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:28px 40px;
   width:100%;
-  font-family:'Orbitron',sans-serif;
-  font-weight:900;
-  font-size:inherit;
-  letter-spacing:2px;
+  background:#000;
+  border-bottom:1px solid rgba(255,255,255,.1);
+  transition:transform .25s ease;
+  box-sizing:border-box;
+}
+.hero-header .brake-logo{font-size:1.9rem}
+/* ハンバーガーボタン（スマホのみ表示） */
+.hamburger-btn{
+  display:none;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:5px;
+  width:40px;height:40px;
+  background:none;
+  border:none;
+  cursor:pointer;
+  padding:4px;
+  z-index:10001;
+}
+.hamburger-btn span{
+  display:block;
+  width:22px;height:2px;
+  background:#fff;
+  border-radius:2px;
+  transition:background .15s;
+}
+.hamburger-btn:hover span{background:#00ff8c}
+/* サイドパネルオーバーレイ（スマホ用） */
+#mobile-menu-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  z-index:10100;
+  opacity:0;
+  transition:opacity .32s cubic-bezier(.4,0,.2,1);
   pointer-events:none;
 }
-.title-main::before{
-  color:#0ff;
-  animation:glitch-cyan 4s infinite;
-  clip-path:polygon(0 20%,100% 20%,100% 40%,0 40%);
+#mobile-menu-overlay.open{
+  opacity:1;
+  pointer-events:auto;
 }
-.title-main::after{
-  color:#f0f;
-  animation:glitch-magenta 4s infinite;
-  clip-path:polygon(0 60%,100% 60%,100% 80%,0 80%);
+/* サイドパネル本体 */
+#mobile-menu{
+  display:none;
+  position:fixed;
+  top:0;right:0;bottom:0;
+  width:68%;
+  background:#0a0a0a;
+  z-index:10200;
+  flex-direction:column;
+  transform:translateX(100%);
+  transition:transform .32s cubic-bezier(.4,0,.2,1);
+  pointer-events:none;
+  border-left:1px solid rgba(255,255,255,.08);
 }
-
-@keyframes glitch-cyan{
-  0%,90%,100%{transform:translate(0,0);opacity:0}
-  91%{transform:translate(-3px,1px);opacity:0.7}
-  92%{transform:translate(3px,-1px);opacity:0.7}
-  93%{transform:translate(-2px,2px);opacity:0.7}
-  94%{transform:translate(0,0);opacity:0}
+#mobile-menu.open{
+  transform:translateX(0);
+  pointer-events:auto;
 }
-@keyframes glitch-magenta{
-  0%,90%,100%{transform:translate(0,0);opacity:0}
-  91%{transform:translate(3px,-1px);opacity:0.7}
-  92%{transform:translate(-3px,1px);opacity:0.7}
-  93%{transform:translate(2px,-2px);opacity:0.7}
-  94%{transform:translate(0,0);opacity:0}
-}
-
-/* 3. タイプライターテキスト */
-.typewriter-wrap{
-  font-family:'Share Tech Mono',monospace;
-  font-size:13px;
-  color:#00ff8c;
-  letter-spacing:4px;
-  text-transform:uppercase;
-  margin-bottom:20px;
-  min-height:20px;
-}
-.cursor{
-  display:inline-block;
-  width:8px;height:14px;
-  background:#00ff8c;
-  vertical-align:middle;
-  margin-left:2px;
-  animation:blink-cursor 0.8s step-end infinite;
-}
-@keyframes blink-cursor{0%,100%{opacity:1}50%{opacity:0}}
-
-/* 4. ひし形ドット */
-.dots-row{
+.mobile-menu-header{
   display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  padding:24px 24px 16px;
+}
+.mobile-menu-close{
+  background:none;
+  border:none;
+  cursor:pointer;
+  color:#fff;
+  font-size:24px;
+  line-height:1;
+  padding:4px;
+  transition:color .15s;
+}
+.mobile-menu-close:hover{color:#00ff8c}
+.mobile-menu-links{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  padding:8px 24px;
+}
+.mobile-menu-links a{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:18px;
+  font-weight:500;
+  color:#fff;
+  text-decoration:none;
+  padding:18px 0;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  transition:color .15s;
+}
+.mobile-menu-links a::after{
+  content:'→';
+  color:#00ff8c;
+  font-size:16px;
+}
+.mobile-menu-links a:hover{color:#00ff8c}
+.mobile-menu-footer{
+  padding:24px 24px 40px;
+  text-align:center;
+  font-family:'JetBrains Mono',monospace;
+  font-size:11px;
+  color:rgba(0,255,140,.75);
+  letter-spacing:.1em;
+  text-shadow:0 0 8px rgba(0,255,140,.5);
+}
+.hero-nav{
+  display:flex;
+  gap:36px;
+  align-items:center;
+}
+.hero-nav a{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:16px;
+  font-weight:500;
+  color:rgba(255,255,255,.8);
+  text-decoration:none;
+  transition:color .15s;
+}
+.hero-nav a:hover{color:#00ff8c}
+/* スマホ対応 */
+@media(max-width:767px){
+  .hero-header{padding:20px 24px;}
+  .hero-header .brake-logo{font-size:1.6rem}
+  .hero-nav{display:none}
+  .hamburger-btn{display:flex}
+}
+.hero-body{
+  position:relative;
+  z-index:2;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
   justify-content:center;
-  gap:12px;
+  padding:60px 24px 80px;
+  text-align:center;
+}
+.hero-catch{
+  font-family:'Noto Sans JP',sans-serif;
+  font-weight:700;
+  font-size:clamp(26px,5vw,52px);
+  color:#fff;
+  line-height:1.4;
   margin-bottom:20px;
+  letter-spacing:.02em;
 }
-.dot{
-  width:8px;height:8px;
-  background:#00ff8c;
-  transform:rotate(45deg);
-  animation:dot-blink 1.5s ease-in-out infinite;
+.hero-sub{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:clamp(14px,2vw,18px);
+  color:rgba(255,255,255,.55);
+  margin-bottom:48px;
+  letter-spacing:.04em;
 }
-.dot:nth-child(1){animation-delay:0s}
-.dot:nth-child(2){animation-delay:0.3s}
-.dot:nth-child(3){animation-delay:0.6s}
-.dot:nth-child(4){animation-delay:0.9s}
-.dot:nth-child(5){animation-delay:1.2s}
-@keyframes dot-blink{
-  0%,100%{opacity:0.15}
-  50%{opacity:1}
-}
-
-/* 5. ASCIIコード装飾 */
-.ascii-row{
-  font-family:'Share Tech Mono',monospace;
-  font-size:10px;
-  color:rgba(0,255,140,0.4);
-  letter-spacing:2px;
-  word-spacing:4px;
+.hero-form-wrap{
+  width:100%;
+  max-width:600px;
 }
 
 /* ============================================================
-   2. フォーム領域（白）
+   フォーム領域（白カード）
    ============================================================ */
-.form-area{
-  width:calc(100% - 36px);
-  max-width:600px;
-  margin:0 18px;
-}
-
-/* Claude風大カード */
 .form-card{
   background:#fff;
   border:1px solid #e8e8e5;
@@ -720,8 +727,6 @@ body{
   box-shadow:0 4px 24px rgba(0,0,0,0.06);
   overflow:hidden;
 }
-
-/* URL入力欄 */
 .url-input-wrap{
   padding:20px 20px 0;
 }
@@ -738,8 +743,6 @@ body{
 }
 .url-input::placeholder{color:#b4b4ac}
 .url-input:disabled{color:#aaa;cursor:not-allowed}
-
-/* ファイル選択表示バー */
 .file-selected-bar{
   display:none;
   align-items:center;
@@ -768,16 +771,12 @@ body{
   flex-shrink:0;
 }
 .file-cancel-btn:hover{color:#555}
-
-/* 下部バー */
 .form-bar{
   display:flex;
   align-items:center;
   justify-content:space-between;
   padding:12px 16px;
 }
-
-/* 左：＋ボタン（SVG十字で正確な中心に配置） */
 .btn-plus{
   width:34px;height:34px;
   border-radius:50%;
@@ -793,19 +792,14 @@ body{
 .btn-plus:hover{background:#f5f5f3;border-color:#ccc}
 .btn-plus.active{background:#1a1a18;border-color:#1a1a18}
 .btn-plus.active svg line{stroke:#fff}
-/* ＋記号はSVGで描画（グリフのベースラインずれを回避） */
 .btn-plus svg{display:block;width:14px;height:14px;flex-shrink:0}
 .btn-plus svg line{stroke:#888;stroke-width:1.8;stroke-linecap:round;transition:stroke .15s}
 .btn-plus:hover svg line{stroke:#555}
-
-/* 右側グループ */
 .bar-right{
   display:flex;
   align-items:center;
   gap:10px;
 }
-
-/* 時間指定ピル */
 .time-pill{
   display:flex;
   align-items:center;
@@ -847,8 +841,6 @@ body{
   -webkit-appearance:none;
   padding-right:2px;
 }
-
-/* 実行ボタン → */
 .btn-run{
   width:38px;height:38px;
   border-radius:50%;
@@ -864,8 +856,6 @@ body{
 .btn-run:hover{background:#000}
 .btn-run:active{transform:scale(0.94)}
 .btn-run:disabled{opacity:0.4;cursor:not-allowed;transform:none}
-
-/* ローディング */
 .loading-bar{
   display:flex;align-items:center;gap:10px;
   padding:14px 20px;
@@ -879,8 +869,6 @@ body{
   animation:spin .7s linear infinite;flex-shrink:0;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* エラー */
 .error-msg{
   font-family:'Share Tech Mono',monospace;
   font-size:13px;color:#d93025;
@@ -888,154 +876,84 @@ body{
 }
 
 /* ============================================================
-   3. 生成結果表示（黒カード）
+   生成結果表示（白カード・入力カードと対に揃える）
    ============================================================ */
+
+/* hero-body を相対基準にする（result-anchor の absolute 配置の基準） */
+/* ※ .hero-body には既に position:relative が設定されているため追加不要 */
+
+/* 結果アンカー：通常フローでは高さ0、中身は絶対配置で浮かせる（押しのけ防止） */
+.result-anchor{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  /* 実機調整ポイント: フォームの真下に来るよう top を調整する */
+  top: calc(50% + 160px);
+  width: calc(100% - 48px);
+  max-width: 600px;
+  z-index: 3;
+  pointer-events: none; /* 空のときクリックを透過 */
+}
+.result-anchor .result-section{ pointer-events: auto; }
+
 .result-section{
-  position:relative;
-  background:#000;
-  margin:18px auto;
-  border-radius:14px;
-  width:calc(100% - 36px);
-  max-width:600px;
-  padding:32px 28px 28px;
-  overflow:hidden;
+  background:#fff;
+  border:1px solid #e8e8e5;            /* 入力カードと同じ */
+  border-radius:22px;                   /* 入力カードと同じ */
+  box-shadow:0 4px 24px rgba(0,0,0,0.06); /* 入力カードと同じ */
+  width:100%;
+  max-width:600px;                      /* 入力カードと同じ */
+  margin:0 auto;
+  padding:20px 20px 16px;               /* 入力カードの左右paddingに合わせる */
   opacity:0;
   transform:translateY(18px);
   transition:opacity .5s ease, transform .5s ease;
 }
-.result-section.show{opacity:1;transform:translateY(0)}
+.result-section.show{ opacity:1; transform:translateY(0); }
+.result-section-inner{ position:relative; }
 
-/* スキャンライン */
-.result-section::before{
-  content:'';
-  position:absolute;inset:0;
-  background:repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 3px,
-    rgba(255,255,255,0.015) 3px,
-    rgba(255,255,255,0.015) 4px
-  );
-  pointer-events:none;
-  z-index:0;
-}
+/* ラベル行（右端に共有ボタン） */
+.result-label-row{ display:flex; align-items:center; gap:8px; margin-bottom:16px; }
+.result-green-dot{ width:8px; height:8px; background:#00ff8c; flex-shrink:0; }
+.result-label-text{ font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:2px; color:#888; text-transform:uppercase; }
+/* 共有ボタン：入力の btn-run(38px円,#1a1a18) に合わせる。ただし角丸の四角で統一 */
+.result-share-btn{ margin-left:auto; width:38px; height:38px; background:#1a1a18; border:none; border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; padding:0; transition:background .15s; }
+.result-share-btn:hover{ background:#000; }
+.result-share-btn svg{ width:20px; height:20px; display:block; }
 
-/* コーナーマーカー（下2隅） */
-.result-section .corner{position:absolute;width:18px;height:18px;opacity:0.6}
-.result-section .corner::before,.result-section .corner::after{content:'';position:absolute;background:#00ff8c}
-.result-section .corner-bl{bottom:10px;left:10px}
-.result-section .corner-bl::before{bottom:0;left:0;width:2px;height:18px}
-.result-section .corner-bl::after{bottom:0;left:0;width:18px;height:2px}
-.result-section .corner-br{bottom:10px;right:10px}
-.result-section .corner-br::before{bottom:0;right:0;width:2px;height:18px}
-.result-section .corner-br::after{bottom:0;right:0;width:18px;height:2px}
+/* URL帯：入力の url-input(Share Tech Mono 17px)に合わせる。
+   ★コピー時にボタンが動かないよう、テキスト領域を固定幅(flex:1,min-width:0)にし、
+     URLと「コピーしました」を絶対配置で重ねる */
+.result-url-wrap{ display:flex; align-items:center; gap:10px; background:#f5f5f3; border-radius:10px; padding:0 10px 0 14px; height:48px; cursor:pointer; margin-bottom:12px; }
+.result-url-textarea{ position:relative; flex:1; min-width:0; height:100%; }
+.result-url-text, .result-url-copied{
+  position:absolute; left:0; top:50%; transform:translateY(-50%);
+  font-family:'Share Tech Mono',monospace; font-size:17px; white-space:nowrap;
+  max-width:100%; overflow:hidden; text-overflow:ellipsis;
+  transform-origin:left center;
+}
+.result-url-text{ color:#1a1a18; transition:transform .2s ease, opacity .2s ease; }
+.result-url-copied{ color:#999; display:none; }
+/* コピーボタン：入力の btn-plus(34px円)に近い大きさ。四角角丸で統一 */
+.copy-btn{ width:36px; height:36px; background:#fff; border:1px solid #e0e0dc; border-radius:9px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; padding:0; transition:background .15s; }
+.copy-btn:hover{ background:#f5f5f3; }
+.copy-btn svg{ width:18px; height:18px; display:block; }
 
-.result-section-inner{position:relative;z-index:1}
-
-/* 暗号化されたURL バッジ */
-.result-badge{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  border:1px solid rgba(0,255,140,0.3);
-  border-radius:999px;
-  background:rgba(0,255,140,0.08);
-  color:rgba(0,255,140,0.7);
-  font-family:'Share Tech Mono',monospace;
-  font-size:11px;
-  letter-spacing:1.5px;
-  text-transform:uppercase;
-  padding:4px 12px;
-  margin-bottom:14px;
-}
-
-/* 生成URL表示エリア */
-.result-url-wrap{
-  position:relative;
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(0,255,140,0.35);
-  border-radius:10px;
-  padding:14px 48px 14px 14px;
-  cursor:pointer;
-  transition:background .15s,border-color .15s;
-}
-.result-url-wrap:hover{background:rgba(255,255,255,0.07);border-color:rgba(0,255,140,0.6)}
-.result-url{
-  display:block;
-  width:100%;
-  background:transparent;
-  border:none;
-  outline:none;
-  resize:none;
-  font-family:'Share Tech Mono',monospace;
-  font-size:15px;
-  color:rgba(255,255,255,0.85);
-  word-break:break-all;
-  line-height:1.7;
-  cursor:pointer;
-  user-select:all;
-  pointer-events:none;
-}
-.result-actions{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-top:10px;
-}
-.result-hint{
-  font-family:'Share Tech Mono',monospace;
-  font-size:11px;
-  color:rgba(0,255,140,0.4);
-}
-.result-open-btn{
-  display:inline-flex;
-  align-items:center;
-  gap:5px;
-  font-family:'Share Tech Mono',monospace;
-  font-size:11px;
-  color:rgba(0,255,140,0.6);
-  text-decoration:none;
-  letter-spacing:1px;
-  border:1px solid rgba(0,255,140,0.25);
-  border-radius:6px;
-  padding:4px 10px;
-  transition:background .15s,color .15s,border-color .15s;
-  cursor:pointer;
-  background:transparent;
-}
-.result-open-btn:hover{background:rgba(0,255,140,0.1);color:#00ff8c;border-color:rgba(0,255,140,0.5)}
-
-/* コピーボタン（右上） */
-.copy-btn{
-  position:absolute;
-  top:10px;right:10px;
-  width:30px;height:30px;
-  border:1px solid rgba(0,255,140,0.25);
-  border-radius:6px;
-  background:rgba(0,255,140,0.06);
-  cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  transition:background .15s,border-color .15s;
-}
-.copy-btn:hover{background:rgba(0,255,140,0.15);border-color:rgba(0,255,140,0.5)}
-.copy-btn svg{width:14px;height:14px;stroke:rgba(0,255,140,0.6);transition:stroke .15s}
-.copy-btn:hover svg{stroke:#00ff8c}
+/* 下段：左ヒント／右 開く */
+.result-bottom-row{ display:flex; align-items:center; justify-content:space-between; margin-top:8px; }
+.result-hint{ font-family:'Share Tech Mono',monospace; font-size:12px; color:#aaa; }
+/* 開く：控えめ。入力の雰囲気に合わせ小さめ */
+.result-open-btn{ height:38px; background:#fff; color:#1a1a18; border:1px solid #e0e0dc; border-radius:10px; padding:0 18px; display:flex; align-items:center; gap:7px; cursor:pointer; font-family:'Noto Sans JP',sans-serif; font-size:14px; transition:background .15s; }
+.result-open-btn:hover{ background:#f5f5f3; }
+.result-open-btn svg{ width:16px; height:16px; display:block; }
 
 /* ============================================================
-   4. 暗号化オーバーレイ（横帯）
+   暗号化オーバーレイ（横帯）
    ============================================================ */
-
-/*
- * ── 帯の位置・サイズ定数 ──────────────────────────────────
- * BAND_TOP    : 帯の上端（viewport上端からの距離）
- * BAND_HEIGHT : 帯の高さ
- * 変更する場合はここだけ書き換えればよい
- * ─────────────────────────────────────────────────────────── */
 :root{
   --band-top: 30vh;
   --band-height: 40vh;
 }
-
 #enc-overlay{
   display:none;
   position:fixed;
@@ -1050,7 +968,6 @@ body{
   align-items:center;
   justify-content:center;
   overflow:hidden;
-  /* 差し込み初期状態: 帯を上方向にクリップ（高さ0） */
   clip-path:inset(100% 0 0 0);
 }
 #enc-overlay.active{display:flex}
@@ -1064,12 +981,6 @@ body{
   from{clip-path:inset(0% 0 0% 0)}
   to{clip-path:inset(0 0 100% 0)}
 }
-
-/* ── 帯の上辺・下辺の緑ライン ─────────────────────────────
-   ::before = 上辺ライン（常時表示）
-   ::after  = 下辺ライン（常時表示）
-   走査線アニメーションは .scan-line-el（JS生成要素）で行う
-   ─────────────────────────────────────────────────────────── */
 #enc-overlay::before{
   content:'';
   position:absolute;
@@ -1090,8 +1001,6 @@ body{
   z-index:3;
   pointer-events:none;
 }
-
-/* ── 走査線（JS生成 .scan-line-el） ─────────────────────── */
 .scan-line-el{
   position:absolute;
   left:0;right:0;
@@ -1101,7 +1010,6 @@ body{
   z-index:4;
   pointer-events:none;
 }
-/* 差し込み時: 上→下 */
 .scan-line-el.scan-in{
   top:-2px;
   animation:scan-line-in 0.45s linear forwards;
@@ -1110,7 +1018,6 @@ body{
   from{top:-2px}
   to{top:100%}
 }
-/* ハケ時: 下→上（逆方向） */
 .scan-line-el.scan-out{
   bottom:-2px;
   top:auto;
@@ -1120,8 +1027,6 @@ body{
   from{bottom:-2px}
   to{bottom:100%}
 }
-
-/* ── 帯内スキャンライン（横縞） ─────────────────────────── */
 .enc-scanlines{
   position:absolute;inset:0;
   background:repeating-linear-gradient(
@@ -1134,8 +1039,6 @@ body{
   pointer-events:none;
   z-index:0;
 }
-
-/* ── 帯グリッチ演出（タイトルと同テイスト） ─────────────── */
 .enc-glitch-layer{
   position:absolute;inset:0;
   pointer-events:none;
@@ -1172,7 +1075,6 @@ body{
   91%{top:60%;opacity:1;transform:translateX(2px)}
   92%{top:60%;opacity:0;transform:translateX(0)}
 }
-
 .enc-inner{
   position:relative;
   z-index:2;
@@ -1184,8 +1086,6 @@ body{
   max-width:480px;
   padding:0 24px;
 }
-
-/* ステータスラベル */
 .enc-status{
   font-family:'Share Tech Mono',monospace;
   font-size:11px;
@@ -1193,14 +1093,7 @@ body{
   color:rgba(0,255,140,0.6);
   text-transform:uppercase;
 }
-
-/* Canvasスピナー */
-#enc-canvas{
-  display:block;
-  /* 実サイズはJSで設定 */
-}
-
-/* ターミナルログ */
+#enc-canvas{display:block;}
 .enc-log{
   width:100%;
   max-width:360px;
@@ -1219,8 +1112,6 @@ body{
   text-overflow:ellipsis;
 }
 .enc-log-line.new{color:rgba(0,255,140,0.85)}
-
-/* 完了画面 */
 .enc-done{
   display:none;
   flex-direction:column;
@@ -1230,8 +1121,6 @@ body{
 }
 .enc-done.visible{display:flex}
 @keyframes done-fadein{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
-
-/* 暗号化完了チェックマーク: 緑塗りつぶし円＋黒抜きチェック（力強い見た目） */
 .enc-check{
   width:72px;height:72px;
   border-radius:50%;
@@ -1245,7 +1134,6 @@ body{
   0%,100%{box-shadow:0 0 20px rgba(0,255,140,0.4)}
   50%{box-shadow:0 0 40px rgba(0,255,140,0.8)}
 }
-
 .enc-done-title{
   font-family:'Share Tech Mono',monospace;
   font-size:14px;
@@ -1261,126 +1149,351 @@ body{
 }
 
 /* ============================================================
-   5. フッター（サイバーテイスト）
+   What's Brake? セクション（黒背景）
    ============================================================ */
-
-/* 白→黒グラデーション繋ぎ帯 */
-.footer-fade{
+.whats-section{
   width:100%;
-  height:50px;
-  background:linear-gradient(to bottom, #fff 0%, #000 100%);
-  display:block;
+  background:#000;
+  padding:100px 24px;
+  text-align:center;
+}
+.whats-inner{
+  max-width:1080px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:64px;
+  text-align:left;
+  align-items:start;
+}
+.whats-col-eyebrow{
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;
+  font-weight:500;
+  letter-spacing:3px;
+  color:#00ff8c;
+  text-transform:uppercase;
+  text-shadow:0 0 9px rgba(0,255,140,.6),0 0 16px rgba(0,255,140,.3);
+  display:inline-flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:24px;
+}
+.whats-col-eyebrow::before{
+  content:"";
+  width:10px;
+  height:10px;
+  background:#00ff8c;
+  box-shadow:0 0 8px rgba(0,255,140,.8);
+  display:inline-block;
+}
+.whats-col-body{
+  font-family:'Noto Sans JP',sans-serif;
+  font-weight:400;
+  font-size:16px;
+  color:rgba(255,255,255,.82);
+  line-height:1.95;
+  margin-bottom:28px;
+}
+.whats-link{
+  font-family:'Share Tech Mono',monospace;
+  font-size:14px;
+  color:#00ff8c;
+  text-decoration:none;
+  letter-spacing:.05em;
+}
+.who-item{
+  margin-bottom:24px;
+}
+.who-item-title{
+  font-family:'Noto Sans JP',sans-serif;
+  font-weight:700;
+  font-size:16px;
+  color:#fff;
+  margin-bottom:6px;
+}
+.who-item-desc{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:14px;
+  color:rgba(255,255,255,.6);
+  line-height:1.7;
+}
+@media(max-width:680px){
+  .whats-inner{
+    grid-template-columns:1fr;
+    gap:48px;
+  }
+}
+.section-eyebrow{
+  font-family:'JetBrains Mono',monospace;
+  font-size:14px;
+  font-weight:500;
+  color:#00ff8c;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  text-shadow:0 0 9px rgba(0,255,140,.6), 0 0 16px rgba(0,255,140,.3);
+  margin-bottom:28px;
+}
+.eb-prompt{ letter-spacing:0; margin-right:5px; opacity:.85; }
+.eb-cursor{ letter-spacing:0; margin-left:4px; animation:ebBlink 1.1s steps(1) infinite; }
+@keyframes ebBlink{ 0%,50%{opacity:1} 51%,100%{opacity:0} }
+.whats-heading{
+  font-family:'Noto Sans JP',sans-serif;
+  font-weight:700;
+  font-size:clamp(20px,3.5vw,32px);
+  color:#fff;
+  line-height:1.6;
+  margin-bottom:36px;
+  letter-spacing:.02em;
+}
+.whats-body{
+  font-family:'Shippori Mincho',serif;
+  font-size:16px;
+  color:rgba(255,255,255,.6);
+  line-height:2;
+  margin-bottom:16px;
 }
 
+/* ============================================================
+   使い方セクション（黒背景・黒文字）
+   ============================================================ */
+.howto-section{
+  width:100%;
+  background:#000;
+  padding:100px 24px;
+}
+.howto-section-inner{
+  max-width:1100px;
+  margin:0 auto;
+}
+.howto-section-eyebrow{
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;
+  color:#00ff8c;
+  letter-spacing:4px;
+  text-transform:uppercase;
+  margin-bottom:16px;
+}
+.howto-section-heading{
+  font-family:'Noto Sans JP',sans-serif;
+  font-weight:700;
+  font-size:clamp(20px,3vw,28px);
+  color:#fff;
+  margin-bottom:40px;
+  line-height:1.4;
+}
+/* トグルボタン */
+.howto-toggle{
+  display:flex;
+  gap:0;
+  margin-bottom:48px;
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:8px;
+  overflow:hidden;
+  width:fit-content;
+}
+.howto-toggle-btn{
+  padding:10px 28px;
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:13px;
+  font-weight:700;
+  color:rgba(255,255,255,.4);
+  background:transparent;
+  border:none;
+  cursor:pointer;
+  transition:background .15s,color .15s;
+}
+.howto-toggle-btn.active{
+  background:#fff;
+  color:#111;
+}
+/* 3カラム */
+.howto-cols{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:32px;
+}
+@media(max-width:640px){
+  .howto-cols{grid-template-columns:1fr;}
+}
+.howto-col{
+  display:flex;
+  flex-direction:column;
+  gap:16px;
+}
+.howto-col-img{
+  width:100%;
+  aspect-ratio:4/3;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;
+  color:rgba(255,255,255,.2);
+  letter-spacing:1px;
+}
+.howto-col-step{
+  font-family:'JetBrains Mono',monospace;
+  font-size:12px;
+  font-weight:500;
+  color:#00ff8c;
+  letter-spacing:2px;
+  text-shadow:0 0 9px rgba(0,255,140,.6),0 0 16px rgba(0,255,140,.3);
+}
+.howto-col-title{
+  font-family:'Noto Sans JP',sans-serif;
+  font-weight:700;
+  font-size:17px;
+  color:#fff;
+}
+.howto-col-desc{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:14px;
+  color:rgba(255,255,255,.82);
+  line-height:1.8;
+}
+.howto-panel{
+  display:none;
+}
+.howto-panel.active{
+  display:block;
+  animation:panel-fadein .25s ease;
+}
+@keyframes panel-fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ============================================================
+   Why Brake? セクション（黒背景）
+   ============================================================ */
+.why-section{
+  width:100%;
+  background:#000;
+  padding:100px 24px;
+}
+.why-inner{
+  max-width:800px;
+  margin:0 auto;
+}
+.why-heading{
+  font-family:'Noto Sans JP',sans-serif;
+  font-weight:700;
+  font-size:clamp(18px,3vw,28px);
+  color:#fff;
+  line-height:1.7;
+  margin-bottom:60px;
+  letter-spacing:.02em;
+}
+.why-cards{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:20px;
+}
+@media(max-width:600px){
+  .why-cards{grid-template-columns:1fr;}
+}
+.why-card{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;
+  padding:28px 24px;
+}
+.why-card-num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;
+  font-weight:700;
+  color:#00ff8c;
+  letter-spacing:2px;
+  margin-bottom:12px;
+  text-shadow:0 0 9px rgba(0,255,140,.6),0 0 16px rgba(0,255,140,.3);
+}
+.why-card-icon{
+  width:40px;height:40px;
+  border:1px solid rgba(0,255,140,.2);
+  border-radius:8px;
+  background:rgba(0,255,140,.04);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;
+  margin-bottom:16px;
+}
+.why-card-title{
+  font-family:'Shippori Mincho',serif;
+  font-size:18px;
+  color:#fff;
+  margin-bottom:10px;
+}
+.why-card-desc{
+  font-family:'Shippori Mincho',serif;
+  font-size:14px;
+  color:rgba(255,255,255,.55);
+  line-height:1.9;
+}
+
+/* ============================================================
+   堅牢性セクション（黒背景・緑枠）
+   ============================================================ */
+.robust-section{
+  width:100%;
+  background:#000;
+  padding:0 24px 100px;
+}
+.robust-inner{
+  max-width:700px;
+  margin:0 auto;
+  border:1px solid rgba(0,255,140,.35);
+  border-radius:14px;
+  padding:48px 40px;
+  background:rgba(0,255,140,.02);
+}
+.robust-heading{
+  font-family:'Shippori Mincho',serif;
+  font-size:clamp(18px,3vw,24px);
+  color:#fff;
+  line-height:1.6;
+  margin-bottom:28px;
+  padding-bottom:20px;
+  border-bottom:1px solid rgba(0,255,140,.2);
+}
+.robust-body{
+  font-family:'Shippori Mincho',serif;
+  font-size:15px;
+  color:rgba(255,255,255,.6);
+  line-height:2;
+  margin-bottom:14px;
+}
+.robust-note{
+  font-family:'Share Tech Mono',monospace;
+  font-size:10px;
+  color:rgba(0,255,140,.35);
+  letter-spacing:1px;
+  line-height:1.7;
+  margin-top:20px;
+}
+
+/* ============================================================
+   フッター（サイバーテイスト）
+   ============================================================ */
 .site-footer{
   width:100%;
   background:#000;
-  margin-top:0;
-  padding:0 0 0;
   font-family:'Share Tech Mono',monospace;
 }
-
 .footer-section{
   width:100%;
   max-width:600px;
   margin:0 auto;
   padding:32px 24px;
 }
-
 .footer-section--border{
   border-top:1px solid rgba(0,255,140,0.15);
 }
-
-/* セクション見出し（ターミナル風） */
-.footer-section-header{
-  font-family:'Share Tech Mono',monospace;
-  font-size:11px;
-  color:rgba(0,255,140,0.6);
-  letter-spacing:3px;
-  text-transform:uppercase;
-  margin-bottom:24px;
-  text-align:center;
-}
-
-/* (a) 3ステップカード */
-.footer-steps{
-  display:flex;
-  gap:16px;
-  flex-wrap:wrap;
-}
-
-.footer-step{
-  flex:1;
-  min-width:140px;
-  background:rgba(255,255,255,0.03);
-  border:1px solid rgba(0,255,140,0.15);
-  border-radius:10px;
-  padding:18px 16px;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-
-.step-num{
-  font-family:'Share Tech Mono',monospace;
-  font-size:10px;
-  color:#00ff8c;
-  letter-spacing:2px;
-}
-
-.step-screen{
-  border:1px dashed rgba(0,255,140,0.3);
-  border-radius:6px;
-  padding:20px 8px;
-  text-align:center;
-  font-family:'Share Tech Mono',monospace;
-  font-size:11px;
-  color:rgba(0,255,140,0.3);
-  letter-spacing:2px;
-  background:rgba(0,255,140,0.02);
-}
-
-.step-desc{
-  font-family:'Share Tech Mono',monospace;
-  font-size:11px;
-  color:rgba(255,255,255,0.55);
-  line-height:1.6;
-}
-
-/* (b) 復号フロー */
-.footer-flow{
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:12px;
-}
-
-.flow-step{
-  font-family:'Share Tech Mono',monospace;
-  font-size:12px;
-  color:rgba(255,255,255,0.55);
-  letter-spacing:1px;
-}
-
-.flow-step--glow{
-  color:#fff;
-  text-shadow:0 0 10px rgba(0,255,140,0.7),0 0 20px rgba(0,255,140,0.4);
-}
-
-.flow-arrow{
-  font-size:14px;
-  color:rgba(0,255,140,0.5);
-}
-
-/* (c) プライバシー */
 .footer-privacy{
   list-style:none;
   display:flex;
   flex-direction:column;
   gap:10px;
 }
-
 .footer-privacy li{
   font-family:'Share Tech Mono',monospace;
   font-size:11px;
@@ -1388,20 +1501,16 @@ body{
   letter-spacing:0.5px;
   line-height:1.6;
 }
-
 .priv-bullet{
   color:rgba(0,255,140,0.5);
   margin-right:6px;
 }
-
-/* (d) リンク行 */
 .footer-links{
   display:flex;
   flex-wrap:wrap;
   gap:20px;
   justify-content:center;
 }
-
 .footer-link{
   font-family:'Share Tech Mono',monospace;
   font-size:11px;
@@ -1410,12 +1519,7 @@ body{
   letter-spacing:1px;
   transition:color .15s;
 }
-
-.footer-link:hover{
-  color:#00ff8c;
-}
-
-/* (e) コピーライト */
+.footer-link:hover{color:#00ff8c}
 .footer-copy{
   width:100%;
   max-width:600px;
@@ -1435,12 +1539,9 @@ body{
 
 <!-- 暗号化オーバーレイ（横帯） -->
 <div id="enc-overlay">
-  <!-- 横縞スキャンライン -->
   <div class="enc-scanlines"></div>
-  <!-- グリッチ演出レイヤー -->
   <div class="enc-glitch-layer"></div>
   <div class="enc-inner" id="enc-spin-area">
-    <!-- ステータス部分: 小ラベル(ENCRYPTING)＋大テキスト(暗号化しています...) -->
     <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
       <div class="enc-status" id="enc-status-label">ENCRYPTING</div>
       <div style="font-family:'Share Tech Mono',monospace;font-size:15px;letter-spacing:2px;color:rgba(0,255,140,0.85)">暗号化しています...</div>
@@ -1449,12 +1550,11 @@ body{
     <div class="enc-log" id="enc-log"></div>
   </div>
   <div class="enc-done" id="enc-done-area">
-      <div class="enc-check">
-        <!-- 緑塗りつぶし円＋黒抜きチェック（力強い見た目） -->
-        <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <polyline points="7,21 17,31 33,12" stroke="#000" stroke-width="3.5" stroke-linecap="square" stroke-linejoin="miter"/>
-        </svg>
-      </div>
+    <div class="enc-check">
+      <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polyline points="7,21 17,31 33,12" stroke="#000" stroke-width="3.5" stroke-linecap="square" stroke-linejoin="miter"/>
+      </svg>
+    </div>
     <div class="enc-done-title">暗号化が完了しました</div>
     <div class="enc-done-sub">URL GENERATED</div>
   </div>
@@ -1463,169 +1563,506 @@ body{
 <!-- 隠しファイル入力 -->
 <input type="file" id="file-input" style="display:none" accept="*/*">
 
-<!-- 1. タイトルカード -->
-<div class="title-card">
-  <div class="corner corner-tl"></div>
-  <div class="corner corner-tr"></div>
-  <div class="corner corner-bl"></div>
-  <div class="corner corner-br"></div>
-  <div class="title-card-inner">
-    <div class="sys-label">[ SYS://ENCRYPTION_MODULE_v2.4 ]</div>
-    <div class="title-main" data-text="SADOCRYPT">
-      <span class="sado">SADO</span><span class="crypt">CRYPT</span>
-    </div>
-    <div class="typewriter-wrap">
-      <span id="tw-text"></span><span class="cursor"></span>
-    </div>
-    <div class="dots-row">
-      <div class="dot"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
-      <div class="dot"></div>
-    </div>
-    <div class="ascii-row">0x53 0x41 0x44 0x4F 0x43 0x52 0x59 0x50 0x54</div>
+<!-- ============================================================
+     1. ヒーロー
+     ============================================================ -->
+<section class="hero">
+<canvas id="hero-bg" class="hero-canvas" aria-hidden="true"></canvas>
+  <!-- CRT走査線（SVG Q曲線・中央が上に膨らむ） -->
+  <div class="hero-scanlines">
+    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <defs>
+        <pattern id="scanpat" x="0" y="0" width="100%" height="8" patternUnits="userSpaceOnUse">
+          <path d="M0,4 Q50%,0 100%,4" fill="none" stroke="rgba(0,255,140,0.07)" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#scanpat)"/>
+    </svg>
   </div>
-</div>
+  <!-- ビネット -->
+  <div class="hero-vignette"></div>
 
-<!-- 2. フォーム領域 -->
-<div class="form-area">
-  <div class="form-card" id="form-card">
-    <form id="f">
-      <div class="url-input-wrap">
-        <input
-          class="url-input"
-          type="text"
-          id="content-input"
-          placeholder="ここにURLを入力"
-          autocomplete="off"
-        >
-      </div>
-      <!-- ファイル選択表示バー -->
-      <div class="file-selected-bar" id="file-selected-bar">
-        <span style="font-size:14px">📎</span>
-        <span class="file-selected-name" id="file-selected-name"></span>
-        <button type="button" class="file-cancel-btn" id="file-cancel-btn" title="ファイルを取り消す">✕</button>
-      </div>
-      <div class="form-bar">
-        <!-- ＋記号はSVGで描画（グリフのベースラインずれを回避し、円の正確な中心に配置） -->
-        <button type="button" class="btn-plus" id="btn-plus" title="ファイルを暗号化">
-          <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <line x1="7" y1="1" x2="7" y2="13"/>
-            <line x1="1" y1="7" x2="13" y2="7"/>
-          </svg>
-        </button>
-        <div class="bar-right">
-          <div class="time-pill">
-            <span class="pill-label">復号</span>
-            <input type="number" id="tv" value="10" min="1">
-            <select id="tu">
-              <option value="s">秒</option>
-              <option value="m">分</option>
-              <option value="h">時間</option>
-              <option value="d">日</option>
-            </select>
+  <!-- モバイルメニューオーバーレイ（背景） -->
+  <div id="mobile-menu-overlay"></div>
+  <!-- サイドパネル -->
+  <div id="mobile-menu">
+    <div class="mobile-menu-header">
+      <button class="mobile-menu-close" id="mobile-menu-close" aria-label="メニューを閉じる">&#x2715;</button>
+    </div>
+    <div class="mobile-menu-links">
+      <a href="#howto" id="mmlink-howto">使い方</a>
+      <a href="#why" id="mmlink-why">仕組み</a>
+      <a href="#privacy" id="mmlink-privacy">プライバシー</a>
+      <a href="mailto:info@sadocrypt.com" id="mmlink-contact">お問い合わせ</a>
+    </div>
+    <div class="mobile-menu-footer">© 2026 Brake. · TIME-LOCK ENCRYPTION</div>
+  </div>
+
+  <!-- ヘッダー -->
+  <header class="hero-header">
+    <a href="/" class="brake-logo" style="text-decoration:none;color:inherit">Brake<span class="brake-dot">.</span></a>
+    <nav class="hero-nav">
+      <a href="#howto">使い方</a>
+      <a href="#why">仕組み</a>
+      <a href="#privacy">プライバシー</a>
+      <a href="mailto:info@sadocrypt.com">お問い合わせ</a>
+    </nav>
+    <button class="hamburger-btn" id="hamburger-btn" aria-label="メニューを開く">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </header>
+
+  <!-- ヒーロー本文 -->
+  <div class="hero-body">
+    <div class="hero-catch">ファイルに"時間の鍵"をかける。</div>
+    <div class="hero-sub">ファイルを置いて、時間を決めるだけ。</div>
+
+    <!-- 暗号化フォーム（既存のまま流用） -->
+    <div class="hero-form-wrap">
+      <div class="form-card" id="form-card">
+        <form id="f">
+          <div class="url-input-wrap">
+            <input
+              class="url-input"
+              type="text"
+              id="content-input"
+              placeholder="ここにURLを入力"
+              autocomplete="off"
+            >
           </div>
-          <button type="button" class="btn-run" id="btn" title="暗号化して生成">&#x2192;</button>
-        </div>
+          <div class="file-selected-bar" id="file-selected-bar">
+            <span style="font-size:14px">📎</span>
+            <span class="file-selected-name" id="file-selected-name"></span>
+            <button type="button" class="file-cancel-btn" id="file-cancel-btn" title="ファイルを取り消す">✕</button>
+          </div>
+          <div class="form-bar">
+            <button type="button" class="btn-plus" id="btn-plus" title="ファイルを暗号化">
+              <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <line x1="7" y1="1" x2="7" y2="13"/>
+                <line x1="1" y1="7" x2="13" y2="7"/>
+              </svg>
+            </button>
+            <div class="bar-right">
+              <div class="time-pill">
+                <span class="pill-label">復号</span>
+                <input type="number" id="tv" value="10" min="1">
+                <select id="tu">
+                  <option value="s">秒</option>
+                  <option value="m">分</option>
+                  <option value="h">時間</option>
+                  <option value="d">日</option>
+                </select>
+              </div>
+              <button type="button" class="btn-run" id="btn" title="暗号化して生成">&#x2192;</button>
+            </div>
+          </div>
+        </form>
+        <div id="res"></div>
       </div>
-    </form>
-    <div id="res"></div>
+    </div>
+
+    <!-- 生成結果（JS で挿入）: result-anchor で通常フローから外し押しのけを防ぐ -->
+    <div id="result-section" class="result-anchor"></div>
   </div>
-</div>
-
-<!-- 3. 生成結果（JS で挿入） -->
-<!-- 外ラッパーは幅制御を持たせず、内側の .result-section に任せる（タイトルカードと同じ計算） -->
-<div id="result-section" style="width:100%;max-width:none;margin:0"></div>
-
-<!-- 白→黒グラデーション繋ぎ帯 -->
-<div class="footer-fade"></div>
+</section>
 
 <!-- ============================================================
-     4. フッター（サイバーテイスト）
+     2. What's Brake?
      ============================================================ -->
-<footer class="site-footer">
-  <!-- (a) 使い方 — 暗号化 -->
-  <section class="footer-section">
-    <div class="footer-section-header">// 使い方</div>
-    <div class="footer-steps">
-      <div class="footer-step">
-        <div class="step-num">STEP 01</div>
-        <div class="step-screen">[ screen ]</div>
-        <div class="step-desc">URLやテキストを入力</div>
+<section class="whats-section" id="whats">
+  <div class="whats-inner">
+    <div class="whats-col-left">
+      <div class="whats-col-eyebrow">WHAT'S BRAKE?</div>
+      <div class="whats-heading">Brakeは、タイムロック暗号を使った暗号化Webサービスです。</div>
+      <div class="whats-col-body">ファイルに時間鍵をかけ、マシンが計算を解き終えるまで、誰にも復号できないようにします。</div>
+      <a href="/time-lock" class="whats-link" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">タイムロック暗号とは？ →</a>
+    </div>
+    <div class="whats-col-right">
+      <div class="whats-col-eyebrow">こんな人に</div>
+      <div class="who-item">
+        <div class="who-item-title">デジタル疲れを感じている人に。</div>
+        <div class="who-item-desc">情報量にブレーキをかける。</div>
       </div>
-      <div class="footer-step">
-        <div class="step-num">STEP 02</div>
-        <div class="step-screen">[ screen ]</div>
-        <div class="step-desc">解読にかかる時間を設定</div>
+      <div class="who-item">
+        <div class="who-item-title">コンテンツをちゃんと見てほしい人に。</div>
+        <div class="who-item-desc">待つ時間込みで、映画のように。</div>
       </div>
-      <div class="footer-step">
-        <div class="step-num">STEP 03</div>
-        <div class="step-screen">[ screen ]</div>
-        <div class="step-desc">生成されたURLを共有</div>
+      <div class="who-item">
+        <div class="who-item-title">知り合いに待つ時間を送りたい人に。</div>
+        <div class="who-item-desc">待ってる間にひと呼吸。</div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- (b) 使い方 — 復号 -->
-  <section class="footer-section footer-section--border">
-    <div class="footer-section-header">// 復号の流れ</div>
-    <div class="footer-flow">
-      <span class="flow-step">URLを開く</span>
-      <span class="flow-arrow">&#x2192;</span>
-      <span class="flow-step">時間をかけて復号</span>
-      <span class="flow-arrow">&#x2192;</span>
-      <span class="flow-step flow-step--glow">中身が見られる！</span>
+<!-- ============================================================
+     3. 使い方（白背景・Uber風）
+     ============================================================ -->
+<section class="howto-section" id="howto">
+  <div class="howto-section-inner">
+    <div class="howto-section-eyebrow"><span class="eb-dot" style="width:10px;height:10px;background:#00ff8c;box-shadow:0 0 8px rgba(0,255,140,.8);display:inline-block;margin-right:12px;vertical-align:middle"></span>使い方</div>
+
+    <!-- トグル -->
+    <div class="howto-toggle">
+      <button class="howto-toggle-btn active" onclick="switchHowto('sender',this)">送る人</button>
+      <button class="howto-toggle-btn" onclick="switchHowto('receiver',this)">受け取る人</button>
     </div>
-  </section>
 
-  <!-- (c) プライバシー要点 -->
-  <section class="footer-section footer-section--border">
-    <div class="footer-section-header">// プライバシー</div>
-    <ul class="footer-privacy">
-      <li><span class="priv-bullet">&#x25B8;</span> 暗号化はすべてブラウザ内で完結</li>
-      <li><span class="priv-bullet">&#x25B8;</span> サーバーに平文・鍵を一切送らない</li>
-      <li><span class="priv-bullet">&#x25B8;</span> 保存されるのは暗号文とパズルのみ</li>
-      <li><span class="priv-bullet">&#x25B8;</span> 有効期限後は自動削除</li>
-    </ul>
-  </section>
-
-  <!-- (d) リンク行 -->
-  <section class="footer-section footer-section--border">
-    <div class="footer-links">
-      <a href="#" class="footer-link">使い方（詳細&#x2197;）</a>
-      <a href="#" class="footer-link">プライバシーポリシー（詳細&#x2197;）</a>
-      <a href="mailto:info@sadocrypt.com" class="footer-link">問い合わせ（&#x2709;）</a>
+    <!-- 送る人パネル -->
+    <div class="howto-panel active" id="panel-sender">
+      <div class="howto-cols">
+        <div class="howto-col">
+          <div class="howto-col-img">[ img ]</div>
+          <div class="howto-col-step">STEP 01</div>
+          <div class="howto-col-title">置く</div>
+          <div class="howto-col-desc">渡したいもの（URL・テキスト・写真・動画）をドロップする。</div>
+        </div>
+        <div class="howto-col">
+          <div class="howto-col-img">[ img ]</div>
+          <div class="howto-col-step">STEP 02</div>
+          <div class="howto-col-title">時間を決める</div>
+          <div class="howto-col-desc">解読にかかる時間を指定。その時間が、相手の「余白」になる。</div>
+        </div>
+        <div class="howto-col">
+          <div class="howto-col-img">[ img ]</div>
+          <div class="howto-col-step">STEP 03</div>
+          <div class="howto-col-title">共有</div>
+          <div class="howto-col-desc">生成されたリンクを送るだけ。中身はまだ誰も開けない。</div>
+        </div>
+      </div>
     </div>
-  </section>
 
-  <!-- (e) コピーライト -->
-  <div class="footer-copy">© 2026 SADOCRYPT &middot; TIME-LOCK ENCRYPTION</div>
+    <!-- 受け取る人パネル -->
+    <div class="howto-panel" id="panel-receiver">
+      <div class="howto-cols">
+        <div class="howto-col">
+          <div class="howto-col-img">[ img ]</div>
+          <div class="howto-col-step">STEP 01</div>
+          <div class="howto-col-title">開く</div>
+          <div class="howto-col-desc">届いたリンクを開くと、その場で復号がはじまる。</div>
+        </div>
+        <div class="howto-col">
+          <div class="howto-col-img">[ img ]</div>
+          <div class="howto-col-step">STEP 02</div>
+          <div class="howto-col-title">待つ</div>
+          <div class="howto-col-desc">設定された時間が経つまで待つ。画面を見ている必要はない。</div>
+        </div>
+        <div class="howto-col">
+          <div class="howto-col-img">[ img ]</div>
+          <div class="howto-col-step">STEP 03</div>
+          <div class="howto-col-title">受け取る</div>
+          <div class="howto-col-desc">時間の末に、中身がようやく姿を現す。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     4. Why Brake?
+     ============================================================ -->
+
+<!-- ============================================================
+     5. タイムロック暗号解説（Why Brake?の直後）2カラム
+     ============================================================ -->
+<section style="width:100%;background:#000;padding:100px 24px" id="time-lock">
+  <div style="max-width:1100px;margin:0 auto">
+    <div class="section-eyebrow" style="margin-bottom:40px"><span class="eb-dot" style="width:10px;height:10px;background:#00ff8c;box-shadow:0 0 8px rgba(0,255,140,.8);display:inline-block;margin-right:12px;vertical-align:middle"></span>WHAT'S TIME-LOCK CRYPTOGRAPHY?</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start">
+      <!-- 左: テキスト -->
+      <div>
+        <div style="font-family:'Shippori Mincho',serif;font-weight:600;font-size:clamp(20px,3vw,30px);color:#fff;line-height:1.5;margin-bottom:36px;letter-spacing:.02em">「時間が経たないと開かない」を、数学で実現する。</div>
+        <div style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:rgba(207,216,211,1);line-height:2;margin-bottom:24px">Brake. の心臓部にあるのは、タイムロック暗号（Time-Lock Puzzle）という暗号技術です。これは1996年、RSA暗号の生みの親である Ron Rivest、Adi Shamir、そして David Wagner の3氏によって理論化されました。</div>
+        <div style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:rgba(207,216,211,1);line-height:2;margin-bottom:24px">仕組みは、ひとつずつ順番にしか解けない計算を、膨大な回数くり返させること。前の答えが出ないと次に進めないので、計算を分担して速めることが原理的にできません。これを「逐次性（sequential）」と呼びます。</div>
+        <div style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:rgba(207,216,211,1);line-height:2;margin-bottom:24px">だからこそ——潤沢な資金でサーバーを千台並べても、待ち時間は1秒も縮まない。時間だけが、唯一の鍵になります。</div>
+        <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(0,255,140,.35);line-height:1.9;margin-top:20px;letter-spacing:.03em">
+          ※ Brake. は Rivest–Shamir–Wagner 方式に基づいて実装されています。<br>
+          ※ 待ち時間は iPhone 17 Pro の処理性能を基準に設定。
+        </div>
+      </div>
+      <!-- 右: ビジュアルプレースホルダ -->
+      <div style="border:1px solid rgba(0,255,140,.15);border-radius:16px;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;background:rgba(0,255,140,.02)">
+        <div style="text-align:center">
+          <div style="font-family:'Share Tech Mono',monospace;font-size:13px;color:rgba(0,255,140,.25);letter-spacing:.1em;margin-bottom:16px">x = x² mod N</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(0,255,140,.15);letter-spacing:.05em">逐次平方（time-lock puzzle）</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <style>
+    @media(max-width:767px){
+      #time-lock [style*="grid-template-columns:1fr 1fr"]{
+        grid-template-columns:1fr !important;
+      }
+    }
+  </style>
+</section>
+
+<!-- ============================================================
+     6. プライバシーセクション（2カラム）
+     ============================================================ -->
+<section style="width:100%;background:#000;padding:100px 24px" id="privacy">
+  <div style="max-width:1100px;margin:0 auto">
+    <div class="section-eyebrow" style="margin-bottom:40px"><span class="eb-dot" style="width:10px;height:10px;background:#00ff8c;box-shadow:0 0 8px rgba(0,255,140,.8);display:inline-block;margin-right:12px;vertical-align:middle"></span>プライバシー</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start">
+      <!-- 左: ビジュアルプレースホルダ -->
+      <div style="border:1px solid rgba(0,255,140,.15);border-radius:16px;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;background:rgba(0,255,140,.02)">
+        <div style="text-align:center">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:500;color:#00ff8c;letter-spacing:.1em;margin-bottom:16px;text-shadow:0 0 9px rgba(0,255,140,.6),0 0 16px rgba(0,255,140,.3);display:inline-flex;align-items:center;gap:14px"><span style="width:11px;height:11px;background:#00ff8c;display:inline-block;box-shadow:0 0 8px rgba(0,255,140,.8)"></span>PRIVACY FIRST</div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(0,255,140,.15);letter-spacing:.05em">ブラウザ内で完結</div>
+        </div>
+      </div>
+      <!-- 右: テキスト -->
+      <div style="display:flex;flex-direction:column;gap:1.6rem">
+        <div>
+          <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+            <div style="width:8px;height:8px;background:#00ff8c;flex-shrink:0;margin-top:6px"></div>
+            <div style="font-family:'Noto Sans JP',sans-serif;font-size:18px;color:#e8efeb;font-weight:500">暗号化はすべてブラウザ内で完結</div>
+          </div>
+          <div style="padding-left:22px;font-family:'Noto Sans JP',sans-serif;font-size:14px;color:rgba(255,255,255,.82);line-height:1.7">あなたのファイルやメッセージは、お使いの端末の中だけで暗号化されます。元のデータがそのままサーバーへ送られることはありません。</div>
+        </div>
+        <div>
+          <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+            <div style="width:8px;height:8px;background:#00ff8c;flex-shrink:0;margin-top:6px"></div>
+            <div style="font-family:'Noto Sans JP',sans-serif;font-size:18px;color:#e8efeb;font-weight:500">サーバーに平文・鍵を一切送らない</div>
+          </div>
+          <div style="padding-left:22px;font-family:'Noto Sans JP',sans-serif;font-size:14px;color:rgba(255,255,255,.82);line-height:1.7">暗号を解くための鍵も、中身そのものも、私たちのサーバーには届きません。だから運営者であっても、あなたの中身を見ることはできません。</div>
+        </div>
+        <div>
+          <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+            <div style="width:8px;height:8px;background:#00ff8c;flex-shrink:0;margin-top:6px"></div>
+            <div style="font-family:'Noto Sans JP',sans-serif;font-size:18px;color:#e8efeb;font-weight:500">保存されるのは暗号文とパズルのみ</div>
+          </div>
+          <div style="padding-left:22px;font-family:'Noto Sans JP',sans-serif;font-size:14px;color:rgba(255,255,255,.82);line-height:1.7">サーバーに残るのは、解読時間を決める「パズル」と、鍵のかかった暗号文だけ。それ単体から中身を復元することはできません。</div>
+        </div>
+        <div>
+          <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
+            <div style="width:8px;height:8px;background:#00ff8c;flex-shrink:0;margin-top:6px"></div>
+            <div style="font-family:'Noto Sans JP',sans-serif;font-size:18px;color:#e8efeb;font-weight:500">有効期限後は自動削除</div>
+          </div>
+          <div style="padding-left:22px;font-family:'Noto Sans JP',sans-serif;font-size:14px;color:rgba(255,255,255,.82);line-height:1.7">設定した期限を過ぎたデータは自動的に消えます。いつまでも残り続けることはありません。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <style>
+    @media(max-width:767px){
+      #privacy [style*="grid-template-columns:1fr 1fr"]{
+        grid-template-columns:1fr !important;
+      }
+    }
+  </style>
+</section>
+
+<!-- ============================================================
+     7. フッター
+     ============================================================ -->
+<footer style="width:100%;background:#000;border-top:1px solid rgba(0,255,140,.1)">
+  <div style="max-width:700px;margin:0 auto;padding:60px 24px 0;text-align:center">
+    <a href="/" class="brake-logo" style="font-size:1.6rem;margin-bottom:32px;text-decoration:none;color:inherit;display:inline-block">Brake<span class="brake-dot">.</span></a>
+    <div style="display:flex;flex-wrap:wrap;gap:40px;justify-content:center;margin-bottom:40px">
+      <a href="#howto" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">使い方</a>
+      <a href="#why" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">仕組み</a>
+      <a href="#privacy" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">プライバシーポリシー</a>
+      <a href="mailto:info@sadocrypt.com" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">お問い合わせ</a>
+    </div>
+  </div>
+  <div style="max-width:700px;margin:0 auto;padding:24px 24px 40px;border-top:1px solid rgba(0,255,140,.1);text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(0,255,140,.75);letter-spacing:.15em;text-transform:uppercase;text-shadow:0 0 8px rgba(0,255,140,.5)">© 2026 Brake. &middot; TIME-LOCK ENCRYPTION</div>
 </footer>
 
 <script>
 // ============================================================
-// タイプライターアニメーション
+// ヒーロー背景アニメーション（洞窟＋光の粒子）確定版
 // ============================================================
 (function(){
-  const words=['encrypt','obfuscate','secure'];
-  let wi=0,ci=0,deleting=false;
-  const el=document.getElementById('tw-text');
-  function tick(){
-    const w=words[wi];
-    if(!deleting){
-      el.textContent=w.slice(0,ci+1);
-      ci++;
-      if(ci===w.length){deleting=true;setTimeout(tick,1400);return;}
-    }else{
-      el.textContent=w.slice(0,ci-1);
-      ci--;
-      if(ci===0){deleting=false;wi=(wi+1)%words.length;}
-    }
-    setTimeout(tick,deleting?60:110);
+  var canvas=document.getElementById('hero-bg');
+  if(!canvas) return;
+  var ctx=canvas.getContext('2d');
+  var G='0,255,140';
+  var DPR=Math.min(window.devicePixelRatio||1,2);
+  var W,H,LINK=200;
+  function resize(){
+    var r=canvas.getBoundingClientRect();
+    W=r.width; H=r.height;
+    canvas.width=W*DPR; canvas.height=H*DPR; ctx.setTransform(DPR,0,0,DPR,0,0);
+    LINK = (W<=600)?150:200;   // ★スマホ(幅600px以下)=150 / PC=200
   }
-  tick();
+  resize(); window.addEventListener('resize',resize);
+
+  function speedForSize(s){ return (1.1/s)*0.4; }
+  function pickSize(forceBig){ if(forceBig) return 70+Math.random()*34; var r=Math.random(); if(r<0.20)return 5+Math.random()*5; if(r<0.45)return 30+Math.random()*18; return 15+Math.random()*11; }
+  function edgeOffset(p,dirx,diry){ var hw=p.s/2; var ax=Math.abs(dirx),ay=Math.abs(diry); if(ax<1e-6&&ay<1e-6)return hw; var tx=ax>1e-6?hw/ax:Infinity, ty=ay>1e-6?hw/ay:Infinity; return Math.min(tx,ty); }
+
+  var TARGET_FILL_RATIO=0.35;
+  var uid=1, pts=[];
+  function countBig(){ var n=0; for(var i=0;i<pts.length;i++){ if(pts[i].s>=66&&!pts[i].dying)n++; } return n; }
+  function curRatio(){ var c=0,t=0; for(var i=0;i<pts.length;i++){ if(pts[i].dying)continue; t++; if(pts[i].charged)c++; } return t?c/t:0; }
+  function makePoint(opt){ opt=opt||{};
+    var forceBig=opt.forceBig||(countBig()<1&&Math.random()<0.5);
+    var s=opt.s||pickSize(forceBig), sp=speedForSize(s);
+    var charged;
+    if(opt.charged!=null) charged=opt.charged;
+    else { var r=curRatio(); charged=Math.random()<Math.max(0.05,Math.min(0.95,TARGET_FILL_RATIO-r+0.5)); }
+    return { id:uid++, x:opt.x!=null?opt.x:Math.random()*W, y:opt.y!=null?opt.y:Math.random()*H, s:s,
+      charged:charged, fillAmt:charged?(opt.seed?1:0):0,
+      glow:s>40?30:s>20?20:s>10?14:10, vx:(Math.random()-0.5)*sp, vy:(Math.random()-0.5)*sp,
+      life:opt.seed?1:0, state:opt.seed?'hold':'in', dying:false,
+      energy:charged?(2+Math.floor(Math.random()*2)):0, bornAt:performance.now(), lifespan:16000+Math.random()*22000 }; }
+  function initPoints(){ pts=[]; var T=Math.max(22,Math.floor(W/40)); for(var i=0;i<T;i++) pts.push(makePoint({seed:true})); }
+  initPoints();
+
+  function centerFade(x){ var c=Math.abs(x-W/2)/(W/2); return 0.25+0.75*Math.pow(c,1.3); }
+  // 線の伸びは「速度一定」方式：毎フレーム SPEED/距離 を進捗に加算（距離によらず同じpx/秒で伸びる）
+  var SPEED=0.4, RETRACT_RATE=0.0035;   // ★LINKは上部で宣言＋resize()でPC200/スマホ150に出し分け
+  var FADE_IN=0.005, FADE_OUT=0.0035, FILL_RATE=0.004, HOLD_TO_RELAY=1500;
+  var linkState={};
+
+  function strokeSegment(src,dst,startFrac,endFrac,op){
+    var dx=dst.x-src.x, dy=dst.y-src.y, len=Math.sqrt(dx*dx+dy*dy)||1; var ux=dx/len, uy=dy/len;
+    var oSrc=edgeOffset(src,ux,uy)/len, oDst=edgeOffset(dst,-ux,-uy)/len;
+    var s0=Math.max(startFrac,oSrc), s1=Math.min(endFrac,1-oDst);
+    if(s1<=s0) return;
+    var x1=src.x+dx*s0, y1=src.y+dy*s0, x2=src.x+dx*s1, y2=src.y+dy*s1;
+    ctx.save(); ctx.shadowColor='rgba('+G+',0.8)'; ctx.shadowBlur=6;
+    ctx.strokeStyle='rgba('+G+','+op.toFixed(3)+')'; ctx.lineWidth=2.0; ctx.lineCap='round';
+    ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2,y2); ctx.stroke(); ctx.restore();
+  }
+
+  function frame(now){
+    ctx.clearRect(0,0,W,H);
+    var bg=ctx.createRadialGradient(W/2,H*0.5,8, W/2,H*0.5,Math.max(W,H)*0.62);
+    bg.addColorStop(0,'rgba(0,20,10,0.55)'); bg.addColorStop(0.35,'rgba(0,8,4,0.25)'); bg.addColorStop(1,'rgba(0,0,0,0.0)');
+    ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+    var vg=ctx.createRadialGradient(W/2,H*0.5,H*0.3, W/2,H*0.5,Math.max(W,H)*0.7);
+    vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,0.6)');
+    ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
+
+    for(var i=0;i<pts.length;i++){ var p=pts[i];
+      p.x+=p.vx; p.y+=p.vy;
+      if(p.charged && p.fillAmt<1) p.fillAmt=Math.min(1,p.fillAmt+FILL_RATE);
+      if(!p.dying && now-p.bornAt>p.lifespan) p.dying=true;
+      if(p.dying){ p.life-=FADE_OUT; if(p.life<0)p.life=0; }
+      else if(p.state==='in'){ p.life=Math.min(1,p.life+FADE_IN); if(p.life>=1)p.state='hold'; }
+      if(p.x<0||p.x>W)p.vx*=-1; if(p.y<0||p.y>H)p.vy*=-1; }
+
+    var byId={}; for(var i=0;i<pts.length;i++) byId[pts[i].id]=pts[i];
+    var nextLink={}, candidates={}, linkedIds={};
+
+    for(var key in linkState){ var st=linkState[key];
+      if(st.retract!==undefined){
+        var src=byId[st.srcId], dst=byId[st.dstId];
+        if(!src||!dst){
+          var only=src||dst;
+          if(only && st.retract<1 && st.lastOp*(1-st.retract)>0.002){
+            st.retract=Math.min(1,st.retract+RETRACT_RATE*2);
+            nextLink[key]=st; linkedIds[only.id]=1;
+          }
+          continue;
+        }
+        st.retract=Math.min(1,st.retract+RETRACT_RATE);
+        var op=st.lastOp*(1-st.retract); var sF,eF;
+        if(st.anchorIsDst){ sF=1-st.cur*(1-st.retract); eF=1; } else { sF=0; eF=st.cur*(1-st.retract); }
+        if(op>0.002){ strokeSegment(src,dst,sF,eF,op); linkedIds[src.id]=1; linkedIds[dst.id]=1; }
+        if(st.retract<1) nextLink[key]=st; continue;
+      }
+    }
+
+    for(var i=0;i<pts.length;i++)for(var j=i+1;j<pts.length;j++){
+      var a=pts[i], b=pts[j];
+      if(a.charged===b.charged){
+        var keyS=(a.id<b.id)?(a.id+'_'+b.id):(b.id+'_'+a.id);
+        var prevS=linkState[keyS];
+        if(prevS && prevS.retract===undefined && prevS.cur>0.005){
+          var srcS=byId[prevS.srcId], dstS=byId[prevS.dstId];
+          prevS.retract=0; prevS.anchorIsDst=false; prevS.fullSince=0;
+          nextLink[keyS]=prevS; if(srcS)linkedIds[srcS.id]=1; if(dstS)linkedIds[dstS.id]=1;
+        }
+        continue;
+      }
+      var key=(a.id<b.id)?(a.id+'_'+b.id):(b.id+'_'+a.id);
+      if(linkState[key]&&linkState[key].retract!==undefined) continue;
+      var prev=linkState[key];
+      var src=a.charged?a:b, dst=a.charged?b:a;
+      if(a.dying||b.dying){
+        if(prev && prev.cur>0.01){ var surviving=a.dying?b:a;
+          prev.retract=0; prev.srcId=src.id; prev.dstId=dst.id; prev.anchorIsDst=(surviving===dst); prev.fullSince=0;
+          nextLink[key]=prev; linkedIds[a.id]=1; linkedIds[b.id]=1; }
+        continue;
+      }
+      var dx=a.x-b.x, dy=a.y-b.y, d=Math.sqrt(dx*dx+dy*dy);
+      if(d>=LINK){
+        if(prev && prev.cur>0.005){ prev.retract=0; prev.srcId=src.id; prev.dstId=dst.id; prev.anchorIsDst=false; prev.fullSince=0; nextLink[key]=prev; linkedIds[a.id]=1; linkedIds[b.id]=1; }
+        continue;
+      }
+      var st=prev||{cur:0,fullSince:0};
+      st.cur=Math.min(1, st.cur + SPEED/Math.max(d,1));   // ★速度一定：距離dで割る
+      if(st.cur>=1){ if(!st.fullSince) st.fullSince=now; } else { st.fullSince=0; }
+      var alpha=(1-d/LINK); if(alpha<0)alpha=0;
+      var op=alpha*0.58*Math.min(centerFade(a.x),centerFade(b.x))*Math.min(a.life,b.life);
+      st.lastOp=op; st.srcId=src.id; st.dstId=dst.id; nextLink[key]=st; linkedIds[a.id]=1; linkedIds[b.id]=1;
+      if(op>0.002) strokeSegment(src,dst,0,st.cur,op);
+      if(st.fullSince && now-st.fullSince>HOLD_TO_RELAY){
+        if(!candidates[dst.id]) candidates[dst.id]=[];
+        candidates[dst.id].push({srcId:src.id,key:key,st:st});
+      }
+    }
+
+    for(var dstId in candidates){
+      var list=candidates[dstId], dst=byId[dstId]; if(!dst||dst.charged) continue;
+      var pick=Math.floor(Math.random()*list.length);
+      for(var k=0;k<list.length;k++){
+        var c=list[k], src=byId[c.srcId]; if(!src) continue;
+        if(k===pick){
+          if(src.energy<=0){ src.dying=true; }
+          else { dst.charged=true; dst.energy=2+Math.floor(Math.random()*2); dst.bornAt=now; dst.fillAmt=0;
+            src.energy--; if(src.energy<=0) src.dying=true;
+            c.st.retract=0; c.st.srcId=src.id; c.st.dstId=dst.id; c.st.anchorIsDst=true; c.st.fullSince=0; }
+        } else { c.st.retract=0; c.st.srcId=src.id; c.st.dstId=dst.id; c.st.anchorIsDst=false; c.st.fullSince=0; }
+      }
+    }
+    linkState=nextLink;
+
+    for(var i=pts.length-1;i>=0;i--){ var p=pts[i];
+      if(p.dying && p.life<=0 && !linkedIds[p.id]){ pts.splice(i,1); continue; }
+      if((p.x<-p.s*2||p.x>W+p.s*2||p.y<-p.s*2||p.y>H+p.s*2) && !linkedIds[p.id]){ pts.splice(i,1); continue; }
+    }
+    var T=Math.max(22,Math.floor(W/40));
+    var TMAX=T*2;
+    while(pts.length<T) pts.push(makePoint({}));
+    var hasFrame=false; for(var i=0;i<pts.length;i++){ if(!pts[i].charged&&!pts[i].dying){ hasFrame=true; break; } }
+    if(!hasFrame && pts.length<TMAX) pts.push(makePoint({charged:false}));
+    if(pts.length>TMAX){
+      for(var i=pts.length-1;i>=0 && pts.length>TMAX;i--){
+        var p=pts[i]; if(!p.dying && !linkedIds[p.id]){ p.dying=true; }
+      }
+    }
+
+    pts.sort(function(a,b){ return b.s-a.s; });
+    for(var i=0;i<pts.length;i++){ var p=pts[i];
+      var base=p.s>40?0.42:p.s>20?0.5:p.s>10?0.7:0.82;
+      var op=base*centerFade(p.x)*p.life; if(op<=0.002) continue;
+      var x=p.x-p.s/2, y=p.y-p.s/2;
+      ctx.save(); ctx.shadowColor='rgba('+G+',1)'; ctx.shadowBlur=p.glow;
+      var fo=op*(1-p.fillAmt), fi=op*p.fillAmt;
+      if(fo>0.002){ ctx.strokeStyle='rgba('+G+','+fo.toFixed(3)+')'; ctx.lineWidth=2.0; ctx.strokeRect(x,y,p.s,p.s); }
+      if(fi>0.002){ ctx.fillStyle='rgba('+G+','+fi.toFixed(3)+')'; ctx.fillRect(x,y,p.s,p.s); }
+      ctx.restore();
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
 })();
+// ============================================================
+// 使い方トグル
+// ============================================================
+function switchHowto(panel, btn) {
+  document.querySelectorAll('.howto-panel').forEach(function(el){ el.classList.remove('active'); });
+  document.querySelectorAll('.howto-toggle-btn').forEach(function(el){ el.classList.remove('active'); });
+  document.getElementById('panel-' + panel).classList.add('active');
+  btn.classList.add('active');
+}
 
 // ============================================================
 // クライアントサイド暗号化（CLAUDE.md準拠: 暗号化はブラウザJSで完結）
@@ -2150,7 +2587,10 @@ async function doEncrypt(){
       hideOverlay(function(){
         // オーバーレイが完全に消えた後にフェードイン
         if(selectedFile) clearFileSelection();
-        buildResultSection(resultSection, shareUrl);
+        // タイトルカードの下2隅コーナーマーカーを非表示にする
+    const titleCard = document.querySelector('.title-card');
+    if(titleCard) titleCard.classList.add('encrypted');
+    buildResultSection(resultSection, shareUrl);
       });
     };
     triggerCollapse();
@@ -2166,23 +2606,32 @@ async function doEncrypt(){
 
 function buildResultSection(resultSection, shareUrl){
   // 古い結果をクリアしてから新しい結果を挿入
+  var escapedUrl = shareUrl.replace(/"/g, '&quot;');
   resultSection.innerHTML =
     '<div class="result-section" id="result-card-inner">' +
-    '<div class="corner corner-bl"></div>' +
-    '<div class="corner corner-br"></div>' +
     '<div class="result-section-inner">' +
-    '<div class="result-badge">&#x2713;&nbsp;暗号化されたURL</div>' +
-    '<div class="result-url-wrap" id="result-url-wrap" title="クリックでコピー">' +
-    '<textarea class="result-url" id="rurl" readonly rows="3">' + shareUrl + '</textarea>' +
-    '<button class="copy-btn" id="copy-btn" title="コピー">' +
-    '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">' +
-    '<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>' +
-    '</svg>' +
+    '<div class="result-label-row">' +
+    '<div class="result-green-dot"></div>' +
+    '<span class="result-label-text">生成されたURL</span>' +
+    '<button class="result-share-btn" id="result-share-btn" title="共有">' +
+    '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="m8 8 4-4 4 4"/><path d="M5 12v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>' +
     '</button>' +
     '</div>' +
-    '<div class="result-actions">' +
+    '<div class="result-url-wrap" id="result-url-wrap">' +
+    '<div class="result-url-textarea">' +
+    '<span class="result-url-text" id="result-url-text" data-url="' + escapedUrl + '">' + escapedUrl + '</span>' +
+    '<span class="result-url-copied" id="result-url-copied">コピーしました</span>' +
+    '</div>' +
+    '<button class="copy-btn" id="copy-btn" title="コピー">' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
+    '</button>' +
+    '</div>' +
+    '<div class="result-bottom-row">' +
     '<span class="result-hint" id="result-hint">クリックでコピー</span>' +
-    '<button class="result-open-btn" id="result-open-btn">&#x2197; 開く</button>' +
+    '<button class="result-open-btn" id="result-open-btn" title="開く">' +
+    '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>' +
+    '開く' +
+    '</button>' +
     '</div>' +
     '</div>' +
     '</div>';
@@ -2193,40 +2642,145 @@ function buildResultSection(resultSection, shareUrl){
     // result-url-wrap クリック → コピー
     const urlWrap = document.getElementById('result-url-wrap');
     if(urlWrap) urlWrap.addEventListener('click', function(){ copyUrl(); });
-    // copy-btn クリック → バブリング停止してコピー
+    // copy-btn クリック → コピー
     const copyBtn = document.getElementById('copy-btn');
     if(copyBtn) copyBtn.addEventListener('click', function(e){ e.stopPropagation(); copyUrl(); });
     // 開くボタン → 新しいタブ
     const openBtn = document.getElementById('result-open-btn');
     if(openBtn) openBtn.addEventListener('click', function(){ window.open(shareUrl, '_blank'); });
+    // 共有ボタン
+    var shareBtn = document.getElementById('result-share-btn');
+    if(shareBtn) shareBtn.addEventListener('click', function(){
+      if(navigator.share){
+        navigator.share({ title:'Brake.', url: shareUrl }).catch(function(){});
+      } else {
+        copyUrl();
+      }
+    });
+    // スクロール（カードが画面内に収まるように）
+    setTimeout(function(){
+      var catchEl = document.querySelector('.hero-catch');
+      var headerEl = document.querySelector('.hero-header');
+      if(catchEl){
+        var headerH = headerEl ? headerEl.offsetHeight : 0;
+        var rect = catchEl.getBoundingClientRect();
+        var target = window.scrollY + rect.top - headerH - 24;  // ヘッダー分＋24pxの余白＝キャッチの少し上。24は実機調整ポイント
+        window.scrollTo({ top: target, behavior:'smooth' });
+      }
+    }, 120);
   });
 }
 
 // ============================================================
-// URLコピー
+// サイドパネルメニュー開閉（addEventListener使用・インラインonclick禁止）
+// ============================================================
+(function(){
+  var hamburgerBtn = document.getElementById('hamburger-btn');
+  var mobileMenu = document.getElementById('mobile-menu');
+  var mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+  var mobileMenuClose = document.getElementById('mobile-menu-close');
+
+  function openMenu(){
+    mobileMenuOverlay.style.display = 'block';
+    mobileMenu.style.display = 'flex';
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        mobileMenuOverlay.classList.add('open');
+        mobileMenu.classList.add('open');
+      });
+    });
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMenu(){
+    mobileMenuOverlay.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(function(){
+      if(!mobileMenu.classList.contains('open')){
+        mobileMenu.style.display = 'none';
+        mobileMenuOverlay.style.display = 'none';
+      }
+    }, 340);
+  }
+
+  if(hamburgerBtn) hamburgerBtn.addEventListener('click', openMenu);
+  if(mobileMenuClose) mobileMenuClose.addEventListener('click', closeMenu);
+  if(mobileMenuOverlay) mobileMenuOverlay.addEventListener('click', closeMenu);
+
+  // メニュー内リンクをタップしたら閉じる
+  var mmLinks = document.querySelectorAll('.mobile-menu-links a');
+  mmLinks.forEach(function(link){
+    link.addEventListener('click', closeMenu);
+  });
+})();
+
+// ============================================================
+// スマホ上スクロール時のみヘッダー表示（PC常時表示）
+// ============================================================
+(function(){
+  var header=document.querySelector('.hero-header');
+  if(!header) return;
+  var lastY=window.pageYOffset||0, ticking=false;
+  function isMobile(){ return window.matchMedia('(max-width:767px)').matches; }
+  function onScroll(){
+    var y=window.pageYOffset||0;
+    if(!isMobile()){
+      header.style.transform='translateY(0)';
+    } else {
+      if(y<10){ header.style.transform='translateY(0)'; }
+      else if(y>lastY+4){ header.style.transform='translateY(-100%)'; }
+      else if(y<lastY-4){ header.style.transform='translateY(0)'; }
+    }
+    lastY=y; ticking=false;
+  }
+  window.addEventListener('scroll',function(){
+    if(!ticking){ window.requestAnimationFrame(onScroll); ticking=true; }
+  });
+  window.addEventListener('resize',function(){ if(!isMobile()) header.style.transform='translateY(0)'; });
+})();
+
+// ============================================================
+// URLコピー（アニメーション付き）
 // ============================================================
 function copyUrl(){
-  const el = document.getElementById('rurl');
+  var el = document.getElementById('result-url-text');
   if(!el) return;
-  navigator.clipboard.writeText(el.value).then(function(){
-    // コピーボタンのアイコンをチェックマークに
-    const cb = document.getElementById('copy-btn');
-    if(cb){
-      const orig = cb.innerHTML;
-      cb.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-      setTimeout(function(){ cb.innerHTML = orig; }, 1500);
-    }
-    // ヒントテキストを「コピーしました」に
-    const hint = document.getElementById('result-hint');
-    if(hint){
-      hint.textContent = 'コピーしました';
-      setTimeout(function(){ hint.textContent = 'クリックでコピー'; }, 1500);
-    }
-  }).catch(function(){
-    // フォールバック: テキスト選択
-    el.select();
-    document.execCommand('copy');
+  var url = el.getAttribute('data-url') || el.textContent;
+  navigator.clipboard.writeText(url).then(doCopiedAnim).catch(function(){
+    var ta=document.createElement('textarea'); ta.value=url; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); }catch(e){}
+    document.body.removeChild(ta); doCopiedAnim();
   });
+}
+function doCopiedAnim(){
+  var urlT=document.getElementById('result-url-text');
+  var copiedT=document.getElementById('result-url-copied');
+  if(!urlT||!copiedT) return;
+  if(urlT.dataset.busy==='1') return; urlT.dataset.busy='1';
+  urlT.style.transform='scale(0.9)'; urlT.style.opacity='0';
+  setTimeout(function(){
+    urlT.style.display='none';
+    copiedT.style.display='inline-block';
+    copiedT.style.transform='scale(0.8)'; copiedT.style.opacity='0'; copiedT.style.transition='none';
+    requestAnimationFrame(function(){
+      copiedT.style.transition='transform .26s cubic-bezier(.2,.9,.3,1.2),opacity .2s ease';
+      copiedT.style.transform='scale(1)'; copiedT.style.opacity='1';
+    });
+  },200);
+  setTimeout(function(){
+    copiedT.style.transform='scale(0.9)'; copiedT.style.opacity='0';
+    setTimeout(function(){
+      copiedT.style.display='none';
+      urlT.style.display='inline-block';
+      urlT.style.transition='none'; urlT.style.transform='scale(0.9)'; urlT.style.opacity='0';
+      requestAnimationFrame(function(){
+        urlT.style.transition='transform .22s ease,opacity .2s ease';
+        urlT.style.transform='scale(1)'; urlT.style.opacity='1';
+      });
+      urlT.dataset.busy='';
+    },180);
+  },1500);
 }
 </script>
 </body>
@@ -2237,8 +2791,8 @@ const HTML_DECRYPT = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>sadocrypt — 復号</title>
-<link rel="icon" href="${YUNOMI_FAVICON}">
+<title>Brake. – 復号</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -2976,8 +3530,8 @@ async function handleEncryptLegacy(request, env) {
  */
 // 有効期限切れエラーページ HTML
 function buildExpiredHtml() {
-    return '<!DOCTYPE html><html lang=ja><head><meta charset=UTF-8><title>sadocrypt</title>' +
-        '<link rel="icon" href="' + YUNOMI_FAVICON + '">' +
+    return '<!DOCTYPE html><html lang=ja><head><meta charset=UTF-8><title>Brake. – Error</title>' +
+        '<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">' +
         '<style>body{background:#000;color:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif}' +
         '.c{text-align:center}.m{font-size:28px;margin-bottom:12px}h1{font-size:13px;font-weight:400;margin-bottom:8px}p{font-size:11px;color:rgba(255,255,255,.2)}</style>' +
         '<body><div class=c><div class=m>&#x229E;</div><h1>このパズルは存在しないか、有効期限が切れています</h1>' +
@@ -3074,6 +3628,14 @@ export default {
                 });
             }
 
+            // 静的アセット（public/ のファイル）にフォールバック
+            if (env.ASSETS) {
+                const assetRes = await env.ASSETS.fetch(request);
+                if (assetRes && assetRes.status !== 404) {
+                    return assetRes;
+                }
+            }
+            // ここまで来たら本当に Not Found
             return new Response('Not Found', { status: 404 });
 
         } catch (e) {

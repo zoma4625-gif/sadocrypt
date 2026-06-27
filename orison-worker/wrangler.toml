@@ -13,3 +13,8 @@ id = "b973caae74e74b2fb2f603c0d4bbbea5"
 [dev]
 port = 5002
 local_protocol = "http"
+
+[assets]
+directory = "public"
+binding = "ASSETS"
+run_worker_first = true
