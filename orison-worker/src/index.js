@@ -482,65 +482,15 @@ function renderHistory() {
 </html>`;
 
 // ============================================================
-// HTML テンプレート（暗号化ページ）
+// 共通ヘッダー部品
 // ============================================================
 
-const HTML_ENCRYPT = `<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Brake. – 時間鍵ファイル暗号化サービス</title>
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@600&family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{
-  background:#000;
-  color:#fff;
-  -webkit-font-smoothing:antialiased;
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  padding:0;
-}
-
-/* ============================================================
+const HEADER_CSS = `/* ============================================================
    Brake. ロゴ共通
    ============================================================ */
 .brake-logo{font-family:'Orbitron',sans-serif;font-weight:900;color:#fff;letter-spacing:.02em;line-height:1}
 .brake-dot{color:#00ff8c;text-shadow:0 0 10px rgba(0,255,140,.6)}
 
-/* ============================================================
-   ヒーロー: 黒背景 + CRT走査線 + ビネット
-   ============================================================ */
-.hero{
-  position:relative;
-  width:100%;
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-  background:#000;
-}
-.hero-canvas{ position:absolute; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; }
-.hero-scanlines{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  z-index:0;
-  overflow:hidden;
-}
-.hero-vignette{
-  position:absolute;
-  inset:0;
-  background:radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.75) 100%);
-  pointer-events:none;
-  z-index:1;
-}
 .hero-header{
   position:fixed;
   top:0;
@@ -684,7 +634,234 @@ body{
   .hero-header .brake-logo{font-size:1.6rem}
   .hero-nav{display:none}
   .hamburger-btn{display:flex}
+}`;
+
+const HEADER_HTML = `  <!-- モバイルメニューオーバーレイ（背景） -->
+  <div id="mobile-menu-overlay"></div>
+  <!-- サイドパネル -->
+  <div id="mobile-menu">
+    <div class="mobile-menu-header">
+      <button class="mobile-menu-close" id="mobile-menu-close" aria-label="メニューを閉じる">&#x2715;</button>
+    </div>
+    <div class="mobile-menu-links">
+      <a href="/#howto" id="mmlink-howto">使い方</a>
+      <a href="/time-lock" id="mmlink-why">仕組み</a>
+      <a href="/#privacy" id="mmlink-privacy">プライバシー</a>
+      <a href="mailto:info@sadocrypt.com" id="mmlink-contact">お問い合わせ</a>
+    </div>
+    <div class="mobile-menu-footer">© 2026 Brake. · TIME-LOCK ENCRYPTION</div>
+  </div>
+
+  <!-- ヘッダー -->
+  <header class="hero-header">
+    <a href="/" class="brake-logo" style="text-decoration:none;color:inherit">Brake<span class="brake-dot">.</span></a>
+    <nav class="hero-nav">
+      <a href="/#howto">使い方</a>
+      <a href="/time-lock">仕組み</a>
+      <a href="/#privacy">プライバシー</a>
+      <a href="mailto:info@sadocrypt.com">お問い合わせ</a>
+    </nav>
+    <button class="hamburger-btn" id="hamburger-btn" aria-label="メニューを開く">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </header>`;
+
+const HEADER_JS = `// ============================================================
+// サイドパネルメニュー開閉（addEventListener使用・インラインonclick禁止）
+// ============================================================
+(function(){
+  var hamburgerBtn = document.getElementById('hamburger-btn');
+  var mobileMenu = document.getElementById('mobile-menu');
+  var mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+  var mobileMenuClose = document.getElementById('mobile-menu-close');
+
+  function openMenu(){
+    mobileMenuOverlay.style.display = 'block';
+    mobileMenu.style.display = 'flex';
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        mobileMenuOverlay.classList.add('open');
+        mobileMenu.classList.add('open');
+      });
+    });
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMenu(){
+    mobileMenuOverlay.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(function(){
+      if(!mobileMenu.classList.contains('open')){
+        mobileMenu.style.display = 'none';
+        mobileMenuOverlay.style.display = 'none';
+      }
+    }, 340);
+  }
+
+  if(hamburgerBtn) hamburgerBtn.addEventListener('click', openMenu);
+  if(mobileMenuClose) mobileMenuClose.addEventListener('click', closeMenu);
+  if(mobileMenuOverlay) mobileMenuOverlay.addEventListener('click', closeMenu);
+
+  // メニュー内リンクをタップしたら閉じる
+  var mmLinks = document.querySelectorAll('.mobile-menu-links a');
+  mmLinks.forEach(function(link){
+    link.addEventListener('click', closeMenu);
+  });
+})();
+
+// ============================================================
+// スマホ上スクロール時のみヘッダー表示（PC常時表示）
+// ============================================================
+(function(){
+  var header=document.querySelector('.hero-header');
+  if(!header) return;
+  var lastY=window.pageYOffset||0, ticking=false;
+  function isMobile(){ return window.matchMedia('(max-width:767px)').matches; }
+  function onScroll(){
+    var y=window.pageYOffset||0;
+    if(!isMobile()){
+      header.style.transform='translateY(0)';
+    } else {
+      if(y<10){ header.style.transform='translateY(0)'; }
+      else if(y>lastY+4){ header.style.transform='translateY(-100%)'; }
+      else if(y<lastY-4){ header.style.transform='translateY(0)'; }
+    }
+    lastY=y; ticking=false;
+  }
+  window.addEventListener('scroll',function(){
+    if(!ticking){ window.requestAnimationFrame(onScroll); ticking=true; }
+  });
+  window.addEventListener('resize',function(){ if(!isMobile()) header.style.transform='translateY(0)'; });
+})();`;
+
+// ============================================================
+// HTML テンプレート（タイムロック解説ページ）
+// ============================================================
+
+const HTML_TIME_LOCK = `<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Brake. – タイムロック暗号とは</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;}
+${HEADER_CSS}
+/* 解説本文用CSS */
+.content-wrap{max-width:760px;margin:0 auto;padding:120px 24px 80px;width:100%;}
+.tl-eyebrow{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;letter-spacing:3px;color:#00ff8c;text-transform:uppercase;text-shadow:0 0 9px rgba(0,255,140,.6),0 0 16px rgba(0,255,140,.3);display:inline-flex;align-items:center;gap:12px;margin-bottom:24px}
+.tl-eyebrow::before{content:"";width:10px;height:10px;background:#00ff8c;box-shadow:0 0 8px rgba(0,255,140,.8);display:inline-block}
+.tl-h1{font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:clamp(28px,5vw,40px);color:#fff;line-height:1.4;margin-bottom:48px;letter-spacing:.02em}
+.tl-h2{font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:20px;color:#fff;line-height:1.5;margin:48px 0 20px;padding-left:14px;border-left:2px solid #00ff8c}
+.tl-body{font-family:'Noto Sans JP',sans-serif;font-weight:400;font-size:16px;color:rgba(255,255,255,.82);line-height:2;margin-bottom:20px}
+.tl-code{font-family:'Share Tech Mono',monospace;font-size:16px;color:#00ff8c;background:rgba(0,255,140,.05);border:1px solid rgba(0,255,140,.18);border-radius:8px;padding:20px 24px;margin:24px 0;letter-spacing:.05em;overflow-x:auto;white-space:nowrap}
+</style>
+</head>
+<body>
+${HEADER_HTML}
+
+<!-- 解説本文（後で渡す） -->
+<main class="content-wrap">
+  <div class="tl-eyebrow">WHAT'S TIME-LOCK CRYPTOGRAPHY?</div>
+  <h1 class="tl-h1">タイムロック暗号とは</h1>
+  <p class="tl-body">タイムロック暗号（Time-Lock Puzzle）とは、「送信者を含む誰も、あらかじめ決められた時間が経過するまで復号できない」ことを数学的に保証する暗号方式です。「情報を未来へ送る」ことを目標に、1996年に Ron Rivest、Adi Shamir、David Wagner によって提案され、技術が確立されました。Rivest と Shamir は、RSA暗号の生みの親でもあります。</p>
+  <p class="tl-body">最新鋭のコンピュータでも解くのに時間がかかる複雑なパズルをその場で生成し、パズルの答えを鍵とした錠前でリンクやファイルを完全にロックします。</p>
+
+  <h2 class="tl-h2">仕組み</h2>
+  <p class="tl-body">パズルの中身はシンプルな二乗計算のくり返しです。x を二乗して巨大数Nで割り、その余りをまた二乗してNで割る、その余りをまた二乗して…——このプロセスを数万回〜数億回マシンにくり返させることで任意の計算負荷を発生させ、復号までにかかる時間を自由に調整することができます。</p>
+  <div class="tl-code">x → x² → x⁴ → x⁸ → … &nbsp;(mod N)</div>
+
+  <h2 class="tl-h2">なぜスキップできないのか</h2>
+  <p class="tl-body">計算を速く行うには、マシンを並列化し、複数の計算機やコアで処理を分散させる方法がありますが、タイムロックの逐次計算方式にはこれが効きません。</p>
+  <p class="tl-body">前述の式を見ると、各ステップは一つ前のステップの答えを入力にしているのがわかります。一つ前の答えが分からなければ次に進めないので、並列マシンによる同時並行処理は不可能になっています。</p>
+  <p class="tl-body">結果として、復号にかかる時間はCPUのシングルスレッド性能と設定された計算回数だけに依存することになります。</p>
+
+  <h2 class="tl-h2">Brake. での実装</h2>
+  <p class="tl-body">Brake. では、暗号化リクエストを受けとると、まずランダムな底 x₀ と2つの巨大な素数 p, q が生成され、次に p, q の積 N = p×q を法（modulus）として逐次平方パズル（時間鍵）が作成されます。この計算を何回行うかは、指定された復号時間から逆算して求められ、決定されます。</p>
+  <p class="tl-body">暗号化プロセスはすべて、ユーザーのブラウザ内（JavaScript の BigInt）だけで完結します。サーバーには暗号化されたデータと、パズルの情報だけが送られ、元データや鍵がサーバーに渡ることはありません。これにより、万が一悪意のある第三者に攻撃を受けても、ファイルの中身が漏洩することはありません。</p>
+  <p class="tl-body">復号が始まると、計算はユーザーのデバイス（PC、スマホ）が行います。</p>
+</main>
+
+<!-- フッター -->
+<footer style="width:100%;background:#000;border-top:1px solid rgba(0,255,140,.1)">
+  <div style="max-width:700px;margin:0 auto;padding:60px 24px 0;text-align:center">
+    <a href="/" class="brake-logo" style="font-size:1.6rem;margin-bottom:32px;text-decoration:none;color:inherit;display:inline-block">Brake<span class="brake-dot">.</span></a>
+    <div style="display:flex;flex-wrap:wrap;gap:40px;justify-content:center;margin-bottom:40px">
+      <a href="/#howto" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">使い方</a>
+      <a href="/time-lock" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">仕組み</a>
+      <a href="/#privacy" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">プライバシーポリシー</a>
+      <a href="mailto:info@sadocrypt.com" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">お問い合わせ</a>
+    </div>
+  </div>
+  <div style="max-width:700px;margin:0 auto;padding:24px 24px 40px;border-top:1px solid rgba(0,255,140,.1);text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(0,255,140,.75);letter-spacing:.15em;text-transform:uppercase;text-shadow:0 0 8px rgba(0,255,140,.5)">© 2026 Brake. &middot; TIME-LOCK ENCRYPTION</div>
+</footer>
+
+<script>
+${HEADER_JS}
+</script>
+</body>
+</html>`;
+
+// ============================================================
+// HTML テンプレート（暗号化ページ）
+// ============================================================
+
+const HTML_ENCRYPT = `<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Brake. – 時間鍵ファイル暗号化サービス</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@600&family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#000;
+  color:#fff;
+  -webkit-font-smoothing:antialiased;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:0;
 }
+
+/* ============================================================
+   ヒーロー: 黒背景 + CRT走査線 + ビネット
+   ============================================================ */
+.hero{
+  position:relative;
+  width:100%;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  background:#000;
+}
+.hero-canvas{ position:absolute; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+.hero-scanlines{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  overflow:hidden;
+}
+.hero-vignette{
+  position:absolute;
+  inset:0;
+  background:radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.75) 100%);
+  pointer-events:none;
+  z-index:1;
+}
+${HEADER_CSS}
 .hero-body{
   position:relative;
   z-index:2;
@@ -1582,37 +1759,7 @@ body{
   <!-- ビネット -->
   <div class="hero-vignette"></div>
 
-  <!-- モバイルメニューオーバーレイ（背景） -->
-  <div id="mobile-menu-overlay"></div>
-  <!-- サイドパネル -->
-  <div id="mobile-menu">
-    <div class="mobile-menu-header">
-      <button class="mobile-menu-close" id="mobile-menu-close" aria-label="メニューを閉じる">&#x2715;</button>
-    </div>
-    <div class="mobile-menu-links">
-      <a href="#howto" id="mmlink-howto">使い方</a>
-      <a href="#why" id="mmlink-why">仕組み</a>
-      <a href="#privacy" id="mmlink-privacy">プライバシー</a>
-      <a href="mailto:info@sadocrypt.com" id="mmlink-contact">お問い合わせ</a>
-    </div>
-    <div class="mobile-menu-footer">© 2026 Brake. · TIME-LOCK ENCRYPTION</div>
-  </div>
-
-  <!-- ヘッダー -->
-  <header class="hero-header">
-    <a href="/" class="brake-logo" style="text-decoration:none;color:inherit">Brake<span class="brake-dot">.</span></a>
-    <nav class="hero-nav">
-      <a href="#howto">使い方</a>
-      <a href="#why">仕組み</a>
-      <a href="#privacy">プライバシー</a>
-      <a href="mailto:info@sadocrypt.com">お問い合わせ</a>
-    </nav>
-    <button class="hamburger-btn" id="hamburger-btn" aria-label="メニューを開く">
-      <span></span>
-      <span></span>
-      <span></span>
-    </button>
-  </header>
+${HEADER_HTML}
 
   <!-- ヒーロー本文 -->
   <div class="hero-body">
@@ -1864,7 +2011,7 @@ body{
     <a href="/" class="brake-logo" style="font-size:1.6rem;margin-bottom:32px;text-decoration:none;color:inherit;display:inline-block">Brake<span class="brake-dot">.</span></a>
     <div style="display:flex;flex-wrap:wrap;gap:40px;justify-content:center;margin-bottom:40px">
       <a href="#howto" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">使い方</a>
-      <a href="#why" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">仕組み</a>
+      <a href="/time-lock" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">仕組み</a>
       <a href="#privacy" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">プライバシーポリシー</a>
       <a href="mailto:info@sadocrypt.com" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">お問い合わせ</a>
     </div>
@@ -2672,73 +2819,7 @@ function buildResultSection(resultSection, shareUrl){
 }
 
 // ============================================================
-// サイドパネルメニュー開閉（addEventListener使用・インラインonclick禁止）
-// ============================================================
-(function(){
-  var hamburgerBtn = document.getElementById('hamburger-btn');
-  var mobileMenu = document.getElementById('mobile-menu');
-  var mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
-  var mobileMenuClose = document.getElementById('mobile-menu-close');
-
-  function openMenu(){
-    mobileMenuOverlay.style.display = 'block';
-    mobileMenu.style.display = 'flex';
-    requestAnimationFrame(function(){
-      requestAnimationFrame(function(){
-        mobileMenuOverlay.classList.add('open');
-        mobileMenu.classList.add('open');
-      });
-    });
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeMenu(){
-    mobileMenuOverlay.classList.remove('open');
-    mobileMenu.classList.remove('open');
-    document.body.style.overflow = '';
-    setTimeout(function(){
-      if(!mobileMenu.classList.contains('open')){
-        mobileMenu.style.display = 'none';
-        mobileMenuOverlay.style.display = 'none';
-      }
-    }, 340);
-  }
-
-  if(hamburgerBtn) hamburgerBtn.addEventListener('click', openMenu);
-  if(mobileMenuClose) mobileMenuClose.addEventListener('click', closeMenu);
-  if(mobileMenuOverlay) mobileMenuOverlay.addEventListener('click', closeMenu);
-
-  // メニュー内リンクをタップしたら閉じる
-  var mmLinks = document.querySelectorAll('.mobile-menu-links a');
-  mmLinks.forEach(function(link){
-    link.addEventListener('click', closeMenu);
-  });
-})();
-
-// ============================================================
-// スマホ上スクロール時のみヘッダー表示（PC常時表示）
-// ============================================================
-(function(){
-  var header=document.querySelector('.hero-header');
-  if(!header) return;
-  var lastY=window.pageYOffset||0, ticking=false;
-  function isMobile(){ return window.matchMedia('(max-width:767px)').matches; }
-  function onScroll(){
-    var y=window.pageYOffset||0;
-    if(!isMobile()){
-      header.style.transform='translateY(0)';
-    } else {
-      if(y<10){ header.style.transform='translateY(0)'; }
-      else if(y>lastY+4){ header.style.transform='translateY(-100%)'; }
-      else if(y<lastY-4){ header.style.transform='translateY(0)'; }
-    }
-    lastY=y; ticking=false;
-  }
-  window.addEventListener('scroll',function(){
-    if(!ticking){ window.requestAnimationFrame(onScroll); ticking=true; }
-  });
-  window.addEventListener('resize',function(){ if(!isMobile()) header.style.transform='translateY(0)'; });
-})();
+${HEADER_JS}
 
 // ============================================================
 // URLコピー（アニメーション付き）
@@ -3619,6 +3700,11 @@ export default {
                 return new Response(HTML_BENCHMARK, {
                     headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-store' }
                 });
+            }
+
+            // タイムロック解説ページ
+            if (path === '/time-lock') {
+                return new Response(HTML_TIME_LOCK, { headers: { 'Content-Type': 'text/html;charset=utf-8' } });
             }
 
             // トップページ
