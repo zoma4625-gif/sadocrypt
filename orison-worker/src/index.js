@@ -2161,7 +2161,7 @@ ${FOOTER}
           else { dst.charged=true; dst.energy=2+Math.floor(Math.random()*2); dst.bornAt=now; dst.fillAmt=0;
             src.energy--; if(src.energy<=0) src.dying=true;
             c.st.retract=0; c.st.srcId=src.id; c.st.dstId=dst.id; c.st.anchorIsDst=true; c.st.fullSince=0; }
-        } else { c.st.retract=0; c.st.srcId=src.id; c.st.dstId=dst.id; c.st.anchorIsDst=false; c.st.fullSince=0; }
+        } else { c.st.retract=0; c.st.srcId=src.id; c.st.dstId=dst.id; c.st.anchorIsDst=true; c.st.fullSince=0; }
       }
     }
     linkState=nextLink;
