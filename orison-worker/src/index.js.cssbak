@@ -996,37 +996,6 @@ const HERO_BG_JS = `(function(){
   requestAnimationFrame(frame);
 })();`;
 
-const HERO_BG_CSS = `.hero-canvas{ position:absolute; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; }
-.hero-scanlines{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  z-index:0;
-  overflow:hidden;
-}
-.hero-vignette{
-  position:absolute;
-  inset:0;
-  background:radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.75) 100%);
-  pointer-events:none;
-  z-index:1;
-}`;
-
-const HERO_BG_HTML = `<canvas id="hero-bg" class="hero-canvas" aria-hidden="true"></canvas>
-  <!-- CRT走査線（SVG Q曲線・中央が上に膨らむ） -->
-  <div class="hero-scanlines">
-    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
-      <defs>
-        <pattern id="scanpat" x="0" y="0" width="100%" height="8" patternUnits="userSpaceOnUse">
-          <path d="M0,4 Q50%,0 100%,4" fill="none" stroke="rgba(0,255,140,0.07)" stroke-width="1"/>
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#scanpat)"/>
-    </svg>
-  </div>
-  <!-- ビネット -->
-  <div class="hero-vignette"></div>`;
-
 const HTML_ENCRYPT = `<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -1062,7 +1031,21 @@ body{
   overflow:hidden;
   background:#000;
 }
-${HERO_BG_CSS}
+.hero-canvas{ position:absolute; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+.hero-scanlines{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+  overflow:hidden;
+}
+.hero-vignette{
+  position:absolute;
+  inset:0;
+  background:radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,.75) 100%);
+  pointer-events:none;
+  z-index:1;
+}
 ${HEADER_CSS}
 .hero-body{
   position:relative;
@@ -1946,7 +1929,20 @@ ${HEADER_CSS}
      1. ヒーロー
      ============================================================ -->
 <section class="hero">
-${HERO_BG_HTML}
+<canvas id="hero-bg" class="hero-canvas" aria-hidden="true"></canvas>
+  <!-- CRT走査線（SVG Q曲線・中央が上に膨らむ） -->
+  <div class="hero-scanlines">
+    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <defs>
+        <pattern id="scanpat" x="0" y="0" width="100%" height="8" patternUnits="userSpaceOnUse">
+          <path d="M0,4 Q50%,0 100%,4" fill="none" stroke="rgba(0,255,140,0.07)" stroke-width="1"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#scanpat)"/>
+    </svg>
+  </div>
+  <!-- ビネット -->
+  <div class="hero-vignette"></div>
 
 ${HEADER_HTML}
 
