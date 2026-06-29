@@ -992,26 +992,25 @@ ${HEADER_CSS}
 .tl-h2{font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:20px;color:#fff;line-height:1.5;margin:48px 0 20px;padding-left:14px;border-left:2px solid #00ff8c}
 .tl-body{font-family:'Noto Sans JP',sans-serif;font-weight:400;font-size:16px;color:rgba(255,255,255,.82);line-height:2;margin-bottom:20px}
 .tl-code{font-family:'Share Tech Mono',monospace;font-size:16px;color:#00ff8c;background:rgba(0,255,140,.05);border:1px solid rgba(0,255,140,.18);border-radius:8px;padding:20px 24px;margin:24px 0;letter-spacing:.05em;overflow-x:auto;white-space:nowrap}
-/* ヒーロー全面背景（トップと共通） */
-.hero{position:relative;width:100%;min-height:100vh;display:flex;flex-direction:column;justify-content:center;overflow:hidden;background:#000;}
+/* 背景アニメ：開いた1画面ぶん(100vh)だけ。スクロールで上に抜けて消える */
+.tl-bg{position:absolute;top:0;left:0;width:100%;height:100vh;overflow:hidden;z-index:0;pointer-events:none;background:#000;}
 ${HERO_BG_CSS}
-.hero-inner{position:relative;z-index:2;width:100%;max-width:760px;margin:0 auto;padding:0 24px;}
+/* 解説は通常フローで上から。背景の上に乗せる */
+.content-wrap{position:relative;z-index:2;}
 </style>
 </head>
 <body>
 ${HEADER_HTML}
 
-<!-- ヒーロー（全面背景アニメ・トップと共通） -->
-<section class="hero">
+<!-- 背景アニメ：開いた1画面ぶんだけ（スクロールで消える） -->
+<div class="tl-bg">
 ${HERO_BG_HTML}
-  <div class="hero-inner">
-    <div class="tl-eyebrow">WHAT'S TIME-LOCK CRYPTOGRAPHY?</div>
-    <h1 class="tl-h1">タイムロック暗号とは</h1>
-  </div>
-</section>
+</div>
 
-<!-- 解説本文 -->
+<!-- 解説本文（ヘッダー直下から上詰めで表示） -->
 <main class="content-wrap">
+  <div class="tl-eyebrow">WHAT'S TIME-LOCK CRYPTOGRAPHY?</div>
+  <h1 class="tl-h1">タイムロック暗号とは</h1>
   <p class="tl-body">タイムロック暗号（Time-Lock Puzzle）とは、「送信者を含む誰も、あらかじめ決められた時間が経過するまで復号できない」ことを数学的に保証する暗号方式です。「情報を未来へ送る」ことを目標に、1996年に Ron Rivest、Adi Shamir、David Wagner によって提案され、技術が確立されました。Rivest と Shamir は、RSA暗号の生みの親でもあります。</p>
   <p class="tl-body">最新鋭のコンピュータでも解くのに時間がかかる複雑なパズルをその場で生成し、パズルの答えを鍵とした錠前でリンクやファイルを完全にロックします。</p>
 
