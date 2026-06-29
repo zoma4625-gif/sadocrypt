@@ -2755,7 +2755,6 @@ async function doEncrypt(){
       // ハケ（overlay-out）開始と同時に裏で結果を差し替え
       hideOverlay(function(){
         // オーバーレイが完全に消えた後にフェードイン
-        if(selectedFile) clearFileSelection();
         // タイトルカードの下2隅コーナーマーカーを非表示にする
     const titleCard = document.querySelector('.title-card');
     if(titleCard) titleCard.classList.add('encrypted');
@@ -3499,6 +3498,7 @@ function renderResult(decBuf){
   const resultCard=document.getElementById('result-card');
   const inner=document.getElementById('result-card-inner');
   resultCard.style.display='block';
+  document.getElementById('dec-card').style.display='none';
 
   if(P.is_file){
     const mime=P.mime_type||'application/octet-stream';
