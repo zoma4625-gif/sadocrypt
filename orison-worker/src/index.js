@@ -988,9 +988,13 @@ const HTML_TIME_LOCK = `<!DOCTYPE html>
 <meta property="og:description" content="タイムロック暗号の仕組みを解説。Rivest-Shamir-Wagner方式の逐次2乗計算で、設定した時間が経過しないと復号できない暗号を実現します。">
 <meta property="og:url" content="https://sadocrypt.com/time-lock">
 <meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://sadocrypt.com/time-lock">
+<link rel="alternate" hreflang="ja" href="https://sadocrypt.com/time-lock">
+<link rel="alternate" hreflang="x-default" href="https://sadocrypt.com/time-lock">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Brake.","url":"https://sadocrypt.com/time-lock","description":"タイムロック暗号の仕組みを解説。Rivest-Shamir-Wagner方式の逐次2乗計算で、設定した時間が経過しないと復号できない暗号を実現します。","applicationCategory":"SecurityApplication","operatingSystem":"Any","inLanguage":"ja"}</script>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -1072,9 +1076,13 @@ const HTML_ENCRYPT = `<!DOCTYPE html>
 <meta property="og:description" content="ファイルやURLに"時間の鍵"をかける。設定した時間が来るまで誰も解読できない、タイムロック暗号化サービス。">
 <meta property="og:url" content="https://sadocrypt.com/">
 <meta name="twitter:card" content="summary">
+<link rel="canonical" href="https://sadocrypt.com/">
+<link rel="alternate" hreflang="ja" href="https://sadocrypt.com/">
+<link rel="alternate" hreflang="x-default" href="https://sadocrypt.com/">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Brake.","url":"https://sadocrypt.com","description":"ファイルやURLに“時間の鍵”をかける。設定した時間が来るまで誰も解読できない、タイムロック暗号化サービス。","applicationCategory":"SecurityApplication","operatingSystem":"Any","inLanguage":"ja","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@600&family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -3878,6 +3886,26 @@ async function innerFetch(request, env, ctx) {
         if (path.startsWith('/s/')) {
             const puzzleId = path.slice(3);
             return await handleSharedPuzzle(request, env, puzzleId);
+        }
+
+        // sitemap.xml
+        if (path === '/sitemap.xml') {
+            const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://sadocrypt.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://sadocrypt.com/time-lock</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+</urlset>`;
+            return new Response(xml, {
+                headers: { 'Content-Type': 'application/xml;charset=utf-8', 'Cache-Control': 'public, max-age=86400' }
+            });
+        }
+
+        // robots.txt
+        if (path === '/robots.txt') {
+            const txt = `User-agent: *\nDisallow: /s/\nDisallow: /api/\nDisallow: /benchmark\n\nSitemap: https://sadocrypt.com/sitemap.xml\n`;
+            return new Response(txt, {
+                headers: { 'Content-Type': 'text/plain;charset=utf-8', 'Cache-Control': 'public, max-age=86400' }
+            });
         }
 
         // ベンチマークページ
