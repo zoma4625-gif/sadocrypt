@@ -758,63 +758,9 @@ const FOOTER = `<footer style="width:100%;background:#000;border-top:1px solid r
 // HTML テンプレート（タイムロック解説ページ）
 // ============================================================
 
-const HTML_TIME_LOCK = `<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Brake. – タイムロック暗号とは</title>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;color:#fff;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;}
-${HEADER_CSS}
-/* 解説本文用CSS */
-.content-wrap{max-width:760px;margin:0 auto;padding:120px 24px 80px;width:100%;}
-.tl-eyebrow{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;letter-spacing:3px;color:#00ff8c;text-transform:uppercase;text-shadow:0 0 9px rgba(0,255,140,.6),0 0 16px rgba(0,255,140,.3);display:inline-flex;align-items:center;gap:12px;margin-bottom:24px}
-.tl-eyebrow::before{content:"";width:10px;height:10px;background:#00ff8c;box-shadow:0 0 8px rgba(0,255,140,.8);display:inline-block}
-.tl-h1{font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:clamp(28px,5vw,40px);color:#fff;line-height:1.4;margin-bottom:48px;letter-spacing:.02em}
-.tl-h2{font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:20px;color:#fff;line-height:1.5;margin:48px 0 20px;padding-left:14px;border-left:2px solid #00ff8c}
-.tl-body{font-family:'Noto Sans JP',sans-serif;font-weight:400;font-size:16px;color:rgba(255,255,255,.82);line-height:2;margin-bottom:20px}
-.tl-code{font-family:'Share Tech Mono',monospace;font-size:16px;color:#00ff8c;background:rgba(0,255,140,.05);border:1px solid rgba(0,255,140,.18);border-radius:8px;padding:20px 24px;margin:24px 0;letter-spacing:.05em;overflow-x:auto;white-space:nowrap}
-</style>
-</head>
-<body>
-${HEADER_HTML}
-
-<!-- 解説本文（後で渡す） -->
-<main class="content-wrap">
-  <div class="tl-eyebrow">WHAT'S TIME-LOCK CRYPTOGRAPHY?</div>
-  <h1 class="tl-h1">タイムロック暗号とは</h1>
-  <p class="tl-body">タイムロック暗号（Time-Lock Puzzle）とは、「送信者を含む誰も、あらかじめ決められた時間が経過するまで復号できない」ことを数学的に保証する暗号方式です。「情報を未来へ送る」ことを目標に、1996年に Ron Rivest、Adi Shamir、David Wagner によって提案され、技術が確立されました。Rivest と Shamir は、RSA暗号の生みの親でもあります。</p>
-  <p class="tl-body">最新鋭のコンピュータでも解くのに時間がかかる複雑なパズルをその場で生成し、パズルの答えを鍵とした錠前でリンクやファイルを完全にロックします。</p>
-
-  <h2 class="tl-h2">仕組み</h2>
-  <p class="tl-body">パズルの中身はシンプルな二乗計算のくり返しです。x を二乗して巨大数Nで割り、その余りをまた二乗してNで割る、その余りをまた二乗して…——このプロセスを数万回〜数億回マシンにくり返させることで任意の計算負荷を発生させ、復号までにかかる時間を自由に調整することができます。</p>
-  <div class="tl-code">x → x² → x⁴ → x⁸ → … &nbsp;(mod N)</div>
-
-  <h2 class="tl-h2">なぜスキップできないのか</h2>
-  <p class="tl-body">計算を速く行うには、マシンを並列化し、複数の計算機やコアで処理を分散させる方法がありますが、タイムロックの逐次計算方式にはこれが効きません。</p>
-  <p class="tl-body">前述の式を見ると、各ステップは一つ前のステップの答えを入力にしているのがわかります。一つ前の答えが分からなければ次に進めないので、並列マシンによる同時並行処理は不可能になっています。</p>
-  <p class="tl-body">結果として、復号にかかる時間はCPUのシングルスレッド性能と設定された計算回数だけに依存することになります。</p>
-
-  <h2 class="tl-h2">Brake. での実装</h2>
-  <p class="tl-body">Brake. では、暗号化リクエストを受けとると、まずランダムな底 x₀ と2つの巨大な素数 p, q が生成され、次に p, q の積 N = p×q を法（modulus）として逐次平方パズル（時間鍵）が作成されます。この計算を何回行うかは、指定された復号時間から逆算して求められ、決定されます。</p>
-  <p class="tl-body">暗号化プロセスはすべて、ユーザーのブラウザ内（JavaScript の BigInt）だけで完結します。サーバーには暗号化されたデータと、パズルの情報だけが送られ、元データや鍵がサーバーに渡ることはありません。これにより、万が一悪意のある第三者に攻撃を受けても、ファイルの中身が漏洩することはありません。</p>
-  <p class="tl-body">復号が始まると、計算はユーザーのデバイス（PC、スマホ）が行います。</p>
-</main>
-
-<!-- フッター -->
-${FOOTER}
-
-<script>
-${HEADER_JS}
-</script>
-</body>
-</html>`;
-
 // ============================================================
-// HTML テンプレート（暗号化ページ）
+// ヒーロー背景アニメ共通部品（CSS/HTML/JS）
+// HTML_TIME_LOCK と HTML_ENCRYPT の両方から参照するため両定義より前に置く
 // ============================================================
 
 const HERO_BG_JS = `(function(){
@@ -1026,6 +972,79 @@ const HERO_BG_HTML = `<canvas id="hero-bg" class="hero-canvas" aria-hidden="true
   </div>
   <!-- ビネット -->
   <div class="hero-vignette"></div>`;
+
+const HTML_TIME_LOCK = `<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Brake. – タイムロック暗号とは</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;}
+${HEADER_CSS}
+/* 解説本文用CSS */
+.content-wrap{max-width:760px;margin:0 auto;padding:120px 24px 80px;width:100%;}
+.tl-eyebrow{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;letter-spacing:3px;color:#00ff8c;text-transform:uppercase;text-shadow:0 0 9px rgba(0,255,140,.6),0 0 16px rgba(0,255,140,.3);display:inline-flex;align-items:center;gap:12px;margin-bottom:24px}
+.tl-eyebrow::before{content:"";width:10px;height:10px;background:#00ff8c;box-shadow:0 0 8px rgba(0,255,140,.8);display:inline-block}
+.tl-h1{font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:clamp(28px,5vw,40px);color:#fff;line-height:1.4;margin-bottom:48px;letter-spacing:.02em}
+.tl-h2{font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:20px;color:#fff;line-height:1.5;margin:48px 0 20px;padding-left:14px;border-left:2px solid #00ff8c}
+.tl-body{font-family:'Noto Sans JP',sans-serif;font-weight:400;font-size:16px;color:rgba(255,255,255,.82);line-height:2;margin-bottom:20px}
+.tl-code{font-family:'Share Tech Mono',monospace;font-size:16px;color:#00ff8c;background:rgba(0,255,140,.05);border:1px solid rgba(0,255,140,.18);border-radius:8px;padding:20px 24px;margin:24px 0;letter-spacing:.05em;overflow-x:auto;white-space:nowrap}
+/* ヒーロー全面背景（トップと共通） */
+.hero{position:relative;width:100%;min-height:100vh;display:flex;flex-direction:column;justify-content:center;overflow:hidden;background:#000;}
+${HERO_BG_CSS}
+.hero-inner{position:relative;z-index:2;width:100%;max-width:760px;margin:0 auto;padding:0 24px;}
+</style>
+</head>
+<body>
+${HEADER_HTML}
+
+<!-- ヒーロー（全面背景アニメ・トップと共通） -->
+<section class="hero">
+${HERO_BG_HTML}
+  <div class="hero-inner">
+    <div class="tl-eyebrow">WHAT'S TIME-LOCK CRYPTOGRAPHY?</div>
+    <h1 class="tl-h1">タイムロック暗号とは</h1>
+  </div>
+</section>
+
+<!-- 解説本文 -->
+<main class="content-wrap">
+  <p class="tl-body">タイムロック暗号（Time-Lock Puzzle）とは、「送信者を含む誰も、あらかじめ決められた時間が経過するまで復号できない」ことを数学的に保証する暗号方式です。「情報を未来へ送る」ことを目標に、1996年に Ron Rivest、Adi Shamir、David Wagner によって提案され、技術が確立されました。Rivest と Shamir は、RSA暗号の生みの親でもあります。</p>
+  <p class="tl-body">最新鋭のコンピュータでも解くのに時間がかかる複雑なパズルをその場で生成し、パズルの答えを鍵とした錠前でリンクやファイルを完全にロックします。</p>
+
+  <h2 class="tl-h2">仕組み</h2>
+  <p class="tl-body">パズルの中身はシンプルな二乗計算のくり返しです。x を二乗して巨大数Nで割り、その余りをまた二乗してNで割る、その余りをまた二乗して…——このプロセスを数万回〜数億回マシンにくり返させることで任意の計算負荷を発生させ、復号までにかかる時間を自由に調整することができます。</p>
+  <div class="tl-code">x → x² → x⁴ → x⁸ → … &nbsp;(mod N)</div>
+
+  <h2 class="tl-h2">なぜスキップできないのか</h2>
+  <p class="tl-body">計算を速く行うには、マシンを並列化し、複数の計算機やコアで処理を分散させる方法がありますが、タイムロックの逐次計算方式にはこれが効きません。</p>
+  <p class="tl-body">前述の式を見ると、各ステップは一つ前のステップの答えを入力にしているのがわかります。一つ前の答えが分からなければ次に進めないので、並列マシンによる同時並行処理は不可能になっています。</p>
+  <p class="tl-body">結果として、復号にかかる時間はCPUのシングルスレッド性能と設定された計算回数だけに依存することになります。</p>
+
+  <h2 class="tl-h2">Brake. での実装</h2>
+  <p class="tl-body">Brake. では、暗号化リクエストを受けとると、まずランダムな底 x₀ と2つの巨大な素数 p, q が生成され、次に p, q の積 N = p×q を法（modulus）として逐次平方パズル（時間鍵）が作成されます。この計算を何回行うかは、指定された復号時間から逆算して求められ、決定されます。</p>
+  <p class="tl-body">暗号化プロセスはすべて、ユーザーのブラウザ内（JavaScript の BigInt）だけで完結します。サーバーには暗号化されたデータと、パズルの情報だけが送られ、元データや鍵がサーバーに渡ることはありません。これにより、万が一悪意のある第三者に攻撃を受けても、ファイルの中身が漏洩することはありません。</p>
+  <p class="tl-body">復号が始まると、計算はユーザーのデバイス（PC、スマホ）が行います。</p>
+</main>
+
+<!-- フッター -->
+${FOOTER}
+
+<script>
+${HERO_BG_JS}
+${HEADER_JS}
+</script>
+</body>
+</html>`;
+
+// ============================================================
+// HTML テンプレート（暗号化ページ）
+// ============================================================
+
+
 
 const HTML_ENCRYPT = `<!DOCTYPE html>
 <html lang="ja">
