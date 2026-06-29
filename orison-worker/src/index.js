@@ -11,131 +11,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
 // ============================================================
-// 暗号コア（BigInt版）- サーバー側暗号化用
-// ============================================================
-
-// Miller-Rabin素数判定
-function isPrime(n, iterations = 20) {
-    if (n < 2n) return false;
-    if (n === 2n || n === 3n) return true;
-    if (n % 2n === 0n) return false;
-
-    let s = 0n;
-    let d = n - 1n;
-    while (d % 2n === 0n) {
-        s++;
-        d /= 2n;
-    }
-
-    for (let i = 0; i < iterations; i++) {
-        const a = randomBigInt(2n, n - 2n);
-        let x = modPow(a, d, n);
-        if (x === 1n || x === n - 1n) continue;
-        let broken = false;
-        for (let j = 0n; j < s - 1n; j++) {
-            x = modPow(x, 2n, n);
-            if (x === n - 1n) { broken = true; break; }
-        }
-        if (!broken) return false;
-    }
-    return true;
-}
-
-// べき乗剰余: (base^exp) % mod
-function modPow(base, exp, mod) {
-    if (mod === 1n) return 0n;
-    let result = 1n;
-    base = ((base % mod) + mod) % mod;
-    while (exp > 0n) {
-        if (exp & 1n) result = (result * base) % mod;
-        exp >>= 1n;
-        base = (base * base) % mod;
-    }
-    return result;
-}
-
-// 最大公約数
-function gcd(a, b) {
-    a = a < 0n ? -a : a;
-    b = b < 0n ? -b : b;
-    while (b) {
-        [a, b] = [b, a % b];
-    }
-    return a;
-}
-
-// 暗号論的乱数BigInt [min, max]
-function randomBigInt(min, max) {
-    const range = max - min + 1n;
-    const bits = range.toString(2).length;
-    let result;
-    do {
-        result = 0n;
-        for (let i = 0; i < bits; i += 32) {
-            const chunk = crypto.getRandomValues(new Uint32Array(1))[0];
-            result = (result << 32n) | BigInt(chunk);
-        }
-        result = result & ((1n << BigInt(bits)) - 1n);
-    } while (result >= range);
-    return result + min;
-}
-
-// 指定ビット数の素数生成
-function generateLargePrime(bits) {
-    while (true) {
-        let n = 0n;
-        for (let i = 0; i < bits; i += 32) {
-            const chunk = crypto.getRandomValues(new Uint32Array(1))[0];
-            n = (n << 32n) | BigInt(chunk);
-        }
-        n |= (1n << BigInt(bits - 1)) | 1n;
-        n &= (1n << BigInt(bits)) - 1n;
-        if (isPrime(n, 15)) return n;
-    }
-}
-
-// 初期値 x0 生成（暗号論的乱数使用）
-function generateX0(N) {
-    while (true) {
-        const x0 = randomBigInt(2n, N - 2n);
-        if (gcd(x0, N) === 1n) return x0;
-    }
-}
-
-// 高速スキップ（Carmichael関数使用）- サーバー側のみ使用
-function fastForwardChain(x0, chainCount, p, q, N) {
-    const lambda = lcm(p - 1n, q - 1n);
-    const exponent = modPow(2n, BigInt(chainCount), lambda);
-    return modPow(x0, exponent, N);
-}
-
-function lcm(a, b) {
-    return (a / gcd(a, b)) * b;
-}
-
-function arrayToHex(arr) {
-    return Array.from(arr).map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-function hexToUint8(hex) {
-    const u = new Uint8Array(Math.ceil(hex.length / 2));
-    for (let i = 0; i < u.length; i++) u[i] = parseInt(hex.substr(i * 2, 2), 16);
-    return u;
-}
-
-// AES-256-GCM 暗号化（Hex返却）
-async function aesEncrypt(data, xFinal) {
-    const hex = xFinal.toString(16);
-    const bytes = hexToUint8(hex.length % 2 === 0 ? hex : '0' + hex);
-    const hash = await crypto.subtle.digest('SHA-256', bytes);
-    const key = await crypto.subtle.importKey('raw', hash, { name: 'AES-GCM' }, false, ['encrypt']);
-    const iv = crypto.getRandomValues(new Uint8Array(12));
-    const encoded = new TextEncoder().encode(data);
-    const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv, tagLength: 128 }, key, encoded);
-    return { iv: arrayToHex(iv), ct: arrayToHex(new Uint8Array(ciphertext)) };
-}
-
-// ============================================================
 // HTML テンプレート
 // ============================================================
 
@@ -147,6 +22,8 @@ const HTML_BENCHMARK = `<!DOCTYPE html>
 <title>Brake. – ベンチマーク</title>
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -995,6 +872,8 @@ const HTML_TIME_LOCK = `<!DOCTYPE html>
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Brake.","url":"https://sadocrypt.com/time-lock","description":"タイムロック暗号の仕組みを解説。Rivest-Shamir-Wagner方式の逐次2乗計算で、設定した時間が経過しないと復号できない暗号を実現します。","applicationCategory":"SecurityApplication","operatingSystem":"Any","inLanguage":"ja"}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -1083,6 +962,8 @@ const HTML_ENCRYPT = `<!DOCTYPE html>
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Brake.","url":"https://sadocrypt.com","description":"ファイルやURLに“時間の鍵”をかける。設定した時間が来るまで誰も解読できない、タイムロック暗号化サービス。","applicationCategory":"SecurityApplication","operatingSystem":"Any","inLanguage":"ja","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@600&family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -2684,6 +2565,15 @@ document.getElementById('content-input').addEventListener('keydown', function(e)
   if(isDesktop) document.getElementById('content-input').focus();
 })();
 
+function showEncError(msg){
+  var el=document.createElement('div');
+  el.className='error-msg';
+  el.textContent=msg;
+  var resEl=document.getElementById('res');
+  resEl.innerHTML='';
+  resEl.appendChild(el);
+}
+
 async function doEncrypt(){
   const resEl = document.getElementById('res');
   const resultSection = document.getElementById('result-section');
@@ -2697,7 +2587,7 @@ async function doEncrypt(){
 
   // バリデーション
   if(!selectedFile && !contentInput.value.trim()){
-    resEl.innerHTML = '<div class="error-msg">URLまたはファイルを指定してください</div>';
+    showEncError('URLまたはファイルを指定してください');
     return;
   }
 
@@ -2717,7 +2607,7 @@ async function doEncrypt(){
       // ファイル暗号化
       if(selectedFile.size > MAX_FILE_SIZE){
         hideOverlay(function(){
-          resEl.innerHTML = '<div class="error-msg">このファイルは大きすぎます（最大' + (MAX_FILE_SIZE/1024/1024) + 'MB）</div>';
+          showEncError('このファイルは大きすぎます（最大' + (MAX_FILE_SIZE/1024/1024) + 'MB）');
           btn.disabled = false;
         });
         return;
@@ -2782,7 +2672,7 @@ async function doEncrypt(){
 
     if(d.error){
       hideOverlay(function(){
-        resEl.innerHTML = '<div class="error-msg">' + d.error + '</div>';
+        showEncError(d.error);
         btn.disabled = false;
       });
       return;
@@ -2816,7 +2706,7 @@ async function doEncrypt(){
 
   } catch(err) {
     hideOverlay(function(){
-      resEl.innerHTML = '<div class="error-msg">' + err.message + '</div>';
+      showEncError(err.message);
     });
   }
   btn.disabled = false;
@@ -2946,6 +2836,8 @@ const HTML_DECRYPT = `<!DOCTYPE html>
 <title>Brake. – 復号</title>
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -3741,7 +3633,7 @@ async function handleSave(request, env) {
         // 有効期限: 復号時間 + 1ヶ月（CLAUDE.md準拠）
         const decryptSeconds = target_seconds > 0
             ? Math.ceil(target_seconds)
-            : Math.ceil(Number(cc) / 500000);
+            : Math.ceil(Number(cc) / 376223);
         const oneMonth = 30 * 24 * 60 * 60;
         const ttl = decryptSeconds + oneMonth;
 
@@ -3784,12 +3676,6 @@ async function handleSave(request, env) {
  * POST /api/encrypt (後方互換: 旧APIを維持しつつ新方式に誘導)
  * ※ 新方式では暗号化はクライアントサイドで行うため、このエンドポイントは非推奨
  */
-async function handleEncryptLegacy(request, env) {
-    return new Response(JSON.stringify({
-        error: 'このAPIは廃止されました。暗号化はブラウザ側で行ってください。'
-    }), { status: 410, headers: { 'Content-Type': 'application/json' } });
-}
-
 /**
  * GET /s/:id
  * 共有URLの復号ページを返す
@@ -3875,11 +3761,6 @@ async function innerFetch(request, env, ctx) {
         // パズル保存API（新方式: クライアントサイド暗号化済みデータを保存）
         if (path === '/api/save' && request.method === 'POST') {
             return await handleSave(request, env);
-        }
-
-        // 旧暗号化API（廃止）
-        if (path === '/api/encrypt' && request.method === 'POST') {
-            return await handleEncryptLegacy(request, env);
         }
 
         // 共有URL
