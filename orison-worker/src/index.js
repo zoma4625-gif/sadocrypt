@@ -981,10 +981,10 @@ const HTML_TIME_LOCK = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Brake. – タイムロック暗号とは</title>
+<title>タイムロック暗号とは | Brake.</title>
 <meta name="description" content="タイムロック暗号の仕組みを解説。Rivest-Shamir-Wagner方式の逐次2乗計算で、設定した時間が経過しないと復号できない暗号を実現します。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="タイムロック暗号とは – Brake.">
+<meta property="og:title" content="タイムロック暗号とは | Brake.">
 <meta property="og:description" content="タイムロック暗号の仕組みを解説。Rivest-Shamir-Wagner方式の逐次2乗計算で、設定した時間が経過しないと復号できない暗号を実現します。">
 <meta property="og:url" content="https://sadocrypt.com/time-lock">
 <meta name="twitter:card" content="summary">
@@ -1065,10 +1065,10 @@ const HTML_ENCRYPT = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Brake. – 時間鍵ファイル暗号化サービス</title>
+<title>Brake. – タイムロック暗号化サービス</title>
 <meta name="description" content="ファイルやURLに"時間の鍵"をかける。設定した時間が来るまで誰も解読できない、タイムロック暗号化サービス。">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Brake. – 時間鍵ファイル暗号化サービス">
+<meta property="og:title" content="Brake. – タイムロック暗号化サービス">
 <meta property="og:description" content="ファイルやURLに"時間の鍵"をかける。設定した時間が来るまで誰も解読できない、タイムロック暗号化サービス。">
 <meta property="og:url" content="https://sadocrypt.com/">
 <meta name="twitter:card" content="summary">
@@ -3526,6 +3526,8 @@ async function run(){
     }
   }
 
+  document.title = '復号しています… | Brake.';
+
   // スピナー開始
   startSpinner();
 
@@ -3597,6 +3599,7 @@ async function run(){
 // 結果表示（MIME タイプで分岐）
 // ============================================================
 function showResult(decBuf){
+  document.title = '復号しました | Brake.';
   // dec-card は消さない（ハッシュ数値・進捗バーをそのまま残す）
   // スピナーがいた位置（dec-spinner-wrap）にチェックマークを重ねて表示
   const doneEl=document.getElementById('dec-done');
