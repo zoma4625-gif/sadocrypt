@@ -684,6 +684,89 @@ const HERO_BG_JS = `(function(){
   var FADE_IN=0.005, FADE_OUT=0.0035, FILL_RATE=0.004, HOLD_TO_RELAY=1500;
   var linkState={};
 
+  // ============================================================
+  // 差動回転演出（暗号化完了後）
+  // ============================================================
+  var SPIN3D = {
+    TILT:        0.40,
+    SPIN:        0.030,
+    EASE:        1.0,
+    FALLOFF:     1.4,
+    R_REF:       160,
+    FOCAL:       360,
+    DEPTH:       0.7,
+    DURATION_MS: 5000,
+    HOLD_MS:     800
+  };
+  var spinActive=false, spinStart=0, spinDone=false, spinPhase=0;
+  var spinCx=0, spinCy=0, spinCb=null, spinPaused=false;
+
+  function projectSpin(p){
+    var a=p._ang0+spinPhase*p._fall;
+    var rx=Math.cos(a)*p._rad;
+    var rz=Math.sin(a)*p._rad;
+    var sx=spinCx+rx;
+    var sy=spinCy+rz*SPIN3D.TILT;
+    var scale=SPIN3D.FOCAL/(SPIN3D.FOCAL+rz*SPIN3D.DEPTH);
+    return {sx:sx,sy:sy,scale:scale,rz:rz};
+  }
+
+  function updateSpinPhase(now){
+    var t=Math.min(1,(now-spinStart)/SPIN3D.DURATION_MS);
+    spinPhase+=SPIN3D.SPIN*Math.pow(t,SPIN3D.EASE);
+    if(!spinDone&&(now-spinStart)>SPIN3D.DURATION_MS){
+      spinDone=true; spinActive=false; spinPaused=false;
+      showSpinLockPopup();
+      setTimeout(function(){ if(spinCb)spinCb(); },SPIN3D.HOLD_MS);
+    }
+  }
+
+  function showSpinLockPopup(){
+    var pop=document.createElement('div');
+    pop.id='spin-lock-popup';
+    pop.style.cssText=
+      'position:fixed;top:50%;left:50%;'+
+      'transform:translate(-50%,-50%) scale(0.7);opacity:0;'+
+      'transition:opacity .4s,transform .4s cubic-bezier(0.34,1.56,0.64,1);'+
+      'z-index:8888;background:rgba(0,0,0,0.88);'+
+      'border:1.5px solid #00ff8c;border-radius:14px;'+
+      'padding:28px 44px;text-align:center;'+
+      'font-family:"Share Tech Mono",monospace;color:#00ff8c;'+
+      'pointer-events:none;box-shadow:0 0 32px rgba(0,255,140,.25);';
+    pop.innerHTML=
+      '<svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">'+
+      '<rect x="11" y="20" width="22" height="17" rx="3.5" stroke="#00ff8c" stroke-width="2.5" fill="rgba(0,255,140,0.12)"/>'+
+      '<path d="M15.5 20v-5.5a6.5 6.5 0 0 1 13 0V20" stroke="#00ff8c" stroke-width="2.5" stroke-linecap="round"/>'+
+      '<circle cx="22" cy="29" r="2.5" fill="#00ff8c"/>'+
+      '<line x1="22" y1="29" x2="22" y2="33" stroke="#00ff8c" stroke-width="2" stroke-linecap="round"/>'+
+      '</svg>'+
+      '<div style="margin-top:12px;font-size:14px;letter-spacing:3px;'+
+      'text-shadow:0 0 12px rgba(0,255,140,.7);">暗号化しました</div>';
+    document.body.appendChild(pop);
+    window._spinLockPopup=pop;
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        pop.style.opacity='1';
+        pop.style.transform='translate(-50%,-50%) scale(1)';
+      });
+    });
+  }
+
+  function startSpin(onComplete){
+    spinCx=W/2; spinCy=H/2;
+    for(var i=0;i<pts.length;i++){
+      var p=pts[i];
+      var dx=p.x-spinCx;
+      var dy=(p.y-spinCy)/SPIN3D.TILT;
+      p._rad=Math.hypot(dx,dy);
+      p._ang0=Math.atan2(dy,dx);
+      p._fall=1/(1+Math.pow(p._rad/SPIN3D.R_REF,SPIN3D.FALLOFF));
+    }
+    spinCb=onComplete; spinActive=true; spinDone=false;
+    spinPhase=0; spinStart=performance.now(); spinPaused=true;
+    if(typeof hideOverlay==='function') hideOverlay(function(){});
+  }
+
   function strokeSegment(src,dst,startFrac,endFrac,op){
     var dx=dst.x-src.x, dy=dst.y-src.y, len=Math.sqrt(dx*dx+dy*dy)||1; var ux=dx/len, uy=dy/len;
     var oSrc=edgeOffset(src,ux,uy)/len, oDst=edgeOffset(dst,-ux,-uy)/len;
@@ -703,6 +786,31 @@ const HERO_BG_JS = `(function(){
     var vg=ctx.createRadialGradient(W/2,H*0.5,H*0.3, W/2,H*0.5,Math.max(W,H)*0.7);
     vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,0.6)');
     ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
+
+    // 差動回転モード（暗号化完了演出）
+    if(spinActive){
+      updateSpinPhase(now);
+      var projected=[];
+      for(var i=0;i<pts.length;i++){
+        var p=pts[i]; if(p.life<=0.002) continue;
+        var proj=projectSpin(p); projected.push({p:p,proj:proj});
+      }
+      projected.sort(function(a,b){ return a.proj.rz-b.proj.rz; });
+      for(var i=0;i<projected.length;i++){
+        var p=projected[i].p; var proj=projected[i].proj;
+        var sc=proj.scale; var sz=p.s*sc;
+        var base=p.s>40?0.42:p.s>20?0.5:p.s>10?0.7:0.82;
+        var op=base*p.life*Math.min(1,sc*1.2); if(op<=0.002) continue;
+        var x=proj.sx-sz/2, y=proj.sy-sz/2;
+        ctx.save(); ctx.shadowColor='rgba('+G+',1)'; ctx.shadowBlur=p.glow*sc;
+        var fo=op*(1-p.fillAmt), fi=op*p.fillAmt;
+        if(fo>0.002){ctx.strokeStyle='rgba('+G+','+fo.toFixed(3)+')';ctx.lineWidth=2.0*sc;ctx.strokeRect(x,y,sz,sz);}
+        if(fi>0.002){ctx.fillStyle='rgba('+G+','+fi.toFixed(3)+')';ctx.fillRect(x,y,sz,sz);}
+        ctx.restore();
+      }
+      requestAnimationFrame(frame);
+      return;
+    }
 
     for(var i=0;i<pts.length;i++){ var p=pts[i];
       p.x+=p.vx; p.y+=p.vy;
@@ -819,6 +927,7 @@ const HERO_BG_JS = `(function(){
     }
     requestAnimationFrame(frame);
   }
+  window.startSpin=startSpin;
   requestAnimationFrame(frame);
 })();`;
 
@@ -2689,20 +2798,13 @@ async function doEncrypt(){
     const wait = Math.max(0, MIN_SPIN_MS - elapsed);
     await new Promise(r=>setTimeout(r, wait));
 
-    // collapse開始と同時にステータス＋ログをフェードアウト
-    // expand最終コマでpendingDoneCallbackが呼ばれる（イベント駆動）
-    pendingDoneCallback = function(){
-      // ハケ（overlay-out）開始と同時に裏で結果を差し替え
-      hideOverlay(function(){
-        // オーバーレイが完全に消えた後にフェードイン
-        // タイトルカードの下2隅コーナーマーカーを非表示にする
-    const titleCard = document.querySelector('.title-card');
-    if(titleCard) titleCard.classList.add('encrypted');
-    buildResultSection(resultSection, shareUrl);
-      });
-    };
-    triggerCollapse();
-    fadeOutSpinContent();
+    // 差動回転演出 → ロックポップアップ → 結果カード
+    window.startSpin(function(){
+      const titleCard = document.querySelector('.title-card');
+      if(titleCard) titleCard.classList.add('encrypted');
+      if(window._spinLockPopup){ window._spinLockPopup.remove(); window._spinLockPopup=null; }
+      buildResultSection(resultSection, shareUrl);
+    });
 
   } catch(err) {
     hideOverlay(function(){
