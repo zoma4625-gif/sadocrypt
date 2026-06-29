@@ -3328,26 +3328,29 @@ const P=JSON.parse(document.getElementById('puzzle-data').textContent);
 const CACHE_KEY='sadocrypt_cache_'+P.id;
 
 // 復号推定時間が1時間超の場合にのみ警告を表示（キャッシュヒット時はスキップ）
-(function(){
-  var sec = Number(P.target_seconds) || (Number(P.cc) / 376223);
-  if(sec <= 3600) return;
-  if(localStorage.getItem(CACHE_KEY)) return;
-  var h = sec / 3600;
-  var label;
-  if(h < 24){
-    label = '約' + (Math.round(h * 10) / 10) + '時間';
-  } else if(sec < 2592000){
-    label = '約' + Math.round(sec / 86400) + '日';
-  } else {
-    label = '約' + Math.round(sec / 2592000) + 'ヶ月';
-  }
-  var el = document.getElementById('dec-time-warn-text');
-  var wrap = document.getElementById('dec-time-warn');
-  if(el && wrap){
-    el.textContent = 'このリンクの解読には ' + label + ' かかる見込みです';
-    wrap.style.display = 'block';
-  }
-})();
+// localStorage がセキュリティ設定でブロックされていてもクラッシュしないよう try-catch で囲む
+try {
+  (function(){
+    var sec = Number(P.target_seconds) || (Number(P.cc) / 376223);
+    if(sec <= 3600) return;
+    if(localStorage.getItem(CACHE_KEY)) return;
+    var h = sec / 3600;
+    var label;
+    if(h < 24){
+      label = '約' + (Math.round(h * 10) / 10) + '時間';
+    } else if(sec < 2592000){
+      label = '約' + Math.round(sec / 86400) + '日';
+    } else {
+      label = '約' + Math.round(sec / 2592000) + 'ヶ月';
+    }
+    var el = document.getElementById('dec-time-warn-text');
+    var wrap = document.getElementById('dec-time-warn');
+    if(el && wrap){
+      el.textContent = 'このリンクの解読には ' + label + ' かかる見込みです';
+      wrap.style.display = 'block';
+    }
+  })();
+} catch(e) { /* localStorage 不可やその他エラーは無視して後続処理を続行 */ }
 
 // ============================================================
 // Canvasスピナー（暗号化画面と同じ緑ドット8個・24ステップ）
