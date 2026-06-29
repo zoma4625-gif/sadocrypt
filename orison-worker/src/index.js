@@ -994,8 +994,8 @@ ${HEADER_CSS}
 .tl-code{font-family:'Share Tech Mono',monospace;font-size:16px;color:#00ff8c;background:rgba(0,255,140,.05);border:1px solid rgba(0,255,140,.18);border-radius:8px;padding:20px 24px;margin:24px 0;letter-spacing:.05em;overflow-x:auto;white-space:nowrap}
 /* 背景アニメ：開いた1画面ぶん(100vh)だけ。スクロールで上に抜けて消える */
 .tl-bg{position:absolute;top:0;left:0;width:100%;height:100vh;overflow:hidden;z-index:0;pointer-events:none;background:#000;}
-/* この解説ページだけ背景canvas(四角+線)を薄く。トップは無関係 */
-.tl-bg .hero-canvas{opacity:.15;}
+/* 中央(文章カラム)の裏だけ黒帯を敷いて粒子を3割に。左右は元の明るさ */
+.tl-scrim{position:absolute;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:760px;height:100vh;background:rgba(0,0,0,.7);z-index:1;pointer-events:none;}
 ${HERO_BG_CSS}
 /* 解説は通常フローで上から。背景の上に乗せる */
 .content-wrap{position:relative;z-index:2;}
@@ -1008,6 +1008,7 @@ ${HEADER_HTML}
 <div class="tl-bg">
 ${HERO_BG_HTML}
 </div>
+<div class="tl-scrim"></div>
 
 <!-- 解説本文（ヘッダー直下から上詰めで表示） -->
 <main class="content-wrap">
