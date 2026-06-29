@@ -3666,9 +3666,9 @@ async function handleSave(request, env) {
             return bad('ct が不正です');
         if (typeof iv !== 'string' || iv.length !== 16)
             return bad('iv が不正です');
-        if (typeof N !== 'string' || N.length > 400)
+        if (typeof N !== 'string' || N.length > 700)
             return bad('N が不正です');
-        if (typeof x0 !== 'string' || x0.length > 400)
+        if (typeof x0 !== 'string' || x0.length > 700)
             return bad('x0 が不正です');
         if (!Number.isFinite(Number(cc)) || Number(cc) <= 0)
             return bad('cc が不正です');
