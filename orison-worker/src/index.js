@@ -2288,6 +2288,30 @@ function hexToUint8(h){
 }
 function arrayToHex(a){return Array.from(a).map(b=>b.toString(16).padStart(2,'0')).join('');}
 
+// 大容量対応Base64変換（btoa直接渡しはcall stack overflowするためチャンク分割）
+function uint8ToBase64(bytes){
+  let bin='';
+  const chunk=0x8000;
+  for(let i=0;i<bytes.length;i+=chunk)bin+=String.fromCharCode(...bytes.subarray(i,i+chunk));
+  return btoa(bin);
+}
+function base64ToUint8(b64){
+  const bin=atob(b64);
+  const out=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i);
+  return out;
+}
+
+// Safari互換FileReader（arrayBuffer()が断続的にLoad failedを出すため）
+function readFileAsArrayBuffer(file){
+  return new Promise(function(resolve,reject){
+    const reader=new FileReader();
+    reader.onload=function(e){resolve(e.target.result);};
+    reader.onerror=function(){reject(new Error('ファイルの読み込みに失敗しました'));};
+    reader.readAsArrayBuffer(file);
+  });
+}
+
 const BENCHMARK_SPEED = 376223;
 function calcChainCount(targetSeconds) {
   return Math.floor(targetSeconds * BENCHMARK_SPEED);
@@ -2317,7 +2341,7 @@ async function encryptContent(content, targetSeconds) {
   const ciphertext = await crypto.subtle.encrypt({name:'AES-GCM',iv,tagLength:128}, key, encoded);
   return {
     x0: x0.toString(), N: N.toString(), chainCount,
-    iv: arrayToHex(iv), ct: arrayToHex(new Uint8Array(ciphertext))
+    iv: uint8ToBase64(iv), ct: uint8ToBase64(new Uint8Array(ciphertext))
   };
 }
 
@@ -2341,7 +2365,7 @@ async function encryptFile(fileBuffer, fileName, mimeType, targetSeconds) {
   const ciphertext = await crypto.subtle.encrypt({name:'AES-GCM',iv,tagLength:128}, key, fileBuffer);
   return {
     x0: x0.toString(), N: N.toString(), chainCount,
-    iv: arrayToHex(iv), ct: arrayToHex(new Uint8Array(ciphertext)),
+    iv: uint8ToBase64(iv), ct: uint8ToBase64(new Uint8Array(ciphertext)),
     is_file: true, file_name: fileName, mime_type: mimeType
   };
 }
@@ -2680,7 +2704,7 @@ async function doEncrypt(){
       addLog('x0 を採番中');
       await logDelay('x0');
 
-      const fileBuffer = await selectedFile.arrayBuffer();
+      const fileBuffer = await readFileAsArrayBuffer(selectedFile);
       addLog('2乗チェーン計算中 (Carmichael skip)');
       await logDelay('chain');
 
@@ -3387,7 +3411,7 @@ function isSafeURL(s){try{const u=new URL(s);return u.protocol==='http:'||u.prot
 async function decryptWithXFinal(xFinalHex){
   const hash=await crypto.subtle.digest('SHA-256',hexToUint8(xFinalHex));
   const key=await crypto.subtle.importKey('raw',hash,{name:'AES-GCM'},false,['decrypt']);
-  const dec=await crypto.subtle.decrypt({name:'AES-GCM',iv:hexToUint8(P.iv),tagLength:128},key,hexToUint8(P.ct));
+  const dec=await crypto.subtle.decrypt({name:'AES-GCM',iv:base64ToUint8(P.iv),tagLength:128},key,base64ToUint8(P.ct));
   return dec;
 }
 
