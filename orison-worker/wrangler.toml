@@ -2,8 +2,8 @@ name = "orison"
 main = "src/index.js"
 compatibility_date = "2024-02-01"
 routes = [
-  { pattern = "brake.run", custom_domain = true },
-  { pattern = "dev.brake.run", custom_domain = true }
+  { pattern = "brake.run" },
+  { pattern = "dev.brake.run" }
 ]
 
 [[kv_namespaces]]
