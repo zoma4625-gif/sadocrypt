@@ -865,6 +865,8 @@ const HERO_BG_JS = `(function(){
           var srcS=byId[prevS.srcId], dstS=byId[prevS.dstId];
           prevS.retract=0; prevS.anchorIsDst=false; prevS.fullSince=0;
           nextLink[keyS]=prevS; if(srcS)linkedIds[srcS.id]=1; if(dstS)linkedIds[dstS.id]=1;
+          // retract切替フレームも描画（retractループは既に終了しているため1フレーム空白になる問題を防ぐ）
+          if(srcS&&dstS&&prevS.lastOp>0.002) strokeSegment(srcS,dstS,0,prevS.cur,prevS.lastOp);
         }
         continue;
       }
