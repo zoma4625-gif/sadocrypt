@@ -3279,8 +3279,9 @@ body{
   <div class="result-card-inner" id="result-card-inner"></div>
 </div>
 
+<script type="application/json" id="puzzle-data">__PUZZLE__</script>
 <script>
-const P=__PUZZLE__;
+const P=JSON.parse(document.getElementById('puzzle-data').textContent);
 const CACHE_KEY='sadocrypt_cache_'+P.id;
 
 // ============================================================
@@ -3382,7 +3383,7 @@ function hexToUint8(h){
   return b;
 }
 
-function isURL(s){try{new URL(s);return true;}catch{return false;}}
+function isSafeURL(s){try{const u=new URL(s);return u.protocol==='http:'||u.protocol==='https:';}catch{return false;}}
 
 async function decryptWithXFinal(xFinalHex){
   const hash=await crypto.subtle.digest('SHA-256',hexToUint8(xFinalHex));
@@ -3531,10 +3532,10 @@ function renderResult(decBuf){
   }else{
     // テキスト/URL
     const content=new TextDecoder().decode(decBuf);
-    if(isURL(content)){
-      // URLならリンク化（2秒後に自動遷移）
+    if(isSafeURL(content)){
+      // http/https のみリンク化（2秒後に自動遷移）
       inner.innerHTML='<div class="result-text-content"><a href="'+escHtml(content)+'" class="result-url-link" target="_blank">'+escHtml(content)+'</a></div>';
-      setTimeout(function(){window.location.href=content;},2000);
+      setTimeout(function(){if(isSafeURL(content))window.location.href=content;},2000);
     }else{
       // テキストはそのまま表示
       inner.innerHTML='<div class="result-text-content">'+escHtml(content)+'</div>';
@@ -3673,7 +3674,7 @@ async function handleSharedPuzzle(request, env, puzzleId) {
         file_name: puzzle.file_name || null,
         mime_type: puzzle.mime_type || null
     });
-    const html = HTML_DECRYPT.replace('__PUZZLE__', puzzleJSON);
+    const html = HTML_DECRYPT.replace('__PUZZLE__', () => puzzleJSON);
 
     return new Response(html, {
         headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-store' }
