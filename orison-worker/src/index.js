@@ -764,7 +764,9 @@ const HERO_BG_JS = `(function(){
     }
     spinCb=onComplete; spinActive=true; spinDone=false;
     spinPhase=0; spinStart=performance.now(); spinPaused=true;
-    if(typeof hideOverlay==='function') hideOverlay(function(){});
+    // オーバーレイを即時非表示（フェードなし）→ 回転開始時に現在のセル配置をそのまま見せる
+    var ov=document.getElementById('enc-overlay');
+    if(ov){ ov.classList.remove('active','overlay-in','overlay-out'); }
   }
 
   function strokeSegment(src,dst,startFrac,endFrac,op){
@@ -798,13 +800,14 @@ const HERO_BG_JS = `(function(){
       projected.sort(function(a,b){ return a.proj.rz-b.proj.rz; });
       for(var i=0;i<projected.length;i++){
         var p=projected[i].p; var proj=projected[i].proj;
-        var sc=proj.scale; var sz=p.s*sc;
+        var sc=proj.scale; if(sc<=0) continue;  // カメラより奥のセルはスキップ
+        var sz=p.s;                              // サイズはオリジナルのまま（初期フレームで激変しない）
         var base=p.s>40?0.42:p.s>20?0.5:p.s>10?0.7:0.82;
-        var op=base*p.life*Math.min(1,sc*1.2); if(op<=0.002) continue;
+        var op=base*p.life; if(op<=0.002) continue;
         var x=proj.sx-sz/2, y=proj.sy-sz/2;
-        ctx.save(); ctx.shadowColor='rgba('+G+',1)'; ctx.shadowBlur=p.glow*sc;
+        ctx.save(); ctx.shadowColor='rgba('+G+',1)'; ctx.shadowBlur=p.glow;
         var fo=op*(1-p.fillAmt), fi=op*p.fillAmt;
-        if(fo>0.002){ctx.strokeStyle='rgba('+G+','+fo.toFixed(3)+')';ctx.lineWidth=2.0*sc;ctx.strokeRect(x,y,sz,sz);}
+        if(fo>0.002){ctx.strokeStyle='rgba('+G+','+fo.toFixed(3)+')';ctx.lineWidth=2.0;ctx.strokeRect(x,y,sz,sz);}
         if(fi>0.002){ctx.fillStyle='rgba('+G+','+fi.toFixed(3)+')';ctx.fillRect(x,y,sz,sz);}
         ctx.restore();
       }
@@ -2612,13 +2615,10 @@ function showOverlay(){
   if(statusLabel){ statusLabel.style.transition = ''; statusLabel.style.opacity = ''; }
   encLog.style.transition = '';
   encLog.style.opacity = '';
-  encSpinArea.style.display = 'flex';
-  encSpinArea.style.opacity = '1';
-  encSpinArea.style.transition = '';
+  encSpinArea.style.display = 'none';
   encDoneArea.classList.remove('visible');
   logLines = [];
   encLog.innerHTML = '';
-  startSpinner();
 }
 
 function hideOverlay(onHidden){
