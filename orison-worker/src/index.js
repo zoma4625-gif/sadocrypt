@@ -3497,18 +3497,13 @@ async function run(){
   // UI初期化
   document.getElementById('total').textContent=total.toLocaleString('ja-JP');
 
-  // 更新間隔: 総ハッシュ数に応じて動的化（最低1、最大5000）
-  // 総数が少ない場合もバーが動くよう、max(1, floor(total/100)) ごとに更新
-  const UPDATE_EVERY=BigInt(Math.max(1,Math.floor(totalNum/100)));
-
-  // 下3桁ザワめき演出用タイマー
-  let displayBase=0n; // 上位桁（実際の進捗）
+  // 下3桁ザワめき演出用タイマー（メインスレッドで継続、displayBaseをWorkerのprogressで更新）
+  let displayBase=0n;
   let jitterTimer=null;
 
   function startJitter(){
     if(jitterTimer)return;
     jitterTimer=setInterval(function(){
-      // 上位桁は実際の進捗、下3桁をランダムに動かす
       const jitterVal=displayBase+BigInt(Math.floor(Math.random()*1000));
       const capped=jitterVal>total?total:jitterVal;
       document.getElementById('cur').textContent=capped.toLocaleString('ja-JP');
@@ -3519,35 +3514,76 @@ async function run(){
     if(jitterTimer){clearInterval(jitterTimer);jitterTimer=null;}
   }
 
-  startJitter();
-
-  let x=x0;
-  for(let i=0n;i<total;i++){
-    x=(x*x)%N;
-
-    if(i%UPDATE_EVERY===0n&&i>0n){
-      displayBase=i+1n;
-      const pct=Number(displayBase)*100/totalNum;
-      // バーと上位桁を同じ current/total で更新
-      document.getElementById('pbar').style.width=pct.toFixed(2)+'%';
-      await new Promise(r=>setTimeout(r,0));
-    }
+  function showDecError(msg){
+    stopJitter();
+    document.getElementById('dec-card').style.display='none';
+    document.getElementById('dec-err').style.display='block';
+    document.getElementById('dec-em').textContent='Error: '+msg;
   }
 
-  // 完了: ザワめきを止めて正確な値を表示
-  stopJitter();
-  document.getElementById('cur').textContent=total.toLocaleString('ja-JP');
-  document.getElementById('pbar').style.width='100%';
-  await new Promise(r=>setTimeout(r,50));
+  startJitter();
 
-  const xFinalHex=x.toString(16);
-  try{localStorage.setItem(CACHE_KEY,xFinalHex);}catch(e){}
+  // 2乗チェーン計算をWeb Workerに移譲（メインスレッドのUIフリーズを回避）
+  // Worker文字列はシングルクォート連結で記述し、外側のテンプレートリテラルと${...}衝突させない
+  var workerCode=
+    'self.onmessage=function(e){'
+  + 'try{'
+  + 'var N=BigInt(e.data.N);'
+  + 'var x=BigInt(e.data.x0);'
+  + 'var cc=BigInt(e.data.cc);'
+  + 'var upd=BigInt(Math.max(1,Math.floor(Number(cc)/100)));'
+  + 'for(var i=0n;i<cc;i++){'
+  + 'x=(x*x)%N;'
+  + 'if(upd>0n&&i%upd===0n&&i>0n){'
+  + 'self.postMessage({type:"progress",done:Number(i+1n)});'
+  + '}'
+  + '}'
+  + 'self.postMessage({type:"done",xFinalHex:x.toString(16)});'
+  + '}catch(err){'
+  + 'self.postMessage({type:"error",message:err.message});'
+  + '}'
+  + '};';
 
-  const decBuf=await decryptWithXFinal(xFinalHex);
+  var blob=new Blob([workerCode],{type:'application/javascript'});
+  var workerUrl=URL.createObjectURL(blob);
+  var worker=new Worker(workerUrl);
+  URL.revokeObjectURL(workerUrl);
 
-  // スピナー発散 → 完了表示
-  pendingDoneCallback=function(){showResult(decBuf);};
-  triggerCollapse();
+  worker.onmessage=function(ev){
+    var d=ev.data;
+    if(d.type==='progress'){
+      displayBase=BigInt(d.done);
+      var pct=d.done*100/totalNum;
+      document.getElementById('pbar').style.width=pct.toFixed(2)+'%';
+    } else if(d.type==='done'){
+      worker.terminate();
+      stopJitter();
+      document.getElementById('cur').textContent=total.toLocaleString('ja-JP');
+      document.getElementById('pbar').style.width='100%';
+      // 50ms待ってからAES復号→結果表示（バー完了アニメが見えるようにする）
+      setTimeout(function(){
+        var xFinalHex=d.xFinalHex;
+        try{localStorage.setItem(CACHE_KEY,xFinalHex);}catch(e){}
+        decryptWithXFinal(xFinalHex).then(function(decBuf){
+          pendingDoneCallback=function(){showResult(decBuf);};
+          triggerCollapse();
+        }).catch(function(e){
+          showDecError(e.message);
+        });
+      },50);
+    } else if(d.type==='error'){
+      worker.terminate();
+      showDecError(d.message);
+    }
+  };
+
+  // Worker自体の起動失敗やパースエラーをキャッチ
+  worker.onerror=function(ev){
+    worker.terminate();
+    showDecError(ev.message||'Worker error');
+  };
+
+  worker.postMessage({N:P.N,x0:P.x0,cc:P.cc});
 }
 
 // ============================================================
