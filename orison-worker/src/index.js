@@ -3405,6 +3405,12 @@ function hexToUint8(h){
   for(let i=0;i<b.length;i++)b[i]=parseInt(h.substr(i*2,2),16);
   return b;
 }
+function base64ToUint8(b64){
+  const bin=atob(b64);
+  const out=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++)out[i]=bin.charCodeAt(i);
+  return out;
+}
 
 function isSafeURL(s){try{const u=new URL(s);return u.protocol==='http:'||u.protocol==='https:';}catch{return false;}}
 
