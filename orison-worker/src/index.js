@@ -2682,7 +2682,7 @@ async function doEncrypt(){
     addLog('保存完了 → ID: ' + d.id);
     await logDelay('done');
 
-    const shareUrl = location.origin + '/s/' + d.id;
+    const shareUrl = location.origin + '/' + d.id;
 
     // 最低演出時間を確保してからcollapse
     const elapsed = performance.now() - encStart;
@@ -3763,10 +3763,11 @@ async function innerFetch(request, env, ctx) {
             return await handleSave(request, env);
         }
 
-        // 共有URL
+        // 旧共有URL (/s/:id) → 新URL (/:id) へ301リダイレクト
         if (path.startsWith('/s/')) {
-            const puzzleId = path.slice(3);
-            return await handleSharedPuzzle(request, env, puzzleId);
+            const redirectUrl = new URL(request.url);
+            redirectUrl.pathname = '/' + path.slice(3);
+            return Response.redirect(redirectUrl.toString(), 301);
         }
 
         // sitemap.xml
@@ -3815,6 +3816,12 @@ async function innerFetch(request, env, ctx) {
                 return assetRes;
             }
         }
+        // 共有URL (/:id) — 8桁小文字hexのパズルID
+        const idMatch = path.match(/^\/([0-9a-f]{8})$/);
+        if (idMatch) {
+            return await handleSharedPuzzle(request, env, idMatch[1]);
+        }
+
         // ここまで来たら本当に Not Found
         return new Response('Not Found', { status: 404 });
 
