@@ -3102,6 +3102,19 @@ body{
   letter-spacing:2px;
   text-transform:uppercase;
 }
+.dec-time-warn{
+  margin-top:14px;
+  padding:9px 18px;
+  border:1px solid rgba(0,255,140,0.18);
+  border-radius:4px;
+  font-family:'Share Tech Mono',monospace;
+  font-size:12px;
+  color:rgba(0,255,140,0.5);
+  letter-spacing:1px;
+  text-align:center;
+  background:rgba(0,255,140,0.03);
+}
+.dec-time-warn-icon{ color:rgba(0,255,140,0.25); }
 
 /* ============================================================
    完了・エラー状態
@@ -3299,6 +3312,11 @@ body{
   <div class="dec-err-label" id="dec-em">エラー</div>
 </div>
 
+<!-- 1時間超の警告 -->
+<div class="dec-time-warn" id="dec-time-warn" style="display:none">
+  <span class="dec-time-warn-icon">// </span><span id="dec-time-warn-text"></span>
+</div>
+
 <!-- 結果カード（完了後に表示） -->
 <div class="result-card" id="result-card">
   <div class="result-card-inner" id="result-card-inner"></div>
@@ -3308,6 +3326,28 @@ body{
 <script>
 const P=JSON.parse(document.getElementById('puzzle-data').textContent);
 const CACHE_KEY='sadocrypt_cache_'+P.id;
+
+// 復号推定時間が1時間超の場合にのみ警告を表示（キャッシュヒット時はスキップ）
+(function(){
+  var sec = Number(P.target_seconds) || (Number(P.cc) / 376223);
+  if(sec <= 3600) return;
+  if(localStorage.getItem(CACHE_KEY)) return;
+  var h = sec / 3600;
+  var label;
+  if(h < 24){
+    label = '約' + (Math.round(h * 10) / 10) + '時間';
+  } else if(sec < 2592000){
+    label = '約' + Math.round(sec / 86400) + '日';
+  } else {
+    label = '約' + Math.round(sec / 2592000) + 'ヶ月';
+  }
+  var el = document.getElementById('dec-time-warn-text');
+  var wrap = document.getElementById('dec-time-warn');
+  if(el && wrap){
+    el.textContent = 'このリンクの解読には ' + label + ' かかる見込みです';
+    wrap.style.display = 'block';
+  }
+})();
 
 // ============================================================
 // Canvasスピナー（暗号化画面と同じ緑ドット8個・24ステップ）
@@ -3531,6 +3571,8 @@ function renderResult(decBuf){
   const inner=document.getElementById('result-card-inner');
   resultCard.style.display='block';
   document.getElementById('dec-card').style.display='none';
+  var tw=document.getElementById('dec-time-warn');
+  if(tw) tw.style.display='none';
 
   if(P.is_file){
     const mime=P.mime_type||'application/octet-stream';
