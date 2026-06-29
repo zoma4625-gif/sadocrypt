@@ -2,8 +2,8 @@ name = "orison"
 main = "src/index.js"
 compatibility_date = "2024-02-01"
 routes = [
-  { pattern = "sadocrypt.com", custom_domain = true },
-  { pattern = "dev.sadocrypt.com", custom_domain = true }
+  { pattern = "brake.run", custom_domain = true },
+  { pattern = "dev.brake.run", custom_domain = true }
 ]
 
 [[kv_namespaces]]
