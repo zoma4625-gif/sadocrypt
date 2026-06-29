@@ -55,17 +55,20 @@
 
 ## 🟡 フェーズB：プライバシー＆HTTPヘッダー（"privacy-first"を掲げるなら揃える）
 
-### 4. リファラ漏れ 🟡
-**症状**: 復号結果が外部URLのとき `location.href` で遷移するが `Referrer-Policy` 未設定。遷移先に `/s/:id`（sadocrypt利用の事実＋パズルID）が `Referer` で漏れる。
-**直す方向**: 全応答に `Referrer-Policy: no-referrer`（最低でも `strict-origin-when-cross-origin`）。
+### 4. リファラ漏れ ✅ 対応済み
+`Referrer-Policy: no-referrer` を `withSec()` で全レスポンスに付与。
 
-### 5. セキュリティヘッダー欠如（クリックジャッキング等）🟡
-**症状**: `X-Frame-Options: DENY`（or CSP `frame-ancestors 'none'`）無し＝iframe埋め込みでクリックジャッキング可能。`X-Content-Type-Options: nosniff`・`Strict-Transport-Security`(HSTS) も無し。
-**直す方向**: Worker応答に一括付与（`X-Frame-Options: DENY` / `X-Content-Type-Options: nosniff` / `Referrer-Policy` / `HSTS`）。一度で片付く。
-**発展（後回し可）**: インラインscript/style多用のため厳密なCSPには nonce 化が必要。1のXSS対策の総仕上げとして将来検討。
+### 5. セキュリティヘッダー欠如（クリックジャッキング等）✅ 対応済み
+`withSec()` + `innerFetch()` 方式で全レスポンスに一括付与:
+- `X-Frame-Options: DENY`
+- `X-Content-Type-Options: nosniff`
+- `Referrer-Policy: no-referrer`
+- `Strict-Transport-Security: max-age=63072000; includeSubDomains`
+
+CSP（`Content-Security-Policy`）は後回し。インラインスクリプト多用のため nonce 化が必要で工数大。
 
 ### 追加メモ（privacy系）
-- **復号鍵がlocalStorageに永続**: `localStorage.setItem('sadocrypt_cache_'+id, x_final)`。再計算回避の設計意図はあるが（[CLAUDE.md のキャッシュ仕様参照]）、共有PCでは第三者が抽出可能。期限付き or オプトアウトを検討する余地。
+- **復号鍵がlocalStorageに永続** ✅ 対応済み: 有効期限付きJSON形式（`{v, exp}`）に変更。有効期限 = `target_seconds + 30日`（サーバーKV TTL と同じ）。旧フォーマット・期限切れは自動削除して再計算扱い。
 - **`target_seconds` は平文でサーバ送信**: 意図した復号時間がメタデータとしてサーバに見える。仕様として許容かは判断。
 - **500応答が `e.message` を返す**（`handleSave` catch）: 内部情報の軽い漏洩。汎用文言に。
 

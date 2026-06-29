@@ -3327,13 +3327,35 @@ body{
 const P=JSON.parse(document.getElementById('puzzle-data').textContent);
 const CACHE_KEY='sadocrypt_cache_'+P.id;
 
+// キャッシュの読み書き（有効期限付きJSON形式）
+// 旧フォーマット（生文字列）・期限切れはともに自動削除して再計算扱いにする
+function readCache(key){
+  try{
+    var raw=localStorage.getItem(key);
+    if(!raw) return null;
+    var data=JSON.parse(raw);
+    if(!data.v||!data.exp){localStorage.removeItem(key);return null;}
+    if(Date.now()>data.exp){localStorage.removeItem(key);return null;}
+    return data.v;
+  }catch(e){
+    try{localStorage.removeItem(key);}catch(_){}
+    return null;
+  }
+}
+function writeCache(key,xFinalHex){
+  try{
+    var ttlMs=(Number(P.target_seconds)+30*24*3600)*1000;
+    localStorage.setItem(key,JSON.stringify({v:xFinalHex,exp:Date.now()+ttlMs}));
+  }catch(e){}
+}
+
 // 復号推定時間が1時間超の場合にのみ警告を表示（キャッシュヒット時はスキップ）
 // localStorage がセキュリティ設定でブロックされていてもクラッシュしないよう try-catch で囲む
 try {
   (function(){
     var sec = Number(P.target_seconds) || (Number(P.cc) / 376223);
     if(sec <= 3600) return;
-    if(localStorage.getItem(CACHE_KEY)) return;
+    if(readCache(CACHE_KEY)) return;
     var h = sec / 3600;
     var label;
     if(h < 24){
@@ -3473,7 +3495,7 @@ async function run(){
   const N=BigInt(P.N),x0=BigInt(P.x0),cc=BigInt(P.cc);
 
   // キャッシュ確認（localStorageにx_finalがあればスキップ）
-  const cached=localStorage.getItem(CACHE_KEY);
+  const cached=readCache(CACHE_KEY);
   if(cached){
     try{
       const decBuf=await decryptWithXFinal(cached);
@@ -3545,7 +3567,7 @@ async function run(){
   await new Promise(r=>setTimeout(r,50));
 
   const xFinalHex=x.toString(16);
-  try{localStorage.setItem(CACHE_KEY,xFinalHex);}catch(e){}
+  writeCache(CACHE_KEY,xFinalHex);
 
   const decBuf=await decryptWithXFinal(xFinalHex);
 
@@ -3797,66 +3819,85 @@ async function handleSharedPuzzle(request, env, puzzleId) {
 // Main Handler
 // ============================================================
 
-export default {
-    async fetch(request, env, ctx) {
-        const url = new URL(request.url);
-        const path = url.pathname;
+// 全レスポンスに一括付与するセキュリティヘッダー
+// クリックジャッキング防止・MIMEスニッフィング防止・リファラ漏洩対策・HTTPS強制
+const SEC_HEADERS = {
+    'X-Frame-Options': 'DENY',
+    'X-Content-Type-Options': 'nosniff',
+    'Referrer-Policy': 'no-referrer',
+    'Strict-Transport-Security': 'max-age=63072000; includeSubDomains',
+};
 
-        // CORSヘッダは不要（同一オリジン運用）。他ドメインからのPOSTはSame-Origin Policyで遮断させる
-        if (request.method === 'OPTIONS') {
-            return new Response(null, { status: 405 });
+function withSec(res) {
+    const h = new Headers(res.headers);
+    for (const [k, v] of Object.entries(SEC_HEADERS)) h.set(k, v);
+    return new Response(res.body, { status: res.status, statusText: res.statusText, headers: h });
+}
+
+async function innerFetch(request, env, ctx) {
+    const url = new URL(request.url);
+    const path = url.pathname;
+
+    // CORSヘッダは不要（同一オリジン運用）。他ドメインからのPOSTはSame-Origin Policyで遮断させる
+    if (request.method === 'OPTIONS') {
+        return new Response(null, { status: 405 });
+    }
+
+    try {
+        // パズル保存API（新方式: クライアントサイド暗号化済みデータを保存）
+        if (path === '/api/save' && request.method === 'POST') {
+            return await handleSave(request, env);
         }
 
-        try {
-            // パズル保存API（新方式: クライアントサイド暗号化済みデータを保存）
-            if (path === '/api/save' && request.method === 'POST') {
-                return await handleSave(request, env);
-            }
+        // 旧暗号化API（廃止）
+        if (path === '/api/encrypt' && request.method === 'POST') {
+            return await handleEncryptLegacy(request, env);
+        }
 
-            // 旧暗号化API（廃止）
-            if (path === '/api/encrypt' && request.method === 'POST') {
-                return await handleEncryptLegacy(request, env);
-            }
+        // 共有URL
+        if (path.startsWith('/s/')) {
+            const puzzleId = path.slice(3);
+            return await handleSharedPuzzle(request, env, puzzleId);
+        }
 
-            // 共有URL
-            if (path.startsWith('/s/')) {
-                const puzzleId = path.slice(3);
-                return await handleSharedPuzzle(request, env, puzzleId);
-            }
-
-            // ベンチマークページ
-            if (path === '/benchmark') {
-                return new Response(HTML_BENCHMARK, {
-                    headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-store' }
-                });
-            }
-
-            // タイムロック解説ページ
-            if (path === '/time-lock') {
-                return new Response(HTML_TIME_LOCK, { headers: { 'Content-Type': 'text/html;charset=utf-8' } });
-            }
-
-            // トップページ
-            if (path === '/' || path === '') {
-                return new Response(HTML_ENCRYPT, {
-                    headers: { 'Content-Type': 'text/html;charset=utf-8' }
-                });
-            }
-
-            // 静的アセット（public/ のファイル）にフォールバック
-            if (env.ASSETS) {
-                const assetRes = await env.ASSETS.fetch(request);
-                if (assetRes && assetRes.status !== 404) {
-                    return assetRes;
-                }
-            }
-            // ここまで来たら本当に Not Found
-            return new Response('Not Found', { status: 404 });
-
-        } catch (e) {
-            return new Response(JSON.stringify({ error: e.message }), {
-                status: 500, headers: { 'Content-Type': 'application/json' }
+        // ベンチマークページ
+        if (path === '/benchmark') {
+            return new Response(HTML_BENCHMARK, {
+                headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-store' }
             });
         }
+
+        // タイムロック解説ページ
+        if (path === '/time-lock') {
+            return new Response(HTML_TIME_LOCK, { headers: { 'Content-Type': 'text/html;charset=utf-8' } });
+        }
+
+        // トップページ
+        if (path === '/' || path === '') {
+            return new Response(HTML_ENCRYPT, {
+                headers: { 'Content-Type': 'text/html;charset=utf-8' }
+            });
+        }
+
+        // 静的アセット（public/ のファイル）にフォールバック
+        if (env.ASSETS) {
+            const assetRes = await env.ASSETS.fetch(request);
+            if (assetRes && assetRes.status !== 404) {
+                return assetRes;
+            }
+        }
+        // ここまで来たら本当に Not Found
+        return new Response('Not Found', { status: 404 });
+
+    } catch (e) {
+        return new Response(JSON.stringify({ error: e.message }), {
+            status: 500, headers: { 'Content-Type': 'application/json' }
+        });
+    }
+}
+
+export default {
+    async fetch(request, env, ctx) {
+        return withSec(await innerFetch(request, env, ctx));
     }
 };
