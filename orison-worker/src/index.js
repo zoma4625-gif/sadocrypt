@@ -3597,12 +3597,43 @@ run().catch(function(e){
  */
 async function handleSave(request, env) {
     try {
+        // ボディサイズ事前チェック（8MB超は即413）
+        const contentLength = parseInt(request.headers.get('Content-Length') || '0', 10);
+        if (contentLength > 8_000_000) {
+            return new Response(JSON.stringify({ error: 'リクエストが大きすぎます' }), {
+                status: 413, headers: { 'Content-Type': 'application/json' }
+            });
+        }
+
         const { x0, N, cc, iv, ct, target_seconds, is_file, file_name, mime_type } = await request.json();
+
+        // 必須フィールド存在チェック
         if (!x0 || !N || !cc || !iv || !ct) {
             return new Response(JSON.stringify({ error: 'パラメータが不足しています' }), {
                 status: 400, headers: { 'Content-Type': 'application/json' }
             });
         }
+
+        // フィールド型・長さバリデーション
+        const bad = (msg) => new Response(JSON.stringify({ error: msg }), {
+            status: 400, headers: { 'Content-Type': 'application/json' }
+        });
+        if (typeof ct !== 'string' || ct.length > 7_500_000)
+            return bad('ct が不正です');
+        if (typeof iv !== 'string' || iv.length !== 16)
+            return bad('iv が不正です');
+        if (typeof N !== 'string' || N.length > 400)
+            return bad('N が不正です');
+        if (typeof x0 !== 'string' || x0.length > 400)
+            return bad('x0 が不正です');
+        if (!Number.isFinite(Number(cc)) || Number(cc) <= 0)
+            return bad('cc が不正です');
+        if (target_seconds !== undefined && (!Number.isFinite(Number(target_seconds)) || Number(target_seconds) < 0))
+            return bad('target_seconds が不正です');
+        if (file_name !== undefined && (typeof file_name !== 'string' || file_name.length > 255))
+            return bad('file_name が不正です');
+        if (mime_type !== undefined && (typeof mime_type !== 'string' || mime_type.length > 100))
+            return bad('mime_type が不正です');
 
         const puzzleId = uuidv4().slice(0, 8);
 
@@ -3642,7 +3673,7 @@ async function handleSave(request, env) {
         });
 
     } catch (e) {
-        return new Response(JSON.stringify({ error: e.message }), {
+        return new Response(JSON.stringify({ error: '保存に失敗しました' }), {
             status: 500, headers: { 'Content-Type': 'application/json' }
         });
     }
@@ -3720,15 +3751,9 @@ export default {
         const url = new URL(request.url);
         const path = url.pathname;
 
-        // CORS preflight
+        // CORSヘッダは不要（同一オリジン運用）。他ドメインからのPOSTはSame-Origin Policyで遮断させる
         if (request.method === 'OPTIONS') {
-            return new Response(null, {
-                headers: {
-                    'Access-Control-Allow-Origin': '*',
-                    'Access-Control-Allow-Methods': 'GET, POST',
-                    'Access-Control-Allow-Headers': 'Content-Type'
-                }
-            });
+            return new Response(null, { status: 405 });
         }
 
         try {
