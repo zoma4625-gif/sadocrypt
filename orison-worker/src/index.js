@@ -145,6 +145,7 @@ const HTML_BENCHMARK = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Brake. – ベンチマーク</title>
+<meta name="robots" content="noindex,nofollow">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
@@ -981,6 +982,15 @@ const HTML_TIME_LOCK = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Brake. – タイムロック暗号とは</title>
+<meta name="description" content="タイムロック暗号の仕組みを解説。Rivest-Shamir-Wagner方式の逐次2乗計算で、設定した時間が経過しないと復号できない暗号を実現します。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="タイムロック暗号とは – Brake.">
+<meta property="og:description" content="タイムロック暗号の仕組みを解説。Rivest-Shamir-Wagner方式の逐次2乗計算で、設定した時間が経過しないと復号できない暗号を実現します。">
+<meta property="og:url" content="https://sadocrypt.com/time-lock">
+<meta name="twitter:card" content="summary">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -1056,6 +1066,12 @@ const HTML_ENCRYPT = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Brake. – 時間鍵ファイル暗号化サービス</title>
+<meta name="description" content="ファイルやURLに"時間の鍵"をかける。設定した時間が来るまで誰も解読できない、タイムロック暗号化サービス。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Brake. – 時間鍵ファイル暗号化サービス">
+<meta property="og:description" content="ファイルやURLに"時間の鍵"をかける。設定した時間が来るまで誰も解読できない、タイムロック暗号化サービス。">
+<meta property="og:url" content="https://sadocrypt.com/">
+<meta name="twitter:card" content="summary">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -1975,7 +1991,7 @@ ${HEADER_HTML}
 
   <!-- ヒーロー本文 -->
   <div class="hero-body">
-    <div class="hero-catch">ファイルに"時間の鍵"をかける。</div>
+    <h1 class="hero-catch">ファイルに"時間の鍵"をかける。</h1>
     <div class="hero-sub">ファイルを置いて、時間を決めるだけ。</div>
 
     <!-- 暗号化フォーム（既存のまま流用） -->
@@ -2920,6 +2936,7 @@ const HTML_DECRYPT = `<!DOCTYPE html>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Brake. – 復号</title>
+<meta name="robots" content="noindex,nofollow">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
@@ -3863,19 +3880,19 @@ async function innerFetch(request, env, ctx) {
         // ベンチマークページ
         if (path === '/benchmark') {
             return new Response(HTML_BENCHMARK, {
-                headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-store' }
+                headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'public, max-age=3600' }
             });
         }
 
         // タイムロック解説ページ
         if (path === '/time-lock') {
-            return new Response(HTML_TIME_LOCK, { headers: { 'Content-Type': 'text/html;charset=utf-8' } });
+            return new Response(HTML_TIME_LOCK, { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'public, max-age=3600' } });
         }
 
         // トップページ
         if (path === '/' || path === '') {
             return new Response(HTML_ENCRYPT, {
-                headers: { 'Content-Type': 'text/html;charset=utf-8' }
+                headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'public, max-age=3600' }
             });
         }
 
