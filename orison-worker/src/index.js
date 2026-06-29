@@ -3514,76 +3514,44 @@ async function run(){
     if(jitterTimer){clearInterval(jitterTimer);jitterTimer=null;}
   }
 
-  function showDecError(msg){
-    stopJitter();
-    document.getElementById('dec-card').style.display='none';
-    document.getElementById('dec-err').style.display='block';
-    document.getElementById('dec-em').textContent='Error: '+msg;
-  }
-
   startJitter();
 
-  // 2乗チェーン計算をWeb Workerに移譲（メインスレッドのUIフリーズを回避）
-  // Worker文字列はシングルクォート連結で記述し、外側のテンプレートリテラルと${...}衝突させない
-  var workerCode=
-    'self.onmessage=function(e){'
-  + 'try{'
-  + 'var N=BigInt(e.data.N);'
-  + 'var x=BigInt(e.data.x0);'
-  + 'var cc=BigInt(e.data.cc);'
-  + 'var upd=BigInt(Math.max(1,Math.floor(Number(cc)/100)));'
-  + 'for(var i=0n;i<cc;i++){'
-  + 'x=(x*x)%N;'
-  + 'if(upd>0n&&i%upd===0n&&i>0n){'
-  + 'self.postMessage({type:"progress",done:Number(i+1n)});'
-  + '}'
-  + '}'
-  + 'self.postMessage({type:"done",xFinalHex:x.toString(16)});'
-  + '}catch(err){'
-  + 'self.postMessage({type:"error",message:err.message});'
-  + '}'
-  + '};';
-
-  var blob=new Blob([workerCode],{type:'application/javascript'});
-  var workerUrl=URL.createObjectURL(blob);
-  var worker=new Worker(workerUrl);
-  URL.revokeObjectURL(workerUrl);
-
-  worker.onmessage=function(ev){
-    var d=ev.data;
-    if(d.type==='progress'){
-      displayBase=BigInt(d.done);
-      var pct=d.done*100/totalNum;
-      document.getElementById('pbar').style.width=pct.toFixed(2)+'%';
-    } else if(d.type==='done'){
-      worker.terminate();
-      stopJitter();
-      document.getElementById('cur').textContent=total.toLocaleString('ja-JP');
-      document.getElementById('pbar').style.width='100%';
-      // 50ms待ってからAES復号→結果表示（バー完了アニメが見えるようにする）
-      setTimeout(function(){
-        var xFinalHex=d.xFinalHex;
-        try{localStorage.setItem(CACHE_KEY,xFinalHex);}catch(e){}
-        decryptWithXFinal(xFinalHex).then(function(decBuf){
-          pendingDoneCallback=function(){showResult(decBuf);};
-          triggerCollapse();
-        }).catch(function(e){
-          showDecError(e.message);
-        });
-      },50);
-    } else if(d.type==='error'){
-      worker.terminate();
-      showDecError(d.message);
+  // 経過時間ベースのchunked setTimeout方式（全ブラウザ対応・UIフリーズなし）
+  // 1000回ごとにDate.nowをチェックし、50ms経過していたらイベントループに制御を返す
+  // → 高速デバイスは多く回り、低速デバイスは少なく回って自動調整
+  let x=x0;
+  let i=0n;
+  while(i<total){
+    const chunkStart=Date.now();
+    let c=0;
+    while(i<total){
+      x=(x*x)%N;
+      i++;
+      if(++c>=1000){
+        c=0;
+        if(Date.now()-chunkStart>=50) break;
+      }
     }
-  };
+    displayBase=i;
+    const pct=Number(i)*100/totalNum;
+    document.getElementById('pbar').style.width=pct.toFixed(2)+'%';
+    if(i<total) await new Promise(r=>setTimeout(r,0));
+  }
 
-  // Worker自体の起動失敗やパースエラーをキャッチ
-  worker.onerror=function(ev){
-    worker.terminate();
-    showDecError(ev.message||'Worker error');
-  };
+  // 完了: ザワめきを止めて正確な値を表示
+  stopJitter();
+  document.getElementById('cur').textContent=total.toLocaleString('ja-JP');
+  document.getElementById('pbar').style.width='100%';
+  await new Promise(r=>setTimeout(r,50));
 
-  worker.postMessage({N:P.N,x0:P.x0,cc:P.cc});
+  const xFinalHex=x.toString(16);
+  try{localStorage.setItem(CACHE_KEY,xFinalHex);}catch(e){}
+
+  const decBuf=await decryptWithXFinal(xFinalHex);
+
+  // スピナー発散 → 完了表示
+  pendingDoneCallback=function(){showResult(decBuf);};
+  triggerCollapse();
 }
 
 // ============================================================
