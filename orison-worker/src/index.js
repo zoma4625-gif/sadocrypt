@@ -1373,6 +1373,12 @@ ${HEADER_CSS}
   z-index:201;
 }
 #btn-plus:hover::before{opacity:1;transition-delay:0s}
+/* スマホ／タッチデバイス（hover不可）ではツールチップを一切表示しない。
+   :hover はタップで誤発火するため、吹き出し本体(::after)と三角(::before)を無効化 */
+@media (hover: none), (pointer: coarse){
+  [data-tip]::after,
+  #btn-plus::before{ content:none; display:none; }
+}
 
 /* ============================================================
    生成結果表示（白カード・入力カードと対に揃える）
@@ -2843,14 +2849,13 @@ var _rareLineInFrac=0;       // 左線(当たる)の伸び 0..1
 var _rareLineAlpha=1;        // 左線の不透明度（満ちたらフェード）
 var _rareEmitFrac=0;         // 右線(放つ)の伸び 0..1
 var _rareEyeAlpha=0;         // 目のフェード 0..1
-var _rareEyeMorph=0;         // 0=カプセル目 1=棒目
-var _rareEyeOpen=1;          // まばたき 1=開 0=閉
+var _rareEyeOpen=1;          // 目の開き(縦割合) 0..1
 var _rareTurnDeg=0;          // 枠右向きヨー角(度)
 var _rareTextDone=false;     // ステータス文言切替の一度きりフラグ
 // 各サブフェーズ長(ms)。レアなので通常より長尺
-var RARE_LINE_IN=450, RARE_FILL=1200, RARE_LGONE=220, RARE_EYESIN=260, RARE_BLINK=620, RARE_TURN=620, RARE_EMIT=520, RARE_ENDHOLD=180;
+var RARE_LINE_IN=450, RARE_FILL=1200, RARE_LGONE=220, RARE_EYESIN=320, RARE_BLINK=720, RARE_TURN=620, RARE_EMIT=520, RARE_ENDHOLD=180;
 var RARE_FADE=300;           // ポップのフェードイン(.3s)。これが終わるまで演出は待つ
-var RARE_DELAY=200;          // フェードイン後、再生開始までの間(ms)。その間は空セルがハッキリ見える
+var RARE_DELAY=100;          // フェードイン後、再生開始までの間(ms)。その間は空セルがハッキリ見える
 var RARE_TURN_MAX=46;        // 右向き最大ヨー角(度)
 var RARE_GROW=0.12;          // 右向き時のセル拡大率（小さく見える分の相殺）
 var RARE_DEP=0.6;            // 見かけの奥行き係数
@@ -2860,8 +2865,10 @@ var RARE_GREEN='#3ddc84';    // 線・セル共通の緑（色は不変）
 var RARE_EYE_CY=0.47;        // 目の縦位置（top からの比率）
 var RARE_EYE_GAP=0.205;      // 目の左右間隔（中心から各目までの比率）
 var RARE_EYE_W=10.5;         // 目の半幅(px)
-var RARE_EYE_CAPH=8;         // カプセル時の縦幅(px)
-var RARE_EYE_BARH=4.5;       // 棒目(静止)の縦幅(px)。少しカプセル寄りの厚み
+var RARE_EYE_H=8.0;          // 最大時の目の高さ(px)。開き(割合)を掛けて縦が決まる
+var RARE_EYE_START_OPEN=0.50;// 出現時の細さ（割合）
+var RARE_EYE_MAX_OPEN=1.0;   // パチクリで見開いた最大・右向き中
+var RARE_EYE_EMIT_OPEN=0.60; // 線出し時の細さ（割合。emit と同期して 最大→これへ）
 var RARE_TURN_MAX=48;        // 右向き最大ヨー角(度)
 
 function _drawPopCell(canvas){
@@ -2935,6 +2942,7 @@ function _drawPopCell(canvas){
   gctx.restore();
 }
 
+function _rareLerp(a,b,t){ return a+(b-a)*Math.max(0,Math.min(1,t)); }
 // 角丸矩形パス（目の描画用）
 function _rareRoundRect(g,x,y,w,hh,r){
   if(w<=0||hh<=0) return;
@@ -3010,7 +3018,8 @@ function _drawPopRare(gctx, cx, cy, sz){
   gctx.strokeStyle=RARE_GREEN; gctx.lineWidth=2;
   gctx.strokeRect(fL,top,faceW,faceH);
 
-  // ③④ 目（正面の中心 fc に。カプセル→棒目、ヨーで横に潰れる）
+  // ③④ 目（正面の中心 fc に。一定サイズの丸角バー。ヨーで横に潰れ、
+  //    パチクリ＝開閉のみ、線出し(emit)時だけ縦に細める）
   if(_rareEyeAlpha>0.01 && faceW>4){
     gctx.save();
     gctx.globalAlpha=_rareEyeAlpha;
@@ -3018,12 +3027,13 @@ function _drawPopRare(gctx, cx, cy, sz){
     var eyeCy=top+faceH*RARE_EYE_CY;
     var gap=faceH*RARE_EYE_GAP*c;
     var ew=RARE_EYE_W*c*grow;                     // 半幅
-    var eh=(RARE_EYE_CAPH+(RARE_EYE_BARH-RARE_EYE_CAPH)*_rareEyeMorph)*0.5*grow; // カプセル→棒 の半分
-    var rr=(4+(2-4)*_rareEyeMorph)*grow;          // 角丸 4→2
+    var eh=RARE_EYE_H*0.5*grow;                    // 半分の高さ（一定）
     var openY=Math.max(0.06,_rareEyeOpen);
+    var hh=eh*2*openY;                             // 開閉後の高さ
+    var rv=Math.min(hh/2,ew);                       // 丸角＝ピル端
     for(var k=-1;k<=1;k+=2){
       var ex=fc+k*gap;
-      _rareRoundRect(gctx, ex-ew, eyeCy-eh*openY, ew*2, eh*2*openY, Math.min(rr,eh*openY));
+      _rareRoundRect(gctx, ex-ew, eyeCy-hh/2, ew*2, hh, rv);
       gctx.fill();
     }
     gctx.restore();
@@ -3069,32 +3079,35 @@ function _rareStep(now){
       if(_popStatusEl){ _popStatusEl.textContent='暗号化しました'; _popStatusEl.style.color=RARE_GREEN; _popStatusEl.style.fontSize='17px'; }
     }
   } else if(t<t4){
-    // ④ カプセル目フェードイン
+    // ④ 目フェードイン（細めで出現）
     _rarePhase='eyesIn';
     _rareLineAlpha=0;
-    _rareEyeAlpha=Math.min(1,(t-t3)/RARE_EYESIN); _rareEyeMorph=0; _rareEyeOpen=1;
+    _rareEyeAlpha=Math.min(1,(t-t3)/RARE_EYESIN); _rareEyeOpen=RARE_EYE_START_OPEN;
   } else if(t<t5){
-    // ④ 棒目にモーフ→2回まばたき
+    // ④ 細めから2回パチクリして、初めて最大に見開く
     _rarePhase='blink';
-    var tb=t-t4; _rareEyeAlpha=1; _rareEyeMorph=Math.min(1,tb/120); _rareEyeOpen=1;
-    var b1=200, b2=380, bw=70;
-    if(tb>b1-bw && tb<b1+bw) _rareEyeOpen=Math.abs(tb-b1)/bw;
-    else if(tb>b2-bw && tb<b2+bw) _rareEyeOpen=Math.abs(tb-b2)/bw;
+    var tb=t-t4; _rareEyeAlpha=1;
+    if(tb<110) _rareEyeOpen=_rareLerp(RARE_EYE_START_OPEN,0.06,tb/110);
+    else if(tb<210) _rareEyeOpen=_rareLerp(0.06,0.7,(tb-110)/100);
+    else if(tb<290) _rareEyeOpen=_rareLerp(0.7,0.06,(tb-210)/80);
+    else if(tb<450) _rareEyeOpen=_rareLerp(0.06,RARE_EYE_MAX_OPEN,(tb-290)/160);
+    else _rareEyeOpen=RARE_EYE_MAX_OPEN;
   } else if(t<t6){
-    // ⑤ 枠右を向く（＋拡大で相殺）
+    // ⑤ 枠右を向く（＋拡大で相殺）。目は最大のまま
     _rarePhase='turn';
     var tt=(t-t5)/RARE_TURN;
     var e2=tt<0.5?2*tt*tt:-1+(4-2*tt)*tt;
-    _rareTurnDeg=RARE_TURN_MAX*e2; _rareEyeMorph=1; _rareEyeOpen=1;
+    _rareTurnDeg=RARE_TURN_MAX*e2; _rareEyeOpen=RARE_EYE_MAX_OPEN;
   } else if(t<t7){
-    // ⑥ 右へ線を伸ばす（枠右端で見切れ）
+    // ⑥ 右へ線を伸ばす（枠右端で見切れ）＝同時に目を細める
     _rarePhase='emit';
     _rareTurnDeg=RARE_TURN_MAX; _rareEmitFrac=(t-t6)/RARE_EMIT;
+    _rareEyeOpen=_rareLerp(RARE_EYE_MAX_OPEN,RARE_EYE_EMIT_OPEN,_rareEmitFrac);
   } else {
-    // ⑦ 終端：セル・線はそのまま保持。API 完了（_popOnLand 設定済み）を
+    // ⑦ 終端：セル・線・細めた目はそのまま保持。API 完了（_popOnLand 設定済み）を
     //    待ってから結果カードへ遷移。早く終わってもここで待つ。
     _rarePhase='end';
-    _rareTurnDeg=RARE_TURN_MAX; _rareEmitFrac=1;
+    _rareTurnDeg=RARE_TURN_MAX; _rareEmitFrac=1; _rareEyeOpen=RARE_EYE_EMIT_OPEN;
     if(_popOnLand){ _popOnLand(); _popOnLand=null; }
   }
 }
@@ -3173,7 +3186,7 @@ function showEncPopup(){
   // レア抽選＆リセット（window._brakeForceRare=true で強制発動）
   _popRare=(window._brakeForceRare===true)||(Math.random()<_POP_RARE_PROB);
   _rarePhase='none'; _rareStart=0; _rareReadyAt=0; _rareLineInFrac=0; _rareLineAlpha=1; _rareEmitFrac=0;
-  _rareEyeAlpha=0; _rareEyeMorph=0; _rareEyeOpen=1; _rareTurnDeg=0; _rareTextDone=false;
+  _rareEyeAlpha=0; _rareEyeOpen=RARE_EYE_START_OPEN; _rareTurnDeg=0; _rareTextDone=false;
   // レアはポップのフェードイン完了後に再生開始（_rareReadyAt）。それまでは空セルを表示。
   // その後 RARE_DELAY の間ハッキリ空セルを見せてからビーム。結果カード遷移(_popOnLand)
   // だけは API 完了を待ってから（_rareStep 終端で実行）。
