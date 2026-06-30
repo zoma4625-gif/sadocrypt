@@ -2840,7 +2840,7 @@ var _POP_CELL_XOFF=102, _POP_CELL_YOFF=20; // cx=105 → (300-90)/2 で中央。
 // シーケンス: lineIn→fill→lineGone→eyesIn→blink→turn(+grow)→emit→end
 // 終端で _popOnLand を呼び、以降は通常アニメ仕様に準拠（結果カード・放出・ポップ消し）。
 // ============================================================
-var _POP_RARE_PROB=1;        // ★一時的に必ずレア発動（確認用）。確率は後で調整する。window._brakeForceRare=true でも強制発動
+var _POP_RARE_PROB=1/5;      // レア発動確率（1/5）。window._brakeForceRare=true で強制発動
 var _popRare=false;
 var _rarePhase='none';       // none|lineIn|fill|lineGone|eyesIn|blink|turn|emit|end|done
 var _rareStart=0;
