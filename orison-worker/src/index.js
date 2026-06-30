@@ -1239,12 +1239,19 @@ ${HEADER_CSS}
   color:#333;
   cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  transition:border-color .12s,background .12s;
+  transition:border-color .12s,background .12s,box-shadow .12s,color .12s;
   white-space:nowrap;
   flex-shrink:0;
 }
 .preset-chip:hover{border-color:#999;background:#ebebeb}
-.preset-chip.active{background:#fff;border:2px solid #0a0e0c;color:#0a0e0c;font-weight:600}
+/* active: border色を透明にしてbox-shadowで2px黒枠を表現 → レイアウト幅不変 */
+.preset-chip.active{
+  background:#fff;
+  border-color:transparent;
+  box-shadow:inset 0 0 0 2px #0a0e0c;
+  color:#0a0e0c;
+  font-weight:600;
+}
 /* 数値・単位フィールド */
 .time-val-input{
   border:1px solid #c4c4c4;
@@ -1277,6 +1284,8 @@ ${HEADER_CSS}
   background:transparent;
   cursor:pointer;
   -webkit-appearance:none;
+  text-align:center;
+  text-align-last:center;
   flex-shrink:0;
 }
 .time-unit-select:focus{border-color:#888}
@@ -1321,7 +1330,7 @@ ${HEADER_CSS}
 [data-tip]::after{
   content:attr(data-tip);
   position:absolute;
-  bottom:calc(100% + 7px);
+  bottom:calc(100% + 8px);
   left:50%;
   transform:translateX(-50%);
   background:#1a1a18;
@@ -1335,9 +1344,16 @@ ${HEADER_CSS}
   pointer-events:none;
   opacity:0;
   transition:opacity .08s;
+  transition-delay:0s;
   z-index:200;
 }
+/* 即表示（離したら即消し） */
 [data-tip]:hover::after{opacity:1;transition-delay:0s}
+/* 実行ボタンのみ：ホバー開始から1秒後に表示、離したら即消し */
+#btn::after{transition-delay:0s}
+#btn:hover::after{transition-delay:1000ms}
+/* +ボタン：form-card(overflow:hidden)の左端クリップを回避するため左寄せ */
+#btn-plus::after{left:0;transform:none}
 
 /* ============================================================
    生成結果表示（白カード・入力カードと対に揃える）
@@ -3547,15 +3563,15 @@ body{
   margin-bottom:0;
 }
 .dec-copy-btn{
-  display:flex;align-items:center;gap:5px;
+  display:flex;align-items:center;justify-content:center;
+  width:28px;height:28px;
   background:rgba(0,255,140,0.08);
   border:0.5px solid rgba(0,255,140,0.3);
-  border-radius:8px;
+  border-radius:7px;
   color:#00ff8c;
-  font-family:'Share Tech Mono',monospace;
-  font-size:11px;
   cursor:pointer;
-  padding:5px 10px;
+  padding:0;
+  flex-shrink:0;
   transition:background .15s,border-color .15s;
   flex-shrink:0;
 }
@@ -4001,7 +4017,7 @@ function renderResult(decBuf){
       // テキストはそのまま表示（ラベル行右端にコピーボタン）
       var svgCopy='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
       var svgCheck='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-      inner.innerHTML='<div class="dec-result-header"><span class="dec-result-label">DECRYPTED TEXT</span><button class="dec-copy-btn" id="dec-copy-btn">'+svgCopy+'コピー</button></div><div class="result-text-content" id="dec-text-body"></div>';
+      inner.innerHTML='<div class="dec-result-header"><span class="dec-result-label">DECRYPTED TEXT</span><button class="dec-copy-btn" id="dec-copy-btn" aria-label="コピー">'+svgCopy+'</button></div><div class="result-text-content" id="dec-text-body"></div>';
       document.getElementById('dec-text-body').textContent=content; // XSS回避: textContentで設定
       (function(cpContent){
         var dcb=document.getElementById('dec-copy-btn');
@@ -4010,8 +4026,8 @@ function renderResult(decBuf){
           function onCopied(){
             var b=document.getElementById('dec-copy-btn');
             if(!b) return;
-            b.innerHTML=svgCheck+'コピー済';
-            setTimeout(function(){ var b2=document.getElementById('dec-copy-btn'); if(b2) b2.innerHTML=svgCopy+'コピー'; },1500);
+            b.innerHTML=svgCheck;
+            setTimeout(function(){ var b2=document.getElementById('dec-copy-btn'); if(b2) b2.innerHTML=svgCopy; },1500);
           }
           navigator.clipboard.writeText(cpContent).then(onCopied).catch(function(){
             var ta=document.createElement('textarea');ta.value=cpContent;document.body.appendChild(ta);ta.select();
