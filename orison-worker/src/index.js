@@ -2127,7 +2127,7 @@ ${HEADER_HTML}
               class="url-input"
               type="text"
               id="content-input"
-              placeholder="ここにURLを入力"
+              placeholder="ここにURLを入力..."
               autocomplete="off"
             >
           </div>
@@ -2557,7 +2557,7 @@ function clearFileSelection(){
   fileSelectedBar.classList.remove('visible');
   btnPlus.classList.remove('active');
   contentInput.disabled = false;
-  contentInput.placeholder = 'ここにURLを入力';
+  contentInput.placeholder = 'ここにURLを入力...';
 }
 
 // ドラッグ&ドロップ
