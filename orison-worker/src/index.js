@@ -1683,13 +1683,12 @@ ${HEADER_CSS}
   align-items:start;
 }
 .whats-col-eyebrow{
-  font-family:'JetBrains Mono',monospace;
+  font-family:'Inter','Noto Sans JP',sans-serif;
   font-size:13px;
   font-weight:500;
-  letter-spacing:3px;
+  letter-spacing:0.05em;
   color:#00ff8c;
-  text-transform:uppercase;
-  text-shadow:0 0 9px rgba(0,255,140,.6),0 0 16px rgba(0,255,140,.3);
+  text-shadow:0 0 7px rgba(0,255,140,.45),0 0 14px rgba(0,255,140,.2);
   display:inline-flex;
   align-items:center;
   gap:12px;
@@ -1741,13 +1740,12 @@ ${HEADER_CSS}
   }
 }
 .section-eyebrow{
-  font-family:'JetBrains Mono',monospace;
+  font-family:'Inter','Noto Sans JP',sans-serif;
   font-size:14px;
   font-weight:500;
   color:#00ff8c;
-  letter-spacing:4px;
-  text-transform:uppercase;
-  text-shadow:0 0 9px rgba(0,255,140,.6), 0 0 16px rgba(0,255,140,.3);
+  letter-spacing:0.05em;
+  text-shadow:0 0 7px rgba(0,255,140,.45),0 0 14px rgba(0,255,140,.2);
   margin-bottom:28px;
 }
 .eb-prompt{ letter-spacing:0; margin-right:5px; opacity:.85; }
@@ -1783,11 +1781,12 @@ ${HEADER_CSS}
   margin:0 auto;
 }
 .howto-section-eyebrow{
-  font-family:'Share Tech Mono',monospace;
+  font-family:'Inter','Noto Sans JP',sans-serif;
   font-size:11px;
+  font-weight:500;
   color:#00ff8c;
-  letter-spacing:4px;
-  text-transform:uppercase;
+  letter-spacing:0.05em;
+  text-shadow:0 0 7px rgba(0,255,140,.45),0 0 14px rgba(0,255,140,.2);
   margin-bottom:16px;
 }
 .howto-section-heading{
@@ -1852,12 +1851,12 @@ ${HEADER_CSS}
   letter-spacing:1px;
 }
 .howto-col-step{
-  font-family:'JetBrains Mono',monospace;
+  font-family:'Inter','Noto Sans JP',sans-serif;
   font-size:12px;
   font-weight:500;
   color:#00ff8c;
-  letter-spacing:2px;
-  text-shadow:0 0 9px rgba(0,255,140,.6),0 0 16px rgba(0,255,140,.3);
+  letter-spacing:0.05em;
+  text-shadow:0 0 7px rgba(0,255,140,.45),0 0 14px rgba(0,255,140,.2);
 }
 .howto-col-title{
   font-family:'Noto Sans JP',sans-serif;
@@ -1916,11 +1915,11 @@ ${HEADER_CSS}
   padding:28px 24px;
 }
 .why-card-num{
-  font-family:'JetBrains Mono',monospace;
+  font-family:'Inter','Noto Sans JP',sans-serif;
   font-size:13px;
   font-weight:700;
   color:#00ff8c;
-  letter-spacing:2px;
+  letter-spacing:0.05em;
   margin-bottom:12px;
   text-shadow:0 0 9px rgba(0,255,140,.6),0 0 16px rgba(0,255,140,.3);
 }
@@ -2149,24 +2148,28 @@ ${HEADER_HTML}
 <section class="whats-section" id="whats">
   <div class="whats-inner">
     <div class="whats-col-left">
-      <div class="whats-col-eyebrow">WHAT'S BRAKE?</div>
-      <div class="whats-heading">Brakeは、タイムロック暗号を使った暗号化Webサービスです。</div>
-      <div class="whats-col-body">ファイルに時間鍵をかけ、マシンが計算を解き終えるまで、誰にも復号できないようにします。</div>
-      <a href="/time-lock" class="whats-link" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">タイムロック暗号とは？ →</a>
+      <div class="whats-col-eyebrow">Brake.とは?</div>
+      <div class="whats-heading">Brake.は、タイムロック暗号を使った暗号化Webサービスです。</div>
+      <div class="whats-col-body">URLやテキストを暗号化し、「1分後」「1時間後」「1日後」にしか開けないリンクを生成します。画像、動画、音声、文書なども暗号化できます（最大5MBまで）。</div>
+      <a href="/time-lock" class="whats-link" style="display:inline-flex;align-items:center;gap:5px;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>タイムロック暗号とは？ →</a>
     </div>
     <div class="whats-col-right">
-      <div class="whats-col-eyebrow">こんな人に</div>
-      <div class="who-item">
-        <div class="who-item-title">デジタル疲れを感じている人に。</div>
-        <div class="who-item-desc">情報量にブレーキをかける。</div>
-      </div>
+      <div class="whats-col-eyebrow">使われ方のイメージ</div>
       <div class="who-item">
         <div class="who-item-title">コンテンツをちゃんと見てほしい人に。</div>
-        <div class="who-item-desc">待つ時間込みで、映画のように。</div>
+        <div class="who-item-desc">閲覧の難易度を上げ、意味のあるコンテンツがスクロールに流されるのを防ぎます。</div>
       </div>
       <div class="who-item">
-        <div class="who-item-title">知り合いに待つ時間を送りたい人に。</div>
-        <div class="who-item-desc">待ってる間にひと呼吸。</div>
+        <div class="who-item-title">商品のリリースや重大発表に。</div>
+        <div class="who-item-desc">解禁時間を設計し、待つことができる人たちの間でだけ情報が共有されます。</div>
+      </div>
+      <div class="who-item">
+        <div class="who-item-title">知り合いに待つ時間を贈りたい人に。</div>
+        <div class="who-item-desc">復号はブラウザを開いている間しか行われません。待ってる間にひと呼吸。</div>
+      </div>
+      <div class="who-item">
+        <div class="who-item-title">ほかにも</div>
+        <div class="who-item-desc">使い方は、あなた次第。サプライズやタイムカプセルにも。</div>
       </div>
     </div>
   </div>
@@ -2240,42 +2243,6 @@ ${HEADER_HTML}
      ============================================================ -->
 
 <!-- ============================================================
-     5. タイムロック暗号解説（Why Brake?の直後）2カラム
-     ============================================================ -->
-<section style="width:100%;background:#000;padding:100px 24px" id="time-lock">
-  <div style="max-width:1100px;margin:0 auto">
-    <div class="section-eyebrow" style="margin-bottom:40px"><span class="eb-dot" style="width:10px;height:10px;background:#00ff8c;box-shadow:0 0 8px rgba(0,255,140,.8);display:inline-block;margin-right:12px;vertical-align:middle"></span>WHAT'S TIME-LOCK CRYPTOGRAPHY?</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start">
-      <!-- 左: テキスト -->
-      <div>
-        <div style="font-family:'Shippori Mincho',serif;font-weight:600;font-size:clamp(20px,3vw,30px);color:#fff;line-height:1.5;margin-bottom:36px;letter-spacing:.02em">「時間が経たないと開かない」を、数学で実現する。</div>
-        <div style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:rgba(207,216,211,1);line-height:2;margin-bottom:24px">Brake. の心臓部にあるのは、タイムロック暗号（Time-Lock Puzzle）という暗号技術です。これは1996年、RSA暗号の生みの親である Ron Rivest、Adi Shamir、そして David Wagner の3氏によって理論化されました。</div>
-        <div style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:rgba(207,216,211,1);line-height:2;margin-bottom:24px">仕組みは、ひとつずつ順番にしか解けない計算を、膨大な回数くり返させること。前の答えが出ないと次に進めないので、計算を分担して速めることが原理的にできません。これを「逐次性（sequential）」と呼びます。</div>
-        <div style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:rgba(207,216,211,1);line-height:2;margin-bottom:24px">だからこそ——潤沢な資金でサーバーを千台並べても、待ち時間は1秒も縮まない。時間だけが、唯一の鍵になります。</div>
-        <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(0,255,140,.35);line-height:1.9;margin-top:20px;letter-spacing:.03em">
-          ※ Brake. は Rivest–Shamir–Wagner 方式に基づいて実装されています。<br>
-          ※ 待ち時間は iPhone 17 Pro の処理性能を基準に設定。
-        </div>
-      </div>
-      <!-- 右: ビジュアルプレースホルダ -->
-      <div style="border:1px solid rgba(0,255,140,.15);border-radius:16px;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;background:rgba(0,255,140,.02)">
-        <div style="text-align:center">
-          <div style="font-family:'Share Tech Mono',monospace;font-size:13px;color:rgba(0,255,140,.25);letter-spacing:.1em;margin-bottom:16px">x = x² mod N</div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(0,255,140,.15);letter-spacing:.05em">逐次平方（time-lock puzzle）</div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <style>
-    @media(max-width:767px){
-      #time-lock [style*="grid-template-columns:1fr 1fr"]{
-        grid-template-columns:1fr !important;
-      }
-    }
-  </style>
-</section>
-
-<!-- ============================================================
      6. プライバシーセクション（2カラム）
      ============================================================ -->
 <section style="width:100%;background:#000;padding:100px 24px" id="privacy">
@@ -2285,7 +2252,7 @@ ${HEADER_HTML}
       <!-- 左: ビジュアルプレースホルダ -->
       <div style="border:1px solid rgba(0,255,140,.15);border-radius:16px;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;background:rgba(0,255,140,.02)">
         <div style="text-align:center">
-          <div style="font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:500;color:#00ff8c;letter-spacing:.1em;margin-bottom:16px;text-shadow:0 0 9px rgba(0,255,140,.6),0 0 16px rgba(0,255,140,.3);display:inline-flex;align-items:center;gap:14px"><span style="width:11px;height:11px;background:#00ff8c;display:inline-block;box-shadow:0 0 8px rgba(0,255,140,.8)"></span>PRIVACY FIRST</div>
+          <div style="font-family:'Inter','Noto Sans JP',sans-serif;font-size:17px;font-weight:500;color:#00ff8c;letter-spacing:0.05em;margin-bottom:16px;text-shadow:0 0 7px rgba(0,255,140,.45),0 0 14px rgba(0,255,140,.2);display:inline-flex;align-items:center;gap:14px"><span style="width:11px;height:11px;background:#00ff8c;display:inline-block;box-shadow:0 0 8px rgba(0,255,140,.8)"></span>PRIVACY FIRST</div>
           <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(0,255,140,.15);letter-spacing:.05em">ブラウザ内で完結</div>
         </div>
       </div>
