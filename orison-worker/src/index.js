@@ -2834,13 +2834,13 @@ function showEncPopup(){
   cvs.style.width=_POP_CVS_W+'px'; cvs.style.height=_POP_CVS_H+'px';
   var statusDiv=document.createElement('div');
   statusDiv.style.cssText=
-    'font-family:"Share Tech Mono",monospace;font-size:15px;'+
+    'font-family:"Noto Sans JP",sans-serif;font-size:15px;'+
     'letter-spacing:0.5px;color:rgba(255,255,255,0.9);text-align:center;'+
     'transition:color .4s,font-size .4s;';
   statusDiv.textContent='暗号化しています';
   var logDiv=document.createElement('div');
   logDiv.style.cssText=
-    'font-family:"Share Tech Mono",monospace;font-size:11px;'+
+    'font-family:"JetBrains Mono",monospace;font-size:11px;'+
     'color:rgba(61,220,132,0.75);text-align:left;min-width:200px;'+
     'height:49px;overflow-y:hidden;line-height:1.4;flex-shrink:0;';
   pop.appendChild(cvs);
