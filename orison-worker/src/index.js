@@ -2328,6 +2328,16 @@ ${HEADER_HTML}
      ============================================================ -->
 ${FOOTER}
 
+<!-- ドラッグ&ドロップオーバーレイ -->
+<div id="drop-overlay">
+  <div id="drop-frame"></div>
+  <div id="drop-content">
+    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 16px"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+    <div style="color:#fff;font-weight:700;font-size:20px;margin-bottom:8px;font-family:'Noto Sans JP',sans-serif">ここにファイルを置く</div>
+    <div style="color:rgba(255,255,255,.5);font-size:13px;font-family:'Noto Sans JP',sans-serif">最大5MBまで</div>
+  </div>
+</div>
+
 <script>
 // ============================================================
 // ヒーロー背景アニメーション（洞窟＋光の粒子）確定版
@@ -4389,15 +4399,6 @@ run().catch(function(e){
   document.getElementById('dec-em').textContent='Error: '+e.message;
 });
 </script>
-<!-- ドラッグ&ドロップオーバーレイ -->
-<div id="drop-overlay">
-  <div id="drop-frame"></div>
-  <div id="drop-content">
-    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 16px"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
-    <div style="color:#fff;font-weight:700;font-size:20px;margin-bottom:8px;font-family:'Noto Sans JP',sans-serif">ここにファイルを置く</div>
-    <div style="color:rgba(255,255,255,.5);font-size:13px;font-family:'Noto Sans JP',sans-serif">最大5MBまで</div>
-  </div>
-</div>
 </body>
 </html>`;
 
