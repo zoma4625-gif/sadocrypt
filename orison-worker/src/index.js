@@ -702,7 +702,7 @@ const HERO_BG_JS = `(function(){
   var spinCx=0, spinCy=0, spinCb=null, spinPaused=false;
   var spinReleased=false, releaseDecayFrames=0;
   var spinBlendFrames=0; // スピン開始から10フレームかけてクロスフェード
-  var linkFadeOp=1.0, linkFadingOut=false, linkFadingIn=false; // リンク線フェード
+  var linkGrowFrac=1.0, linkGrowStart=0; // スピン終了後のリンク grow-in（長さ0→実寸）
 
   function projectSpin(p){
     var a=p._ang0+spinPhase*p._fall;
@@ -738,7 +738,8 @@ const HERO_BG_JS = `(function(){
     spinPaused=false;
     spinReleased=true;
     releaseDecayFrames=180;
-    linkFadingOut=false; linkFadingIn=true; linkFadeOp=0;
+    // スピン終了: リンク線を長さ0から300msかけて grow-in
+    linkGrowFrac=0; linkGrowStart=performance.now();
   }
 
   function startSpin(){
@@ -754,7 +755,7 @@ const HERO_BG_JS = `(function(){
     }
     spinActive=true; spinDone=false;
     spinPhase=0; spinStart=performance.now(); spinPaused=true;
-    linkFadingIn=false; linkFadingOut=true; linkFadeOp=1.0;
+    linkGrowFrac=0; // スピン中はリンク線を完全非表示
   }
 
   function strokeSegment(src,dst,startFrac,endFrac,op){
@@ -777,10 +778,11 @@ const HERO_BG_JS = `(function(){
     vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,0.6)');
     ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
 
-    // リンク線フェード更新（スピン開始/終了で200ms）
-    var LINK_FADE_STEP=1/12;
-    if(linkFadingOut){ linkFadeOp=Math.max(0,linkFadeOp-LINK_FADE_STEP); if(linkFadeOp<=0) linkFadingOut=false; }
-    if(linkFadingIn){  linkFadeOp=Math.min(1,linkFadeOp+LINK_FADE_STEP); if(linkFadeOp>=1) linkFadingIn=false; }
+    // リンク線 grow-in 更新（スピン終了後300msかけて0→1）
+    if(linkGrowStart>0 && linkGrowFrac<1){
+      linkGrowFrac=Math.min(1,(now-linkGrowStart)/300);
+      if(linkGrowFrac>=1) linkGrowStart=0;
+    }
 
     // 差動回転モード（暗号化完了演出）
     if(spinActive){
@@ -795,12 +797,21 @@ const HERO_BG_JS = `(function(){
       for(var i=0;i<projected.length;i++){
         var p=projected[i].p; var proj=projected[i].proj;
         var sc=proj.scale;
-        if(sc<=-0.5) continue;
-        var scC=Math.max(0.25,sc);
         var sz=p.s;
         var base=p.s>40?0.42:p.s>20?0.5:p.s>10?0.7:0.82;
+        if(sc<=0){
+          // 後方セル(sc<=0): 元位置(p.x,p.y)でspinBlendに従いフェードアウト（瞬間消滅を回避）
+          var op0=base*p.life*(1-spinBlend)*centerFade(p.x); if(op0<=0.002) continue;
+          var x0=p.x-sz/2, y0=p.y-sz/2;
+          ctx.save(); ctx.shadowColor='rgba('+G+',1)'; ctx.shadowBlur=p.glow*(1-spinBlend);
+          var fo0=op0*(1-p.fillAmt), fi0=op0*p.fillAmt;
+          if(fo0>0.002){ctx.strokeStyle='rgba('+G+','+fo0.toFixed(3)+')';ctx.lineWidth=2.0;ctx.strokeRect(x0,y0,sz,sz);}
+          if(fi0>0.002){ctx.fillStyle='rgba('+G+','+fi0.toFixed(3)+')';ctx.fillRect(x0,y0,sz,sz);}
+          ctx.restore();
+          continue;
+        }
+        var scC=Math.min(1,Math.max(0.25,sc)); // 上限1.0: 前面セルが通常より明るくならない
         var scFactor=1+(scC-1)*spinBlend;
-        // cfadeをblendで1.0に近づけるのをやめ、centerFadeを常に保持（中央セルが急に光る問題を解消）
         var op=base*p.life*scFactor*centerFade(p.x); if(op<=0.002) continue;
         var x=proj.sx-sz/2, y=proj.sy-sz/2;
         ctx.save(); ctx.shadowColor='rgba('+G+',1)'; ctx.shadowBlur=p.glow;
@@ -809,11 +820,8 @@ const HERO_BG_JS = `(function(){
         if(fi>0.002){ctx.fillStyle='rgba('+G+','+fi.toFixed(3)+')';ctx.fillRect(x,y,sz,sz);}
         ctx.restore();
       }
-      if(!linkFadingOut){
-        requestAnimationFrame(frame);
-        return; // フェード完了後は物理・リンク描画をスキップ
-      }
-      // linkFadingOut中のみフォールスルーして物理＋リンクフェードを実行（通常セル描画は下でスキップ）
+      requestAnimationFrame(frame);
+      return; // 常にearly-return: fall-through廃止（spinActive中はリンク線を一切描画しない）
     }
 
     for(var i=0;i<pts.length;i++){ var p=pts[i];
@@ -844,7 +852,7 @@ const HERO_BG_JS = `(function(){
         st.retract=Math.min(1,st.retract+RETRACT_RATE);
         var op=st.lastOp*(1-st.retract); var sF,eF;
         if(st.anchorIsDst){ sF=1-st.cur*(1-st.retract); eF=1; } else { sF=0; eF=st.cur*(1-st.retract); }
-        if(op*linkFadeOp>0.002){ strokeSegment(src,dst,sF,eF,op*linkFadeOp); linkedIds[src.id]=1; linkedIds[dst.id]=1; }
+        if(op*linkGrowFrac>0.002){ strokeSegment(src,dst,sF,eF,op*linkGrowFrac); linkedIds[src.id]=1; linkedIds[dst.id]=1; }
         if(st.retract<1) nextLink[key]=st; continue;
       }
     }
@@ -859,7 +867,7 @@ const HERO_BG_JS = `(function(){
           prevS.retract=0; prevS.anchorIsDst=false; prevS.fullSince=0;
           nextLink[keyS]=prevS; if(srcS)linkedIds[srcS.id]=1; if(dstS)linkedIds[dstS.id]=1;
           // retract切替フレームも描画（retractループは既に終了しているため1フレーム空白になる問題を防ぐ）
-          if(srcS&&dstS&&prevS.lastOp*linkFadeOp>0.002) strokeSegment(srcS,dstS,0,prevS.cur,prevS.lastOp*linkFadeOp);
+          if(srcS&&dstS&&prevS.lastOp*linkGrowFrac>0.002) strokeSegment(srcS,dstS,0,prevS.cur,prevS.lastOp*linkGrowFrac);
         }
         continue;
       }
@@ -884,7 +892,7 @@ const HERO_BG_JS = `(function(){
       var alpha=(1-d/LINK); if(alpha<0)alpha=0;
       var op=alpha*0.58*Math.min(centerFade(a.x),centerFade(b.x))*Math.min(a.life,b.life);
       st.lastOp=op; st.srcId=src.id; st.dstId=dst.id; nextLink[key]=st; linkedIds[a.id]=1; linkedIds[b.id]=1;
-      if(op*linkFadeOp>0.002) strokeSegment(src,dst,0,st.cur,op*linkFadeOp);
+      if(op>0.002) strokeSegment(src,dst,0,st.cur*linkGrowFrac,op); // grow-in: 長さが0から伸びる
       if(st.fullSince && now-st.fullSince>HOLD_TO_RELAY){
         if(!candidates[dst.id]) candidates[dst.id]=[];
         candidates[dst.id].push({srcId:src.id,key:key,st:st});
