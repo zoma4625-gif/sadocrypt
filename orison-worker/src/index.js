@@ -2709,6 +2709,7 @@ var _popRollDeg=0;
 var _popGlow=0;
 var _popLanded=false;
 var _popDotInterval=null;
+var _popOnLand=null;
 var _POP_W=96;
 var _POP_CVS_W=148, _POP_CVS_H=130;  // 14°回転時にTL(y≈-10)・TR(x≈137)がはみ出るため拡大
 var _POP_CELL_XOFF=22, _POP_CELL_YOFF=20; // pivY=cy+sz=23+90=113, TL.y=113-109=4px ✓
@@ -2772,29 +2773,35 @@ function _popAnimLoop(now){
     var t2=e2<0.5?2*e2*e2:-1+(4-2*e2)*e2;
     _popFillFrac=0.5+0.5*t2;
     _popWaveAmp=4*Math.max(0,1-Math.pow(e2,0.5));
-    if(e2>=0.85&&_popRollPhase==='none'){
+    // fillFrac≥90% で転がり開始（残り10%の満ちと転がりが並行。e2≈0.684）
+    if(_popFillFrac>=0.90&&_popRollPhase==='none'){
       _popRollPhase='going'; _popRollStart=now;
+      // 転がり開始と同タイミングで「暗号化しました」に切替
+      if(_popDotInterval){ clearInterval(_popDotInterval); _popDotInterval=null; }
+      if(_popStatusEl){
+        _popStatusEl.textContent='暗号化しました';
+        _popStatusEl.style.color='#3ddc84';
+        _popStatusEl.style.fontSize='17px';
+      }
     }
     if(e2>=1.0){ _popPhase='complete'; _popFillFrac=1.0; _popWaveAmp=0; }
   }
   if(_popRollPhase==='going'){
-    var rg=Math.min(1,(now-_popRollStart)/700);
+    // going 220ms（旧700ms）: fill残り~316msと並行
+    var rg=Math.min(1,(now-_popRollStart)/220);
     _popRollDeg=14*rg*rg*rg;
     if(rg>=1){ _popRollPhase='returning'; _popRollStart=now; }
   } else if(_popRollPhase==='returning'){
-    var rr=Math.min(1,(now-_popRollStart)/180);
+    // returning 100ms（旧180ms）: fillとほぼ同時に終わる
+    var rr=Math.min(1,(now-_popRollStart)/100);
     _popRollDeg=14*(1-rr)*(1-rr);
     if(rr>=1){
       _popRollPhase='done'; _popRollDeg=0;
       if(!_popLanded){
         _popLanded=true;
         _popGlow=1.0;
-        if(_popDotInterval){ clearInterval(_popDotInterval); _popDotInterval=null; }
-        if(_popStatusEl){
-          _popStatusEl.textContent='暗号化しました';
-          _popStatusEl.style.color='#3ddc84';
-          _popStatusEl.style.fontSize='17px';
-        }
+        // 着地直後にコールバック（固定timeoutを廃止し即遷移）
+        if(_popOnLand){ _popOnLand(); _popOnLand=null; }
       }
     }
   } else if(_popRollPhase==='done'){
@@ -2828,14 +2835,14 @@ function showEncPopup(){
   var statusDiv=document.createElement('div');
   statusDiv.style.cssText=
     'font-family:"Share Tech Mono",monospace;font-size:15px;'+
-    'letter-spacing:2px;color:rgba(255,255,255,0.9);text-align:center;'+
+    'letter-spacing:0.5px;color:rgba(255,255,255,0.9);text-align:center;'+
     'transition:color .4s,font-size .4s;';
   statusDiv.textContent='暗号化しています';
   var logDiv=document.createElement('div');
   logDiv.style.cssText=
     'font-family:"Share Tech Mono",monospace;font-size:11px;'+
     'color:rgba(61,220,132,0.75);text-align:left;min-width:200px;'+
-    'max-height:49px;overflow-y:hidden;line-height:1.4;';
+    'height:49px;overflow-y:hidden;line-height:1.4;flex-shrink:0;';
   pop.appendChild(cvs);
   pop.appendChild(statusDiv);
   pop.appendChild(logDiv);
@@ -2849,7 +2856,8 @@ function showEncPopup(){
     _dotCount=(_dotCount+1)%4;
     var dots='';
     for(var i=0;i<_dotCount;i++) dots+='.';
-    _popStatusEl.textContent='暗号化しています'+dots;
+    // dotsをspanで小さく（letter-spacing:2pxで点が大きく見える問題を回避）
+    _popStatusEl.innerHTML='暗号化しています<span style="font-size:10px;letter-spacing:0;opacity:0.6">'+dots+'</span>';
   },500);
   if(_popRafId) cancelAnimationFrame(_popRafId);
   _popRafId=requestAnimationFrame(_popAnimLoop);
@@ -2880,14 +2888,13 @@ function setPopFill(frac){
 function triggerPopupComplete(shareUrl, resultSection){
   _popPhase='fill2';
   _popFill2Start=performance.now();
-  setTimeout(function(){
+  // 固定timeoutを廃止。転がり着地時(_popOnLand)に即遷移
+  _popOnLand=function(){
     var titleCard=document.querySelector('.title-card');
     if(titleCard) titleCard.classList.add('encrypted');
     buildResultSection(resultSection, shareUrl);
-  }, 2400);
-  setTimeout(function(){
-    hideEncPopup();
-  }, 3200);
+    setTimeout(function(){ hideEncPopup(); }, 350);
+  };
 }
 
 async function doEncrypt(){
