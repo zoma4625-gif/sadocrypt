@@ -696,7 +696,7 @@ const HERO_BG_JS = `(function(){
     FOCAL:         360,
     DEPTH:         0.7,
     RELEASE_BOOST: 1.0,
-    RELEASE_DAMP:  0.99
+    RELEASE_DAMP:  0.97
   };
   var spinActive=false, spinStart=0, spinDone=false, spinPhase=0;
   var spinCx=0, spinCy=0, spinCb=null, spinPaused=false;
@@ -738,9 +738,13 @@ const HERO_BG_JS = `(function(){
     spinPaused=false;
     spinReleased=true;
     releaseDecayFrames=180;
-    // スピン終了: リンク線を長さ0から300msかけて grow-in
-    linkGrowFrac=0; linkGrowStart=performance.now();
+    // grow-inはポップアップ消滅後に window.startLinkGrow() で起動する
+    linkGrowFrac=0; linkGrowStart=0;
   }
+
+  window.startLinkGrow=function(){
+    linkGrowFrac=0; linkGrowStart=performance.now();
+  };
 
   function startSpin(){
     spinCx=W/2; spinCy=H/2;
@@ -1331,14 +1335,14 @@ ${HEADER_CSS}
 .result-anchor .result-section{ pointer-events: auto; }
 
 .result-section{
-  background:#fff;
-  border:1px solid #e8e8e5;            /* 入力カードと同じ */
-  border-radius:22px;                   /* 入力カードと同じ */
-  box-shadow:0 4px 24px rgba(0,0,0,0.06); /* 入力カードと同じ */
+  background:#0a0e0c;
+  border:0.5px solid rgba(45,212,150,0.35);
+  border-radius:22px;
+  box-shadow:0 0 0 1px rgba(45,212,150,0.08), 0 8px 32px rgba(45,212,150,0.12);
   width:100%;
-  max-width:600px;                      /* 入力カードと同じ */
+  max-width:600px;
   margin:0 auto;
-  padding:20px 20px 16px;               /* 入力カードの左右paddingに合わせる */
+  padding:20px 20px 16px;
   opacity:0;
   transform:translateY(18px);
   transition:opacity .5s ease, transform .5s ease;
@@ -1346,39 +1350,36 @@ ${HEADER_CSS}
 .result-section.show{ opacity:1; transform:translateY(0); }
 .result-section-inner{ position:relative; }
 
-/* ラベル行（右端に共有ボタン） */
+/* ラベル行 */
 .result-label-row{ display:flex; align-items:center; gap:8px; margin-bottom:16px; }
-.result-green-dot{ width:8px; height:8px; background:#00ff8c; flex-shrink:0; }
-.result-label-text{ font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:2px; color:#888; text-transform:uppercase; }
-/* 共有ボタン：入力の btn-run(38px円,#1a1a18) に合わせる。ただし角丸の四角で統一 */
-.result-share-btn{ margin-left:auto; width:38px; height:38px; background:#1a1a18; border:none; border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; padding:0; transition:background .15s; }
-.result-share-btn:hover{ background:#000; }
+.result-green-dot{ width:7px; height:7px; background:#3ddc84; border-radius:1px; flex-shrink:0; box-shadow:0 0 6px rgba(61,220,132,0.6); }
+.result-label-text{ font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:2px; color:rgba(255,255,255,0.7); text-transform:uppercase; }
+/* 共有ボタン（下部行） */
+.result-share-btn{ width:42px; height:42px; background:rgba(61,220,132,0.06); border:0.5px solid rgba(45,212,150,0.35); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; padding:0; transition:background .15s; }
+.result-share-btn:hover{ background:rgba(61,220,132,0.12); }
 .result-share-btn svg{ width:20px; height:20px; display:block; }
 
-/* URL帯：入力の url-input(Share Tech Mono 17px)に合わせる。
-   ★コピー時にボタンが動かないよう、テキスト領域を固定幅(flex:1,min-width:0)にし、
-     URLと「コピーしました」を絶対配置で重ねる */
-.result-url-wrap{ display:flex; align-items:center; gap:10px; background:#f5f5f3; border-radius:10px; padding:0 10px 0 14px; height:48px; cursor:pointer; margin-bottom:12px; }
+/* URL帯 */
+.result-url-wrap{ display:flex; align-items:center; gap:10px; background:#f0f0f0; border-radius:10px; padding:0 10px 0 14px; height:48px; cursor:pointer; margin-bottom:12px; }
 .result-url-textarea{ position:relative; flex:1; min-width:0; height:100%; }
 .result-url-text, .result-url-copied{
   position:absolute; left:0; top:50%; transform:translateY(-50%);
-  font-family:'Share Tech Mono',monospace; font-size:17px; white-space:nowrap;
+  font-family:'JetBrains Mono',monospace; font-size:14px; white-space:nowrap;
   max-width:100%; overflow:hidden; text-overflow:ellipsis;
   transform-origin:left center;
 }
-.result-url-text{ color:#1a1a18; transition:transform .2s ease, opacity .2s ease; }
+.result-url-text{ color:#1a1a1a; transition:transform .2s ease, opacity .2s ease; }
 .result-url-copied{ color:#999; display:none; }
-/* コピーボタン：入力の btn-plus(34px円)に近い大きさ。四角角丸で統一 */
-.copy-btn{ width:36px; height:36px; background:#fff; border:1px solid #e0e0dc; border-radius:9px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; padding:0; transition:background .15s; }
-.copy-btn:hover{ background:#f5f5f3; }
+/* コピーボタン：アイコンのみ（枠なし・背景なし） */
+.copy-btn{ width:36px; height:36px; background:none; border:none; border-radius:9px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; padding:0; transition:opacity .15s; }
+.copy-btn:hover{ opacity:0.6; }
 .copy-btn svg{ width:18px; height:18px; display:block; }
 
-/* 下段：左ヒント／右 開く */
-.result-bottom-row{ display:flex; align-items:center; justify-content:space-between; margin-top:8px; }
-.result-hint{ font-family:'Share Tech Mono',monospace; font-size:12px; color:#aaa; }
-/* 開く：控えめ。入力の雰囲気に合わせ小さめ */
-.result-open-btn{ height:38px; background:#fff; color:#1a1a18; border:1px solid #e0e0dc; border-radius:10px; padding:0 18px; display:flex; align-items:center; gap:7px; cursor:pointer; font-family:'Noto Sans JP',sans-serif; font-size:14px; transition:background .15s; }
-.result-open-btn:hover{ background:#f5f5f3; }
+/* 下段：共有→開く */
+.result-bottom-row{ display:flex; align-items:center; gap:10px; margin-top:8px; }
+/* 開くボタン */
+.result-open-btn{ flex:1; height:42px; background:rgba(61,220,132,0.16); color:#3ddc84; border:0.5px solid rgba(45,212,150,0.4); border-radius:10px; padding:0 18px; display:flex; align-items:center; justify-content:center; gap:7px; cursor:pointer; font-family:'Noto Sans JP',sans-serif; font-size:14px; font-weight:500; transition:background .15s; }
+.result-open-btn:hover{ background:rgba(61,220,132,0.24); }
 .result-open-btn svg{ width:16px; height:16px; display:block; }
 
 /* ============================================================
@@ -2805,8 +2806,8 @@ function _popAnimLoop(now){
     _popRollDeg=12;
     if(now-_popRollStart>=180){ _popRollPhase='returning'; _popRollStart=now; }
   } else if(_popRollPhase==='returning'){
-    // パチン: 200ms で12→0度
-    var rr=Math.min(1,(now-_popRollStart)/200);
+    // パチン: 120ms で12→0度
+    var rr=Math.min(1,(now-_popRollStart)/120);
     _popRollDeg=12*(1-rr)*(1-rr);
     if(rr>=1){
       _popRollPhase='done'; _popRollDeg=0;
@@ -2892,7 +2893,10 @@ function hideEncPopup(){
   if(_popDotInterval){ clearInterval(_popDotInterval); _popDotInterval=null; }
   if(_popRafId){ cancelAnimationFrame(_popRafId); _popRafId=null; }
   el.style.opacity='0';
-  setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 350);
+  setTimeout(function(){
+    if(el.parentNode) el.parentNode.removeChild(el);
+    if(window.startLinkGrow) window.startLinkGrow();
+  }, 350);
 }
 
 function popAddLog(msg){
@@ -3037,9 +3041,6 @@ function buildResultSection(resultSection, shareUrl){
     '<div class="result-label-row">' +
     '<div class="result-green-dot"></div>' +
     '<span class="result-label-text">生成されたURL</span>' +
-    '<button class="result-share-btn" id="result-share-btn" title="共有">' +
-    '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="m8 8 4-4 4 4"/><path d="M5 12v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg>' +
-    '</button>' +
     '</div>' +
     '<div class="result-url-wrap" id="result-url-wrap">' +
     '<div class="result-url-textarea">' +
@@ -3047,13 +3048,15 @@ function buildResultSection(resultSection, shareUrl){
     '<span class="result-url-copied" id="result-url-copied">コピーしました</span>' +
     '</div>' +
     '<button class="copy-btn" id="copy-btn" title="コピー">' +
-    '<svg viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
+    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
     '</button>' +
     '</div>' +
     '<div class="result-bottom-row">' +
-    '<span class="result-hint" id="result-hint">クリックでコピー</span>' +
+    '<button class="result-share-btn" id="result-share-btn" title="共有">' +
+    '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>' +
+    '</button>' +
     '<button class="result-open-btn" id="result-open-btn" title="開く">' +
-    '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg>' +
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
     '開く' +
     '</button>' +
     '</div>' +
