@@ -1292,7 +1292,8 @@ ${HEADER_CSS}
   border:none;
   background:#0a0e0c;
   color:#fff;
-  font-size:18px;
+  font-size:32px;
+  line-height:1;
   cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   transition:background .15s,transform .1s;
@@ -1433,9 +1434,14 @@ ${HEADER_CSS}
 .qr-thumb-btn canvas,.qr-thumb-btn img{ display:block; }
 /* スペーサー */
 .result-spacer{ flex:1; }
-/* 共有・開く：同サイズ・同スタイル */
-.result-share-btn, .result-open-btn{ flex-shrink:0; width:96px; height:46px; background:rgba(61,220,132,0.16); border:0.5px solid rgba(45,212,150,0.4); border-radius:10px; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; padding:0 10px; transition:background .15s; color:#3ddc84; font-family:'Noto Sans JP',sans-serif; font-size:13px; font-weight:500; }
-.result-share-btn:hover, .result-open-btn:hover{ background:rgba(61,220,132,0.24); }
+/* 共有・開く：同サイズ */
+.result-share-btn, .result-open-btn{ flex-shrink:0; width:96px; height:46px; border-radius:10px; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; padding:0 10px; transition:background .15s; font-family:'Noto Sans JP',sans-serif; font-size:13px; font-weight:500; }
+/* 共有：緑（主役） */
+.result-share-btn{ background:rgba(61,220,132,0.16); border:0.5px solid rgba(45,212,150,0.4); color:#3ddc84; }
+.result-share-btn:hover{ background:rgba(61,220,132,0.24); }
+/* 開く：無彩色（サブ） */
+.result-open-btn{ background:transparent; border:1px solid #4a4f4c; color:#9aa49f; }
+.result-open-btn:hover{ background:rgba(255,255,255,0.06); border-color:#666; }
 
 /* URL帯 */
 .result-url-wrap{ display:flex; align-items:center; gap:10px; background:#f0f0f0; border-radius:12px; padding:0 14px 0 20px; height:48px; cursor:pointer; margin-bottom:12px; }
