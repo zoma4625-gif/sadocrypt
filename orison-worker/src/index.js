@@ -1001,7 +1001,9 @@ ${HEADER_CSS}
 .tl-h1{font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:clamp(28px,5vw,40px);color:#fff;line-height:1.4;margin-bottom:48px;letter-spacing:.02em;text-align:center}
 .tl-h2{font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:20px;color:#fff;line-height:1.5;margin:48px 0 20px;padding-left:14px;border-left:2px solid #00ff8c}
 .tl-body{font-family:'Noto Sans JP',sans-serif;font-weight:400;font-size:16px;color:rgba(255,255,255,.82);line-height:2;margin-bottom:20px}
-.tl-code{font-family:'Share Tech Mono',monospace;font-size:16px;color:#00ff8c;background:rgba(0,255,140,.05);border:1px solid rgba(0,255,140,.18);border-radius:8px;padding:20px 24px;margin:24px 0;letter-spacing:.05em;overflow-x:auto;white-space:nowrap}
+.tl-code{font-family:'Share Tech Mono',monospace;font-size:16px;color:#00ff8c;background:rgba(0,255,140,.05);border:1px solid rgba(0,255,140,.18);border-radius:8px;padding:20px 24px;margin:24px 0;letter-spacing:.05em;overflow-x:auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px 20px;}
+.tl-code-note{font-size:16px;color:#00ff8c;letter-spacing:.05em;white-space:nowrap;}
+.tl-var{font-family:'Share Tech Mono',monospace;font-size:0.9em;color:rgba(0,255,140,.9);background:none;padding:0;border:none;}
 /* 背景アニメ：開いた1画面ぶん(100vh)だけ。スクロールで上に抜けて消える */
 .tl-bg{position:absolute;top:0;left:0;width:100%;height:100vh;overflow:hidden;z-index:0;pointer-events:none;background:#000;}
 /* 中央(文章カラム)の裏だけ黒帯を敷いて粒子を3割に。左右は元の明るさ */
@@ -1028,8 +1030,8 @@ ${HERO_BG_HTML}
   <p class="tl-body">最新鋭のコンピュータでも解くのに時間がかかる複雑なパズルをその場で生成し、パズルの答えを鍵とした錠前でリンクやファイルを完全にロックします。</p>
 
   <h2 class="tl-h2">仕組み</h2>
-  <p class="tl-body">パズルの中身はシンプルな二乗計算のくり返しです。x を二乗して巨大数Nで割り、その余りをまた二乗してNで割る、その余りをまた二乗して…——このプロセスを数万回〜数億回マシンにくり返させることで任意の計算負荷を発生させ、復号までにかかる時間を自由に調整することができます。</p>
-  <div class="tl-code">x → x² → x⁴ → x⁸ → … &nbsp;(mod N)</div>
+  <p class="tl-body">パズルの中身は、シンプルな平方計算のくり返しです。x を二乗して巨大数Nで割り、その余りをまた二乗してNで割る。その余りをまた二乗して…。このプロセスを数万回〜数億回マシンにくり返させることで任意の計算負荷を発生させ、復号までにかかる時間を自由に調整することができます。</p>
+  <div class="tl-code"><span>x → x² → x⁴ → x⁸ → …&nbsp;(mod N)</span><span class="tl-code-note">N&nbsp;=&nbsp;2048bit&nbsp;(約617桁)</span></div>
 
   <h2 class="tl-h2">なぜスキップできないのか</h2>
   <p class="tl-body">計算を速く行うには、マシンを並列化し、複数の計算機やコアで処理を分散させる方法がありますが、タイムロックの逐次計算方式にはこれが効きません。</p>
@@ -1037,7 +1039,7 @@ ${HERO_BG_HTML}
   <p class="tl-body">結果として、復号にかかる時間はCPUのシングルスレッド性能と設定された計算回数だけに依存することになります。</p>
 
   <h2 class="tl-h2">Brake. での実装</h2>
-  <p class="tl-body">Brake. では、暗号化リクエストを受けとると、まずランダムな底 x₀ と2つの巨大な素数 p, q が生成され、次に p, q の積 N = p×q を法（modulus）として逐次平方パズル（時間鍵）が作成されます。この計算を何回行うかは、指定された復号時間から逆算して求められ、決定されます。</p>
+  <p class="tl-body">Brake. では、暗号化リクエストを受けとるとまずランダムな底 <code class="tl-var">x₀</code> と、2つの巨大な素数 <code class="tl-var">p, q</code> を生成します。さらに <code class="tl-var">p, q</code> の積 <code class="tl-var">N</code> を法（modulus）とした逐次平方パズル（時間鍵）が作成され、ファイルに鍵がかけられます。逐次計算をどれくらい行うかは、指定された復号時間から逆算して決定されます。</p>
   <p class="tl-body">暗号化プロセスはすべて、ユーザーのブラウザ内（JavaScript の BigInt）だけで完結します。サーバーには暗号化されたデータと、パズルの情報だけが送られ、元データや鍵がサーバーに渡ることはありません。これにより、万が一悪意のある第三者に攻撃を受けても、ファイルの中身が漏洩することはありません。</p>
   <p class="tl-body">復号が始まると、計算はユーザーのデバイス（PC、スマホ）が行います。</p>
 </main>
