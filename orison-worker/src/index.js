@@ -1244,13 +1244,10 @@ ${HEADER_CSS}
   flex-shrink:0;
 }
 .preset-chip:hover{border-color:#999;background:#ebebeb}
-/* active: border色を透明にしてbox-shadowで2px黒枠を表現 → レイアウト幅不変 */
+/* active: box-shadowで1.5px濃グレー枠のみ → 背景・太さ変えずレイアウト幅も不変 */
 .preset-chip.active{
-  background:#fff;
   border-color:transparent;
-  box-shadow:inset 0 0 0 2px #0a0e0c;
-  color:#0a0e0c;
-  font-weight:600;
+  box-shadow:inset 0 0 0 1.5px #555;
 }
 /* 数値・単位フィールド */
 .time-val-input{
@@ -2882,8 +2879,8 @@ function _popAnimLoop(now){
     var t2=e2<0.5?2*e2*e2:-1+(4-2*e2)*e2;
     _popFillFrac=0.5+0.5*t2;
     _popWaveAmp=4*Math.max(0,1-Math.pow(e2,0.5));
-    // fillFrac≥65% で転がり開始（残り35%の満ちと転がりが並行、ラグを前倒し）
-    if(_popFillFrac>=0.65&&_popRollPhase==='none'){
+    // fillFrac≥80% で転がり開始（セルがほぼ満ちた状態から）
+    if(_popFillFrac>=0.80&&_popRollPhase==='none'){
       _popRollPhase='going'; _popRollStart=now;
       // 転がり開始と同タイミングで「暗号化しました」に切替
       if(_popDotInterval){ clearInterval(_popDotInterval); _popDotInterval=null; }
@@ -2896,15 +2893,15 @@ function _popAnimLoop(now){
     }
     if(e2>=1.0){ _popPhase='complete'; _popFillFrac=1.0; _popWaveAmp=0; }
   }
-  // 転がり：3フェーズ（持ち上がり sin / ため 100ms / 振り下ろし t^5）
-  var ROLL_RISE=250, ROLL_HOLD=100, ROLL_FALL=380;
+  // 転がり：3フェーズ（持ち上がり t² / ため 100ms / 振り下ろし t^5）
+  var ROLL_RISE=250, ROLL_HOLD=100, ROLL_FALL=250;
   if(_popRollPhase==='going'){
     var elapsed=now-_popRollStart;
     var rdeg;
     if(elapsed<ROLL_RISE){
-      // 持ち上がり：sin(π*t/2) で最初速く頂点でゆっくり
+      // 持ち上がり：t² で最初ゆっくり→だんだん速く（もったり）
       var tr=elapsed/ROLL_RISE;
-      rdeg=12*Math.sin(tr*Math.PI/2);
+      rdeg=12*(tr*tr);
     } else if(elapsed<ROLL_RISE+ROLL_HOLD){
       // 頂点でため
       rdeg=12;
