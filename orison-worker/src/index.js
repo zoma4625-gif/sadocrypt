@@ -2831,10 +2831,10 @@ function hideEncPopup(){
 
 function popAddLog(msg){
   if(!_popLogEl) return;
-  var lines=_popLogEl.textContent.split('\n').filter(function(l){return l.trim();});
+  var lines=_popLogEl.textContent.split('\\n').filter(function(l){return l.trim();});
   lines.push('> '+msg);
   if(lines.length>4) lines=lines.slice(lines.length-4);
-  _popLogEl.textContent=lines.join('\n');
+  _popLogEl.textContent=lines.join('\\n');
 }
 
 function setPopFill(frac){
