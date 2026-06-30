@@ -2871,7 +2871,8 @@ function _drawPopCell(canvas){
   // セルはキャンバス内をオフセットして配置（転がり時に左上が欠けないよう余白を確保）
   var cx=_POP_CELL_XOFF+pad, cy=_POP_CELL_YOFF+pad;
   var pivX=cx+sz, pivY=cy+sz;
-  if(_popRare && _rarePhase!=='none'){
+  if(_popRare){
+    // レアは常に専用描画（空セルに通常の波を描かせない）
     _drawPopRare(gctx, cx, cy, sz);
     gctx.restore();
     return;
@@ -3032,6 +3033,7 @@ function _drawPopRare(gctx, cx, cy, sz){
 
 // レア演出のフェーズ駆動（_popAnimLoop から毎フレーム呼ぶ）
 function _rareStep(now){
+  if(!_rareStart) _rareStart=now;   // 最初の再生フレームで起点を確定
   var t=now-_rareStart;
   var t1=RARE_LINE_IN, t2=t1+RARE_FILL, t3=t2+RARE_LGONE, t4=t3+RARE_EYESIN;
   var t5=t4+RARE_BLINK, t6=t5+RARE_TURN, t7=t6+RARE_EMIT, t8=t7+RARE_ENDHOLD;
@@ -3080,13 +3082,11 @@ function _rareStep(now){
     // ⑥ 右へ線を伸ばす（枠右端で見切れ）
     _rarePhase='emit';
     _rareTurnDeg=RARE_TURN_MAX; _rareEmitFrac=(t-t6)/RARE_EMIT;
-  } else if(t<t8){
-    // ⑦ セルそのまま・線そのままで小休止
+  } else {
+    // ⑦ 終端：セル・線はそのまま保持。API 完了（_popOnLand 設定済み）を
+    //    待ってから結果カードへ遷移。早く終わってもここで待つ。
     _rarePhase='end';
     _rareTurnDeg=RARE_TURN_MAX; _rareEmitFrac=1;
-  } else {
-    // 終端：以降は通常アニメ仕様（結果カード・放出・ポップ消し）
-    _rarePhase='done';
     if(_popOnLand){ _popOnLand(); _popOnLand=null; }
   }
 }
@@ -3166,6 +3166,9 @@ function showEncPopup(){
   _popRare=(window._brakeForceRare===true)||(Math.random()<_POP_RARE_PROB);
   _rarePhase='none'; _rareStart=0; _rareLineInFrac=0; _rareLineAlpha=1; _rareEmitFrac=0;
   _rareEyeAlpha=0; _rareEyeMorph=0; _rareEyeOpen=1; _rareTurnDeg=0; _rareTextDone=false;
+  // レアはポップ表示と同時に最初から再生（_rareStart は最初の _rareStep で確定）。
+  // 結果カードへの遷移(_popOnLand)だけは API 完了を待ってから（_rareStep 終端で実行）。
+  if(_popRare){ _popPhase='rare'; _rarePhase='lineIn'; }
   var dpr=window.devicePixelRatio||1;
   var pop=document.createElement('div');
   pop.id='enc-popup-new';
@@ -3257,13 +3260,12 @@ function triggerPopupComplete(shareUrl, resultSection, targetSeconds){
     buildResultSection(resultSection, shareUrl, targetSeconds);
     setTimeout(function(){ hideEncPopup(); }, 350);
   };
-  if(_popRare){
-    // レア：roll の代わりにレアシーケンスを再生（終端で _popOnLand）
-    _popPhase='rare'; _rarePhase='lineIn'; _rareStart=performance.now();
-  } else {
+  if(!_popRare){
     _popPhase='fill2';
     _popFill2Start=performance.now();
   }
+  // レアは showEncPopup で既に最初から再生中。ここでは _popOnLand を登録するだけ。
+  // 演出の終端（_rareStep）が _popOnLand 設定済みを検知して結果カードへ遷移する。
 }
 
 async function doEncrypt(){
