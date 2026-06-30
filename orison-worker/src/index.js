@@ -2848,6 +2848,7 @@ var _rareTurnDeg=0;          // 枠右向きヨー角(度)
 var _rareTextDone=false;     // ステータス文言切替の一度きりフラグ
 // 各サブフェーズ長(ms)。レアなので通常より長尺
 var RARE_LINE_IN=450, RARE_FILL=1200, RARE_LGONE=220, RARE_EYESIN=260, RARE_BLINK=620, RARE_TURN=620, RARE_EMIT=520, RARE_ENDHOLD=180;
+var RARE_DELAY=200;          // ポップ表示から再生開始までの間(ms)。その間は空セル
 var RARE_TURN_MAX=46;        // 右向き最大ヨー角(度)
 var RARE_GROW=0.12;          // 右向き時のセル拡大率（小さく見える分の相殺）
 var RARE_DEP=0.6;            // 見かけの奥行き係数
@@ -2977,12 +2978,14 @@ function _drawPopRare(gctx, cx, cy, sz){
     _rareFlatLine(gctx, 0, lead, ly, thick, _rareLineAlpha);
   }
 
-  // ⑤ 左側面（枠右を向くと、引っ込む左辺の側面が見えてくる。上面/下面は描かない）
+  // ⑤ 左側面（枠右を向くと、引っ込む左辺の側面が見えてくる。ヨー回転のみなので
+  //    上下は正面と同じ高さの長方形＝上辺/下辺フラッシュ。台形にすると天面/底面の
+  //    隙間が開いてしまうため上下インセットは入れない）
   if(sn>0.01){
-    var sw=H*sn*RARE_DEP*2, farX=fL-sw, ins=sw*0.16;
+    var sw=H*sn*RARE_DEP*2, farX=fL-sw;
     gctx.beginPath();
-    gctx.moveTo(fL,top); gctx.lineTo(farX,top+ins);
-    gctx.lineTo(farX,bot-ins); gctx.lineTo(fL,bot); gctx.closePath();
+    gctx.moveTo(fL,top); gctx.lineTo(farX,top);
+    gctx.lineTo(farX,bot); gctx.lineTo(fL,bot); gctx.closePath();
     gctx.fillStyle='rgba(20,70,44,0.95)'; gctx.fill();
     gctx.strokeStyle=RARE_GREEN; gctx.lineWidth=2; gctx.stroke();
   }
@@ -3034,7 +3037,8 @@ function _drawPopRare(gctx, cx, cy, sz){
 // レア演出のフェーズ駆動（_popAnimLoop から毎フレーム呼ぶ）
 function _rareStep(now){
   if(!_rareStart) _rareStart=now;   // 最初の再生フレームで起点を確定
-  var t=now-_rareStart;
+  var t=now-_rareStart-RARE_DELAY;  // 開始まで RARE_DELAY ぶん待つ
+  if(t<0){ _rarePhase='idle'; _popFillFrac=0; _rareLineInFrac=0; _rareLineAlpha=1; _rareEmitFrac=0; _rareEyeAlpha=0; _rareTurnDeg=0; return; }
   var t1=RARE_LINE_IN, t2=t1+RARE_FILL, t3=t2+RARE_LGONE, t4=t3+RARE_EYESIN;
   var t5=t4+RARE_BLINK, t6=t5+RARE_TURN, t7=t6+RARE_EMIT, t8=t7+RARE_ENDHOLD;
   if(t<t1){
