@@ -701,6 +701,7 @@ const HERO_BG_JS = `(function(){
   var spinActive=false, spinStart=0, spinDone=false, spinPhase=0;
   var spinCx=0, spinCy=0, spinCb=null, spinPaused=false;
   var spinReleased=false, releaseDecayFrames=0;
+  var spinBlendFrames=0; // スピン開始から10フレームかけてクロスフェード
 
   function projectSpin(p){
     var a=p._ang0+spinPhase*p._fall;
@@ -715,6 +716,7 @@ const HERO_BG_JS = `(function(){
   function updateSpinPhase(now){
     var t=Math.min(1,(now-spinStart)/1000);
     spinPhase+=SPIN3D.SPIN*Math.pow(t,SPIN3D.EASE);
+    if(spinBlendFrames<10) spinBlendFrames++;
   }
 
   function releaseSpin(){
@@ -739,7 +741,7 @@ const HERO_BG_JS = `(function(){
 
   function startSpin(){
     spinCx=W/2; spinCy=H/2;
-    spinReleased=false; releaseDecayFrames=0;
+    spinReleased=false; releaseDecayFrames=0; spinBlendFrames=0;
     for(var i=0;i<pts.length;i++){
       var p=pts[i];
       var dx=p.x-spinCx;
@@ -781,12 +783,18 @@ const HERO_BG_JS = `(function(){
         var proj=projectSpin(p); projected.push({p:p,proj:proj});
       }
       projected.sort(function(a,b){ return a.proj.rz-b.proj.rz; });
+      var spinBlend=Math.min(1,spinBlendFrames/10);
       for(var i=0;i<projected.length;i++){
         var p=projected[i].p; var proj=projected[i].proj;
-        var sc=proj.scale; if(sc<=0) continue;  // カメラより奥のセルはスキップ
-        var sz=p.s;                              // サイズはオリジナルのまま（初期フレームで激変しない）
+        var sc=proj.scale;
+        if(sc<=-0.5) continue; // 完全に後ろ側のみスキップ（閾値を緩めて上側セルを保持）
+        var scC=Math.max(0.25,sc); // scale 下限 0.25（奥に回っても極端に薄くならない）
+        var sz=p.s;
         var base=p.s>40?0.42:p.s>20?0.5:p.s>10?0.7:0.82;
-        var op=base*p.life; if(op<=0.002) continue;
+        // 10フレームかけて通常描画(centerFade×1.0)→スピン描画(scC×1.0)へクロスフェード
+        var scFactor=1+(scC-1)*spinBlend;
+        var cfade=centerFade(p.x)*(1-spinBlend)+spinBlend;
+        var op=base*p.life*scFactor*cfade; if(op<=0.002) continue;
         var x=proj.sx-sz/2, y=proj.sy-sz/2;
         ctx.save(); ctx.shadowColor='rgba('+G+',1)'; ctx.shadowBlur=p.glow;
         var fo=op*(1-p.fillAmt), fi=op*p.fillAmt;
@@ -2815,7 +2823,7 @@ function showEncPopup(){
   logDiv.style.cssText=
     'font-family:"Share Tech Mono",monospace;font-size:11px;'+
     'color:rgba(61,220,132,0.75);text-align:left;min-width:200px;'+
-    'max-height:80px;overflow-y:hidden;line-height:1.4;';
+    'max-height:49px;overflow-y:hidden;line-height:1.4;';
   pop.appendChild(cvs);
   pop.appendChild(statusDiv);
   pop.appendChild(logDiv);
