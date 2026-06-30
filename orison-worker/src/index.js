@@ -2838,6 +2838,7 @@ var _POP_RARE_PROB=1;        // ★一時的に必ずレア発動（確認用）
 var _popRare=false;
 var _rarePhase='none';       // none|lineIn|fill|lineGone|eyesIn|blink|turn|emit|end|done
 var _rareStart=0;
+var _rareReadyAt=0;          // 演出開始可能になる時刻(ms)。ポップのフェードイン完了後
 var _rareLineInFrac=0;       // 左線(当たる)の伸び 0..1
 var _rareLineAlpha=1;        // 左線の不透明度（満ちたらフェード）
 var _rareEmitFrac=0;         // 右線(放つ)の伸び 0..1
@@ -2848,7 +2849,8 @@ var _rareTurnDeg=0;          // 枠右向きヨー角(度)
 var _rareTextDone=false;     // ステータス文言切替の一度きりフラグ
 // 各サブフェーズ長(ms)。レアなので通常より長尺
 var RARE_LINE_IN=450, RARE_FILL=1200, RARE_LGONE=220, RARE_EYESIN=260, RARE_BLINK=620, RARE_TURN=620, RARE_EMIT=520, RARE_ENDHOLD=180;
-var RARE_DELAY=200;          // ポップ表示から再生開始までの間(ms)。その間は空セル
+var RARE_FADE=300;           // ポップのフェードイン(.3s)。これが終わるまで演出は待つ
+var RARE_DELAY=200;          // フェードイン後、再生開始までの間(ms)。その間は空セルがハッキリ見える
 var RARE_TURN_MAX=46;        // 右向き最大ヨー角(度)
 var RARE_GROW=0.12;          // 右向き時のセル拡大率（小さく見える分の相殺）
 var RARE_DEP=0.6;            // 見かけの奥行き係数
@@ -3036,8 +3038,10 @@ function _drawPopRare(gctx, cx, cy, sz){
 
 // レア演出のフェーズ駆動（_popAnimLoop から毎フレーム呼ぶ）
 function _rareStep(now){
-  if(!_rareStart) _rareStart=now;   // 最初の再生フレームで起点を確定
-  var t=now-_rareStart-RARE_DELAY;  // 開始まで RARE_DELAY ぶん待つ
+  // ポップのフェードイン完了まで待つ（間がフェードインに食われて見えないのを防ぐ）
+  if(now<_rareReadyAt){ _rarePhase='idle'; _popFillFrac=0; _rareLineInFrac=0; _rareLineAlpha=1; _rareEmitFrac=0; _rareEyeAlpha=0; _rareTurnDeg=0; return; }
+  if(!_rareStart) _rareStart=now;   // フェードイン後の最初のフレームで起点を確定
+  var t=now-_rareStart-RARE_DELAY;  // 開始まで RARE_DELAY ぶん待つ（空セルがハッキリ見える）
   if(t<0){ _rarePhase='idle'; _popFillFrac=0; _rareLineInFrac=0; _rareLineAlpha=1; _rareEmitFrac=0; _rareEyeAlpha=0; _rareTurnDeg=0; return; }
   var t1=RARE_LINE_IN, t2=t1+RARE_FILL, t3=t2+RARE_LGONE, t4=t3+RARE_EYESIN;
   var t5=t4+RARE_BLINK, t6=t5+RARE_TURN, t7=t6+RARE_EMIT, t8=t7+RARE_ENDHOLD;
@@ -3168,11 +3172,12 @@ function showEncPopup(){
   _popRollPhase='none'; _popRollDeg=0; _popGlow=0; _popLandTime=-1; _popLanded=false;
   // レア抽選＆リセット（window._brakeForceRare=true で強制発動）
   _popRare=(window._brakeForceRare===true)||(Math.random()<_POP_RARE_PROB);
-  _rarePhase='none'; _rareStart=0; _rareLineInFrac=0; _rareLineAlpha=1; _rareEmitFrac=0;
+  _rarePhase='none'; _rareStart=0; _rareReadyAt=0; _rareLineInFrac=0; _rareLineAlpha=1; _rareEmitFrac=0;
   _rareEyeAlpha=0; _rareEyeMorph=0; _rareEyeOpen=1; _rareTurnDeg=0; _rareTextDone=false;
-  // レアはポップ表示と同時に最初から再生（_rareStart は最初の _rareStep で確定）。
-  // 結果カードへの遷移(_popOnLand)だけは API 完了を待ってから（_rareStep 終端で実行）。
-  if(_popRare){ _popPhase='rare'; _rarePhase='lineIn'; }
+  // レアはポップのフェードイン完了後に再生開始（_rareReadyAt）。それまでは空セルを表示。
+  // その後 RARE_DELAY の間ハッキリ空セルを見せてからビーム。結果カード遷移(_popOnLand)
+  // だけは API 完了を待ってから（_rareStep 終端で実行）。
+  if(_popRare){ _popPhase='rare'; _rarePhase='lineIn'; _rareReadyAt=performance.now()+RARE_FADE; }
   var dpr=window.devicePixelRatio||1;
   var pop=document.createElement('div');
   pop.id='enc-popup-new';
