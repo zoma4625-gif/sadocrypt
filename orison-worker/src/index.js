@@ -1024,7 +1024,7 @@ ${HERO_BG_HTML}
 <main class="content-wrap">
   <div class="tl-eyebrow">WHAT'S TIME-LOCK CRYPTOGRAPHY?</div>
   <h1 class="tl-h1">タイムロック暗号とは</h1>
-  <p class="tl-body">タイムロック暗号（Time-Lock Puzzle）とは、「送信者を含む誰も、あらかじめ決められた時間が経過するまで復号できない」ことを数学的に保証する暗号方式です。「情報を未来へ送る」ことを目標に、1996年に Ron Rivest、Adi Shamir、David Wagner によって提案され、技術が確立されました。Rivest と Shamir は、RSA暗号の生みの親でもあります。</p>
+  <p class="tl-body">タイムロック暗号（Time-Lock Puzzle）は、「送信者を含む誰も、あらかじめ決められた時間が経過するまで復号できない」ことを数学的に保証する暗号方式です。「情報を未来へ送る」ことを目標に、1996年に Ron Rivest、Adi Shamir、David Wagner によって提案され、技術が確立されました。Rivest と Shamir は、RSA暗号の生みの親でもあります。</p>
   <p class="tl-body">最新鋭のコンピュータでも解くのに時間がかかる複雑なパズルをその場で生成し、パズルの答えを鍵とした錠前でリンクやファイルを完全にロックします。</p>
 
   <h2 class="tl-h2">仕組み</h2>
@@ -1462,6 +1462,31 @@ ${HEADER_CSS}
 /* 下段 */
 .result-bottom-row{ display:flex; align-items:center; gap:10px; margin-top:8px; }
 .result-share-btn svg, .result-open-btn svg{ width:15px; height:15px; display:block; flex-shrink:0; }
+
+/* ============================================================
+   ドラッグ&ドロップオーバーレイ
+   ============================================================ */
+#drop-overlay{
+  position:fixed;inset:0;z-index:9998;
+  background:rgba(5,20,12,0.82);
+  display:none;
+  align-items:center;justify-content:center;
+  pointer-events:none;
+}
+#drop-overlay.active{
+  display:flex;
+  pointer-events:all;
+}
+#drop-frame{
+  position:fixed;inset:16px;
+  border:2px dashed rgba(61,220,132,0.6);
+  border-radius:16px;
+  pointer-events:none;
+}
+#drop-content{
+  text-align:center;
+  pointer-events:none;
+}
 
 /* ============================================================
    暗号化オーバーレイ（横帯）
@@ -2165,7 +2190,7 @@ ${HEADER_HTML}
       </div>
       <div class="who-item">
         <div class="who-item-title">知り合いに待つ時間を贈りたい人に。</div>
-        <div class="who-item-desc">復号はブラウザを開いている間しか行われません。待ってる間にひと呼吸。</div>
+        <div class="who-item-desc">情報量にブレーキをかけ、待ってる間にひと呼吸。</div>
       </div>
       <div class="who-item">
         <div class="who-item-title">ほかにも</div>
@@ -2522,6 +2547,50 @@ function clearFileSelection(){
   contentInput.disabled = false;
   contentInput.placeholder = 'ここにURLを入力';
 }
+
+// ドラッグ&ドロップ
+(function(){
+  var dropOverlay = document.getElementById('drop-overlay');
+  var dragDepth = 0;
+
+  function applyDroppedFile(file){
+    if(!file) return;
+    if(file.size > MAX_FILE_SIZE){
+      showEncError('このファイルは大きすぎます（最大' + (MAX_FILE_SIZE/1024/1024) + 'MB）');
+      return;
+    }
+    selectedFile = file;
+    fileSelectedName.textContent = file.name;
+    fileSelectedBar.classList.add('visible');
+    btnPlus.classList.add('active');
+    contentInput.disabled = true;
+    contentInput.placeholder = 'ファイルを暗号化します';
+    contentInput.value = '';
+  }
+
+  document.addEventListener('dragenter', function(e){
+    e.preventDefault();
+    dragDepth++;
+    if(dragDepth === 1) dropOverlay.classList.add('active');
+  });
+
+  document.addEventListener('dragleave', function(e){
+    dragDepth--;
+    if(dragDepth <= 0){ dragDepth = 0; dropOverlay.classList.remove('active'); }
+  });
+
+  document.addEventListener('dragover', function(e){
+    e.preventDefault();
+  });
+
+  document.addEventListener('drop', function(e){
+    e.preventDefault();
+    dragDepth = 0;
+    dropOverlay.classList.remove('active');
+    var files = e.dataTransfer && e.dataTransfer.files;
+    if(files && files.length > 0) applyDroppedFile(files[0]);
+  });
+})();
 
 // ============================================================
 // フルスクリーン暗号化オーバーレイ（Canvasスピナー）
@@ -4320,6 +4389,15 @@ run().catch(function(e){
   document.getElementById('dec-em').textContent='Error: '+e.message;
 });
 </script>
+<!-- ドラッグ&ドロップオーバーレイ -->
+<div id="drop-overlay">
+  <div id="drop-frame"></div>
+  <div id="drop-content">
+    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 16px"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+    <div style="color:#fff;font-weight:700;font-size:20px;margin-bottom:8px;font-family:'Noto Sans JP',sans-serif">ここにファイルを置く</div>
+    <div style="color:rgba(255,255,255,.5);font-size:13px;font-family:'Noto Sans JP',sans-serif">最大5MBまで</div>
+  </div>
+</div>
 </body>
 </html>`;
 
