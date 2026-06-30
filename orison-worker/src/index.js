@@ -2834,7 +2834,7 @@ var _POP_CELL_XOFF=102, _POP_CELL_YOFF=20; // cx=105 → (300-90)/2 で中央。
 // シーケンス: lineIn→fill→lineGone→eyesIn→blink→turn(+grow)→emit→end
 // 終端で _popOnLand を呼び、以降は通常アニメ仕様に準拠（結果カード・放出・ポップ消し）。
 // ============================================================
-var _POP_RARE_PROB=1/30;     // レア確率（仮）。window._brakeForceRare=true で強制発動
+var _POP_RARE_PROB=1;        // ★一時的に必ずレア発動（確認用）。確率は後で調整する。window._brakeForceRare=true でも強制発動
 var _popRare=false;
 var _rarePhase='none';       // none|lineIn|fill|lineGone|eyesIn|blink|turn|emit|end|done
 var _rareStart=0;
@@ -2853,6 +2853,12 @@ var RARE_GROW=0.12;          // 右向き時のセル拡大率（小さく見え
 var RARE_DEP=0.6;            // 見かけの奥行き係数
 var RARE_LINE_THICK=7;       // 線の太さ(px)
 var RARE_GREEN='#3ddc84';    // 線・セル共通の緑（色は不変）
+// 目（④ジト目を可愛く詰める）。faceに対する比率
+var RARE_EYE_CY=0.47;        // 目の縦位置（top からの比率）
+var RARE_EYE_GAP=0.205;      // 目の左右間隔（中心から各目までの比率）
+var RARE_EYE_W=10.5;         // 目の半幅(px)
+var RARE_EYE_CAPH=8;         // カプセル時の縦幅(px)
+var RARE_EYE_BARH=4.5;       // 棒目(静止)の縦幅(px)。少しカプセル寄りの厚み
 var RARE_TURN_MAX=48;        // 右向き最大ヨー角(度)
 
 function _drawPopCell(canvas){
@@ -3003,10 +3009,10 @@ function _drawPopRare(gctx, cx, cy, sz){
     gctx.save();
     gctx.globalAlpha=_rareEyeAlpha;
     gctx.fillStyle='#04110a';
-    var eyeCy=top+faceH*0.42;
-    var gap=faceH*0.26*c;
-    var ew=7*c*grow;                             // 半幅: カプセル14px幅の半分
-    var eh=(7+(3-7)*_rareEyeMorph)*0.5*grow;      // カプセル7→棒3 の半分
+    var eyeCy=top+faceH*RARE_EYE_CY;
+    var gap=faceH*RARE_EYE_GAP*c;
+    var ew=RARE_EYE_W*c*grow;                     // 半幅
+    var eh=(RARE_EYE_CAPH+(RARE_EYE_BARH-RARE_EYE_CAPH)*_rareEyeMorph)*0.5*grow; // カプセル→棒 の半分
     var rr=(4+(2-4)*_rareEyeMorph)*grow;          // 角丸 4→2
     var openY=Math.max(0.06,_rareEyeOpen);
     for(var k=-1;k<=1;k+=2){
@@ -3089,8 +3095,9 @@ function _popAnimLoop(now){
   if(!_popCanvasEl){ _popRafId=null; return; }
   _popWavePh+=0.08;
   if(_popPhase==='fill1'){
+    // レア時は処理中もセルを空のまま（線が当たって初めて満ちる）
     var diff=_popTargetFrac-_popFillFrac;
-    if(diff>0) _popFillFrac=Math.min(_popTargetFrac, _popFillFrac+diff*0.05);
+    if(diff>0 && !_popRare) _popFillFrac=Math.min(_popTargetFrac, _popFillFrac+diff*0.05);
   } else if(_popPhase==='fill2'){
     var e2=Math.min(1,(now-_popFill2Start)/_popFill2Dur);
     var t2=e2<0.5?2*e2*e2:-1+(4-2*e2)*e2;
@@ -3157,8 +3164,8 @@ function showEncPopup(){
   _popRollPhase='none'; _popRollDeg=0; _popGlow=0; _popLandTime=-1; _popLanded=false;
   // レア抽選＆リセット（window._brakeForceRare=true で強制発動）
   _popRare=(window._brakeForceRare===true)||(Math.random()<_POP_RARE_PROB);
-  _rarePhase='none'; _rareStart=0; _rareLineFrac=0; _rareEmitFrac=0; _rareShake=0;
-  _rareEyeAlpha=0; _rareEyeMorph=0; _rareEyeOpen=1; _rareTurnDeg=0; _rareCellAlpha=1; _rareLineAlpha=1; _rareTextDone=false;
+  _rarePhase='none'; _rareStart=0; _rareLineInFrac=0; _rareLineAlpha=1; _rareEmitFrac=0;
+  _rareEyeAlpha=0; _rareEyeMorph=0; _rareEyeOpen=1; _rareTurnDeg=0; _rareTextDone=false;
   var dpr=window.devicePixelRatio||1;
   var pop=document.createElement('div');
   pop.id='enc-popup-new';
@@ -3252,7 +3259,7 @@ function triggerPopupComplete(shareUrl, resultSection, targetSeconds){
   };
   if(_popRare){
     // レア：roll の代わりにレアシーケンスを再生（終端で _popOnLand）
-    _popPhase='rare'; _rarePhase='line'; _rareStart=performance.now();
+    _popPhase='rare'; _rarePhase='lineIn'; _rareStart=performance.now();
   } else {
     _popPhase='fill2';
     _popFill2Start=performance.now();
