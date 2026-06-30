@@ -2688,7 +2688,10 @@ var _popRollStart=0;
 var _popRollDeg=0;
 var _popGlow=0;
 var _popLanded=false;
+var _popDotInterval=null;
 var _POP_W=96;
+var _POP_CVS_W=132, _POP_CVS_H=128;
+var _POP_CELL_XOFF=22, _POP_CELL_YOFF=6;
 
 function _drawPopCell(canvas){
   var dpr=window.devicePixelRatio||1;
@@ -2697,42 +2700,44 @@ function _drawPopCell(canvas){
   gctx.save();
   gctx.scale(dpr,dpr);
   var pad=3, sz=_POP_W-pad*2;
+  // セルはキャンバス内をオフセットして配置（転がり時に左上が欠けないよう余白を確保）
+  var cx=_POP_CELL_XOFF+pad, cy=_POP_CELL_YOFF+pad;
+  var pivX=cx+sz, pivY=cy+sz;
   if(Math.abs(_popRollDeg)>0.01){
-    var pivX=pad+sz, pivY=pad+sz;
     gctx.translate(pivX,pivY);
     gctx.rotate(_popRollDeg*Math.PI/180);
     gctx.translate(-pivX,-pivY);
   }
-  var waterY=pad+sz*(1-_popFillFrac);
+  var waterY=cy+sz*(1-_popFillFrac);
   gctx.save();
   gctx.beginPath();
-  gctx.moveTo(pad, waterY+Math.sin(_popWavePh)*_popWaveAmp);
+  gctx.moveTo(cx, waterY+Math.sin(_popWavePh)*_popWaveAmp);
   for(var x=0;x<=sz;x+=2){
-    gctx.lineTo(pad+x, waterY+Math.sin(_popWavePh+x*0.12)*_popWaveAmp);
+    gctx.lineTo(cx+x, waterY+Math.sin(_popWavePh+x*0.12)*_popWaveAmp);
   }
-  gctx.lineTo(pad+sz,pad+sz); gctx.lineTo(pad,pad+sz); gctx.closePath();
+  gctx.lineTo(pivX,pivY); gctx.lineTo(cx,pivY); gctx.closePath();
   gctx.clip();
-  gctx.fillStyle='rgba(61,220,132,0.22)';
-  gctx.fillRect(pad,pad,sz,sz);
+  gctx.fillStyle='rgba(61,220,132,0.92)';
+  gctx.fillRect(cx,cy,sz,sz);
   gctx.restore();
   if(_popWaveAmp>0.3){
     gctx.save();
     gctx.beginPath();
-    gctx.moveTo(pad, waterY+Math.sin(_popWavePh)*_popWaveAmp);
+    gctx.moveTo(cx, waterY+Math.sin(_popWavePh)*_popWaveAmp);
     for(var x=0;x<=sz;x+=2){
-      gctx.lineTo(pad+x, waterY+Math.sin(_popWavePh+x*0.12)*_popWaveAmp);
+      gctx.lineTo(cx+x, waterY+Math.sin(_popWavePh+x*0.12)*_popWaveAmp);
     }
-    gctx.strokeStyle='rgba(61,220,132,0.78)';
+    gctx.strokeStyle='rgba(61,220,132,1)';
     gctx.lineWidth=1.5;
-    gctx.shadowColor='rgba(61,220,132,0.5)'; gctx.shadowBlur=3;
+    gctx.shadowColor='rgba(61,220,132,0.8)'; gctx.shadowBlur=6;
     gctx.stroke();
     gctx.restore();
   }
   if(_popGlow>0){
-    gctx.shadowColor='#3ddc84'; gctx.shadowBlur=22*_popGlow;
+    gctx.shadowColor='#3ddc84'; gctx.shadowBlur=28*_popGlow;
   }
   gctx.strokeStyle='#3ddc84'; gctx.lineWidth=2;
-  gctx.strokeRect(pad,pad,sz,sz);
+  gctx.strokeRect(cx,cy,sz,sz);
   gctx.restore();
 }
 
@@ -2764,6 +2769,7 @@ function _popAnimLoop(now){
       if(!_popLanded){
         _popLanded=true;
         _popGlow=1.0;
+        if(_popDotInterval){ clearInterval(_popDotInterval); _popDotInterval=null; }
         if(_popStatusEl){
           _popStatusEl.textContent='暗号化しました';
           _popStatusEl.style.color='#3ddc84';
@@ -2797,8 +2803,8 @@ function showEncPopup(){
     'min-width:200px;pointer-events:none;'+
     'box-shadow:0 0 40px rgba(0,0,0,0.7);';
   var cvs=document.createElement('canvas');
-  cvs.width=_POP_W*dpr; cvs.height=_POP_W*dpr;
-  cvs.style.width=_POP_W+'px'; cvs.style.height=_POP_W+'px';
+  cvs.width=_POP_CVS_W*dpr; cvs.height=_POP_CVS_H*dpr;
+  cvs.style.width=_POP_CVS_W+'px'; cvs.style.height=_POP_CVS_H+'px';
   var statusDiv=document.createElement('div');
   statusDiv.style.cssText=
     'font-family:"Share Tech Mono",monospace;font-size:15px;'+
@@ -2808,14 +2814,23 @@ function showEncPopup(){
   var logDiv=document.createElement('div');
   logDiv.style.cssText=
     'font-family:"Share Tech Mono",monospace;font-size:11px;'+
-    'color:rgba(61,220,132,0.7);text-align:left;min-width:160px;'+
-    'min-height:44px;line-height:1.6;word-break:break-all;';
+    'color:rgba(61,220,132,0.75);text-align:left;min-width:200px;'+
+    'max-height:80px;overflow-y:hidden;line-height:1.4;';
   pop.appendChild(cvs);
   pop.appendChild(statusDiv);
   pop.appendChild(logDiv);
   document.body.appendChild(pop);
   _popEl=pop; _popCanvasEl=cvs; _popStatusEl=statusDiv; _popLogEl=logDiv;
   requestAnimationFrame(function(){ pop.style.opacity='1'; });
+  // ドットアニメーション（500ms ごとに 1→2→3 ドットをループ）
+  var _dotCount=0;
+  _popDotInterval=setInterval(function(){
+    if(!_popStatusEl){ clearInterval(_popDotInterval); _popDotInterval=null; return; }
+    _dotCount=(_dotCount+1)%4;
+    var dots='';
+    for(var i=0;i<_dotCount;i++) dots+='.';
+    _popStatusEl.textContent='暗号化しています'+dots;
+  },500);
   if(_popRafId) cancelAnimationFrame(_popRafId);
   _popRafId=requestAnimationFrame(_popAnimLoop);
 }
@@ -2824,6 +2839,7 @@ function hideEncPopup(){
   if(!_popEl) return;
   var el=_popEl;
   _popEl=null; _popCanvasEl=null; _popStatusEl=null; _popLogEl=null;
+  if(_popDotInterval){ clearInterval(_popDotInterval); _popDotInterval=null; }
   if(_popRafId){ cancelAnimationFrame(_popRafId); _popRafId=null; }
   el.style.opacity='0';
   setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 350);
@@ -2831,10 +2847,10 @@ function hideEncPopup(){
 
 function popAddLog(msg){
   if(!_popLogEl) return;
-  var lines=_popLogEl.textContent.split('\\n').filter(function(l){return l.trim();});
-  lines.push('> '+msg);
-  if(lines.length>4) lines=lines.slice(lines.length-4);
-  _popLogEl.textContent=lines.join('\\n');
+  var line=document.createElement('div');
+  line.textContent='> '+msg;
+  _popLogEl.appendChild(line);
+  _popLogEl.scrollTop=_popLogEl.scrollHeight;
 }
 
 function setPopFill(frac){
@@ -2882,50 +2898,45 @@ async function doEncrypt(){
   try {
     let enc;
 
+    var chainCountEst = calcChainCount(s).toLocaleString('ja-JP');
     if(selectedFile){
-      popAddLog('素数生成中... p, q (1024bit)');
+      popAddLog('RSA パズル生成中 (N=2048bit)...');
       setPopFill(0.08);
       await logDelay('prime');
-      popAddLog('N = p × q を計算中');
+      popAddLog('x₀ 採番中...');
       setPopFill(0.15);
-      await logDelay('npq');
-      popAddLog('x0 を採番中');
-      setPopFill(0.20);
       await logDelay('x0');
       const fileBuffer = await readFileAsArrayBuffer(selectedFile);
-      popAddLog('2乗チェーン計算中 (Carmichael skip)');
-      setPopFill(0.28);
+      popAddLog('x² mod N を ' + chainCountEst + ' 回計算中...');
+      setPopFill(0.25);
       await logDelay('chain');
       enc = await encryptFile(fileBuffer, selectedFile.name, selectedFile.type || 'application/octet-stream', s);
-      popAddLog('iterations: ' + enc.chainCount.toLocaleString('ja-JP'));
+      popAddLog('パズル施鍵完了: t=' + s + 's');
       setPopFill(0.38);
       await logDelay('iter');
-      popAddLog('SHA-256 → AES-256-GCM 暗号化');
+      popAddLog('ペイロードを暗号化 (AES-256-GCM)');
       setPopFill(0.48);
       await logDelay('aes');
     } else {
-      popAddLog('素数生成中... p, q (1024bit)');
+      popAddLog('RSA パズル生成中 (N=2048bit)...');
       setPopFill(0.08);
       await logDelay('prime');
-      popAddLog('N = p × q を計算中');
+      popAddLog('x₀ 採番中...');
       setPopFill(0.15);
-      await logDelay('npq');
-      popAddLog('x0 を採番中');
-      setPopFill(0.20);
       await logDelay('x0');
-      popAddLog('2乗チェーン計算中 (Carmichael skip)');
-      setPopFill(0.28);
+      popAddLog('x² mod N を ' + chainCountEst + ' 回計算中...');
+      setPopFill(0.25);
       await logDelay('chain');
       enc = await encryptContent(contentInput.value.trim(), s);
-      popAddLog('iterations: ' + enc.chainCount.toLocaleString('ja-JP'));
+      popAddLog('パズル施鍵完了: t=' + s + 's');
       setPopFill(0.38);
       await logDelay('iter');
-      popAddLog('SHA-256 → AES-256-GCM 暗号化');
+      popAddLog('ペイロードを暗号化 (AES-256-GCM)');
       setPopFill(0.48);
       await logDelay('aes');
     }
 
-    popAddLog('Cloudflare KV に書き込み中...');
+    popAddLog('サーバーにパズルを保存中...');
     setPopFill(0.50);
 
     const saveBody = {
@@ -2953,8 +2964,9 @@ async function doEncrypt(){
       return;
     }
 
-    popAddLog('完了 → ID: ' + d.id);
+    popAddLog('POST /api/save → 200 OK');
     const shareUrl = location.origin + '/' + d.id;
+    popAddLog('🔒 brake.run/' + d.id);
 
     window.releaseSpin();
     triggerPopupComplete(shareUrl, resultSection);
