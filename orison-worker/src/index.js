@@ -1329,7 +1329,7 @@ ${HEADER_CSS}
   border-radius:22px;
   box-shadow:0 0 0 1.5px rgba(45,212,150,0.25), 0 0 36px rgba(45,212,150,0.4), 0 8px 32px rgba(45,212,150,0.15);
   width:100%;
-  max-width:400px;
+  max-width:520px;
   margin:0 auto;
   padding:20px 20px 16px;
   opacity:0;
@@ -1347,32 +1347,33 @@ ${HEADER_CSS}
 .qr-thumb-btn{ width:42px; height:42px; background:#fff; border:0.5px solid rgba(45,212,150,0.35); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; padding:2px; overflow:hidden; transition:opacity .15s; }
 .qr-thumb-btn:hover{ opacity:0.8; }
 .qr-thumb-btn canvas,.qr-thumb-btn img{ display:block; }
-/* 共有ボタン（右端固定・96px） */
-.result-share-btn{ width:96px; flex-shrink:0; margin-left:auto; height:42px; background:rgba(61,220,132,0.16); border:0.5px solid rgba(45,212,150,0.4); border-radius:10px; display:flex; align-items:center; justify-content:center; gap:7px; cursor:pointer; padding:0 16px; transition:background .15s; color:#3ddc84; font-family:'Noto Sans JP',sans-serif; font-size:13px; font-weight:500; }
-.result-share-btn:hover{ background:rgba(61,220,132,0.24); }
+/* スペーサー */
+.result-spacer{ flex:1; }
+/* 共有・開く：同サイズ・同スタイル */
+.result-share-btn, .result-open-btn{ flex-shrink:0; height:42px; background:rgba(61,220,132,0.16); border:0.5px solid rgba(45,212,150,0.4); border-radius:10px; display:flex; align-items:center; justify-content:center; gap:7px; cursor:pointer; padding:0 14px; transition:background .15s; color:#3ddc84; font-family:'Noto Sans JP',sans-serif; font-size:13px; font-weight:500; }
+.result-share-btn:hover, .result-open-btn:hover{ background:rgba(61,220,132,0.24); }
 
 /* URL帯 */
 .result-url-wrap{ display:flex; align-items:center; gap:10px; background:#f0f0f0; border-radius:12px; padding:0 14px 0 20px; height:48px; cursor:pointer; margin-bottom:12px; }
 .result-url-textarea{ position:relative; flex:1; min-width:0; height:100%; }
 .result-url-text, .result-url-copied{
   position:absolute; left:0; top:50%; transform:translateY(-50%);
-  font-family:'Inter',sans-serif; font-size:clamp(14px,4vw,19px); white-space:nowrap;
+  font-family:'Inter',sans-serif; font-size:clamp(14px,4vw,19px);
+  font-weight:500; line-height:1; /* 同一指定で高さを揃え、translateY(-50%)のズレをなくす */
+  white-space:nowrap;
   max-width:100%; overflow:hidden; text-overflow:ellipsis;
   transform-origin:left center;
 }
-.result-url-text{ color:#1a1a1a; font-weight:500; transition:transform .2s ease, opacity .2s ease; }
-.result-url-copied{ color:#999; display:none; }
+.result-url-text{ color:#1a1a1a; transition:transform .2s ease, opacity .2s ease; }
+.result-url-copied{ color:#999; opacity:0; pointer-events:none; }
 /* コピーボタン：アイコンのみ（枠なし・背景なし） */
 .copy-btn{ width:36px; height:36px; background:none; border:none; border-radius:9px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; padding:0; transition:opacity .15s; }
 .copy-btn:hover{ opacity:0.6; }
 .copy-btn svg{ width:20px; height:20px; display:block; }
 
-/* 下段：共有→開く */
+/* 下段 */
 .result-bottom-row{ display:flex; align-items:center; gap:10px; margin-top:8px; }
-/* 開くボタン（脇役・小四角・アイコンのみ） */
-.result-open-btn{ width:42px; height:42px; flex-shrink:0; background:transparent; color:#3ddc84; border:0.5px solid rgba(45,212,150,0.25); border-radius:10px; padding:0; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .15s; }
-.result-open-btn:hover{ background:rgba(61,220,132,0.08); }
-.result-open-btn svg{ width:16px; height:16px; display:block; }
+.result-share-btn svg, .result-open-btn svg{ width:15px; height:15px; display:block; flex-shrink:0; }
 
 /* ============================================================
    暗号化オーバーレイ（横帯）
@@ -3035,12 +3036,14 @@ function buildResultSection(resultSection, shareUrl, targetSeconds){
     '<button class="qr-thumb-btn" id="qr-thumb-btn" title="QRコード">' +
     '<div id="qr-thumb-inner"></div>' +
     '</button>' +
-    '<button class="result-open-btn" id="result-open-btn" title="開く">' +
-    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
-    '</button>' +
+    '<div class="result-spacer"></div>' +
     '<button class="result-share-btn" id="result-share-btn" title="共有">' +
-    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>' +
+    '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>' +
     '共有' +
+    '</button>' +
+    '<button class="result-open-btn" id="result-open-btn" title="開く">' +
+    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+    '開く' +
     '</button>' +
     '</div>' +
     '</div>' +
@@ -3134,25 +3137,31 @@ function doCopiedAnim(){
   var copiedT=document.getElementById('result-url-copied');
   if(!urlT||!copiedT) return;
   if(urlT.dataset.busy==='1') return; urlT.dataset.busy='1';
+  // URL縮んで消える
+  urlT.style.transition='transform .2s ease,opacity .2s ease';
   urlT.style.transform='translateY(-50%) scale(0.9)'; urlT.style.opacity='0';
+  urlT.style.pointerEvents='none';
   setTimeout(function(){
-    urlT.style.display='none';
-    copiedT.style.display='inline-block';
-    copiedT.style.transform='translateY(-50%) scale(0.8)'; copiedT.style.opacity='0'; copiedT.style.transition='none';
+    // コピーしましたを同位置から出す（display切り替えなし・opacityのみ）
+    copiedT.style.transition='none';
+    copiedT.style.transform='translateY(-50%) scale(0.8)'; copiedT.style.opacity='0';
+    copiedT.style.pointerEvents='auto';
     requestAnimationFrame(function(){
       copiedT.style.transition='transform .26s cubic-bezier(.2,.9,.3,1.2),opacity .2s ease';
       copiedT.style.transform='translateY(-50%) scale(1)'; copiedT.style.opacity='1';
     });
   },200);
   setTimeout(function(){
+    copiedT.style.transition='transform .2s ease,opacity .2s ease';
     copiedT.style.transform='translateY(-50%) scale(0.9)'; copiedT.style.opacity='0';
+    copiedT.style.pointerEvents='none';
     setTimeout(function(){
-      copiedT.style.display='none';
-      urlT.style.display='inline-block';
-      urlT.style.transition='none'; urlT.style.transform='translateY(-50%) scale(0.9)'; urlT.style.opacity='0';
+      urlT.style.transition='none';
+      urlT.style.transform='translateY(-50%) scale(0.9)'; urlT.style.opacity='0';
       requestAnimationFrame(function(){
         urlT.style.transition='transform .22s ease,opacity .2s ease';
         urlT.style.transform='translateY(-50%) scale(1)'; urlT.style.opacity='1';
+        urlT.style.pointerEvents='';
       });
       urlT.dataset.busy='';
     },180);
@@ -3445,6 +3454,7 @@ body{
 .result-card-inner{position:relative;z-index:1}
 
 /* テキスト結果 */
+.result-text-wrap{ position:relative; margin-bottom:16px; }
 .result-text-content{
   font-size:14px;
   line-height:1.8;
@@ -3454,9 +3464,24 @@ body{
   background:rgba(0,255,140,0.04);
   border:1px solid rgba(0,255,140,0.15);
   border-radius:8px;
-  padding:16px;
-  margin-bottom:16px;
+  padding:16px 48px 16px 16px; /* 右側にコピーボタン分の余白 */
+  margin-bottom:0;
 }
+.dec-copy-btn{
+  position:absolute;
+  top:10px; right:10px;
+  width:30px; height:30px;
+  background:none;
+  border:0.5px solid rgba(0,255,140,0.25);
+  border-radius:7px;
+  color:#00ff8c;
+  cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  padding:0;
+  transition:background .15s, border-color .15s;
+}
+.dec-copy-btn:hover{ background:rgba(0,255,140,0.08); border-color:rgba(0,255,140,0.45); }
+.dec-copy-btn svg{ display:block; }
 
 /* URLリンク */
 .result-url-link{
@@ -3894,8 +3919,28 @@ function renderResult(decBuf){
       inner.innerHTML='<div class="result-text-content"><a href="'+escHtml(content)+'" class="result-url-link" target="_blank">'+escHtml(content)+'</a></div>';
       setTimeout(function(){if(isSafeURL(content))window.location.href=content;},2000);
     }else{
-      // テキストはそのまま表示
-      inner.innerHTML='<div class="result-text-content">'+escHtml(content)+'</div>';
+      // テキストはそのまま表示（コピーボタン付き）
+      var svgCopy='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+      var svgCheck='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      inner.innerHTML='<div class="result-text-wrap"><div class="result-text-content" id="dec-text-body"></div><button class="dec-copy-btn" id="dec-copy-btn" title="コピー">'+svgCopy+'</button></div>';
+      document.getElementById('dec-text-body').textContent=content; // XSS回避: textContentで設定
+      (function(cpContent){
+        var dcb=document.getElementById('dec-copy-btn');
+        if(!dcb) return;
+        dcb.addEventListener('click',function(){
+          function onCopied(){
+            var b=document.getElementById('dec-copy-btn');
+            if(!b) return;
+            b.innerHTML=svgCheck;
+            setTimeout(function(){ var b2=document.getElementById('dec-copy-btn'); if(b2) b2.innerHTML=svgCopy; },1500);
+          }
+          navigator.clipboard.writeText(cpContent).then(onCopied).catch(function(){
+            var ta=document.createElement('textarea');ta.value=cpContent;document.body.appendChild(ta);ta.select();
+            try{document.execCommand('copy');}catch(e){}
+            document.body.removeChild(ta);onCopied();
+          });
+        });
+      })(content);
     }
   }
 }
