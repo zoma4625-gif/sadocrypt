@@ -694,7 +694,7 @@ const HERO_BG_JS = `(function(){
     FALLOFF:       1.4,
     R_REF:         160,
     FOCAL:         360,
-    DEPTH:         0.7,
+    DEPTH:         0.3,
     RELEASE_BOOST: 1.0,
     RELEASE_DAMP:  0.97
   };
@@ -803,17 +803,8 @@ const HERO_BG_JS = `(function(){
         var sc=proj.scale;
         var sz=p.s;
         var base=p.s>40?0.42:p.s>20?0.5:p.s>10?0.7:0.82;
-        if(sc<=0){
-          // 後方セル(sc<=0): 元位置(p.x,p.y)でspinBlendに従いフェードアウト（瞬間消滅を回避）
-          var op0=base*p.life*(1-spinBlend)*centerFade(p.x); if(op0<=0.002) continue;
-          var x0=p.x-sz/2, y0=p.y-sz/2;
-          ctx.save(); ctx.shadowColor='rgba('+G+',1)'; ctx.shadowBlur=p.glow*(1-spinBlend);
-          var fo0=op0*(1-p.fillAmt), fi0=op0*p.fillAmt;
-          if(fo0>0.002){ctx.strokeStyle='rgba('+G+','+fo0.toFixed(3)+')';ctx.lineWidth=2.0;ctx.strokeRect(x0,y0,sz,sz);}
-          if(fi0>0.002){ctx.fillStyle='rgba('+G+','+fi0.toFixed(3)+')';ctx.fillRect(x0,y0,sz,sz);}
-          ctx.restore();
-          continue;
-        }
+        // DEPTH=0.3のため sc が負になる条件は数学的に成立しない（安全弁としてのみ残す）
+        if(sc<=0.05) continue;
         var scC=Math.min(1,Math.max(0.25,sc)); // 上限1.0: 前面セルが通常より明るくならない
         var scFactor=1+(scC-1)*spinBlend;
         var op=base*p.life*scFactor*centerFade(p.x); if(op<=0.002) continue;
@@ -1095,7 +1086,8 @@ const HTML_ENCRYPT = `<!DOCTYPE html>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Brake.","url":"https://brake.run","description":"ファイルやURLに“時間の鍵”をかける。設定した時間が来るまで誰も解読できない、タイムロック暗号化サービス。","applicationCategory":"SecurityApplication","operatingSystem":"Any","inLanguage":"ja","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@600&family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Orbitron:wght@900&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@600&family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
@@ -1173,13 +1165,13 @@ ${HEADER_CSS}
   border:none;
   outline:none;
   background:transparent;
-  font-family:'Share Tech Mono',monospace;
+  font-family:'Inter',sans-serif;
   font-size:17px;
   color:#1a1a18;
   padding:4px 0 16px;
   caret-color:#1a1a18;
 }
-.url-input::placeholder{color:#b4b4ac}
+.url-input::placeholder{color:#b4b4ac;font-family:'Noto Sans JP',sans-serif;}
 .url-input:disabled{color:#aaa;cursor:not-allowed}
 .file-selected-bar{
   display:none;
@@ -1354,17 +1346,20 @@ ${HEADER_CSS}
 .result-label-row{ display:flex; align-items:center; gap:8px; margin-bottom:16px; }
 .result-green-dot{ width:7px; height:7px; background:#3ddc84; border-radius:1px; flex-shrink:0; box-shadow:0 0 6px rgba(61,220,132,0.6); }
 .result-label-text{ font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:2px; color:rgba(255,255,255,0.7); text-transform:uppercase; }
-/* 共有ボタン（下部行） */
-.result-share-btn{ width:42px; height:42px; background:rgba(61,220,132,0.06); border:0.5px solid rgba(45,212,150,0.35); border-radius:10px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; padding:0; transition:background .15s; }
-.result-share-btn:hover{ background:rgba(61,220,132,0.12); }
-.result-share-btn svg{ width:20px; height:20px; display:block; }
+/* QRサムネイルボタン */
+.qr-thumb-btn{ width:42px; height:42px; background:#fff; border:0.5px solid rgba(45,212,150,0.35); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; padding:2px; overflow:hidden; transition:opacity .15s; }
+.qr-thumb-btn:hover{ opacity:0.8; }
+.qr-thumb-btn canvas,.qr-thumb-btn img{ display:block; }
+/* 共有ボタン（主役・横伸び） */
+.result-share-btn{ flex:1; height:42px; background:rgba(61,220,132,0.16); border:0.5px solid rgba(45,212,150,0.4); border-radius:10px; display:flex; align-items:center; justify-content:center; gap:7px; cursor:pointer; padding:0 16px; transition:background .15s; color:#3ddc84; font-family:'Noto Sans JP',sans-serif; font-size:14px; font-weight:500; }
+.result-share-btn:hover{ background:rgba(61,220,132,0.24); }
 
 /* URL帯 */
 .result-url-wrap{ display:flex; align-items:center; gap:10px; background:#f0f0f0; border-radius:10px; padding:0 10px 0 14px; height:48px; cursor:pointer; margin-bottom:12px; }
 .result-url-textarea{ position:relative; flex:1; min-width:0; height:100%; }
 .result-url-text, .result-url-copied{
   position:absolute; left:0; top:50%; transform:translateY(-50%);
-  font-family:'JetBrains Mono',monospace; font-size:14px; white-space:nowrap;
+  font-family:'Inter',sans-serif; font-size:14px; white-space:nowrap;
   max-width:100%; overflow:hidden; text-overflow:ellipsis;
   transform-origin:left center;
 }
@@ -1377,9 +1372,9 @@ ${HEADER_CSS}
 
 /* 下段：共有→開く */
 .result-bottom-row{ display:flex; align-items:center; gap:10px; margin-top:8px; }
-/* 開くボタン */
-.result-open-btn{ flex:1; height:42px; background:rgba(61,220,132,0.16); color:#3ddc84; border:0.5px solid rgba(45,212,150,0.4); border-radius:10px; padding:0 18px; display:flex; align-items:center; justify-content:center; gap:7px; cursor:pointer; font-family:'Noto Sans JP',sans-serif; font-size:14px; font-weight:500; transition:background .15s; }
-.result-open-btn:hover{ background:rgba(61,220,132,0.24); }
+/* 開くボタン（脇役・小四角・アイコンのみ） */
+.result-open-btn{ width:42px; height:42px; flex-shrink:0; background:transparent; color:#3ddc84; border:0.5px solid rgba(45,212,150,0.25); border-radius:10px; padding:0; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:background .15s; }
+.result-open-btn:hover{ background:rgba(61,220,132,0.08); }
 .result-open-btn svg{ width:16px; height:16px; display:block; }
 
 /* ============================================================
@@ -2797,23 +2792,13 @@ function _popAnimLoop(now){
     if(e2>=1.0){ _popPhase='complete'; _popFillFrac=1.0; _popWaveAmp=0; }
   }
   if(_popRollPhase==='going'){
-    // ためる: 1000ms で0→12度
-    var rg=Math.min(1,(now-_popRollStart)/1000);
-    _popRollDeg=12*rg*rg*rg;
-    if(rg>=1){ _popRollPhase='hold'; _popRollStart=now; }
-  } else if(_popRollPhase==='hold'){
-    // 頂点停止: 180ms 静止
-    _popRollDeg=12;
-    if(now-_popRollStart>=180){ _popRollPhase='returning'; _popRollStart=now; }
-  } else if(_popRollPhase==='returning'){
-    // パチン: 120ms で12→0度
-    var rr=Math.min(1,(now-_popRollStart)/120);
-    _popRollDeg=12*(1-rr)*(1-rr);
-    if(rr>=1){
+    // sin(π*t^β) 単一関数：β=6.1で上昇89%・下降11%の非対称（頂点でdeg/dt=0で滑らか）
+    var t=Math.min(1,(now-_popRollStart)/1120);
+    _popRollDeg=12*Math.sin(Math.PI*Math.pow(t,6.1));
+    if(t>=1){
       _popRollPhase='done'; _popRollDeg=0;
       if(!_popLanded){
-        _popLanded=true;
-        _popGlow=1.0;
+        _popLanded=true; _popGlow=1.0;
         if(_popOnLand){ _popOnLand(); _popOnLand=null; }
       }
     }
@@ -2911,14 +2896,13 @@ function setPopFill(frac){
   _popTargetFrac=Math.min(0.5, Math.max(_popTargetFrac, frac));
 }
 
-function triggerPopupComplete(shareUrl, resultSection){
+function triggerPopupComplete(shareUrl, resultSection, targetSeconds){
   _popPhase='fill2';
   _popFill2Start=performance.now();
-  // 固定timeoutを廃止。転がり着地時(_popOnLand)に即遷移
   _popOnLand=function(){
     var titleCard=document.querySelector('.title-card');
     if(titleCard) titleCard.classList.add('encrypted');
-    buildResultSection(resultSection, shareUrl);
+    buildResultSection(resultSection, shareUrl, targetSeconds);
     setTimeout(function(){ hideEncPopup(); }, 350);
   };
 }
@@ -3022,7 +3006,7 @@ async function doEncrypt(){
     popAddLog('🔒 brake.run/' + d.id);
 
     window.releaseSpin();
-    triggerPopupComplete(shareUrl, resultSection);
+    triggerPopupComplete(shareUrl, resultSection, s);
 
   } catch(err) {
     hideEncPopup();
@@ -3032,8 +3016,7 @@ async function doEncrypt(){
   btn.disabled = false;
 };
 
-function buildResultSection(resultSection, shareUrl){
-  // 古い結果をクリアしてから新しい結果を挿入
+function buildResultSection(resultSection, shareUrl, targetSeconds){
   var escapedUrl = shareUrl.replace(/"/g, '&quot;');
   resultSection.innerHTML =
     '<div class="result-section" id="result-card-inner">' +
@@ -3052,50 +3035,85 @@ function buildResultSection(resultSection, shareUrl){
     '</button>' +
     '</div>' +
     '<div class="result-bottom-row">' +
+    '<button class="qr-thumb-btn" id="qr-thumb-btn" title="QRコード">' +
+    '<div id="qr-thumb-inner"></div>' +
+    '</button>' +
     '<button class="result-share-btn" id="result-share-btn" title="共有">' +
-    '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>' +
+    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>' +
+    '共有' +
     '</button>' +
     '<button class="result-open-btn" id="result-open-btn" title="開く">' +
     '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
-    '開く' +
     '</button>' +
     '</div>' +
     '</div>' +
     '</div>';
-  // フェードイン＋イベント登録
   requestAnimationFrame(function(){
     const card = document.getElementById('result-card-inner');
     if(card) card.classList.add('show');
-    // result-url-wrap クリック → コピー
     const urlWrap = document.getElementById('result-url-wrap');
     if(urlWrap) urlWrap.addEventListener('click', function(){ copyUrl(); });
-    // copy-btn クリック → コピー
     const copyBtn = document.getElementById('copy-btn');
     if(copyBtn) copyBtn.addEventListener('click', function(e){ e.stopPropagation(); copyUrl(); });
-    // 開くボタン → 新しいタブ
     const openBtn = document.getElementById('result-open-btn');
     if(openBtn) openBtn.addEventListener('click', function(){ window.open(shareUrl, '_blank'); });
-    // 共有ボタン
     var shareBtn = document.getElementById('result-share-btn');
     if(shareBtn) shareBtn.addEventListener('click', function(){
       if(navigator.share){
         navigator.share({ title:'Brake.', url: shareUrl }).catch(function(){});
-      } else {
-        copyUrl();
-      }
+      } else { copyUrl(); }
     });
-    // スクロール（カードが画面内に収まるように）
+    var qrThumb = document.getElementById('qr-thumb-inner');
+    if(qrThumb && window.QRCode){
+      new QRCode(qrThumb, { text:shareUrl, width:38, height:38, colorDark:'#000000', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.L });
+    }
+    var qrBtn = document.getElementById('qr-thumb-btn');
+    if(qrBtn) qrBtn.addEventListener('click', function(){ showQrModal(shareUrl, targetSeconds); });
     setTimeout(function(){
       var catchEl = document.querySelector('.hero-catch');
       var headerEl = document.querySelector('.hero-header');
       if(catchEl){
         var headerH = headerEl ? headerEl.offsetHeight : 0;
         var rect = catchEl.getBoundingClientRect();
-        var target = window.scrollY + rect.top - headerH - 24;  // ヘッダー分＋24pxの余白＝キャッチの少し上。24は実機調整ポイント
+        var target = window.scrollY + rect.top - headerH - 24;
         window.scrollTo({ top: target, behavior:'smooth' });
       }
     }, 120);
   });
+}
+
+function _fmtUnlockTime(s){
+  if(s>=86400) return Math.round(s/86400)+'日';
+  if(s>=3600) return Math.round(s/3600)+'時間';
+  if(s>=60) return Math.round(s/60)+'分';
+  return s+'秒';
+}
+
+function showQrModal(url, targetSeconds){
+  if(document.getElementById('qr-modal-overlay')) return;
+  var overlay=document.createElement('div');
+  overlay.id='qr-modal-overlay';
+  overlay.style.cssText='position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;';
+  var modal=document.createElement('div');
+  modal.style.cssText='background:#fff;border-radius:16px;padding:28px 24px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;max-width:300px;width:90%;';
+  var qrDiv=document.createElement('div');
+  modal.appendChild(qrDiv);
+  var urlText=document.createElement('p');
+  urlText.style.cssText='font-family:"Inter",sans-serif;font-size:11px;color:#555;word-break:break-all;text-align:center;line-height:1.5;max-width:240px;';
+  urlText.textContent=url;
+  modal.appendChild(urlText);
+  if(targetSeconds){
+    var timeText=document.createElement('p');
+    timeText.style.cssText='font-family:"Noto Sans JP",sans-serif;font-size:12px;color:#aaa;';
+    timeText.textContent='復号 = '+_fmtUnlockTime(targetSeconds);
+    modal.appendChild(timeText);
+  }
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+  overlay.addEventListener('click',function(e){ if(e.target===overlay) document.body.removeChild(overlay); });
+  if(window.QRCode){
+    new QRCode(qrDiv,{ text:url, width:220, height:220, colorDark:'#000000', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.L });
+  }
 }
 
 // ============================================================
