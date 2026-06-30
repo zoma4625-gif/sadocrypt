@@ -970,8 +970,8 @@ const HERO_BG_HTML = `<canvas id="hero-bg" class="hero-canvas" aria-hidden="true
   <div class="hero-scanlines">
     <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
       <defs>
-        <pattern id="scanpat" x="0" y="0" width="100%" height="8" patternUnits="userSpaceOnUse">
-          <path d="M0,4 Q50%,0 100%,4" fill="none" stroke="rgba(0,255,140,0.07)" stroke-width="1"/>
+        <pattern id="scanpat" x="0" y="0" width="4" height="8" patternUnits="userSpaceOnUse">
+          <line x1="0" y1="4" x2="4" y2="4" stroke="rgba(0,255,140,0.07)" stroke-width="1"/>
         </pattern>
       </defs>
       <rect width="100%" height="100%" fill="url(#scanpat)"/>
@@ -2702,7 +2702,7 @@ function showEncError(msg){
 // 暗号化ポップアップ（セル満ち演出・ログ・完了アニメ）
 // ============================================================
 
-var _popEl=null, _popCanvasEl=null, _popStatusEl=null, _popLogEl=null;
+var _popEl=null, _popCanvasEl=null, _popStatusEl=null, _popLogEl=null, _popDotsEl=null;
 var _popRafId=null;
 var _popFillFrac=0;
 var _popTargetFrac=0;
@@ -2786,6 +2786,7 @@ function _popAnimLoop(now){
       _popRollPhase='going'; _popRollStart=now;
       // 転がり開始と同タイミングで「暗号化しました」に切替
       if(_popDotInterval){ clearInterval(_popDotInterval); _popDotInterval=null; }
+      if(_popDotsEl) _popDotsEl.textContent='';
       if(_popStatusEl){
         _popStatusEl.textContent='暗号化しました';
         _popStatusEl.style.color='#3ddc84';
@@ -2795,20 +2796,23 @@ function _popAnimLoop(now){
     if(e2>=1.0){ _popPhase='complete'; _popFillFrac=1.0; _popWaveAmp=0; }
   }
   if(_popRollPhase==='going'){
-    // going 220ms（旧700ms）: fill残り~316msと並行
-    var rg=Math.min(1,(now-_popRollStart)/220);
-    _popRollDeg=14*rg*rg*rg;
-    if(rg>=1){ _popRollPhase='returning'; _popRollStart=now; }
+    // ためる: 1000ms で0→12度
+    var rg=Math.min(1,(now-_popRollStart)/1000);
+    _popRollDeg=12*rg*rg*rg;
+    if(rg>=1){ _popRollPhase='hold'; _popRollStart=now; }
+  } else if(_popRollPhase==='hold'){
+    // 頂点停止: 180ms 静止
+    _popRollDeg=12;
+    if(now-_popRollStart>=180){ _popRollPhase='returning'; _popRollStart=now; }
   } else if(_popRollPhase==='returning'){
-    // returning 100ms（旧180ms）: fillとほぼ同時に終わる
-    var rr=Math.min(1,(now-_popRollStart)/100);
-    _popRollDeg=14*(1-rr)*(1-rr);
+    // パチン: 200ms で12→0度
+    var rr=Math.min(1,(now-_popRollStart)/200);
+    _popRollDeg=12*(1-rr)*(1-rr);
     if(rr>=1){
       _popRollPhase='done'; _popRollDeg=0;
       if(!_popLanded){
         _popLanded=true;
         _popGlow=1.0;
-        // 着地直後にコールバック（固定timeoutを廃止し即遷移）
         if(_popOnLand){ _popOnLand(); _popOnLand=null; }
       }
     }
@@ -2835,17 +2839,28 @@ function showEncPopup(){
     'border:1.5px solid rgba(61,220,132,0.5);border-radius:16px;'+
     'padding:28px 32px 24px;'+
     'display:flex;flex-direction:column;align-items:center;gap:16px;'+
-    'min-width:200px;pointer-events:none;'+
+    'width:300px;pointer-events:none;'+
     'box-shadow:0 0 40px rgba(0,0,0,0.7);';
   var cvs=document.createElement('canvas');
   cvs.width=_POP_CVS_W*dpr; cvs.height=_POP_CVS_H*dpr;
   cvs.style.width=_POP_CVS_W+'px'; cvs.style.height=_POP_CVS_H+'px';
   var statusDiv=document.createElement('div');
   statusDiv.style.cssText=
+    'display:flex;align-items:center;justify-content:center;'+
+    'height:26px;overflow:hidden;flex-shrink:0;';
+  var statusMain=document.createElement('span');
+  statusMain.style.cssText=
     'font-family:"Noto Sans JP",sans-serif;font-size:15px;'+
-    'letter-spacing:0.5px;color:rgba(255,255,255,0.9);text-align:center;'+
-    'transition:color .4s,font-size .4s;';
-  statusDiv.textContent='暗号化しています';
+    'letter-spacing:0.5px;color:rgba(255,255,255,0.9);'+
+    'transition:color .4s,font-size .4s;white-space:nowrap;';
+  statusMain.textContent='暗号化しています';
+  var statusDots=document.createElement('span');
+  statusDots.style.cssText=
+    'display:inline-block;width:18px;text-align:left;flex-shrink:0;'+
+    'font-family:"Noto Sans JP",sans-serif;font-size:10px;'+
+    'letter-spacing:0;opacity:0.6;color:rgba(255,255,255,0.9);';
+  statusDiv.appendChild(statusMain);
+  statusDiv.appendChild(statusDots);
   var logDiv=document.createElement('div');
   logDiv.style.cssText=
     'font-family:"JetBrains Mono",monospace;font-size:11px;'+
@@ -2855,17 +2870,16 @@ function showEncPopup(){
   pop.appendChild(statusDiv);
   pop.appendChild(logDiv);
   document.body.appendChild(pop);
-  _popEl=pop; _popCanvasEl=cvs; _popStatusEl=statusDiv; _popLogEl=logDiv;
+  _popEl=pop; _popCanvasEl=cvs; _popStatusEl=statusMain; _popLogEl=logDiv; _popDotsEl=statusDots;
   requestAnimationFrame(function(){ pop.style.opacity='1'; });
   // ドットアニメーション（500ms ごとに 1→2→3 ドットをループ）
   var _dotCount=0;
   _popDotInterval=setInterval(function(){
-    if(!_popStatusEl){ clearInterval(_popDotInterval); _popDotInterval=null; return; }
+    if(!_popDotsEl){ clearInterval(_popDotInterval); _popDotInterval=null; return; }
     _dotCount=(_dotCount+1)%4;
     var dots='';
     for(var i=0;i<_dotCount;i++) dots+='.';
-    // dotsをspanで小さく（letter-spacing:2pxで点が大きく見える問題を回避）
-    _popStatusEl.innerHTML='暗号化しています<span style="font-size:10px;letter-spacing:0;opacity:0.6">'+dots+'</span>';
+    _popDotsEl.textContent=dots;
   },500);
   if(_popRafId) cancelAnimationFrame(_popRafId);
   _popRafId=requestAnimationFrame(_popAnimLoop);
@@ -2874,7 +2888,7 @@ function showEncPopup(){
 function hideEncPopup(){
   if(!_popEl) return;
   var el=_popEl;
-  _popEl=null; _popCanvasEl=null; _popStatusEl=null; _popLogEl=null;
+  _popEl=null; _popCanvasEl=null; _popStatusEl=null; _popLogEl=null; _popDotsEl=null;
   if(_popDotInterval){ clearInterval(_popDotInterval); _popDotInterval=null; }
   if(_popRafId){ cancelAnimationFrame(_popRafId); _popRafId=null; }
   el.style.opacity='0';
@@ -3102,25 +3116,25 @@ function doCopiedAnim(){
   var copiedT=document.getElementById('result-url-copied');
   if(!urlT||!copiedT) return;
   if(urlT.dataset.busy==='1') return; urlT.dataset.busy='1';
-  urlT.style.transform='scale(0.9)'; urlT.style.opacity='0';
+  urlT.style.transform='translateY(-50%) scale(0.9)'; urlT.style.opacity='0';
   setTimeout(function(){
     urlT.style.display='none';
     copiedT.style.display='inline-block';
-    copiedT.style.transform='scale(0.8)'; copiedT.style.opacity='0'; copiedT.style.transition='none';
+    copiedT.style.transform='translateY(-50%) scale(0.8)'; copiedT.style.opacity='0'; copiedT.style.transition='none';
     requestAnimationFrame(function(){
       copiedT.style.transition='transform .26s cubic-bezier(.2,.9,.3,1.2),opacity .2s ease';
-      copiedT.style.transform='scale(1)'; copiedT.style.opacity='1';
+      copiedT.style.transform='translateY(-50%) scale(1)'; copiedT.style.opacity='1';
     });
   },200);
   setTimeout(function(){
-    copiedT.style.transform='scale(0.9)'; copiedT.style.opacity='0';
+    copiedT.style.transform='translateY(-50%) scale(0.9)'; copiedT.style.opacity='0';
     setTimeout(function(){
       copiedT.style.display='none';
       urlT.style.display='inline-block';
-      urlT.style.transition='none'; urlT.style.transform='scale(0.9)'; urlT.style.opacity='0';
+      urlT.style.transition='none'; urlT.style.transform='translateY(-50%) scale(0.9)'; urlT.style.opacity='0';
       requestAnimationFrame(function(){
         urlT.style.transition='transform .22s ease,opacity .2s ease';
-        urlT.style.transform='scale(1)'; urlT.style.opacity='1';
+        urlT.style.transform='translateY(-50%) scale(1)'; urlT.style.opacity='1';
       });
       urlT.dataset.busy='';
     },180);
