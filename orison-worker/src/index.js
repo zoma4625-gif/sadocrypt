@@ -688,18 +688,19 @@ const HERO_BG_JS = `(function(){
   // 差動回転演出（暗号化完了後）
   // ============================================================
   var SPIN3D = {
-    TILT:        0.40,
-    SPIN:        0.030,
-    EASE:        1.0,
-    FALLOFF:     1.4,
-    R_REF:       160,
-    FOCAL:       360,
-    DEPTH:       0.7,
-    DURATION_MS: 5000,
-    HOLD_MS:     800
+    TILT:          0.40,
+    SPIN:          0.030,
+    EASE:          1.0,
+    FALLOFF:       1.4,
+    R_REF:         160,
+    FOCAL:         360,
+    DEPTH:         0.7,
+    RELEASE_BOOST: 1.0,
+    RELEASE_DAMP:  0.99
   };
   var spinActive=false, spinStart=0, spinDone=false, spinPhase=0;
   var spinCx=0, spinCy=0, spinCb=null, spinPaused=false;
+  var spinReleased=false, releaseDecayFrames=0;
 
   function projectSpin(p){
     var a=p._ang0+spinPhase*p._fall;
@@ -712,48 +713,33 @@ const HERO_BG_JS = `(function(){
   }
 
   function updateSpinPhase(now){
-    var t=Math.min(1,(now-spinStart)/SPIN3D.DURATION_MS);
+    var t=Math.min(1,(now-spinStart)/1000);
     spinPhase+=SPIN3D.SPIN*Math.pow(t,SPIN3D.EASE);
-    if(!spinDone&&(now-spinStart)>SPIN3D.DURATION_MS){
-      spinDone=true; spinActive=false; spinPaused=false;
-      showSpinLockPopup();
-      setTimeout(function(){ if(spinCb)spinCb(); },SPIN3D.HOLD_MS);
+  }
+
+  function releaseSpin(){
+    if(!spinActive) return;
+    var omega=SPIN3D.SPIN;
+    for(var i=0;i<pts.length;i++){
+      var p=pts[i]; if(!p._rad) continue;
+      var proj=projectSpin(p);
+      p.x=proj.sx; p.y=proj.sy;
+      var a=p._ang0+spinPhase*p._fall;
+      var omegaEff=omega*p._fall;
+      var tvx=-Math.sin(a)*p._rad*omegaEff*SPIN3D.RELEASE_BOOST;
+      var tvy= Math.cos(a)*p._rad*SPIN3D.TILT*omegaEff*SPIN3D.RELEASE_BOOST;
+      p.vx+=tvx;
+      p.vy+=tvy;
     }
+    spinActive=false;
+    spinPaused=false;
+    spinReleased=true;
+    releaseDecayFrames=180;
   }
 
-  function showSpinLockPopup(){
-    var pop=document.createElement('div');
-    pop.id='spin-lock-popup';
-    pop.style.cssText=
-      'position:fixed;top:50%;left:50%;'+
-      'transform:translate(-50%,-50%) scale(0.7);opacity:0;'+
-      'transition:opacity .4s,transform .4s cubic-bezier(0.34,1.56,0.64,1);'+
-      'z-index:8888;background:rgba(0,0,0,0.88);'+
-      'border:1.5px solid #00ff8c;border-radius:14px;'+
-      'padding:28px 44px;text-align:center;'+
-      'font-family:"Share Tech Mono",monospace;color:#00ff8c;'+
-      'pointer-events:none;box-shadow:0 0 32px rgba(0,255,140,.25);';
-    pop.innerHTML=
-      '<svg width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">'+
-      '<rect x="11" y="20" width="22" height="17" rx="3.5" stroke="#00ff8c" stroke-width="2.5" fill="rgba(0,255,140,0.12)"/>'+
-      '<path d="M15.5 20v-5.5a6.5 6.5 0 0 1 13 0V20" stroke="#00ff8c" stroke-width="2.5" stroke-linecap="round"/>'+
-      '<circle cx="22" cy="29" r="2.5" fill="#00ff8c"/>'+
-      '<line x1="22" y1="29" x2="22" y2="33" stroke="#00ff8c" stroke-width="2" stroke-linecap="round"/>'+
-      '</svg>'+
-      '<div style="margin-top:12px;font-size:14px;letter-spacing:3px;'+
-      'text-shadow:0 0 12px rgba(0,255,140,.7);">暗号化しました</div>';
-    document.body.appendChild(pop);
-    window._spinLockPopup=pop;
-    requestAnimationFrame(function(){
-      requestAnimationFrame(function(){
-        pop.style.opacity='1';
-        pop.style.transform='translate(-50%,-50%) scale(1)';
-      });
-    });
-  }
-
-  function startSpin(onComplete){
+  function startSpin(){
     spinCx=W/2; spinCy=H/2;
+    spinReleased=false; releaseDecayFrames=0;
     for(var i=0;i<pts.length;i++){
       var p=pts[i];
       var dx=p.x-spinCx;
@@ -762,11 +748,8 @@ const HERO_BG_JS = `(function(){
       p._ang0=Math.atan2(dy,dx);
       p._fall=1/(1+Math.pow(p._rad/SPIN3D.R_REF,SPIN3D.FALLOFF));
     }
-    spinCb=onComplete; spinActive=true; spinDone=false;
+    spinActive=true; spinDone=false;
     spinPhase=0; spinStart=performance.now(); spinPaused=true;
-    // オーバーレイを即時非表示（フェードなし）→ 回転開始時に現在のセル配置をそのまま見せる
-    var ov=document.getElementById('enc-overlay');
-    if(ov){ ov.classList.remove('active','overlay-in','overlay-out'); }
   }
 
   function strokeSegment(src,dst,startFrac,endFrac,op){
@@ -821,7 +804,10 @@ const HERO_BG_JS = `(function(){
       if(!p.dying && now-p.bornAt>p.lifespan) p.dying=true;
       if(p.dying){ p.life-=FADE_OUT; if(p.life<0)p.life=0; }
       else if(p.state==='in'){ p.life=Math.min(1,p.life+FADE_IN); if(p.life>=1)p.state='hold'; }
-      if(p.x<0||p.x>W)p.vx*=-1; if(p.y<0||p.y>H)p.vy*=-1; }
+      if(p.x<0||p.x>W)p.vx*=-1; if(p.y<0||p.y>H)p.vy*=-1;
+      if(spinReleased&&releaseDecayFrames>0){ p.vx*=SPIN3D.RELEASE_DAMP; p.vy*=SPIN3D.RELEASE_DAMP; }
+    }
+    if(spinReleased&&releaseDecayFrames>0) releaseDecayFrames--;
 
     var byId={}; for(var i=0;i<pts.length;i++) byId[pts[i].id]=pts[i];
     var nextLink={}, candidates={}, linkedIds={};
@@ -931,6 +917,7 @@ const HERO_BG_JS = `(function(){
     requestAnimationFrame(frame);
   }
   window.startSpin=startSpin;
+  window.releaseSpin=releaseSpin;
   requestAnimationFrame(frame);
 })();`;
 
@@ -2683,84 +2670,263 @@ function showEncError(msg){
   resEl.appendChild(el);
 }
 
+// ============================================================
+// 暗号化ポップアップ（セル満ち演出・ログ・完了アニメ）
+// ============================================================
+
+var _popEl=null, _popCanvasEl=null, _popStatusEl=null, _popLogEl=null;
+var _popRafId=null;
+var _popFillFrac=0;
+var _popTargetFrac=0;
+var _popWavePh=0;
+var _popWaveAmp=4;
+var _popPhase='idle';
+var _popFill2Start=0;
+var _popFill2Dur=1000;
+var _popRollPhase='none';
+var _popRollStart=0;
+var _popRollDeg=0;
+var _popGlow=0;
+var _popLanded=false;
+var _POP_W=96;
+
+function _drawPopCell(canvas){
+  var dpr=window.devicePixelRatio||1;
+  var gctx=canvas.getContext('2d');
+  gctx.clearRect(0,0,canvas.width,canvas.height);
+  gctx.save();
+  gctx.scale(dpr,dpr);
+  var pad=3, sz=_POP_W-pad*2;
+  if(Math.abs(_popRollDeg)>0.01){
+    var pivX=pad+sz, pivY=pad+sz;
+    gctx.translate(pivX,pivY);
+    gctx.rotate(_popRollDeg*Math.PI/180);
+    gctx.translate(-pivX,-pivY);
+  }
+  var waterY=pad+sz*(1-_popFillFrac);
+  gctx.save();
+  gctx.beginPath();
+  gctx.moveTo(pad, waterY+Math.sin(_popWavePh)*_popWaveAmp);
+  for(var x=0;x<=sz;x+=2){
+    gctx.lineTo(pad+x, waterY+Math.sin(_popWavePh+x*0.12)*_popWaveAmp);
+  }
+  gctx.lineTo(pad+sz,pad+sz); gctx.lineTo(pad,pad+sz); gctx.closePath();
+  gctx.clip();
+  gctx.fillStyle='rgba(61,220,132,0.22)';
+  gctx.fillRect(pad,pad,sz,sz);
+  gctx.restore();
+  if(_popWaveAmp>0.3){
+    gctx.save();
+    gctx.beginPath();
+    gctx.moveTo(pad, waterY+Math.sin(_popWavePh)*_popWaveAmp);
+    for(var x=0;x<=sz;x+=2){
+      gctx.lineTo(pad+x, waterY+Math.sin(_popWavePh+x*0.12)*_popWaveAmp);
+    }
+    gctx.strokeStyle='rgba(61,220,132,0.78)';
+    gctx.lineWidth=1.5;
+    gctx.shadowColor='rgba(61,220,132,0.5)'; gctx.shadowBlur=3;
+    gctx.stroke();
+    gctx.restore();
+  }
+  if(_popGlow>0){
+    gctx.shadowColor='#3ddc84'; gctx.shadowBlur=22*_popGlow;
+  }
+  gctx.strokeStyle='#3ddc84'; gctx.lineWidth=2;
+  gctx.strokeRect(pad,pad,sz,sz);
+  gctx.restore();
+}
+
+function _popAnimLoop(now){
+  if(!_popCanvasEl){ _popRafId=null; return; }
+  _popWavePh+=0.08;
+  if(_popPhase==='fill1'){
+    var diff=_popTargetFrac-_popFillFrac;
+    if(diff>0) _popFillFrac=Math.min(_popTargetFrac, _popFillFrac+diff*0.05);
+  } else if(_popPhase==='fill2'){
+    var e2=Math.min(1,(now-_popFill2Start)/_popFill2Dur);
+    var t2=e2<0.5?2*e2*e2:-1+(4-2*e2)*e2;
+    _popFillFrac=0.5+0.5*t2;
+    _popWaveAmp=4*Math.max(0,1-Math.pow(e2,0.5));
+    if(e2>=0.85&&_popRollPhase==='none'){
+      _popRollPhase='going'; _popRollStart=now;
+    }
+    if(e2>=1.0){ _popPhase='complete'; _popFillFrac=1.0; _popWaveAmp=0; }
+  }
+  if(_popRollPhase==='going'){
+    var rg=Math.min(1,(now-_popRollStart)/700);
+    _popRollDeg=14*rg*rg*rg;
+    if(rg>=1){ _popRollPhase='returning'; _popRollStart=now; }
+  } else if(_popRollPhase==='returning'){
+    var rr=Math.min(1,(now-_popRollStart)/180);
+    _popRollDeg=14*(1-rr)*(1-rr);
+    if(rr>=1){
+      _popRollPhase='done'; _popRollDeg=0;
+      if(!_popLanded){
+        _popLanded=true;
+        _popGlow=1.0;
+        if(_popStatusEl){
+          _popStatusEl.textContent='暗号化しました';
+          _popStatusEl.style.color='#3ddc84';
+          _popStatusEl.style.fontSize='17px';
+        }
+      }
+    }
+  } else if(_popRollPhase==='done'){
+    _popGlow=Math.max(0,_popGlow-(1/(0.6*60)));
+  }
+  _drawPopCell(_popCanvasEl);
+  _popRafId=requestAnimationFrame(_popAnimLoop);
+}
+
+function showEncPopup(){
+  if(_popEl) return;
+  _popFillFrac=0; _popTargetFrac=0; _popWavePh=0; _popWaveAmp=4;
+  _popPhase='fill1'; _popFill2Start=0;
+  _popRollPhase='none'; _popRollDeg=0; _popGlow=0; _popLanded=false;
+  var dpr=window.devicePixelRatio||1;
+  var pop=document.createElement('div');
+  pop.id='enc-popup-new';
+  pop.style.cssText=
+    'position:fixed;top:50%;left:50%;z-index:9990;'+
+    'transform:translate(-50%,-50%);opacity:0;'+
+    'transition:opacity .3s ease;'+
+    'background:rgba(0,0,0,0.92);'+
+    'border:1.5px solid rgba(61,220,132,0.5);border-radius:16px;'+
+    'padding:28px 32px 24px;'+
+    'display:flex;flex-direction:column;align-items:center;gap:16px;'+
+    'min-width:200px;pointer-events:none;'+
+    'box-shadow:0 0 40px rgba(0,0,0,0.7);';
+  var cvs=document.createElement('canvas');
+  cvs.width=_POP_W*dpr; cvs.height=_POP_W*dpr;
+  cvs.style.width=_POP_W+'px'; cvs.style.height=_POP_W+'px';
+  var statusDiv=document.createElement('div');
+  statusDiv.style.cssText=
+    'font-family:"Share Tech Mono",monospace;font-size:15px;'+
+    'letter-spacing:2px;color:rgba(255,255,255,0.9);text-align:center;'+
+    'transition:color .4s,font-size .4s;';
+  statusDiv.textContent='暗号化しています';
+  var logDiv=document.createElement('div');
+  logDiv.style.cssText=
+    'font-family:"Share Tech Mono",monospace;font-size:11px;'+
+    'color:rgba(61,220,132,0.7);text-align:left;min-width:160px;'+
+    'min-height:44px;line-height:1.6;word-break:break-all;';
+  pop.appendChild(cvs);
+  pop.appendChild(statusDiv);
+  pop.appendChild(logDiv);
+  document.body.appendChild(pop);
+  _popEl=pop; _popCanvasEl=cvs; _popStatusEl=statusDiv; _popLogEl=logDiv;
+  requestAnimationFrame(function(){ pop.style.opacity='1'; });
+  if(_popRafId) cancelAnimationFrame(_popRafId);
+  _popRafId=requestAnimationFrame(_popAnimLoop);
+}
+
+function hideEncPopup(){
+  if(!_popEl) return;
+  var el=_popEl;
+  _popEl=null; _popCanvasEl=null; _popStatusEl=null; _popLogEl=null;
+  if(_popRafId){ cancelAnimationFrame(_popRafId); _popRafId=null; }
+  el.style.opacity='0';
+  setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); }, 350);
+}
+
+function popAddLog(msg){
+  if(!_popLogEl) return;
+  var lines=_popLogEl.textContent.split('\n').filter(function(l){return l.trim();});
+  lines.push('> '+msg);
+  if(lines.length>4) lines=lines.slice(lines.length-4);
+  _popLogEl.textContent=lines.join('\n');
+}
+
+function setPopFill(frac){
+  _popTargetFrac=Math.min(0.5, Math.max(_popTargetFrac, frac));
+}
+
+function triggerPopupComplete(shareUrl, resultSection){
+  _popPhase='fill2';
+  _popFill2Start=performance.now();
+  setTimeout(function(){
+    var titleCard=document.querySelector('.title-card');
+    if(titleCard) titleCard.classList.add('encrypted');
+    buildResultSection(resultSection, shareUrl);
+  }, 2400);
+  setTimeout(function(){
+    hideEncPopup();
+  }, 3200);
+}
+
 async function doEncrypt(){
   const resEl = document.getElementById('res');
   const resultSection = document.getElementById('result-section');
   const btn = document.getElementById('btn');
-  // FormDataを使わず直接DOM要素から値を取得（クエリパラメータに乗らない）
   let s = parseInt(document.getElementById('tv').value, 10);
   const u = document.getElementById('tu').value;
   if(u==='m') s*=60;
   else if(u==='h') s*=3600;
   else if(u==='d') s*=86400;
 
-  // バリデーション
   if(!selectedFile && !contentInput.value.trim()){
     showEncError('URLまたはファイルを指定してください');
+    return;
+  }
+  if(selectedFile && selectedFile.size > MAX_FILE_SIZE){
+    showEncError('このファイルは大きすぎます（最大' + (MAX_FILE_SIZE/1024/1024) + 'MB）');
     return;
   }
 
   btn.disabled = true;
   resEl.innerHTML = '';
 
-  // オーバーレイ表示（前の結果はまだ見えたまま）
-  showOverlay();
-
-  const MIN_SPIN_MS = 800; // 最低演出時間（短縮）
-  const encStart = performance.now();
+  showEncPopup();
+  window.startSpin();
 
   try {
     let enc;
 
     if(selectedFile){
-      // ファイル暗号化
-      if(selectedFile.size > MAX_FILE_SIZE){
-        hideOverlay(function(){
-          showEncError('このファイルは大きすぎます（最大' + (MAX_FILE_SIZE/1024/1024) + 'MB）');
-          btn.disabled = false;
-        });
-        return;
-      }
-
-      addLog('素数生成中... p, q (1024bit)');
+      popAddLog('素数生成中... p, q (1024bit)');
+      setPopFill(0.08);
       await logDelay('prime');
-      addLog('N = p × q を計算中');
+      popAddLog('N = p × q を計算中');
+      setPopFill(0.15);
       await logDelay('npq');
-      addLog('x0 を採番中');
+      popAddLog('x0 を採番中');
+      setPopFill(0.20);
       await logDelay('x0');
-
       const fileBuffer = await readFileAsArrayBuffer(selectedFile);
-      addLog('2乗チェーン計算中 (Carmichael skip)');
+      popAddLog('2乗チェーン計算中 (Carmichael skip)');
+      setPopFill(0.28);
       await logDelay('chain');
-
       enc = await encryptFile(fileBuffer, selectedFile.name, selectedFile.type || 'application/octet-stream', s);
-
-      addLog('iterations: ' + enc.chainCount.toLocaleString('ja-JP'));
+      popAddLog('iterations: ' + enc.chainCount.toLocaleString('ja-JP'));
+      setPopFill(0.38);
       await logDelay('iter');
-      addLog('SHA-256 → AES-256-GCM 暗号化');
+      popAddLog('SHA-256 → AES-256-GCM 暗号化');
+      setPopFill(0.48);
       await logDelay('aes');
     } else {
-      // テキスト/URL暗号化
-      addLog('素数生成中... p, q (1024bit)');
+      popAddLog('素数生成中... p, q (1024bit)');
+      setPopFill(0.08);
       await logDelay('prime');
-      addLog('N = p × q を計算中');
+      popAddLog('N = p × q を計算中');
+      setPopFill(0.15);
       await logDelay('npq');
-      addLog('x0 を採番中');
+      popAddLog('x0 を採番中');
+      setPopFill(0.20);
       await logDelay('x0');
-      addLog('2乗チェーン計算中 (Carmichael skip)');
+      popAddLog('2乗チェーン計算中 (Carmichael skip)');
+      setPopFill(0.28);
       await logDelay('chain');
-
       enc = await encryptContent(contentInput.value.trim(), s);
-
-      addLog('iterations: ' + enc.chainCount.toLocaleString('ja-JP'));
+      popAddLog('iterations: ' + enc.chainCount.toLocaleString('ja-JP'));
+      setPopFill(0.38);
       await logDelay('iter');
-      addLog('SHA-256 → AES-256-GCM 暗号化');
+      popAddLog('SHA-256 → AES-256-GCM 暗号化');
+      setPopFill(0.48);
       await logDelay('aes');
     }
 
-    // KV保存
-    addLog('Cloudflare KV に書き込み中...');
-    await logDelay('kv');
+    popAddLog('Cloudflare KV に書き込み中...');
+    setPopFill(0.50);
 
     const saveBody = {
       x0: enc.x0, N: enc.N, cc: enc.chainCount,
@@ -2780,36 +2946,23 @@ async function doEncrypt(){
     const d = await r.json();
 
     if(d.error){
-      hideOverlay(function(){
-        showEncError(d.error);
-        btn.disabled = false;
-      });
+      hideEncPopup();
+      window.releaseSpin();
+      showEncError(d.error);
+      btn.disabled = false;
       return;
     }
 
-    // 実際に発行されたIDを表示
-    addLog('保存完了 → ID: ' + d.id);
-    await logDelay('done');
-
+    popAddLog('完了 → ID: ' + d.id);
     const shareUrl = location.origin + '/' + d.id;
 
-    // 最低演出時間を確保してからcollapse
-    const elapsed = performance.now() - encStart;
-    const wait = Math.max(0, MIN_SPIN_MS - elapsed);
-    await new Promise(r=>setTimeout(r, wait));
-
-    // 差動回転演出 → ロックポップアップ → 結果カード
-    window.startSpin(function(){
-      const titleCard = document.querySelector('.title-card');
-      if(titleCard) titleCard.classList.add('encrypted');
-      if(window._spinLockPopup){ window._spinLockPopup.remove(); window._spinLockPopup=null; }
-      buildResultSection(resultSection, shareUrl);
-    });
+    window.releaseSpin();
+    triggerPopupComplete(shareUrl, resultSection);
 
   } catch(err) {
-    hideOverlay(function(){
-      showEncError(err.message);
-    });
+    hideEncPopup();
+    window.releaseSpin();
+    showEncError(err.message);
   }
   btn.disabled = false;
 };
