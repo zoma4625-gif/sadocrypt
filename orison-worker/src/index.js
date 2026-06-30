@@ -701,8 +701,7 @@ const HERO_BG_JS = `(function(){
   var spinActive=false, spinStart=0, spinDone=false, spinPhase=0;
   var spinCx=0, spinCy=0, spinCb=null, spinPaused=false;
   var spinReleased=false, releaseDecayFrames=0;
-  var spinBlendFrames=0; // スピン開始から10フレームかけてクロスフェード
-  var linkGrowFrac=1.0, linkGrowStart=0; // スピン終了後のリンク grow-in（長さ0→実寸）
+  var linkGrowFrac=1.0; // スピン終了後: 0=非表示, 1=通常描画
 
   function projectSpin(p){
     var a=p._ang0+spinPhase*p._fall;
@@ -717,7 +716,6 @@ const HERO_BG_JS = `(function(){
   function updateSpinPhase(now){
     var t=Math.min(1,(now-spinStart)/1000);
     spinPhase+=SPIN3D.SPIN*Math.pow(t,SPIN3D.EASE);
-    if(spinBlendFrames<10) spinBlendFrames++;
   }
 
   function releaseSpin(){
@@ -739,16 +737,17 @@ const HERO_BG_JS = `(function(){
     spinReleased=true;
     releaseDecayFrames=180;
     // grow-inはポップアップ消滅後に window.startLinkGrow() で起動する
-    linkGrowFrac=0; linkGrowStart=0;
+    linkGrowFrac=0;
   }
 
   window.startLinkGrow=function(){
-    linkGrowFrac=0; linkGrowStart=performance.now();
+    linkState={}; // 既存のlink stateをリセット（蓄積したst.curを捨て自然な再形成を待つ）
+    linkGrowFrac=1; // 即フル長表示
   };
 
   function startSpin(){
     spinCx=W/2; spinCy=H/2;
-    spinReleased=false; releaseDecayFrames=0; spinBlendFrames=0;
+    spinReleased=false; releaseDecayFrames=0;
     for(var i=0;i<pts.length;i++){
       var p=pts[i];
       var dx=p.x-spinCx;
@@ -782,12 +781,6 @@ const HERO_BG_JS = `(function(){
     vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,0.6)');
     ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
 
-    // リンク線 grow-in 更新（スピン終了後300msかけて0→1）
-    if(linkGrowStart>0 && linkGrowFrac<1){
-      linkGrowFrac=Math.min(1,(now-linkGrowStart)/300);
-      if(linkGrowFrac>=1) linkGrowStart=0;
-    }
-
     // 差動回転モード（暗号化完了演出）
     if(spinActive){
       updateSpinPhase(now);
@@ -797,16 +790,16 @@ const HERO_BG_JS = `(function(){
         var proj=projectSpin(p); projected.push({p:p,proj:proj});
       }
       projected.sort(function(a,b){ return a.proj.rz-b.proj.rz; });
-      var spinBlend=Math.min(1,spinBlendFrames/10);
+      var spinBlend=Math.min(1,(now-spinStart)/300); // 時間ベース300ms（フレーム落ち耐性）
       for(var i=0;i<projected.length;i++){
         var p=projected[i].p; var proj=projected[i].proj;
         var sc=proj.scale;
         var sz=p.s;
         var base=p.s>40?0.42:p.s>20?0.5:p.s>10?0.7:0.82;
-        // DEPTH=0.3のため sc が負になる条件は数学的に成立しない（安全弁としてのみ残す）
         if(sc<=0.05) continue;
-        var scC=Math.min(1,Math.max(0.25,sc)); // 上限1.0: 前面セルが通常より明るくならない
-        var scFactor=1+(scC-1)*spinBlend;
+        var scC=Math.max(0.25,sc); // 上限外す: 前面セル(sc>1)も明るく表示できる
+        // 輝度を通常の0.7〜1.3倍に制限して暗くなりすぎ・明るくなりすぎを防ぐ
+        var scFactor=Math.min(1.3,Math.max(0.7,1+(scC-1)*spinBlend));
         var op=base*p.life*scFactor*centerFade(p.x); if(op<=0.002) continue;
         var x=proj.sx-sz/2, y=proj.sy-sz/2;
         ctx.save(); ctx.shadowColor='rgba('+G+',1)'; ctx.shadowBlur=p.glow;
@@ -1326,20 +1319,24 @@ ${HEADER_CSS}
 }
 .result-anchor .result-section{ pointer-events: auto; }
 
+@keyframes card-glow-in{
+  0%{ box-shadow:0 0 0 2px rgba(45,212,150,0.6), 0 0 56px rgba(45,212,150,0.7), 0 8px 32px rgba(45,212,150,0.3); }
+  100%{ box-shadow:0 0 0 1.5px rgba(45,212,150,0.25), 0 0 36px rgba(45,212,150,0.4), 0 8px 32px rgba(45,212,150,0.15); }
+}
 .result-section{
   background:#0a0e0c;
-  border:0.5px solid rgba(45,212,150,0.35);
+  border:2px solid rgba(45,212,150,0.7);
   border-radius:22px;
-  box-shadow:0 0 0 1px rgba(45,212,150,0.08), 0 8px 32px rgba(45,212,150,0.12);
+  box-shadow:0 0 0 1.5px rgba(45,212,150,0.25), 0 0 36px rgba(45,212,150,0.4), 0 8px 32px rgba(45,212,150,0.15);
   width:100%;
-  max-width:600px;
+  max-width:400px;
   margin:0 auto;
   padding:20px 20px 16px;
   opacity:0;
   transform:translateY(18px);
   transition:opacity .5s ease, transform .5s ease;
 }
-.result-section.show{ opacity:1; transform:translateY(0); }
+.result-section.show{ opacity:1; transform:translateY(0); animation:card-glow-in .6s ease .4s both; }
 .result-section-inner{ position:relative; }
 
 /* ラベル行 */
@@ -1350,25 +1347,25 @@ ${HEADER_CSS}
 .qr-thumb-btn{ width:42px; height:42px; background:#fff; border:0.5px solid rgba(45,212,150,0.35); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; padding:2px; overflow:hidden; transition:opacity .15s; }
 .qr-thumb-btn:hover{ opacity:0.8; }
 .qr-thumb-btn canvas,.qr-thumb-btn img{ display:block; }
-/* 共有ボタン（主役・横伸び） */
-.result-share-btn{ flex:1; height:42px; background:rgba(61,220,132,0.16); border:0.5px solid rgba(45,212,150,0.4); border-radius:10px; display:flex; align-items:center; justify-content:center; gap:7px; cursor:pointer; padding:0 16px; transition:background .15s; color:#3ddc84; font-family:'Noto Sans JP',sans-serif; font-size:14px; font-weight:500; }
+/* 共有ボタン（右端固定・96px） */
+.result-share-btn{ width:96px; flex-shrink:0; margin-left:auto; height:42px; background:rgba(61,220,132,0.16); border:0.5px solid rgba(45,212,150,0.4); border-radius:10px; display:flex; align-items:center; justify-content:center; gap:7px; cursor:pointer; padding:0 16px; transition:background .15s; color:#3ddc84; font-family:'Noto Sans JP',sans-serif; font-size:13px; font-weight:500; }
 .result-share-btn:hover{ background:rgba(61,220,132,0.24); }
 
 /* URL帯 */
-.result-url-wrap{ display:flex; align-items:center; gap:10px; background:#f0f0f0; border-radius:10px; padding:0 10px 0 14px; height:48px; cursor:pointer; margin-bottom:12px; }
+.result-url-wrap{ display:flex; align-items:center; gap:10px; background:#f0f0f0; border-radius:12px; padding:0 14px 0 20px; height:48px; cursor:pointer; margin-bottom:12px; }
 .result-url-textarea{ position:relative; flex:1; min-width:0; height:100%; }
 .result-url-text, .result-url-copied{
   position:absolute; left:0; top:50%; transform:translateY(-50%);
-  font-family:'Inter',sans-serif; font-size:14px; white-space:nowrap;
+  font-family:'Inter',sans-serif; font-size:clamp(14px,4vw,19px); white-space:nowrap;
   max-width:100%; overflow:hidden; text-overflow:ellipsis;
   transform-origin:left center;
 }
-.result-url-text{ color:#1a1a1a; transition:transform .2s ease, opacity .2s ease; }
+.result-url-text{ color:#1a1a1a; font-weight:500; transition:transform .2s ease, opacity .2s ease; }
 .result-url-copied{ color:#999; display:none; }
 /* コピーボタン：アイコンのみ（枠なし・背景なし） */
 .copy-btn{ width:36px; height:36px; background:none; border:none; border-radius:9px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; padding:0; transition:opacity .15s; }
 .copy-btn:hover{ opacity:0.6; }
-.copy-btn svg{ width:18px; height:18px; display:block; }
+.copy-btn svg{ width:20px; height:20px; display:block; }
 
 /* 下段：共有→開く */
 .result-bottom-row{ display:flex; align-items:center; gap:10px; margin-top:8px; }
@@ -3038,12 +3035,12 @@ function buildResultSection(resultSection, shareUrl, targetSeconds){
     '<button class="qr-thumb-btn" id="qr-thumb-btn" title="QRコード">' +
     '<div id="qr-thumb-inner"></div>' +
     '</button>' +
-    '<button class="result-share-btn" id="result-share-btn" title="共有">' +
-    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>' +
-    '共有' +
-    '</button>' +
     '<button class="result-open-btn" id="result-open-btn" title="開く">' +
     '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+    '</button>' +
+    '<button class="result-share-btn" id="result-share-btn" title="共有">' +
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>' +
+    '共有' +
     '</button>' +
     '</div>' +
     '</div>' +
