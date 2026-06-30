@@ -1148,7 +1148,7 @@ ${HEADER_CSS}
   border:1px solid #e8e8e5;
   border-radius:22px;
   box-shadow:0 4px 24px rgba(0,0,0,0.06);
-  overflow:hidden;
+  overflow:visible; /* +ボタンの下向きツールチップを枠外に出すため */
 }
 .url-input-wrap{
   padding:24px 26px 0;
@@ -1349,8 +1349,30 @@ ${HEADER_CSS}
 /* 実行ボタンのみ：ホバー開始から1秒後に表示、離したら即消し */
 #btn::after{transition-delay:0s}
 #btn:hover::after{transition-delay:1000ms}
-/* +ボタン：form-card(overflow:hidden)の左端クリップを回避するため左寄せ */
-#btn-plus::after{left:0;transform:none}
+/* +ボタン：下向きツールチップ（上端クリップ回避のため bottom→top に変更） */
+#btn-plus::after{
+  bottom:auto;
+  top:calc(100% + 10px);
+  left:0;
+  transform:none;
+}
+/* 上向き三角（+ボタン中央を指す。吹き出しが左寄りなので三角は吹き出し内で右寄りに見える） */
+#btn-plus::before{
+  content:'';
+  position:absolute;
+  top:calc(100% + 4px);
+  left:50%;
+  transform:translateX(-50%);
+  width:0;height:0;
+  border:5px solid transparent;
+  border-bottom-color:#1a1a18;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .08s;
+  transition-delay:0s;
+  z-index:201;
+}
+#btn-plus:hover::before{opacity:1;transition-delay:0s}
 
 /* ============================================================
    生成結果表示（白カード・入力カードと対に揃える）
@@ -2800,8 +2822,38 @@ var _popLanded=false;
 var _popDotInterval=null;
 var _popOnLand=null;
 var _POP_W=96;
-var _POP_CVS_W=148, _POP_CVS_H=130;  // 14°回転時にTL(y≈-10)・TR(x≈137)がはみ出るため拡大
-var _POP_CELL_XOFF=22, _POP_CELL_YOFF=20; // pivY=cy+sz=23+90=113, TL.y=113-109=4px ✓
+// キャンバスをポップ幅(300px)まで拡大し、セルを中央に配置。
+// レア演出の左右の線が枠の左右端まで届くようにするため（線も同じ1枚に描く）。
+// 通常の転がりアニメはセル中央寄せ＋余白増になるだけ（要・実機確認）。
+var _POP_CVS_W=300, _POP_CVS_H=130;
+var _POP_CELL_XOFF=102, _POP_CELL_YOFF=20; // cx=105 → (300-90)/2 で中央。cy=23
+
+// ============================================================
+// レアキューブ演出（低確率で暗号化ポップのセルが特別モーション）
+// 舞台はポップのキャンバス1枚（枠内で完結）。背景セル・startSpin系は触らない。
+// シーケンス: lineIn→fill→lineGone→eyesIn→blink→turn(+grow)→emit→end
+// 終端で _popOnLand を呼び、以降は通常アニメ仕様に準拠（結果カード・放出・ポップ消し）。
+// ============================================================
+var _POP_RARE_PROB=1/30;     // レア確率（仮）。window._brakeForceRare=true で強制発動
+var _popRare=false;
+var _rarePhase='none';       // none|lineIn|fill|lineGone|eyesIn|blink|turn|emit|end|done
+var _rareStart=0;
+var _rareLineInFrac=0;       // 左線(当たる)の伸び 0..1
+var _rareLineAlpha=1;        // 左線の不透明度（満ちたらフェード）
+var _rareEmitFrac=0;         // 右線(放つ)の伸び 0..1
+var _rareEyeAlpha=0;         // 目のフェード 0..1
+var _rareEyeMorph=0;         // 0=カプセル目 1=棒目
+var _rareEyeOpen=1;          // まばたき 1=開 0=閉
+var _rareTurnDeg=0;          // 枠右向きヨー角(度)
+var _rareTextDone=false;     // ステータス文言切替の一度きりフラグ
+// 各サブフェーズ長(ms)。レアなので通常より長尺
+var RARE_LINE_IN=450, RARE_FILL=1200, RARE_LGONE=220, RARE_EYESIN=260, RARE_BLINK=620, RARE_TURN=620, RARE_EMIT=520, RARE_ENDHOLD=180;
+var RARE_TURN_MAX=46;        // 右向き最大ヨー角(度)
+var RARE_GROW=0.12;          // 右向き時のセル拡大率（小さく見える分の相殺）
+var RARE_DEP=0.6;            // 見かけの奥行き係数
+var RARE_LINE_THICK=7;       // 線の太さ(px)
+var RARE_GREEN='#3ddc84';    // 線・セル共通の緑（色は不変）
+var RARE_TURN_MAX=48;        // 右向き最大ヨー角(度)
 
 function _drawPopCell(canvas){
   var dpr=window.devicePixelRatio||1;
@@ -2813,6 +2865,11 @@ function _drawPopCell(canvas){
   // セルはキャンバス内をオフセットして配置（転がり時に左上が欠けないよう余白を確保）
   var cx=_POP_CELL_XOFF+pad, cy=_POP_CELL_YOFF+pad;
   var pivX=cx+sz, pivY=cy+sz;
+  if(_popRare && _rarePhase!=='none'){
+    _drawPopRare(gctx, cx, cy, sz);
+    gctx.restore();
+    return;
+  }
   if(Math.abs(_popRollDeg)>0.01){
     gctx.translate(pivX,pivY);
     gctx.rotate(_popRollDeg*Math.PI/180);
@@ -2868,6 +2925,166 @@ function _drawPopCell(canvas){
   gctx.restore();
 }
 
+// 角丸矩形パス（目の描画用）
+function _rareRoundRect(g,x,y,w,hh,r){
+  if(w<=0||hh<=0) return;
+  r=Math.max(0,Math.min(r,w/2,hh/2));
+  g.beginPath();
+  g.moveTo(x+r,y);
+  g.arcTo(x+w,y,x+w,y+hh,r);
+  g.arcTo(x+w,y+hh,x,y+hh,r);
+  g.arcTo(x,y+hh,x,y,r);
+  g.arcTo(x,y,x+w,y,r);
+  g.closePath();
+}
+// 両端フェードの柔らかい発光線（リンクラインと同質感）。op=不透明度
+// 線：セルと同じ緑のベタ塗り・四角端（発光なし・色不変）。x1→x2 の水平線
+function _rareFlatLine(gctx, x1, x2, y, thick, op){
+  if(x2-x1<=0.5) return;
+  gctx.save();
+  if(op!=null) gctx.globalAlpha=op;
+  gctx.fillStyle=RARE_GREEN;
+  gctx.fillRect(x1, y-thick/2, x2-x1, thick);
+  gctx.restore();
+}
+
+// レアセル描画：枠左→当たる線 / セル(液体・目) / 枠右へ放つ線。枠内で完結。
+// 「右を向く」＝枠の右。正面(目)を枠右へ寄せて傾け、引っ込む左辺の側面を見せる。
+// 右を向くと小さく見えるので grow でセル全体を少し拡大して相殺する。
+function _drawPopRare(gctx, cx, cy, sz){
+  var cX=cx+sz/2, cY=cy+sz/2;        // セル中心（拡大・回転の基準）
+  var rad=_rareTurnDeg*Math.PI/180;
+  var c=Math.cos(rad), sn=Math.sin(rad);
+  var grow=1+RARE_GROW*(RARE_TURN_MAX>0?_rareTurnDeg/RARE_TURN_MAX:0);
+  var H=(sz/2)*grow;                 // 拡大後の半サイズ
+  var shift=H*sn*RARE_DEP;           // 正面が枠右へずれる量
+  var fc=cX+shift;
+  var halfW=H*c;
+  var fL=fc-halfW, fR=fc+halfW;
+  var top=cY-H, bot=cY+H, faceW=fR-fL, faceH=bot-top;
+  var thick=RARE_LINE_THICK, ly=cY;
+
+  // ① 左線（枠左端 x=0 → セル左辺 fL へ伸びて当たる）
+  if(_rareLineAlpha>0.002){
+    var lead=fL*Math.min(1,_rareLineInFrac);
+    _rareFlatLine(gctx, 0, lead, ly, thick, _rareLineAlpha);
+  }
+
+  // ⑤ 左側面（枠右を向くと、引っ込む左辺の側面が見えてくる。上面/下面は描かない）
+  if(sn>0.01){
+    var sw=H*sn*RARE_DEP*2, farX=fL-sw, ins=sw*0.16;
+    gctx.beginPath();
+    gctx.moveTo(fL,top); gctx.lineTo(farX,top+ins);
+    gctx.lineTo(farX,bot-ins); gctx.lineTo(fL,bot); gctx.closePath();
+    gctx.fillStyle='rgba(20,70,44,0.95)'; gctx.fill();
+    gctx.strokeStyle=RARE_GREEN; gctx.lineWidth=2; gctx.stroke();
+  }
+
+  // ② 液体（正面の四角にクリップ、波あり。満ちると単なるベタ塗りに）
+  if(faceW>1 && _popFillFrac>0.001){
+    var waterY=bot-faceH*_popFillFrac;
+    gctx.save();
+    gctx.beginPath();
+    gctx.moveTo(fL, waterY+Math.sin(_popWavePh)*_popWaveAmp);
+    for(var x=0;x<=faceW;x+=2){ gctx.lineTo(fL+x, waterY+Math.sin(_popWavePh+x*0.12)*_popWaveAmp); }
+    gctx.lineTo(fR,bot); gctx.lineTo(fL,bot); gctx.closePath();
+    gctx.clip();
+    gctx.fillStyle='rgba(61,220,132,0.92)';
+    gctx.fillRect(fL,top,faceW,faceH);
+    gctx.restore();
+  }
+
+  // 正面の枠
+  gctx.strokeStyle=RARE_GREEN; gctx.lineWidth=2;
+  gctx.strokeRect(fL,top,faceW,faceH);
+
+  // ③④ 目（正面の中心 fc に。カプセル→棒目、ヨーで横に潰れる）
+  if(_rareEyeAlpha>0.01 && faceW>4){
+    gctx.save();
+    gctx.globalAlpha=_rareEyeAlpha;
+    gctx.fillStyle='#04110a';
+    var eyeCy=top+faceH*0.42;
+    var gap=faceH*0.26*c;
+    var ew=7*c*grow;                             // 半幅: カプセル14px幅の半分
+    var eh=(7+(3-7)*_rareEyeMorph)*0.5*grow;      // カプセル7→棒3 の半分
+    var rr=(4+(2-4)*_rareEyeMorph)*grow;          // 角丸 4→2
+    var openY=Math.max(0.06,_rareEyeOpen);
+    for(var k=-1;k<=1;k+=2){
+      var ex=fc+k*gap;
+      _rareRoundRect(gctx, ex-ew, eyeCy-eh*openY, ew*2, eh*2*openY, Math.min(rr,eh*openY));
+      gctx.fill();
+    }
+    gctx.restore();
+  }
+
+  // ⑥ 右線（セル右辺 fR → 枠右端 _POP_CVS_W へ伸び、枠で見切れる）
+  if(_rareEmitFrac>0.001){
+    var rlead=fR+(_POP_CVS_W-fR)*Math.min(1,_rareEmitFrac);
+    _rareFlatLine(gctx, fR, rlead, ly, thick, 1);
+  }
+}
+
+// レア演出のフェーズ駆動（_popAnimLoop から毎フレーム呼ぶ）
+function _rareStep(now){
+  var t=now-_rareStart;
+  var t1=RARE_LINE_IN, t2=t1+RARE_FILL, t3=t2+RARE_LGONE, t4=t3+RARE_EYESIN;
+  var t5=t4+RARE_BLINK, t6=t5+RARE_TURN, t7=t6+RARE_EMIT, t8=t7+RARE_ENDHOLD;
+  if(t<t1){
+    // ① 左線が枠左端からセルへ伸びる（セルは空のまま）
+    _rarePhase='lineIn';
+    _rareLineInFrac=t/RARE_LINE_IN; _rareLineAlpha=1; _popFillFrac=0;
+  } else if(t<t2){
+    // ② 当たって満ちる（通常アニメ同様の波。非同期なのですっと）
+    _rarePhase='fill';
+    _rareLineInFrac=1; _rareLineAlpha=1;
+    var e=(t-t1)/RARE_FILL;
+    var ee=e<0.5?2*e*e:-1+(4-2*e)*e;                        // easeInOut 0→1
+    _popFillFrac=ee;
+    _popWaveAmp=6*Math.max(0,1-Math.sqrt(e));               // 波は減衰
+  } else if(t<t3){
+    // ③ 満ちきり→左線が消える
+    _rarePhase='lineGone';
+    _popFillFrac=1; _popWaveAmp=0;
+    _rareLineAlpha=Math.max(0,1-(t-t2)/RARE_LGONE);
+    if(!_rareTextDone){
+      _rareTextDone=true;
+      if(_popDotInterval){ clearInterval(_popDotInterval); _popDotInterval=null; }
+      if(_popDotsEl) _popDotsEl.textContent='';
+      if(_popStatusEl){ _popStatusEl.textContent='暗号化しました'; _popStatusEl.style.color=RARE_GREEN; _popStatusEl.style.fontSize='17px'; }
+    }
+  } else if(t<t4){
+    // ④ カプセル目フェードイン
+    _rarePhase='eyesIn';
+    _rareLineAlpha=0;
+    _rareEyeAlpha=Math.min(1,(t-t3)/RARE_EYESIN); _rareEyeMorph=0; _rareEyeOpen=1;
+  } else if(t<t5){
+    // ④ 棒目にモーフ→2回まばたき
+    _rarePhase='blink';
+    var tb=t-t4; _rareEyeAlpha=1; _rareEyeMorph=Math.min(1,tb/120); _rareEyeOpen=1;
+    var b1=200, b2=380, bw=70;
+    if(tb>b1-bw && tb<b1+bw) _rareEyeOpen=Math.abs(tb-b1)/bw;
+    else if(tb>b2-bw && tb<b2+bw) _rareEyeOpen=Math.abs(tb-b2)/bw;
+  } else if(t<t6){
+    // ⑤ 枠右を向く（＋拡大で相殺）
+    _rarePhase='turn';
+    var tt=(t-t5)/RARE_TURN;
+    var e2=tt<0.5?2*tt*tt:-1+(4-2*tt)*tt;
+    _rareTurnDeg=RARE_TURN_MAX*e2; _rareEyeMorph=1; _rareEyeOpen=1;
+  } else if(t<t7){
+    // ⑥ 右へ線を伸ばす（枠右端で見切れ）
+    _rarePhase='emit';
+    _rareTurnDeg=RARE_TURN_MAX; _rareEmitFrac=(t-t6)/RARE_EMIT;
+  } else if(t<t8){
+    // ⑦ セルそのまま・線そのままで小休止
+    _rarePhase='end';
+    _rareTurnDeg=RARE_TURN_MAX; _rareEmitFrac=1;
+  } else {
+    // 終端：以降は通常アニメ仕様（結果カード・放出・ポップ消し）
+    _rarePhase='done';
+    if(_popOnLand){ _popOnLand(); _popOnLand=null; }
+  }
+}
+
 function _popAnimLoop(now){
   if(!_popCanvasEl){ _popRafId=null; return; }
   _popWavePh+=0.08;
@@ -2892,6 +3109,8 @@ function _popAnimLoop(now){
       }
     }
     if(e2>=1.0){ _popPhase='complete'; _popFillFrac=1.0; _popWaveAmp=0; }
+  } else if(_popPhase==='rare'){
+    _rareStep(now);
   }
   // 転がり：3フェーズ（持ち上がり t² / ため 100ms / 振り下ろし t^5）
   var ROLL_RISE=250, ROLL_HOLD=100, ROLL_FALL=250;
@@ -2936,6 +3155,10 @@ function showEncPopup(){
   _popFillFrac=0; _popTargetFrac=0; _popWavePh=0; _popWaveAmp=4;
   _popPhase='fill1'; _popFill2Start=0;
   _popRollPhase='none'; _popRollDeg=0; _popGlow=0; _popLandTime=-1; _popLanded=false;
+  // レア抽選＆リセット（window._brakeForceRare=true で強制発動）
+  _popRare=(window._brakeForceRare===true)||(Math.random()<_POP_RARE_PROB);
+  _rarePhase='none'; _rareStart=0; _rareLineFrac=0; _rareEmitFrac=0; _rareShake=0;
+  _rareEyeAlpha=0; _rareEyeMorph=0; _rareEyeOpen=1; _rareTurnDeg=0; _rareCellAlpha=1; _rareLineAlpha=1; _rareTextDone=false;
   var dpr=window.devicePixelRatio||1;
   var pop=document.createElement('div');
   pop.id='enc-popup-new';
@@ -3019,16 +3242,21 @@ function setPopFill(frac){
 }
 
 function triggerPopupComplete(shareUrl, resultSection, targetSeconds){
-  _popPhase='fill2';
-  _popFill2Start=performance.now();
   _popOnLand=function(){
-    // 転がり着地と同時に背景を放出（ポップ演出完了 = 放出のタイミング）
+    // 着地（通常=転がり / レア=戻り終わり）と同時に背景を放出
     if(window.releaseSpin) window.releaseSpin();
     var titleCard=document.querySelector('.title-card');
     if(titleCard) titleCard.classList.add('encrypted');
     buildResultSection(resultSection, shareUrl, targetSeconds);
     setTimeout(function(){ hideEncPopup(); }, 350);
   };
+  if(_popRare){
+    // レア：roll の代わりにレアシーケンスを再生（終端で _popOnLand）
+    _popPhase='rare'; _rarePhase='line'; _rareStart=performance.now();
+  } else {
+    _popPhase='fill2';
+    _popFill2Start=performance.now();
+  }
 }
 
 async function doEncrypt(){
