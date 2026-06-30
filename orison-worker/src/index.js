@@ -1367,12 +1367,14 @@ ${HEADER_CSS}
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  /* 実機調整ポイント: フォームの真下に来るよう top を調整する */
-  top: calc(50% + 160px);
+  top: calc(50% + 200px);
   width: calc(100% - 48px);
   max-width: 560px;
   z-index: 3;
   pointer-events: none; /* 空のときクリックを透過 */
+}
+@media(max-width:640px){
+  .result-anchor{ top: calc(50% + 180px); }
 }
 .result-anchor .result-section{ pointer-events: auto; }
 
@@ -2794,7 +2796,9 @@ var _popFill2Dur=1000;
 var _popRollPhase='none';
 var _popRollStart=0;
 var _popRollDeg=0;
-var _popGlow=0;
+var _popGlow=0;       // 0..1 ease-in-out bell curve（_popLandTimeから計算）
+var _popLandTime=-1;  // 着地時刻(ms)。-1=未着地
+var _GLOW_DUR=1100;   // 発光持続ms
 var _popLanded=false;
 var _popDotInterval=null;
 var _popOnLand=null;
@@ -2842,8 +2846,25 @@ function _drawPopCell(canvas){
     gctx.stroke();
     gctx.restore();
   }
+  // 着地発光：セル内の明度オーバーレイ（じわっと息づく）
+  if(_popGlow>0.01){
+    gctx.save();
+    gctx.beginPath();
+    gctx.moveTo(cx, waterY+Math.sin(_popWavePh)*_popWaveAmp);
+    for(var bx=0;bx<=sz;bx+=2){
+      gctx.lineTo(cx+bx, waterY+Math.sin(_popWavePh+bx*0.12)*_popWaveAmp);
+    }
+    gctx.lineTo(pivX,pivY); gctx.lineTo(cx,pivY); gctx.closePath();
+    gctx.clip();
+    gctx.globalAlpha=_popGlow*0.30;
+    gctx.fillStyle='#c8ffdf';
+    gctx.fillRect(cx,cy,sz,sz);
+    gctx.restore();
+  }
+  // ボーダー発光（_popGlow に応じて強くなる）
   if(_popGlow>0){
-    gctx.shadowColor='#3ddc84'; gctx.shadowBlur=28*_popGlow;
+    gctx.shadowColor='rgba(61,220,132,'+(0.3+0.7*_popGlow)+')';
+    gctx.shadowBlur=4+32*_popGlow;
   }
   gctx.strokeStyle='#3ddc84'; gctx.lineWidth=2;
   gctx.strokeRect(cx,cy,sz,sz);
@@ -2861,8 +2882,8 @@ function _popAnimLoop(now){
     var t2=e2<0.5?2*e2*e2:-1+(4-2*e2)*e2;
     _popFillFrac=0.5+0.5*t2;
     _popWaveAmp=4*Math.max(0,1-Math.pow(e2,0.5));
-    // fillFrac≥90% で転がり開始（残り10%の満ちと転がりが並行。e2≈0.684）
-    if(_popFillFrac>=0.90&&_popRollPhase==='none'){
+    // fillFrac≥65% で転がり開始（残り35%の満ちと転がりが並行、ラグを前倒し）
+    if(_popFillFrac>=0.65&&_popRollPhase==='none'){
       _popRollPhase='going'; _popRollStart=now;
       // 転がり開始と同タイミングで「暗号化しました」に切替
       if(_popDotInterval){ clearInterval(_popDotInterval); _popDotInterval=null; }
@@ -2875,19 +2896,39 @@ function _popAnimLoop(now){
     }
     if(e2>=1.0){ _popPhase='complete'; _popFillFrac=1.0; _popWaveAmp=0; }
   }
+  // 転がり：3フェーズ（持ち上がり sin / ため 100ms / 振り下ろし t^5）
+  var ROLL_RISE=250, ROLL_HOLD=100, ROLL_FALL=380;
   if(_popRollPhase==='going'){
-    // sin(π*t^β) 単一関数：β=6.1で上昇89%・下降11%の非対称（頂点でdeg/dt=0で滑らか）
-    var t=Math.min(1,(now-_popRollStart)/1120);
-    _popRollDeg=12*Math.sin(Math.PI*Math.pow(t,6.1));
-    if(t>=1){
-      _popRollPhase='done'; _popRollDeg=0;
-      if(!_popLanded){
-        _popLanded=true; _popGlow=1.0;
-        if(_popOnLand){ _popOnLand(); _popOnLand=null; }
+    var elapsed=now-_popRollStart;
+    var rdeg;
+    if(elapsed<ROLL_RISE){
+      // 持ち上がり：sin(π*t/2) で最初速く頂点でゆっくり
+      var tr=elapsed/ROLL_RISE;
+      rdeg=12*Math.sin(tr*Math.PI/2);
+    } else if(elapsed<ROLL_RISE+ROLL_HOLD){
+      // 頂点でため
+      rdeg=12;
+    } else {
+      // 振り下ろし：t^5 で頂点からゆっくり→最後に急加速（ぐわん）
+      var tf=Math.min(1,(elapsed-ROLL_RISE-ROLL_HOLD)/ROLL_FALL);
+      rdeg=12*(1-Math.pow(tf,5));
+      if(tf>=1){
+        rdeg=0;
+        _popRollPhase='done';
+        if(!_popLanded){
+          _popLanded=true; _popLandTime=now; _popGlow=0;
+          if(_popOnLand){ _popOnLand(); _popOnLand=null; }
+        }
       }
     }
+    _popRollDeg=rdeg;
   } else if(_popRollPhase==='done'){
-    _popGlow=Math.max(0,_popGlow-(1/(0.6*60)));
+    // bell curve 発光：Math.sin(π*t) で 0→1→0
+    if(_popLandTime>=0){
+      var gt=Math.min(1,(now-_popLandTime)/_GLOW_DUR);
+      _popGlow=Math.sin(Math.PI*gt);
+      if(gt>=1){ _popGlow=0; _popLandTime=-1; }
+    }
   }
   _drawPopCell(_popCanvasEl);
   _popRafId=requestAnimationFrame(_popAnimLoop);
@@ -2897,7 +2938,7 @@ function showEncPopup(){
   if(_popEl) return;
   _popFillFrac=0; _popTargetFrac=0; _popWavePh=0; _popWaveAmp=4;
   _popPhase='fill1'; _popFill2Start=0;
-  _popRollPhase='none'; _popRollDeg=0; _popGlow=0; _popLanded=false;
+  _popRollPhase='none'; _popRollDeg=0; _popGlow=0; _popLandTime=-1; _popLanded=false;
   var dpr=window.devicePixelRatio||1;
   var pop=document.createElement('div');
   pop.id='enc-popup-new';
@@ -2984,6 +3025,8 @@ function triggerPopupComplete(shareUrl, resultSection, targetSeconds){
   _popPhase='fill2';
   _popFill2Start=performance.now();
   _popOnLand=function(){
+    // 転がり着地と同時に背景を放出（ポップ演出完了 = 放出のタイミング）
+    if(window.releaseSpin) window.releaseSpin();
     var titleCard=document.querySelector('.title-card');
     if(titleCard) titleCard.classList.add('encrypted');
     buildResultSection(resultSection, shareUrl, targetSeconds);
@@ -3089,7 +3132,7 @@ async function doEncrypt(){
     const shareUrl = location.origin + '/' + d.id;
     popAddLog('🔒 brake.run/' + d.id);
 
-    window.releaseSpin();
+    // releaseSpin は triggerPopupComplete の _popOnLand（着地時）に移動済み
     triggerPopupComplete(shareUrl, resultSection, s);
 
   } catch(err) {
