@@ -1137,7 +1137,7 @@ ${HEADER_CSS}
 }
 .hero-form-wrap{
   width:100%;
-  max-width:600px;
+  max-width:560px;
 }
 
 /* ============================================================
@@ -1151,7 +1151,7 @@ ${HEADER_CSS}
   overflow:hidden;
 }
 .url-input-wrap{
-  padding:20px 20px 0;
+  padding:24px 26px 0;
 }
 .url-input{
   width:100%;
@@ -1197,73 +1197,83 @@ ${HEADER_CSS}
 .form-bar{
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  padding:12px 16px;
+  gap:8px;
+  padding:14px 20px;
 }
+/* + ボタン：アイコンのみ（枠・背景なし） */
 .btn-plus{
-  width:34px;height:34px;
-  border-radius:50%;
-  border:1px solid #e0e0dc;
-  background:#fff;
-  color:#888;
+  background:none;
+  border:none;
   cursor:pointer;
   display:flex;align-items:center;justify-content:center;
-  transition:background .15s,border-color .15s;
   flex-shrink:0;
-  padding:0;
+  padding:2px;
 }
-.btn-plus:hover{background:#f5f5f3;border-color:#ccc}
-.btn-plus.active{background:#1a1a18;border-color:#1a1a18}
-.btn-plus.active svg line{stroke:#fff}
-.btn-plus svg{display:block;width:14px;height:14px;flex-shrink:0}
+.btn-plus svg{display:block;width:22px;height:22px;flex-shrink:0}
 .btn-plus svg line{stroke:#888;stroke-width:1.8;stroke-linecap:round;transition:stroke .15s}
-.btn-plus:hover svg line{stroke:#555}
-.bar-right{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-.time-pill{
+.btn-plus:hover svg line{stroke:#444}
+.btn-plus.active svg line{stroke:#3ddc84}
+/* スペーサー */
+.form-bar-spacer{flex:1;min-width:0;}
+/* プリセットチップ */
+.preset-chips{
   display:flex;
   align-items:center;
   gap:6px;
-  border:1px solid #e4e4e0;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  flex-shrink:1;
+  min-width:0;
+}
+.preset-chips::-webkit-scrollbar{display:none}
+.preset-chip{
+  background:transparent;
+  border:0.5px solid #d0d0d0;
   border-radius:999px;
-  background:#fafafa;
-  padding:6px 14px;
-  font-family:'Share Tech Mono',monospace;
+  padding:5px 12px;
+  font-family:'Inter','Noto Sans JP',sans-serif;
   font-size:12px;
-  color:#888;
-}
-.time-pill .pill-label{
-  font-size:11px;
-  color:#aaa;
+  color:#777;
+  cursor:pointer;
+  transition:background .12s,color .12s,border-color .12s;
   white-space:nowrap;
+  flex-shrink:0;
 }
-.time-pill input[type=number]{
-  border:none;
-  outline:none;
-  background:transparent;
-  font-family:'Share Tech Mono',monospace;
-  font-size:14px;
-  color:#1a1a18;
-  width:40px;
+.preset-chip:hover{border-color:#aaa;color:#444}
+.preset-chip.active{background:#0a0e0c;color:#3ddc84;border-color:#0a0e0c}
+/* 数値・単位フィールド */
+.time-val-input{
+  border:0.5px solid #d0d0d0;
+  border-radius:8px;
+  width:46px;
   text-align:center;
-  -moz-appearance:textfield;
-}
-.time-pill input[type=number]::-webkit-inner-spin-button,
-.time-pill input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none}
-.time-pill select{
-  border:none;
+  font-family:'Inter',sans-serif;
+  font-size:13px;
+  color:#1a1a18;
+  padding:5px 4px;
   outline:none;
   background:transparent;
-  font-family:'Share Tech Mono',monospace;
+  -moz-appearance:textfield;
+  flex-shrink:0;
+}
+.time-val-input::-webkit-inner-spin-button,
+.time-val-input::-webkit-outer-spin-button{-webkit-appearance:none}
+.time-val-input:focus{border-color:#999}
+.time-unit-select{
+  border:0.5px solid #d0d0d0;
+  border-radius:8px;
+  font-family:'Inter','Noto Sans JP',sans-serif;
   font-size:13px;
   color:#555;
+  padding:5px 6px;
+  outline:none;
+  background:transparent;
   cursor:pointer;
   -webkit-appearance:none;
-  padding-right:2px;
+  flex-shrink:0;
 }
+.time-unit-select:focus{border-color:#999}
 .btn-run{
   width:38px;height:38px;
   border-radius:50%;
@@ -1313,7 +1323,7 @@ ${HEADER_CSS}
   /* 実機調整ポイント: フォームの真下に来るよう top を調整する */
   top: calc(50% + 160px);
   width: calc(100% - 48px);
-  max-width: 600px;
+  max-width: 560px;
   z-index: 3;
   pointer-events: none; /* 空のときクリックを透過 */
 }
@@ -1329,7 +1339,7 @@ ${HEADER_CSS}
   border-radius:22px;
   box-shadow:0 0 0 1.5px rgba(45,212,150,0.25), 0 0 36px rgba(45,212,150,0.4), 0 8px 32px rgba(45,212,150,0.15);
   width:100%;
-  max-width:520px;
+  max-width:540px;
   margin:0 auto;
   padding:20px 20px 16px;
   opacity:0;
@@ -1342,15 +1352,15 @@ ${HEADER_CSS}
 /* ラベル行 */
 .result-label-row{ display:flex; align-items:center; gap:8px; margin-bottom:16px; }
 .result-green-dot{ width:7px; height:7px; background:#3ddc84; border-radius:1px; flex-shrink:0; box-shadow:0 0 6px rgba(61,220,132,0.6); }
-.result-label-text{ font-family:'Share Tech Mono',monospace; font-size:12px; letter-spacing:2px; color:rgba(255,255,255,0.7); text-transform:uppercase; }
+.result-label-text{ font-family:'Noto Sans JP',sans-serif; font-size:13px; font-weight:500; letter-spacing:0.02em; color:rgba(255,255,255,0.7); }
 /* QRサムネイルボタン */
-.qr-thumb-btn{ width:42px; height:42px; background:#fff; border:0.5px solid rgba(45,212,150,0.35); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; padding:2px; overflow:hidden; transition:opacity .15s; }
+.qr-thumb-btn{ width:46px; height:46px; background:#fff; border:0.5px solid rgba(45,212,150,0.35); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; padding:2px; overflow:hidden; transition:opacity .15s; }
 .qr-thumb-btn:hover{ opacity:0.8; }
 .qr-thumb-btn canvas,.qr-thumb-btn img{ display:block; }
 /* スペーサー */
 .result-spacer{ flex:1; }
 /* 共有・開く：同サイズ・同スタイル */
-.result-share-btn, .result-open-btn{ flex-shrink:0; height:42px; background:rgba(61,220,132,0.16); border:0.5px solid rgba(45,212,150,0.4); border-radius:10px; display:flex; align-items:center; justify-content:center; gap:7px; cursor:pointer; padding:0 14px; transition:background .15s; color:#3ddc84; font-family:'Noto Sans JP',sans-serif; font-size:13px; font-weight:500; }
+.result-share-btn, .result-open-btn{ flex-shrink:0; width:96px; height:46px; background:rgba(61,220,132,0.16); border:0.5px solid rgba(45,212,150,0.4); border-radius:10px; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; padding:0 10px; transition:background .15s; color:#3ddc84; font-family:'Noto Sans JP',sans-serif; font-size:13px; font-weight:500; }
 .result-share-btn:hover, .result-open-btn:hover{ background:rgba(61,220,132,0.24); }
 
 /* URL帯 */
@@ -1358,7 +1368,7 @@ ${HEADER_CSS}
 .result-url-textarea{ position:relative; flex:1; min-width:0; height:100%; }
 .result-url-text, .result-url-copied{
   position:absolute; left:0; top:50%; transform:translateY(-50%);
-  font-family:'Inter',sans-serif; font-size:clamp(14px,4vw,19px);
+  font-family:'Inter',sans-serif; font-size:clamp(14px,4vw,18px);
   font-weight:500; line-height:1; /* 同一指定で高さを揃え、translateY(-50%)のズレをなくす */
   white-space:nowrap;
   max-width:100%; overflow:hidden; text-overflow:ellipsis;
@@ -2024,24 +2034,26 @@ ${HEADER_HTML}
           </div>
           <div class="form-bar">
             <button type="button" class="btn-plus" id="btn-plus" title="ファイルを暗号化">
-              <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <line x1="7" y1="1" x2="7" y2="13"/>
-                <line x1="1" y1="7" x2="13" y2="7"/>
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
               </svg>
             </button>
-            <div class="bar-right">
-              <div class="time-pill">
-                <span class="pill-label">復号</span>
-                <input type="number" id="tv" value="10" min="1">
-                <select id="tu">
-                  <option value="s">秒</option>
-                  <option value="m">分</option>
-                  <option value="h">時間</option>
-                  <option value="d">日</option>
-                </select>
-              </div>
-              <button type="button" class="btn-run" id="btn" title="暗号化して生成">&#x2192;</button>
+            <div class="form-bar-spacer"></div>
+            <div class="preset-chips" id="preset-chips">
+              <button type="button" class="preset-chip active" data-tv="10" data-tu="s">10秒</button>
+              <button type="button" class="preset-chip" data-tv="30" data-tu="s">30秒</button>
+              <button type="button" class="preset-chip" data-tv="1" data-tu="m">1分</button>
+              <button type="button" class="preset-chip" data-tv="5" data-tu="m">5分</button>
             </div>
+            <input type="number" id="tv" value="10" min="1" class="time-val-input">
+            <select id="tu" class="time-unit-select">
+              <option value="s">秒</option>
+              <option value="m">分</option>
+              <option value="h">時間</option>
+              <option value="d">日</option>
+            </select>
+            <button type="button" class="btn-run" id="btn" title="暗号化して生成">&#x2192;</button>
           </div>
         </form>
         <div id="res"></div>
@@ -2429,6 +2441,28 @@ fileInput.addEventListener('change', function(){
 fileCancelBtn.addEventListener('click', function(){
   clearFileSelection();
 });
+
+// プリセットチップ連動
+(function(){
+  var chips=document.querySelectorAll('.preset-chip');
+  var tvEl=document.getElementById('tv');
+  var tuEl=document.getElementById('tu');
+  function syncChips(){
+    var tv=tvEl.value, tu=tuEl.value;
+    chips.forEach(function(c){
+      c.classList.toggle('active', c.getAttribute('data-tv')===tv && c.getAttribute('data-tu')===tu);
+    });
+  }
+  chips.forEach(function(chip){
+    chip.addEventListener('click',function(){
+      tvEl.value=chip.getAttribute('data-tv');
+      tuEl.value=chip.getAttribute('data-tu');
+      syncChips();
+    });
+  });
+  tvEl.addEventListener('input',syncChips);
+  tuEl.addEventListener('change',syncChips);
+})();
 
 function clearFileSelection(){
   selectedFile = null;
