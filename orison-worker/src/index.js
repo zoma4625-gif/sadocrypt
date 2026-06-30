@@ -1730,7 +1730,7 @@ ${HEADER_CSS}
 .who-item-desc{
   font-family:'Noto Sans JP',sans-serif;
   font-size:14px;
-  color:rgba(255,255,255,.6);
+  color:rgba(255,255,255,.82);
   line-height:1.7;
 }
 @media(max-width:680px){
