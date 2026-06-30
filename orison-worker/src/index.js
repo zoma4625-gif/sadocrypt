@@ -1292,8 +1292,6 @@ ${HEADER_CSS}
   border:none;
   background:#0a0e0c;
   color:#fff;
-  font-size:32px;
-  line-height:1;
   cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   transition:background .15s,transform .1s;
@@ -2133,7 +2131,7 @@ ${HEADER_HTML}
               <option value="h">時間</option>
               <option value="d">日</option>
             </select>
-            <button type="button" class="btn-run" id="btn" aria-label="暗号化して生成" data-tip="暗号化して生成">&#x2192;</button>
+            <button type="button" class="btn-run" id="btn" aria-label="暗号化して生成" data-tip="暗号化して生成"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
           </div>
         </form>
         <div id="res"></div>
@@ -3433,7 +3431,7 @@ function buildResultSection(resultSection, shareUrl, targetSeconds){
     '共有' +
     '</button>' +
     '<button class="result-open-btn" id="result-open-btn" title="開く">' +
-    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
     '開く' +
     '</button>' +
     '</div>' +
