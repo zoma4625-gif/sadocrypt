@@ -1209,9 +1209,9 @@ ${HEADER_CSS}
   flex-shrink:0;
   padding:2px;
 }
-.btn-plus svg{display:block;width:22px;height:22px;flex-shrink:0}
-.btn-plus svg line{stroke:#888;stroke-width:1.8;stroke-linecap:round;transition:stroke .15s}
-.btn-plus:hover svg line{stroke:#444}
+.btn-plus svg{display:block;width:24px;height:24px;flex-shrink:0}
+.btn-plus svg line{stroke:#333;stroke-width:1.8;stroke-linecap:round;transition:stroke .15s}
+.btn-plus:hover svg line{stroke:#111}
 .btn-plus.active svg line{stroke:#3ddc84}
 /* スペーサー */
 .form-bar-spacer{flex:1;min-width:0;}
@@ -1228,44 +1228,50 @@ ${HEADER_CSS}
 }
 .preset-chips::-webkit-scrollbar{display:none}
 .preset-chip{
-  background:transparent;
-  border:0.5px solid #d0d0d0;
-  border-radius:999px;
-  padding:5px 12px;
+  background:#f4f4f4;
+  border:1px solid #d8d8d8;
+  border-radius:9px;
+  padding:6px 12px;
   font-family:'Inter','Noto Sans JP',sans-serif;
   font-size:12px;
-  color:#777;
+  font-weight:500;
+  line-height:1;
+  color:#333;
   cursor:pointer;
-  transition:background .12s,color .12s,border-color .12s;
+  display:flex;align-items:center;justify-content:center;
+  transition:border-color .12s,background .12s;
   white-space:nowrap;
   flex-shrink:0;
 }
-.preset-chip:hover{border-color:#aaa;color:#444}
-.preset-chip.active{background:#0a0e0c;color:#3ddc84;border-color:#0a0e0c}
+.preset-chip:hover{border-color:#999;background:#ebebeb}
+.preset-chip.active{background:#fff;border:2px solid #0a0e0c;color:#0a0e0c;font-weight:600}
 /* 数値・単位フィールド */
 .time-val-input{
-  border:0.5px solid #d0d0d0;
+  border:1px solid #c4c4c4;
   border-radius:8px;
   width:46px;
   text-align:center;
-  font-family:'Inter',sans-serif;
+  font-family:'Inter','Noto Sans JP',sans-serif;
   font-size:13px;
-  color:#1a1a18;
+  font-weight:600;
+  color:#1a1a1a;
   padding:5px 4px;
   outline:none;
   background:transparent;
   -moz-appearance:textfield;
+  ime-mode:disabled;
   flex-shrink:0;
 }
 .time-val-input::-webkit-inner-spin-button,
 .time-val-input::-webkit-outer-spin-button{-webkit-appearance:none}
-.time-val-input:focus{border-color:#999}
+.time-val-input:focus{border-color:#888}
 .time-unit-select{
-  border:0.5px solid #d0d0d0;
+  border:1px solid #c4c4c4;
   border-radius:8px;
   font-family:'Inter','Noto Sans JP',sans-serif;
   font-size:13px;
-  color:#555;
+  font-weight:500;
+  color:#1a1a1a;
   padding:5px 6px;
   outline:none;
   background:transparent;
@@ -1273,12 +1279,12 @@ ${HEADER_CSS}
   -webkit-appearance:none;
   flex-shrink:0;
 }
-.time-unit-select:focus{border-color:#999}
+.time-unit-select:focus{border-color:#888}
 .btn-run{
-  width:38px;height:38px;
-  border-radius:50%;
+  width:46px;height:46px;
+  border-radius:12px;
   border:none;
-  background:#1a1a18;
+  background:#0a0e0c;
   color:#fff;
   font-size:18px;
   cursor:pointer;
@@ -1286,7 +1292,7 @@ ${HEADER_CSS}
   transition:background .15s,transform .1s;
   flex-shrink:0;
 }
-.btn-run:hover{background:#000}
+.btn-run:hover{background:#222}
 .btn-run:active{transform:scale(0.94)}
 .btn-run:disabled{opacity:0.4;cursor:not-allowed;transform:none}
 .loading-bar{
@@ -1303,10 +1309,35 @@ ${HEADER_CSS}
 }
 @keyframes spin{to{transform:rotate(360deg)}}
 .error-msg{
-  font-family:'Share Tech Mono',monospace;
-  font-size:13px;color:#d93025;
-  padding:12px 20px;text-align:center;
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:13px;
+  font-weight:700;
+  color:#d32f2f;
+  padding:12px 20px;
+  text-align:center;
 }
+/* カスタムツールチップ（ネイティブtitle遅延を回避） */
+[data-tip]{position:relative}
+[data-tip]::after{
+  content:attr(data-tip);
+  position:absolute;
+  bottom:calc(100% + 7px);
+  left:50%;
+  transform:translateX(-50%);
+  background:#1a1a18;
+  color:#fff;
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:11px;
+  font-weight:400;
+  white-space:nowrap;
+  padding:4px 9px;
+  border-radius:6px;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .08s;
+  z-index:200;
+}
+[data-tip]:hover::after{opacity:1;transition-delay:0s}
 
 /* ============================================================
    生成結果表示（白カード・入力カードと対に揃える）
@@ -2033,7 +2064,7 @@ ${HEADER_HTML}
             <button type="button" class="file-cancel-btn" id="file-cancel-btn" title="ファイルを取り消す">✕</button>
           </div>
           <div class="form-bar">
-            <button type="button" class="btn-plus" id="btn-plus" title="ファイルを暗号化">
+            <button type="button" class="btn-plus" id="btn-plus" aria-label="ファイルを暗号化" data-tip="ファイルを暗号化">
               <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 <line x1="12" y1="5" x2="12" y2="19"/>
                 <line x1="5" y1="12" x2="19" y2="12"/>
@@ -2046,14 +2077,14 @@ ${HEADER_HTML}
               <button type="button" class="preset-chip" data-tv="1" data-tu="m">1分</button>
               <button type="button" class="preset-chip" data-tv="5" data-tu="m">5分</button>
             </div>
-            <input type="number" id="tv" value="10" min="1" class="time-val-input">
+            <input type="number" id="tv" value="10" min="1" class="time-val-input" inputmode="numeric" autocomplete="off">
             <select id="tu" class="time-unit-select">
               <option value="s">秒</option>
               <option value="m">分</option>
               <option value="h">時間</option>
               <option value="d">日</option>
             </select>
-            <button type="button" class="btn-run" id="btn" title="暗号化して生成">&#x2192;</button>
+            <button type="button" class="btn-run" id="btn" aria-label="暗号化して生成" data-tip="暗号化して生成">&#x2192;</button>
           </div>
         </form>
         <div id="res"></div>
@@ -2460,7 +2491,12 @@ fileCancelBtn.addEventListener('click', function(){
       syncChips();
     });
   });
-  tvEl.addEventListener('input',syncChips);
+  tvEl.addEventListener('input',function(){
+    // 全角数字を半角に変換
+    var v=tvEl.value.replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0);});
+    if(v!==tvEl.value) tvEl.value=v;
+    syncChips();
+  });
   tuEl.addEventListener('change',syncChips);
 })();
 
@@ -3488,7 +3524,16 @@ body{
 .result-card-inner{position:relative;z-index:1}
 
 /* テキスト結果 */
-.result-text-wrap{ position:relative; margin-bottom:16px; }
+.dec-result-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px;
+}
+.dec-result-label{
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;
+  letter-spacing:2px;
+  color:rgba(0,255,140,0.55);
+}
 .result-text-content{
   font-size:14px;
   line-height:1.8;
@@ -3498,24 +3543,24 @@ body{
   background:rgba(0,255,140,0.04);
   border:1px solid rgba(0,255,140,0.15);
   border-radius:8px;
-  padding:16px 48px 16px 16px; /* 右側にコピーボタン分の余白 */
+  padding:16px;
   margin-bottom:0;
 }
 .dec-copy-btn{
-  position:absolute;
-  top:10px; right:10px;
-  width:30px; height:30px;
-  background:none;
-  border:0.5px solid rgba(0,255,140,0.25);
-  border-radius:7px;
+  display:flex;align-items:center;gap:5px;
+  background:rgba(0,255,140,0.08);
+  border:0.5px solid rgba(0,255,140,0.3);
+  border-radius:8px;
   color:#00ff8c;
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;
   cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  padding:0;
-  transition:background .15s, border-color .15s;
+  padding:5px 10px;
+  transition:background .15s,border-color .15s;
+  flex-shrink:0;
 }
-.dec-copy-btn:hover{ background:rgba(0,255,140,0.08); border-color:rgba(0,255,140,0.45); }
-.dec-copy-btn svg{ display:block; }
+.dec-copy-btn:hover{background:rgba(0,255,140,0.18);border-color:rgba(0,255,140,0.5)}
+.dec-copy-btn svg{display:block;width:13px;height:13px}
 
 /* URLリンク */
 .result-url-link{
@@ -3953,10 +3998,10 @@ function renderResult(decBuf){
       inner.innerHTML='<div class="result-text-content"><a href="'+escHtml(content)+'" class="result-url-link" target="_blank">'+escHtml(content)+'</a></div>';
       setTimeout(function(){if(isSafeURL(content))window.location.href=content;},2000);
     }else{
-      // テキストはそのまま表示（コピーボタン付き）
-      var svgCopy='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
-      var svgCheck='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-      inner.innerHTML='<div class="result-text-wrap"><div class="result-text-content" id="dec-text-body"></div><button class="dec-copy-btn" id="dec-copy-btn" title="コピー">'+svgCopy+'</button></div>';
+      // テキストはそのまま表示（ラベル行右端にコピーボタン）
+      var svgCopy='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+      var svgCheck='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+      inner.innerHTML='<div class="dec-result-header"><span class="dec-result-label">DECRYPTED TEXT</span><button class="dec-copy-btn" id="dec-copy-btn">'+svgCopy+'コピー</button></div><div class="result-text-content" id="dec-text-body"></div>';
       document.getElementById('dec-text-body').textContent=content; // XSS回避: textContentで設定
       (function(cpContent){
         var dcb=document.getElementById('dec-copy-btn');
@@ -3965,8 +4010,8 @@ function renderResult(decBuf){
           function onCopied(){
             var b=document.getElementById('dec-copy-btn');
             if(!b) return;
-            b.innerHTML=svgCheck;
-            setTimeout(function(){ var b2=document.getElementById('dec-copy-btn'); if(b2) b2.innerHTML=svgCopy; },1500);
+            b.innerHTML=svgCheck+'コピー済';
+            setTimeout(function(){ var b2=document.getElementById('dec-copy-btn'); if(b2) b2.innerHTML=svgCopy+'コピー'; },1500);
           }
           navigator.clipboard.writeText(cpContent).then(onCopied).catch(function(){
             var ta=document.createElement('textarea');ta.value=cpContent;document.body.appendChild(ta);ta.select();
