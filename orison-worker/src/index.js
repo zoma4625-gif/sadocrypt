@@ -626,14 +626,13 @@ const FOOTER = `<footer style="width:100%;background:#000;border-top:1px solid r
   <div style="max-width:700px;margin:0 auto;padding:60px 24px 0;text-align:center">
     <a href="/" class="brake-logo" style="font-size:1.6rem;margin-bottom:32px;text-decoration:none;color:inherit;display:inline-block">Brake<span class="brake-dot">.</span></a>
     <div style="display:flex;flex-wrap:wrap;gap:40px;justify-content:center;margin-bottom:40px">
-      <a href="/#howto" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">使い方</a>
-      <a href="/time-lock" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">仕組み</a>
+      <a href="#top" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;" style="display:inline-flex;align-items:center;gap:6px;font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#00ff8c;text-decoration:none;transition:opacity .15s" onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='1'"><svg width="14" height="10" viewBox="0 0 14 10" fill="none"><path d="M1 8L7 2L13 8" stroke="#00ff8c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>TOPへ戻る</a>
       <a href="/terms" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">利用規約</a>
       <a href="/privacy" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">プライバシーポリシー</a>
       <a href="mailto:info@brake.run" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">お問い合わせ</a>
     </div>
   </div>
-  <div style="max-width:700px;margin:0 auto;padding:24px 24px 40px;border-top:1px solid rgba(0,255,140,.1);text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(0,255,140,.75);letter-spacing:.15em;text-transform:uppercase;text-shadow:0 0 8px rgba(0,255,140,.5)">© 2026 Brake. &middot; TIME-LOCK ENCRYPTION</div>
+  <div style="max-width:700px;margin:0 auto;padding:24px 24px 40px;border-top:1px solid rgba(0,255,140,.1);text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:rgba(0,255,140,.75);letter-spacing:.15em;text-transform:uppercase;text-shadow:0 0 8px rgba(0,255,140,.5)">© 2026 BRAKE. &middot; TIME-LOCK ENCRYPTION</div>
 </footer>`;
 
 // ============================================================
@@ -2423,6 +2422,29 @@ ${HEADER_CSS}
   text-transform:uppercase;
   text-align:center;
 }
+/* ===== トップへ戻るボタン ===== */
+#brake-top-btn{
+  position:fixed;bottom:28px;right:24px;
+  width:96px;height:96px;border-radius:50%;
+  background:#050807;border:1.5px solid rgba(0,255,140,.5);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:0;cursor:pointer;z-index:900;
+  opacity:0;transform:translateY(20px);
+  transition:opacity .35s ease,transform .35s ease,border-color .2s,box-shadow .2s;
+  pointer-events:none;
+  text-decoration:none;
+}
+#brake-top-btn.visible{opacity:1;transform:translateY(0);pointer-events:auto;}
+#brake-top-btn:hover{border-color:rgba(0,255,140,.85);box-shadow:0 0 18px rgba(0,255,140,.22);}
+#brake-top-btn .btn-chevron{display:flex;align-items:center;justify-content:center;margin-bottom:5px;}
+#brake-top-btn .btn-logo{font-family:'Orbitron',sans-serif;font-weight:900;font-size:12.5px;color:#fff;letter-spacing:.01em;line-height:1;}
+#brake-top-btn .btn-logo span{color:#00ff8c;}
+#brake-top-btn .btn-sub{font-family:'Noto Sans JP',sans-serif;font-size:9.5px;color:rgba(255,255,255,.5);margin-top:4px;letter-spacing:.04em;}
+@media(max-width:680px){
+  #brake-top-btn{width:72px;height:72px;bottom:20px;right:16px;}
+  #brake-top-btn .btn-logo{font-size:10px;}
+  #brake-top-btn .btn-sub{font-size:8px;}
+}
 </style>
 </head>
 <body>
@@ -2778,6 +2800,13 @@ ${HEADER_HTML}
      7. フッター
      ============================================================ -->
 ${FOOTER}
+
+<!-- トップへ戻るボタン -->
+<a id="brake-top-btn" href="#top" aria-label="TOPへ戻る">
+  <span class="btn-chevron"><svg width="22" height="12" viewBox="0 0 22 12" fill="none"><path d="M2 10L11 3L20 10" stroke="#00ff8c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  <span class="btn-logo">Brake<span>.</span></span>
+  <span class="btn-sub">を試す</span>
+</a>
 
 <!-- ドラッグ&ドロップオーバーレイ -->
 <div id="drop-overlay">
@@ -4392,6 +4421,26 @@ function doCopiedAnim(){
     },180);
   },1500);
 }
+// ============================================================
+// トップへ戻るボタン 出現・クリック制御
+// ============================================================
+(function(){
+  var btn = document.getElementById('brake-top-btn');
+  if(!btn) return;
+  function onScroll(){
+    if(window.pageYOffset > 80){
+      btn.classList.add('visible');
+    } else {
+      btn.classList.remove('visible');
+    }
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+  btn.addEventListener('click', function(e){
+    e.preventDefault();
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+})();
 </script>
 </body>
 </html>`;
@@ -5369,10 +5418,13 @@ ${HEADER_CSS}
 .legal-wrap{
   max-width:820px;
   margin:0 auto;
-  padding:80px 24px 120px;
+  padding:140px 24px 120px;
   color:rgba(255,255,255,.82);
   font-family:'Inter','Noto Sans JP',sans-serif;
   line-height:1.9;
+  counter-reset:legal-cnt;
+  position:relative;
+  z-index:2;
 }
 .legal-wrap .legal-title{
   font-size:32px;font-weight:700;color:#fff;line-height:1.4;
@@ -5381,20 +5433,34 @@ ${HEADER_CSS}
 .legal-wrap .legal-h2{
   font-size:20px;font-weight:600;color:#fff;line-height:1.5;
   margin:48px 0 16px;padding-top:8px;
+  counter-reset:legal-cnt;
 }
 .legal-wrap .legal-h3{
   font-size:16px;font-weight:600;color:rgba(255,255,255,.92);
   margin:28px 0 12px;
 }
 .legal-wrap p{ font-size:15px;margin:0 0 14px; }
-.legal-wrap .legal-ol,
+.legal-wrap .legal-ol{
+  font-size:15px;margin:0 0 4px;padding-left:0;
+  list-style:none;
+}
 .legal-wrap .legal-ul{
   font-size:15px;margin:0 0 16px;padding-left:1.6em;
+  list-style:disc;
 }
-.legal-wrap .legal-ol li,
-.legal-wrap .legal-ul li{ margin:0 0 8px; }
-.legal-wrap .legal-ol{ list-style:decimal; }
-.legal-wrap .legal-ul{ list-style:disc; }
+.legal-wrap .legal-ol > li{
+  margin:0 0 8px;
+  counter-increment:legal-cnt;
+  padding-left:2.2em;
+  position:relative;
+}
+.legal-wrap .legal-ol > li::before{
+  content:counter(legal-cnt) ".";
+  position:absolute;left:0;
+  color:rgba(255,255,255,.82);
+  min-width:1.8em;
+}
+.legal-wrap .legal-ul > li{ margin:0 0 8px; }
 .legal-wrap .legal-hr{
   border:none;border-top:.5px solid rgba(255,255,255,.12);
   margin:36px 0;
@@ -5416,8 +5482,12 @@ ${HEADER_CSS}
 .legal-wrap .legal-note p:last-child{ margin-bottom:0; }
 .legal-wrap .legal-note ol{ font-size:14px;color:rgba(255,255,255,.72);padding-left:1.4em;margin:8px 0 0; }
 .legal-wrap .legal-note strong{ color:#00ff8c; }
+/* 背景アニメ（/time-lock と同一） */
+.tl-bg{position:absolute;top:0;left:0;width:100%;height:100vh;overflow:hidden;z-index:0;pointer-events:none;background:#000;}
+.tl-scrim{position:absolute;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:680px;height:100vh;background:linear-gradient(to right,rgba(0,0,0,0) 0%,rgba(0,0,0,.7) 20%,rgba(0,0,0,.7) 80%,rgba(0,0,0,0) 100%);z-index:1;pointer-events:none;}
+${HERO_BG_CSS}
 @media(max-width:680px){
-  .legal-wrap{ padding:48px 18px 80px; }
+  .legal-wrap{ padding:80px 18px 80px; }
   .legal-wrap .legal-title{ font-size:26px; }
   .legal-wrap .legal-h2{ font-size:18px; }
 }
@@ -5425,6 +5495,8 @@ ${HEADER_CSS}
 </head>
 <body>
 ${HEADER_HTML}
+<div class="tl-bg">${HERO_BG_HTML}</div>
+<div class="tl-scrim"></div>
 <main style="flex:1">
 <div class="legal-wrap">
 <h1 class="legal-title">Brake. 利用規約</h1>
@@ -5613,6 +5685,7 @@ ${HEADER_HTML}
 </main>
 ${FOOTER}
 <script>
+${HERO_BG_JS}
 ${HEADER_JS}
 </script>
 </body>
@@ -5642,10 +5715,13 @@ ${HEADER_CSS}
 .legal-wrap{
   max-width:820px;
   margin:0 auto;
-  padding:80px 24px 120px;
+  padding:140px 24px 120px;
   color:rgba(255,255,255,.82);
   font-family:'Inter','Noto Sans JP',sans-serif;
   line-height:1.9;
+  counter-reset:legal-cnt;
+  position:relative;
+  z-index:2;
 }
 .legal-wrap .legal-title{
   font-size:32px;font-weight:700;color:#fff;line-height:1.4;
@@ -5654,20 +5730,34 @@ ${HEADER_CSS}
 .legal-wrap .legal-h2{
   font-size:20px;font-weight:600;color:#fff;line-height:1.5;
   margin:48px 0 16px;padding-top:8px;
+  counter-reset:legal-cnt;
 }
 .legal-wrap .legal-h3{
   font-size:16px;font-weight:600;color:rgba(255,255,255,.92);
   margin:28px 0 12px;
 }
 .legal-wrap p{ font-size:15px;margin:0 0 14px; }
-.legal-wrap .legal-ol,
+.legal-wrap .legal-ol{
+  font-size:15px;margin:0 0 4px;padding-left:0;
+  list-style:none;
+}
 .legal-wrap .legal-ul{
   font-size:15px;margin:0 0 16px;padding-left:1.6em;
+  list-style:disc;
 }
-.legal-wrap .legal-ol li,
-.legal-wrap .legal-ul li{ margin:0 0 8px; }
-.legal-wrap .legal-ol{ list-style:decimal; }
-.legal-wrap .legal-ul{ list-style:disc; }
+.legal-wrap .legal-ol > li{
+  margin:0 0 8px;
+  counter-increment:legal-cnt;
+  padding-left:2.2em;
+  position:relative;
+}
+.legal-wrap .legal-ol > li::before{
+  content:counter(legal-cnt) ".";
+  position:absolute;left:0;
+  color:rgba(255,255,255,.82);
+  min-width:1.8em;
+}
+.legal-wrap .legal-ul > li{ margin:0 0 8px; }
 .legal-wrap .legal-hr{
   border:none;border-top:.5px solid rgba(255,255,255,.12);
   margin:36px 0;
@@ -5689,8 +5779,12 @@ ${HEADER_CSS}
 .legal-wrap .legal-note p:last-child{ margin-bottom:0; }
 .legal-wrap .legal-note ol{ font-size:14px;color:rgba(255,255,255,.72);padding-left:1.4em;margin:8px 0 0; }
 .legal-wrap .legal-note strong{ color:#00ff8c; }
+/* 背景アニメ（/time-lock と同一） */
+.tl-bg{position:absolute;top:0;left:0;width:100%;height:100vh;overflow:hidden;z-index:0;pointer-events:none;background:#000;}
+.tl-scrim{position:absolute;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:680px;height:100vh;background:linear-gradient(to right,rgba(0,0,0,0) 0%,rgba(0,0,0,.7) 20%,rgba(0,0,0,.7) 80%,rgba(0,0,0,0) 100%);z-index:1;pointer-events:none;}
+${HERO_BG_CSS}
 @media(max-width:680px){
-  .legal-wrap{ padding:48px 18px 80px; }
+  .legal-wrap{ padding:80px 18px 80px; }
   .legal-wrap .legal-title{ font-size:26px; }
   .legal-wrap .legal-h2{ font-size:18px; }
 }
@@ -5698,6 +5792,8 @@ ${HEADER_CSS}
 </head>
 <body>
 ${HEADER_HTML}
+<div class="tl-bg">${HERO_BG_HTML}</div>
+<div class="tl-scrim"></div>
 <main style="flex:1">
 <div class="legal-wrap">
 <h1 class="legal-title">Brake. プライバシーポリシー</h1>
@@ -5788,6 +5884,7 @@ ${HEADER_HTML}
 </main>
 ${FOOTER}
 <script>
+${HERO_BG_JS}
 ${HEADER_JS}
 </script>
 </body>
@@ -5818,12 +5915,18 @@ const HTML_PHILOSOPHY = `<!DOCTYPE html>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#000;color:#fff;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;}
 ${HEADER_CSS}
+/* 背景アニメ（/time-lock と同一） */
+.tl-bg{position:absolute;top:0;left:0;width:100%;height:100vh;overflow:hidden;z-index:0;pointer-events:none;background:#000;}
+.tl-scrim{position:absolute;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:680px;height:100vh;background:linear-gradient(to right,rgba(0,0,0,0) 0%,rgba(0,0,0,.7) 20%,rgba(0,0,0,.7) 80%,rgba(0,0,0,0) 100%);z-index:1;pointer-events:none;}
+${HERO_BG_CSS}
 .phil-wrap{
   max-width:880px;
   margin:0 auto;
   padding:140px 24px 100px;
   width:100%;
   flex:1;
+  position:relative;
+  z-index:2;
 }
 .phil-eyebrow{
   display:flex;
@@ -5928,6 +6031,8 @@ ${HEADER_CSS}
 </head>
 <body>
 ${HEADER_HTML}
+<div class="tl-bg">${HERO_BG_HTML}</div>
+<div class="tl-scrim"></div>
 <div class="phil-wrap">
   <div class="phil-eyebrow">
     <span class="phil-eyebrow-dot"></span>
@@ -5956,6 +6061,7 @@ ${HEADER_HTML}
 </div>
 ${FOOTER}
 <script>
+${HERO_BG_JS}
 ${HEADER_JS}
 </script>
 </body>
