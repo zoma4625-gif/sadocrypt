@@ -999,7 +999,7 @@ body{background:#000;color:#fff;-webkit-font-smoothing:antialiased;min-height:10
 ${HEADER_CSS}
 /* 解説本文用CSS */
 .content-wrap{max-width:760px;margin:0 auto;padding:160px 24px 80px;width:100%;}
-.tl-eyebrow{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;letter-spacing:3px;color:#00ff8c;text-transform:uppercase;text-shadow:0 0 9px rgba(0,255,140,.6),0 0 16px rgba(0,255,140,.3);display:flex;justify-content:center;align-items:center;gap:12px;margin-bottom:24px}
+.tl-eyebrow{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;letter-spacing:3px;color:#00ff8c;text-transform:uppercase;text-shadow:0 0 5px rgba(0,255,140,.3),0 0 9px rgba(0,255,140,.15);display:flex;justify-content:center;align-items:center;gap:12px;margin-bottom:24px}
 .tl-eyebrow::before{content:"";width:10px;height:10px;background:#00ff8c;box-shadow:0 0 8px rgba(0,255,140,.8);display:inline-block}
 .tl-h1{font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:clamp(28px,5vw,40px);color:#fff;line-height:1.4;margin-bottom:48px;letter-spacing:.02em;text-align:center}
 .tl-h2{font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:20px;color:#fff;line-height:1.5;margin:48px 0 20px;padding-left:14px;border-left:2px solid #00ff8c}
@@ -1718,7 +1718,7 @@ ${HEADER_CSS}
   font-weight:500;
   letter-spacing:0.05em;
   color:#00ff8c;
-  text-shadow:0 0 7px rgba(0,255,140,.45),0 0 14px rgba(0,255,140,.2);
+  text-shadow:0 0 4px rgba(0,255,140,.22),0 0 8px rgba(0,255,140,.10);
   display:inline-flex;
   align-items:center;
   gap:12px;
@@ -1775,7 +1775,7 @@ ${HEADER_CSS}
   font-weight:500;
   color:#00ff8c;
   letter-spacing:0.05em;
-  text-shadow:0 0 7px rgba(0,255,140,.45),0 0 14px rgba(0,255,140,.2);
+  text-shadow:0 0 4px rgba(0,255,140,.22),0 0 8px rgba(0,255,140,.10);
   margin-bottom:28px;
 }
 .eb-prompt{ letter-spacing:0; margin-right:5px; opacity:.85; }
@@ -1816,7 +1816,7 @@ ${HEADER_CSS}
   font-weight:600;
   color:#00ff8c;
   letter-spacing:0.08em;
-  text-shadow:0 0 10px rgba(0,255,140,.55),0 0 20px rgba(0,255,140,.25);
+  text-shadow:0 0 5px rgba(0,255,140,.28),0 0 10px rgba(0,255,140,.12);
   margin-bottom:20px;
   text-align:center;
 }
@@ -1902,7 +1902,7 @@ ${HEADER_CSS}
   font-weight:500;
   color:#00ff8c;
   letter-spacing:0.05em;
-  text-shadow:0 0 7px rgba(0,255,140,.45),0 0 14px rgba(0,255,140,.2);
+  text-shadow:0 0 4px rgba(0,255,140,.22),0 0 8px rgba(0,255,140,.10);
 }
 .howto-col-title{
   order:2;
@@ -2269,7 +2269,7 @@ ${HEADER_CSS}
   color:#00ff8c;
   letter-spacing:0.05em;
   margin-bottom:12px;
-  text-shadow:0 0 9px rgba(0,255,140,.6),0 0 16px rgba(0,255,140,.3);
+  text-shadow:0 0 5px rgba(0,255,140,.3),0 0 9px rgba(0,255,140,.15);
 }
 .why-card-icon{
   width:40px;height:40px;
@@ -2500,8 +2500,8 @@ ${HEADER_HTML}
       <div class="whats-heading">Brake.は、タイムロック暗号を使った暗号化Webサービスです。</div>
       <div class="whats-col-body">URLやテキストを暗号化し、「1分後」「1時間後」「1日後」にしか開けないリンクを生成します。画像、動画、音声、文書なども暗号化できます（最大5MBまで）。</div>
       <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;">
-        <a href="/time-lock" class="whats-link" style="display:inline-flex;align-items:center;gap:5px;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>タイムロック暗号とは？ →</a>
-        <a href="/philosophy" class="whats-link" style="display:inline-flex;align-items:center;gap:5px;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>なぜ待たせるか →</a>
+        <a href="/time-lock" class="whats-link" style="display:inline-flex;align-items:center;gap:8px;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>タイムロック暗号とは？ →</a>
+        <a href="/philosophy" class="whats-link" style="display:inline-flex;align-items:center;gap:8px;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M21 11.5a8.38 8.38 0 01-9 8.5 8.5 8.5 0 01-3.8-.9L3 20l1.9-5.2A8.38 8.38 0 013 11.5 8.5 8.5 0 0112 3a8.38 8.38 0 019 8.5z"/></svg>なぜ待たせるのか →</a>
       </div>
     </div>
     <div class="whats-col-right">
@@ -2704,7 +2704,7 @@ ${HEADER_HTML}
       <!-- 左: ビジュアルプレースホルダ -->
       <div style="border:1px solid rgba(0,255,140,.15);border-radius:16px;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;background:rgba(0,255,140,.02)">
         <div style="text-align:center">
-          <div style="font-family:'Inter','Noto Sans JP',sans-serif;font-size:17px;font-weight:500;color:#00ff8c;letter-spacing:0.05em;margin-bottom:16px;text-shadow:0 0 7px rgba(0,255,140,.45),0 0 14px rgba(0,255,140,.2);display:inline-flex;align-items:center;gap:14px"><span style="width:11px;height:11px;background:#00ff8c;display:inline-block;box-shadow:0 0 8px rgba(0,255,140,.8)"></span>PRIVACY FIRST</div>
+          <div style="font-family:'Inter','Noto Sans JP',sans-serif;font-size:17px;font-weight:500;color:#00ff8c;letter-spacing:0.05em;margin-bottom:16px;text-shadow:0 0 4px rgba(0,255,140,.22),0 0 8px rgba(0,255,140,.10);display:inline-flex;align-items:center;gap:14px"><span style="width:11px;height:11px;background:#00ff8c;display:inline-block;box-shadow:0 0 8px rgba(0,255,140,.8)"></span>PRIVACY FIRST</div>
           <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(0,255,140,.15);letter-spacing:.05em">ブラウザ内で完結</div>
         </div>
       </div>
