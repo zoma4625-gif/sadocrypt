@@ -1804,7 +1804,7 @@ ${HEADER_CSS}
   padding:100px 24px;
 }
 .howto-section-inner{
-  max-width:1100px;
+  max-width:1280px;
   margin:0 auto;
 }
 .howto-section-eyebrow{
@@ -1815,6 +1815,7 @@ ${HEADER_CSS}
   letter-spacing:0.05em;
   text-shadow:0 0 7px rgba(0,255,140,.45),0 0 14px rgba(0,255,140,.2);
   margin-bottom:16px;
+  text-align:center;
 }
 .howto-section-heading{
   font-family:'Noto Sans JP',sans-serif;
@@ -1829,6 +1830,8 @@ ${HEADER_CSS}
   display:flex;
   gap:0;
   margin-bottom:48px;
+  margin-left:auto;
+  margin-right:auto;
   border:1px solid rgba(255,255,255,.15);
   border-radius:8px;
   overflow:hidden;
@@ -1911,7 +1914,7 @@ ${HEADER_CSS}
    ============================================================ */
 .showcase{
   display:grid;
-  grid-template-columns:1fr 260px;
+  grid-template-columns:1fr 340px;
   gap:40px;
   align-items:start;
 }
