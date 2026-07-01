@@ -628,7 +628,8 @@ const FOOTER = `<footer style="width:100%;background:#000;border-top:1px solid r
     <div style="display:flex;flex-wrap:wrap;gap:40px;justify-content:center;margin-bottom:40px">
       <a href="/#howto" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">使い方</a>
       <a href="/time-lock" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">仕組み</a>
-      <a href="/#privacy" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">プライバシーポリシー</a>
+      <a href="/terms" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">利用規約</a>
+      <a href="/privacy" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">プライバシーポリシー</a>
       <a href="mailto:info@brake.run" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#e8efeb;text-decoration:none;transition:color .15s" onmouseover="this.style.color='#00ff8c';this.style.textDecoration='underline'" onmouseout="this.style.color='#e8efeb';this.style.textDecoration='none'">お問い合わせ</a>
     </div>
   </div>
@@ -5344,6 +5345,454 @@ async function handleSharedPuzzle(request, env, puzzleId) {
 // ============================================================
 // 思想ページ
 // ============================================================
+// ============================================================
+// 利用規約ページ
+// ============================================================
+const HTML_TERMS = `<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>利用規約 | Brake.</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Noto+Sans+JP:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;}
+${HEADER_CSS}
+/* ===== 法的ページ共通スタイル（/terms, /privacy） ===== */
+.legal-wrap{
+  max-width:820px;
+  margin:0 auto;
+  padding:80px 24px 120px;
+  color:rgba(255,255,255,.82);
+  font-family:'Inter','Noto Sans JP',sans-serif;
+  line-height:1.9;
+}
+.legal-wrap .legal-title{
+  font-size:32px;font-weight:700;color:#fff;line-height:1.4;
+  margin:0 0 8px;letter-spacing:-0.01em;
+}
+.legal-wrap .legal-h2{
+  font-size:20px;font-weight:600;color:#fff;line-height:1.5;
+  margin:48px 0 16px;padding-top:8px;
+}
+.legal-wrap .legal-h3{
+  font-size:16px;font-weight:600;color:rgba(255,255,255,.92);
+  margin:28px 0 12px;
+}
+.legal-wrap p{ font-size:15px;margin:0 0 14px; }
+.legal-wrap .legal-ol,
+.legal-wrap .legal-ul{
+  font-size:15px;margin:0 0 16px;padding-left:1.6em;
+}
+.legal-wrap .legal-ol li,
+.legal-wrap .legal-ul li{ margin:0 0 8px; }
+.legal-wrap .legal-ol{ list-style:decimal; }
+.legal-wrap .legal-ul{ list-style:disc; }
+.legal-wrap .legal-hr{
+  border:none;border-top:.5px solid rgba(255,255,255,.12);
+  margin:36px 0;
+}
+.legal-wrap strong{ color:#fff;font-weight:600; }
+.legal-wrap code{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.9em;color:#00ff8c;
+  background:rgba(0,255,140,.08);
+  padding:.1em .4em;border-radius:4px;
+}
+.legal-wrap .legal-note{
+  margin:24px 0;padding:20px 24px;
+  border:.5px solid rgba(0,255,140,.28);
+  border-radius:12px;
+  background:rgba(0,255,140,.03);
+}
+.legal-wrap .legal-note p{ font-size:14px;color:rgba(255,255,255,.72);margin:0 0 10px; }
+.legal-wrap .legal-note p:last-child{ margin-bottom:0; }
+.legal-wrap .legal-note ol{ font-size:14px;color:rgba(255,255,255,.72);padding-left:1.4em;margin:8px 0 0; }
+.legal-wrap .legal-note strong{ color:#00ff8c; }
+@media(max-width:680px){
+  .legal-wrap{ padding:48px 18px 80px; }
+  .legal-wrap .legal-title{ font-size:26px; }
+  .legal-wrap .legal-h2{ font-size:18px; }
+}
+</style>
+</head>
+<body>
+${HEADER_HTML}
+<main style="flex:1">
+<div class="legal-wrap">
+<h1 class="legal-title">Brake. 利用規約</h1>
+<p><strong>最終更新日：2026年7月1日</strong></p>
+<p><strong>施行日：2026年7月1日</strong></p>
+<hr class="legal-hr">
+<blockquote class="legal-note">
+<p><strong>【重要なお知らせ】</strong></p>
+<p>本規約は、Brake.（以下「本サービス」）をご利用いただくすべての利用者に適用される法的な契約です。本サービスは、指定した時間が経過するまでコンテンツを復号できない「タイムロック暗号」を用いた特殊なサービスであり、通常のウェブサービスとは異なる固有のリスク（時間の非保証、データ喪失の不可逆性等）を伴います。ご利用の前に、特に<strong>第4条（タイムロック機構に関する重要な特約）</strong>、<strong>第5条（データの取扱い）</strong>、<strong>第6条（利用者の責任）</strong>、<strong>第10条（免責事項）</strong>、<strong>第11条（責任の制限）</strong>を十分にお読みいただき、内容に同意された場合にのみ本サービスをご利用ください。</p>
+</blockquote>
+<hr class="legal-hr">
+<h2 class="legal-h2">第1条（定義）</h2>
+<p>本規約において使用する用語の定義は、次の各号に定めるとおりとします。</p>
+<ol class="legal-ol"><li>「本サービス」とは、運営者が「Brake.」の名称で提供する、タイムロック暗号技術を用いた暗号化ウェブサービス及びこれに付随・関連する一切のサービスをいい、ドメイン <code>brake.run</code> 及び運営者が指定するその他のドメイン・アプリケーションを通じて提供されるものを含みます。</li></ol>
+<ol class="legal-ol"><li>「運営者」とは、本サービスを運営する個人事業主（将来的に法人化された場合は当該法人を含む。以下同じ）をいいます。運営者の連絡先その他の情報は、第18条及び本サービス上に別途表示します。</li></ol>
+<ol class="legal-ol"><li>「利用者」とは、本規約に同意の上、本サービスを利用するすべての個人又は法人をいい、送信者及び受信者の双方を含みます。</li></ol>
+<ol class="legal-ol"><li>「送信者」とは、本サービスを用いてコンテンツを暗号化し、タイムロックされたリンク（以下「本リンク」）を生成する利用者をいいます。</li></ol>
+<ol class="legal-ol"><li>「受信者」とは、本リンクを通じて暗号化されたコンテンツにアクセスし、又はこれを復号する利用者をいいます。</li></ol>
+<ol class="legal-ol"><li>「コンテンツ」とは、利用者が本サービスを用いて暗号化する対象となる、URL、テキスト、画像、動画、音声、文書その他一切の情報・データをいいます。</li></ol>
+<ol class="legal-ol"><li>「タイムロック暗号」とは、逐次的な計算（逐次平方等）を要する計算量ベースの暗号技術であり、指定された計算量に相当する時間が経過するまでコンテンツの復号を計算上困難にする仕組みをいいます。</li></ol>
+<ol class="legal-ol"><li>「パズル」とは、タイムロック暗号において復号に必要となる、逐次計算により解を求める計算問題をいいます。</li></ol>
+<ol class="legal-ol"><li>「暗号文」とは、コンテンツが暗号化された後のデータをいいます。</li></ol>
+<ol class="legal-ol"><li>「知的財産権」とは、著作権（著作権法第27条及び第28条の権利を含む）、特許権、実用新案権、意匠権、商標権その他の知的財産に関する一切の権利（それらの権利を取得し、又はそれらの権利につき登録等を出願する権利を含む）をいいます。</li></ol>
+<ol class="legal-ol"><li>「本ウェブサイト」とは、本サービスを提供するために運営者が管理するウェブサイトをいいます。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第2条（本規約への同意及び適用範囲）</h2>
+<ol class="legal-ol"><li>利用者は、本サービスを利用することにより、本規約の全ての条項に同意したものとみなされます。</li></ol>
+<ol class="legal-ol"><li>利用者が本サービスに初めてアクセスし、又はコンテンツの暗号化・復号その他本サービスの機能を利用した時点で、利用者と運営者との間に本規約を内容とする利用契約（以下「本契約」）が成立するものとします。</li></ol>
+<ol class="legal-ol"><li>本規約に同意しない場合、利用者は本サービスを利用することができません。</li></ol>
+<ol class="legal-ol"><li>運営者が本サービス上で別途掲示する個別規定、ガイドライン、プライバシーポリシー、注意書き等（以下「個別規定」）は、本規約の一部を構成します。本規約と個別規定の内容が矛盾する場合、当該個別規定において特段の定めがない限り、本規約が優先して適用されます。</li></ol>
+<ol class="legal-ol"><li>本サービスの利用に関し、利用者が本規約のほか、本サービスを提供するために運営者が利用する第三者サービス（第14条に定めるものをいう）の規約等の適用を受ける場合、利用者は自己の責任において当該規約等を遵守するものとします。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第3条（本サービスの内容）</h2>
+<ol class="legal-ol"><li>本サービスは、利用者が指定したコンテンツを利用者の端末（ブラウザ）上で暗号化し、指定した時間が経過するまで復号できない状態とした上で、当該暗号文にアクセスするための本リンクを生成する機能を提供します。</li></ol>
+<ol class="legal-ol"><li>本サービスにおける暗号化及び復号に関する処理は、原則として利用者の端末（ブラウザ）上で実行されます。運営者のサーバーに保存されるのは、暗号文及びパズルに関するデータであり、運営者は暗号化前のコンテンツ（平文）及び復号のための鍵そのものを取得しません。ただし、本項は、暗号強度、セキュリティ、データの安全性その他一切の事項について運営者が保証するものではありません（第10条及び第11条参照）。</li></ol>
+<ol class="legal-ol"><li>復号に要する時間は、パズルの計算量に基づいて設定される計算上の目安であり、利用者が指定した時間はあくまで目標値です。実際の復号完了までの時間は、復号を行う端末の性能、計算環境、その他の要因により変動します。詳細は第4条に定めるとおりです。</li></ol>
+<ol class="legal-ol"><li>運営者は、本サービスの内容、仕様、機能、料金体系等を、利用者への事前の通知なく変更、追加又は廃止することができます。</li></ol>
+<ol class="legal-ol"><li>本サービスにおいて暗号化できるコンテンツの容量その他の制限は、本サービス上に別途表示するものとし、運営者はこれを随時変更することができます。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第4条（タイムロック機構に関する重要な特約）</h2>
+<p><strong>本条は本サービスの中核的性質に関する極めて重要な条項です。利用者は本条の内容を十分に理解した上で本サービスを利用するものとします。</strong></p>
+<ol class="legal-ol"><li><strong>時間の非保証</strong>　本サービスにおける「指定時間」は、パズルを逐次計算により解くために計算上必要とされる負荷量に基づく推定値であり、当該時間の経過をもって復号が可能となることを保証するものではありません。復号が指定時間より早く、又は遅く可能となる場合があります。</li></ol>
+<ol class="legal-ol"><li><strong>計算量ベースであること</strong>　本サービスのタイムロックは、時間そのものを封じる仕組みではなく、逐次的な計算を要求することにより結果として時間を要させる仕組みです。したがって、復号に要する実際の時間は、計算を実行する端末の処理能力（特にシングルスレッド性能）、計算環境、実装、その他の技術的要因に依存し、これらの要因により大きく変動し得ます。</li></ol>
+<ol class="legal-ol"><li><strong>計算技術の進歩による影響</strong>　将来の計算技術（量子コンピュータを含むがこれに限られない）、アルゴリズムの進歩、暗号解読技術の発展等により、指定時間の経過前にコンテンツが復号され、又は暗号が破られる可能性を、運営者は否定しません。運営者は、本サービスの暗号が将来にわたって解読されないことを一切保証しません。</li></ol>
+<ol class="legal-ol"><li><strong>絶対的な解錠保証の否認</strong>　運営者は、指定時間が経過した後に、コンテンツが確実に復号できることを保証しません。技術的要因、データの喪失・破損（第5条参照）、本サービスの停止・終了（第12条参照）その他の事由により、指定時間の経過後においても復号ができない場合があります。</li></ol>
+<ol class="legal-ol"><li><strong>長時間ロックに関する注意</strong>　利用者が長時間（数日、数か月、数年等）のロックを設定する場合、当該期間中に本サービスが継続して提供されている保証はなく、また、復号のために必要な計算リソース、ブラウザの起動状態その他の条件が満たされる保証もありません。長時間ロックを設定したことにより復号ができなくなった場合であっても、運営者は一切の責任を負いません。</li></ol>
+<ol class="legal-ol"><li><strong>復号処理の継続に関する注意</strong>　本サービスの復号処理は、原則として利用者のブラウザが起動し、当該ページが開かれている間に実行されます。ブラウザを閉じる、端末の電源を切る、その他復号処理が中断される事由が生じた場合、復号処理が完了しない可能性があります。利用者は、この性質を理解した上で本サービスを利用するものとします。</li></ol>
+<ol class="legal-ol"><li><strong>重要な用途への利用の禁止的注意</strong>　利用者は、生命、身体、財産に重大な影響を及ぼし得る用途、法令上の期限の遵守が求められる用途、その他確実な時間管理・確実な復号が必要とされる用途に本サービスを利用してはなりません。利用者がかかる用途に本サービスを利用したことにより生じた一切の損害について、運営者は責任を負いません。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第5条（コンテンツ及びデータの取扱い）</h2>
+<ol class="legal-ol"><li><strong>保存されるデータ</strong>　運営者のサーバーには、暗号文及びパズルに関するデータが保存されます。運営者は、暗号化前のコンテンツ（平文）及び復号のための鍵そのものを保存しません。</li></ol>
+<ol class="legal-ol"><li><strong>データの非保証</strong>　運営者は、保存された暗号文及びパズルその他のデータについて、その完全性、正確性、可用性、永続性及び安全性を一切保証しません。運営者は、これらのデータが消失し、破損し、又はアクセス不能となる可能性があることを明示的に告知します。</li></ol>
+<ol class="legal-ol"><li><strong>データの自動削除</strong>　保存されたデータは、利用者が設定した有効期限の経過その他運営者が定める条件に従い、自動的に削除される場合があります。運営者は、削除の時期、方法及び削除されたデータの復元可能性について一切保証しません。運営者は、事前の通知なくデータを削除することができます。</li></ol>
+<ol class="legal-ol"><li><strong>バックアップの不存在</strong>　利用者は、運営者が利用者のコンテンツ又はデータのバックアップを取得する義務を負わないことを了承します。利用者は、必要なコンテンツ及びデータについて、自己の責任においてバックアップを保持するものとします。</li></ol>
+<ol class="legal-ol"><li><strong>データ喪失時の免責</strong>　暗号文、パズルその他のデータの消失、破損、アクセス不能その他の事由により、利用者が復号できず、又はコンテンツを喪失した場合であっても、運営者は一切の責任を負いません。</li></ol>
+<ol class="legal-ol"><li><strong>個人情報の取扱い</strong>　運営者による利用者の個人情報の取扱いについては、別途定めるプライバシーポリシーによるものとします。プライバシーポリシーは本規約の一部を構成します。</li></ol>
+<ol class="legal-ol"><li><strong>アクセスログ等</strong>　運営者は、本サービスの提供、保守、不正利用の防止、品質向上等の目的で、アクセスログ、通信記録、利用状況に関する情報等を取得・利用する場合があります。これらの取扱いの詳細は、プライバシーポリシーに定めるところによります。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第6条（利用者の責任及び自己責任の原則）</h2>
+<ol class="legal-ol"><li><strong>鍵及びリンクの管理</strong>　利用者は、本リンク及び復号に必要な情報を自己の責任において管理するものとします。本リンク又は復号に必要な情報を紛失し、忘失し、又は第三者に知られたことにより生じた一切の結果について、利用者が責任を負うものとし、運営者は責任を負いません。</li></ol>
+<ol class="legal-ol"><li><strong>本リンクの共有に関する責任</strong>　送信者が本リンクを第三者に共有する場合、当該リンクを知得した者は暗号文にアクセスし得ることを、送信者は了承します。本リンクの管理及び共有先の選定は、送信者の責任において行うものとします。</li></ol>
+<ol class="legal-ol"><li><strong>復号不能のリスク</strong>　利用者は、前条及び第4条に定めるとおり、指定時間の経過後においても復号ができない場合があること、並びにデータの喪失等により復号が不可能となる場合があることを理解し、これらのリスクを自己の責任において引き受けるものとします。</li></ol>
+<ol class="legal-ol"><li><strong>コンテンツに関する責任</strong>　利用者は、自己が本サービスを用いて暗号化するコンテンツについて、その内容、適法性、第三者の権利を侵害しないことその他一切について、自己が責任を負うものとします。</li></ol>
+<ol class="legal-ol"><li><strong>利用環境の整備</strong>　利用者は、本サービスの利用に必要な端末、ソフトウェア、通信環境等を、自己の費用と責任において準備・整備するものとします。運営者は、特定の端末、ブラウザ、OS、通信環境等における本サービスの動作を保証しません。</li></ol>
+<ol class="legal-ol"><li><strong>バックアップ責任の再確認</strong>　利用者は、重要なコンテンツについては、本サービスによる暗号化とは別に、自己の責任において原本を保持するものとします。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第7条（禁止事項）</h2>
+<p>利用者は、本サービスの利用に際し、次の各号のいずれかに該当する行為又は該当すると運営者が判断する行為を行ってはなりません。</p>
+<ol class="legal-ol"><li>法令に違反する行為、又は犯罪行為に関連する行為</li></ol>
+<ol class="legal-ol"><li>児童ポルノ、児童虐待に関するコンテンツその他児童の権利を侵害するコンテンツを暗号化し、保存し、又は送信する行為</li></ol>
+<ol class="legal-ol"><li>わいせつ物、児童ポルノ又は児童虐待に該当する画像・文書等を、暗号化その他の方法により保存・流通させる行為</li></ol>
+<ol class="legal-ol"><li>第三者の著作権、商標権、特許権その他の知的財産権を侵害する行為</li></ol>
+<ol class="legal-ol"><li>第三者のプライバシー、名誉、信用、肖像権、その他の権利又は利益を侵害する行為</li></ol>
+<ol class="legal-ol"><li>犯罪を助長し、又は犯罪に利用される目的で本サービスを利用する行為（違法薬物、武器、爆発物、マルウェア、不正アクセスのためのツール・情報等の授受を含むがこれらに限られない）</li></ol>
+<ol class="legal-ol"><li>詐欺、恐喝、脅迫その他の不正な目的で本サービスを利用する行為、又は本サービスの「時間ロック」という性質を悪用して他者に不利益・不安を与える行為</li></ol>
+<ol class="legal-ol"><li>テロリズム、暴力、差別、ヘイトスピーチその他の反社会的行為を助長し、又はこれに関連するコンテンツを取り扱う行為</li></ol>
+<ol class="legal-ol"><li>営業秘密の不正な取得・開示・利用、その他不正競争防止法に違反する行為</li></ol>
+<ol class="legal-ol"><li>コンピュータウイルス、マルウェアその他の有害なプログラム等を含むコンテンツを暗号化し、保存し、又は送信する行為</li></ol>
+<ol class="legal-ol"><li>本サービスのサーバー又はネットワークの機能を破壊し、妨害し、又は過度の負荷を与える行為</li></ol>
+<ol class="legal-ol"><li>本サービスの運営を妨害する行為、又は本サービスの信用を毀損する行為</li></ol>
+<ol class="legal-ol"><li>本サービス、本ウェブサイト又はこれらに用いられるソフトウェアを、リバースエンジニアリング、逆コンパイル、逆アセンブルし、又はソースコードを解析する行為（法令上許容される場合を除く）</li></ol>
+<ol class="legal-ol"><li>本サービスの脆弱性を不正に探索・利用する行為、認証を回避する行為、又は不正アクセス行為の禁止等に関する法律に違反する行為</li></ol>
+<ol class="legal-ol"><li>自動化された手段（ボット、スクレイパー、クローラー等）により本サービスに過度にアクセスし、又は本サービスを不正に利用する行為（運営者が明示的に許可した場合を除く）</li></ol>
+<ol class="legal-ol"><li>反社会的勢力に対して直接又は間接に利益を供与する行為、又は反社会的勢力の活動を助長する行為</li></ol>
+<ol class="legal-ol"><li>他の利用者又は第三者に成りすます行為</li></ol>
+<ol class="legal-ol"><li>13歳未満の者が本サービスを利用する行為、又は第8条に違反する行為</li></ol>
+<ol class="legal-ol"><li>前各号に定めるもののほか、公序良俗に反する行為、法令に違反する行為、又は運営者が不適切と合理的に判断する行為</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第8条（利用資格及び年齢制限）</h2>
+<ol class="legal-ol"><li>本サービスは、13歳以上の者に限り利用することができます。13歳未満の者は本サービスを利用することができません。</li></ol>
+<ol class="legal-ol"><li>未成年者が本サービスを利用する場合には、親権者その他の法定代理人の同意を得た上で利用するものとします。未成年者が法定代理人の同意なく本サービスを利用した場合であっても、当該未成年者及びその法定代理人は、本規約に基づく責任を免れないものとします。</li></ol>
+<ol class="legal-ol"><li>本サービスを法人その他の団体を代表・代理して利用する者は、当該法人その他の団体を本規約に拘束する適法な権限を有していることを表明し、保証するものとします。</li></ol>
+<ol class="legal-ol"><li>運営者は、利用者の年齢又は利用資格を確認する義務を負いません。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第9条（知的財産権）</h2>
+<ol class="legal-ol"><li>本サービス及び本ウェブサイトに関する知的財産権（本サービスを構成するプログラム、デザイン、ロゴ、商標、テキスト、その他一切のコンテンツに関する権利を含む）は、運営者又は運営者に権利を許諾する第三者に帰属します。</li></ol>
+<ol class="legal-ol"><li>本規約に基づく本サービスの利用許諾は、本サービスに関する運営者又は第三者の知的財産権の利用許諾を意味するものではありません。</li></ol>
+<ol class="legal-ol"><li>利用者が本サービスを用いて暗号化するコンテンツに関する知的財産権は、当該利用者又は正当な権利者に留保されます。運営者は、当該コンテンツに関する権利を取得しません。</li></ol>
+<ol class="legal-ol"><li>利用者は、運営者の事前の書面による承諾なく、本サービス及び本ウェブサイトに関する運営者の知的財産権を、複製、改変、翻案、公衆送信、頒布、譲渡、貸与、翻訳その他いかなる方法によっても利用してはなりません。</li></ol>
+<ol class="legal-ol"><li>利用者は、本サービスに関する運営者の商標、ロゴ、サービス名等を、運営者の事前の承諾なく使用してはなりません。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第10条（免責事項及び保証の否認）</h2>
+<ol class="legal-ol"><li><strong>現状有姿での提供</strong>　本サービスは、「現状有姿」（as is）及び「提供可能な範囲」（as available）で提供されます。運営者は、本サービスについて、明示又は黙示を問わず、商品性、特定目的への適合性、権利の非侵害性、正確性、完全性、有用性、可用性、安全性、継続性、特定の結果の実現その他一切の事項について、いかなる保証も行いません。</li></ol>
+<ol class="legal-ol"><li><strong>暗号強度・セキュリティの非保証</strong>　運営者は、本サービスに用いられる暗号技術の強度、安全性、及びコンテンツが第三者に解読・漏洩・改ざんされないことを保証しません。</li></ol>
+<ol class="legal-ol"><li><strong>時間及び復号の非保証</strong>　運営者は、第4条に定めるとおり、指定時間の正確性、指定時間経過後の確実な復号、その他タイムロック機構に関する一切の事項を保証しません。</li></ol>
+<ol class="legal-ol"><li><strong>データの非保証</strong>　運営者は、第5条に定めるとおり、暗号文、パズルその他のデータの完全性、可用性、永続性及び安全性を保証しません。</li></ol>
+<ol class="legal-ol"><li><strong>中断・停止・不具合</strong>　運営者は、本サービスが中断、停止、終了し、又は不具合、エラー、障害等が生じないことを保証しません。</li></ol>
+<ol class="legal-ol"><li><strong>第三者サービスの非保証</strong>　運営者は、本サービスの提供に用いられる第三者サービス（第14条参照）の可用性、性能、安全性等について保証しません。</li></ol>
+<ol class="legal-ol"><li><strong>利用環境依存の非保証</strong>　運営者は、利用者の端末、ブラウザ、OS、通信環境その他の利用環境における本サービスの動作を保証しません。</li></ol>
+<ol class="legal-ol"><li><strong>利用者間の紛争</strong>　本サービスに関連して利用者間又は利用者と第三者との間に生じた紛争について、運営者は責任を負わず、当該当事者間で解決するものとします。</li></ol>
+<ol class="legal-ol"><li><strong>助言等の不提供</strong>　運営者は、本サービスに関連して、法的、技術的、その他専門的な助言を提供するものではありません。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第11条（責任の制限）</h2>
+<ol class="legal-ol"><li><strong>免責の原則</strong>　運営者は、本サービスの利用又は利用不能（復号の不能、データの喪失、指定時間の不正確性、本サービスの中断・停止・終了を含む）に起因して利用者又は第三者に生じた一切の損害について、運営者に故意又は重過失がある場合を除き、責任を負いません。</li></ol>
+<ol class="legal-ol"><li><strong>間接損害等の免責</strong>　運営者は、逸失利益、事業機会の喪失、データの喪失、信用の毀損、精神的損害その他の特別損害、間接損害、派生的損害、付随的損害及び懲罰的損害について、その予見可能性の有無にかかわらず、一切責任を負いません（運営者に故意又は重過失がある場合を除く）。</li></ol>
+<ol class="legal-ol"><li><strong>責任の上限</strong>　前各項にかかわらず、運営者が利用者に対して損害賠償責任を負う場合（消費者契約法その他の強行法規の適用により運営者の責任の全部を免除できない場合を含む）であっても、運営者が負う損害賠償責任の総額は、次の各号のうちいずれか低い額を上限とします。</li></ol>
+<ul class="legal-ul"><li>(1) 当該損害の直接の原因となった事由が発生した時点の直近1か月間に、利用者が当該損害に関連する本サービスの利用について運営者に現実に支払った対価の総額</li><li>(2) 金1,000円</li></ul>
+<ol class="legal-ol"><li><strong>消費者契約に関する特則</strong>　利用者が消費者契約法上の消費者に該当する場合において、本条の免責又は責任制限の定めが同法その他の強行法規に反し無効とされるときは、当該無効とされる限度において、運営者は法令上許容される範囲で責任を負うものとし、本条のその余の定めは有効に存続するものとします。</li></ol>
+<ol class="legal-ol"><li><strong>利用者による補償</strong>　利用者が本規約に違反し、又は本サービスの利用に関連して第三者に損害を与え、若しくは第三者との間で紛争が生じた場合、利用者は、自己の費用と責任においてこれを解決するものとし、運営者に何らの損害・負担を与えないものとします。運営者が当該事由に関連して第三者からの請求を受け、又は損害（弁護士費用を含む）を被った場合、利用者は、運営者に対し、当該損害を賠償するものとします。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第12条（本サービスの変更・中断・終了）</h2>
+<ol class="legal-ol"><li>運営者は、次の各号のいずれかに該当する場合、利用者への事前の通知なく、本サービスの全部又は一部の提供を中断又は停止することができます。</li></ol>
+<ul class="legal-ul"><li>(1) 本サービスに係るシステムの保守、点検、修理、変更等を行う場合</li><li>(2) 火災、停電、天災地変等の不可抗力により本サービスの提供が困難となった場合</li><li>(3) システム、通信回線等の障害、過度の負荷、不正アクセス等が生じた場合</li><li>(4) 第三者サービス（第14条参照）の障害、停止、終了等により本サービスの提供が困難となった場合</li><li>(5) その他運営者が本サービスの中断又は停止を必要と合理的に判断した場合</li></ul>
+<ol class="legal-ol"><li>運営者は、運営者の裁量により、本サービスの全部又は一部を終了することができます。本サービスを終了する場合、運営者は、可能な範囲で事前に本ウェブサイト上での掲示その他の方法により利用者に通知するよう努めますが、これを保証するものではありません。</li></ol>
+<ol class="legal-ol"><li>本サービスの中断、停止又は終了により、暗号文の復号ができなくなり、又はデータが喪失した場合であっても、運営者は一切の責任を負いません。</li></ol>
+<ol class="legal-ol"><li>運営者は、本条に基づく本サービスの変更、中断又は終了により利用者又は第三者に生じた損害について、一切の責任を負いません。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第13条（有料サービス）</h2>
+<ol class="legal-ol"><li>運営者は、本サービスの一部又は全部を有料で提供する場合があります。有料で提供されるサービス（以下「有料サービス」）の内容、料金、支払方法、支払時期その他の条件は、本サービス上又は運営者が別途定める規定において表示します。</li></ol>
+<ol class="legal-ol"><li>有料サービスの利用に関しては、本規約のほか、運営者が別途定める規定（有料サービスに関する個別規定、決済に関する規定等）が適用されます。当該個別規定は本規約の一部を構成します。</li></ol>
+<ol class="legal-ol"><li>有料サービスの料金その他の条件は、運営者が変更することができます。変更後の料金その他の条件は、本サービス上に表示した時点又は運営者が指定する時点から適用されます。</li></ol>
+<ol class="legal-ol"><li>利用者が支払った対価は、法令に別段の定めがある場合又は運営者が別途認める場合を除き、返金されません。</li></ol>
+<ol class="legal-ol"><li>有料サービスに関して消費者向けの取引を行う場合、運営者は、特定商取引に関する法律その他の関係法令に基づき必要となる表示を、本サービス上において別途行います。</li></ol>
+<ol class="legal-ol"><li>利用者が料金の支払を遅滞した場合、運営者は、有料サービスの提供を停止し、又は本契約を解除することができます。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第14条（第三者サービスの利用）</h2>
+<ol class="legal-ol"><li>本サービスは、その提供にあたり、クラウドインフラストラクチャ、コンテンツ配信、データ保存、通信、解析その他の第三者が提供するサービス（以下「第三者サービス」）を利用しています。</li></ol>
+<ol class="legal-ol"><li>運営者は、第三者サービスの内容、可用性、性能、安全性、継続性等について、いかなる保証も行わず、第三者サービスに起因して利用者又は第三者に生じた損害について責任を負いません。</li></ol>
+<ol class="legal-ol"><li>第三者サービスの利用条件、プライバシーに関する取扱い等については、当該第三者サービスの提供者が定める規約等が適用される場合があります。利用者は、必要に応じて自己の責任において当該規約等を確認するものとします。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第15条（利用の制限及び契約の解除）</h2>
+<ol class="legal-ol"><li>運営者は、利用者が次の各号のいずれかに該当し、又は該当するおそれがあると運営者が合理的に判断した場合、事前の通知なく、当該利用者による本サービスの利用の制限、暗号文・データの削除、本リンクの無効化、その他運営者が必要と判断する措置を講じ、又は本契約を解除することができます。</li></ol>
+<ul class="legal-ul"><li>(1) 本規約のいずれかの条項に違反した場合</li><li>(2) 第7条に定める禁止事項に該当する行為を行った場合</li><li>(3) 運営者に提供した情報に虚偽の事実があることが判明した場合</li><li>(4) 法令又は公序良俗に違反する行為を行った場合</li><li>(5) 反社会的勢力に該当し、又は反社会的勢力と何らかの関与があると認められた場合</li><li>(6) その他運営者が本サービスの利用又は本契約の継続を適当でないと合理的に判断した場合</li></ul>
+<ol class="legal-ol"><li>運営者は、前項に基づき運営者が講じた措置により利用者又は第三者に生じた損害について、一切の責任を負いません。</li></ol>
+<ol class="legal-ol"><li>本条に基づく措置は、運営者による当該利用者に対する損害賠償請求を妨げるものではありません。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第16条（反社会的勢力の排除）</h2>
+<ol class="legal-ol"><li>利用者は、自己が、暴力団、暴力団員、暴力団員でなくなった時から5年を経過しない者、暴力団準構成員、暴力団関係企業、総会屋、社会運動等標ぼうゴロ、特殊知能暴力集団その他これらに準ずる者（以下総称して「反社会的勢力」）に該当しないこと、及び反社会的勢力と関係を有しないことを表明し、保証します。</li></ol>
+<ol class="legal-ol"><li>利用者は、自ら又は第三者を利用して、暴力的な要求行為、法的責任を超えた不当な要求行為、脅迫的言動、風説の流布・偽計・威力による運営者の信用毀損又は業務妨害その他これらに準ずる行為を行わないことを保証します。</li></ol>
+<ol class="legal-ol"><li>利用者が前二項に違反した場合、運営者は、事前の通知なく本契約を解除し、又は本サービスの利用を停止することができます。この場合、運営者は、当該解除・停止により利用者に生じた損害について一切の責任を負いません。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第17条（本規約の変更）</h2>
+<ol class="legal-ol"><li>運営者は、次の各号のいずれかに該当する場合、民法第548条の4の規定に基づき、利用者の個別の同意を得ることなく、本規約を変更することができます。</li></ol>
+<ul class="legal-ul"><li>(1) 本規約の変更が、利用者の一般の利益に適合するとき</li><li>(2) 本規約の変更が、本契約をした目的に反せず、かつ、変更の必要性、変更後の内容の相当性、変更の内容その他の変更に係る事情に照らして合理的なものであるとき</li></ul>
+<ol class="legal-ol"><li>運営者は、前項に基づき本規約を変更する場合、変更後の本規約の効力発生時期を定め、かつ、変更後の本規約の内容及びその効力発生時期を、本ウェブサイト上への掲示その他の適切な方法により周知するものとします。</li></ol>
+<ol class="legal-ol"><li>変更後の本規約は、前項に基づき定められた効力発生時期から効力を生じるものとし、利用者が当該効力発生時期以降に本サービスを利用した場合、変更後の本規約に同意したものとみなされます。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第18条（連絡・通知）</h2>
+<ol class="legal-ol"><li>本サービスに関する運営者から利用者への連絡・通知は、本ウェブサイト上への掲示その他運営者が適当と判断する方法により行います。</li></ol>
+<ol class="legal-ol"><li>利用者から運営者への連絡・問い合わせは、運営者が本サービス上に表示する連絡先（電子メールアドレス <code>info@brake.run</code> 等）を通じて行うものとします。</li></ol>
+<ol class="legal-ol"><li>運営者が本ウェブサイト上への掲示により通知を行った場合、当該掲示がなされた時点で、当該通知が利用者に到達したものとみなします。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第19条（権利義務の譲渡禁止及び事業譲渡）</h2>
+<ol class="legal-ol"><li>利用者は、運営者の事前の書面による承諾なく、本契約上の地位又は本規約に基づく権利義務の全部若しくは一部を、第三者に譲渡し、承継させ、又は担保に供してはなりません。</li></ol>
+<ol class="legal-ol"><li>運営者は、本サービスに係る事業を第三者に譲渡し、又は運営者が法人化その他組織変更を行った場合等において、当該事業譲渡・組織変更等に伴い、本契約上の地位、本規約に基づく権利義務並びに利用者に関する情報を、当該譲渡・変更の相手方に承継させることができるものとし、利用者はこれをあらかじめ承諾するものとします。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第20条（分離可能性）</h2>
+<p>本規約のいずれかの条項又はその一部が、法令等により無効又は執行不能と判断された場合であっても、当該条項のその余の部分及び本規約のその他の条項は、引き続き完全に効力を有するものとします。運営者及び利用者は、当該無効又は執行不能とされた条項の趣旨に最も近い有効かつ執行可能な範囲の効力が確保されるように努めるものとします。</p>
+<hr class="legal-hr">
+<h2 class="legal-h2">第21条（存続条項）</h2>
+<p>本契約が終了した場合であっても、第4条、第5条、第6条、第9条、第10条、第11条、第15条第2項及び第3項、第16条、第18条、第19条、第20条、本条、第22条並びに第23条の規定は、なお有効に存続するものとします。</p>
+<hr class="legal-hr">
+<h2 class="legal-h2">第22条（準拠法）</h2>
+<p>本規約及び本契約の準拠法は、日本法とします。</p>
+<hr class="legal-hr">
+<h2 class="legal-h2">第23条（合意管轄）</h2>
+<p>本サービス又は本規約に関して利用者と運営者との間に生じた紛争については、訴額に応じて、運営者の所在地を管轄する地方裁判所又は簡易裁判所を第一審の専属的合意管轄裁判所とします。</p>
+<hr class="legal-hr">
+<h2 class="legal-h2">第24条（協議解決）</h2>
+<p>本規約に定めのない事項又は本規約の解釈に疑義が生じた事項については、運営者及び利用者が信義誠実の原則に従い協議の上、解決を図るものとします。</p>
+<hr class="legal-hr">
+<p><strong>制定日：2026年7月1日</strong></p>
+<p><strong>運営者：Brake.（個人事業主）</strong></p>
+<p><strong>連絡先：info@brake.run</strong></p>
+</div>
+</main>
+${FOOTER}
+<script>
+${HEADER_JS}
+</script>
+</body>
+</html>`;
+
+// ============================================================
+// プライバシーポリシーページ
+// ============================================================
+const HTML_PRIVACY = `<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>プライバシーポリシー | Brake.</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Noto+Sans+JP:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;}
+${HEADER_CSS}
+/* ===== 法的ページ共通スタイル（/terms, /privacy） ===== */
+.legal-wrap{
+  max-width:820px;
+  margin:0 auto;
+  padding:80px 24px 120px;
+  color:rgba(255,255,255,.82);
+  font-family:'Inter','Noto Sans JP',sans-serif;
+  line-height:1.9;
+}
+.legal-wrap .legal-title{
+  font-size:32px;font-weight:700;color:#fff;line-height:1.4;
+  margin:0 0 8px;letter-spacing:-0.01em;
+}
+.legal-wrap .legal-h2{
+  font-size:20px;font-weight:600;color:#fff;line-height:1.5;
+  margin:48px 0 16px;padding-top:8px;
+}
+.legal-wrap .legal-h3{
+  font-size:16px;font-weight:600;color:rgba(255,255,255,.92);
+  margin:28px 0 12px;
+}
+.legal-wrap p{ font-size:15px;margin:0 0 14px; }
+.legal-wrap .legal-ol,
+.legal-wrap .legal-ul{
+  font-size:15px;margin:0 0 16px;padding-left:1.6em;
+}
+.legal-wrap .legal-ol li,
+.legal-wrap .legal-ul li{ margin:0 0 8px; }
+.legal-wrap .legal-ol{ list-style:decimal; }
+.legal-wrap .legal-ul{ list-style:disc; }
+.legal-wrap .legal-hr{
+  border:none;border-top:.5px solid rgba(255,255,255,.12);
+  margin:36px 0;
+}
+.legal-wrap strong{ color:#fff;font-weight:600; }
+.legal-wrap code{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.9em;color:#00ff8c;
+  background:rgba(0,255,140,.08);
+  padding:.1em .4em;border-radius:4px;
+}
+.legal-wrap .legal-note{
+  margin:24px 0;padding:20px 24px;
+  border:.5px solid rgba(0,255,140,.28);
+  border-radius:12px;
+  background:rgba(0,255,140,.03);
+}
+.legal-wrap .legal-note p{ font-size:14px;color:rgba(255,255,255,.72);margin:0 0 10px; }
+.legal-wrap .legal-note p:last-child{ margin-bottom:0; }
+.legal-wrap .legal-note ol{ font-size:14px;color:rgba(255,255,255,.72);padding-left:1.4em;margin:8px 0 0; }
+.legal-wrap .legal-note strong{ color:#00ff8c; }
+@media(max-width:680px){
+  .legal-wrap{ padding:48px 18px 80px; }
+  .legal-wrap .legal-title{ font-size:26px; }
+  .legal-wrap .legal-h2{ font-size:18px; }
+}
+</style>
+</head>
+<body>
+${HEADER_HTML}
+<main style="flex:1">
+<div class="legal-wrap">
+<h1 class="legal-title">Brake. プライバシーポリシー</h1>
+<p><strong>最終更新日：2026年7月1日</strong></p>
+<p><strong>施行日：2026年7月1日</strong></p>
+<hr class="legal-hr">
+<blockquote class="legal-note">
+<p><strong>【要約】</strong></p>
+<p>本サービス「Brake.」では、暗号化処理はお使いのブラウザ内で完結し、暗号化前のコンテンツ（平文）が運営者のサーバーに送信されることはありません。サーバーに保存されるのは暗号文・パズルデータのみです。本ポリシーは、運営者がいかなる情報をどのように収集・利用・保護するかについて説明するものです。</p>
+</blockquote>
+<hr class="legal-hr">
+<h2 class="legal-h2">第1条（基本方針）</h2>
+<ol class="legal-ol"><li>運営者（以下「当方」）は、個人情報保護の重要性を認識し、個人情報の保護に関する法律（以下「個人情報保護法」）その他の関係法令を遵守するとともに、本ポリシーに従い、利用者の個人情報を適切に取り扱います。</li></ol>
+<ol class="legal-ol"><li>当方は、本サービスの設計思想として「プライバシー・バイ・デザイン」を採用しており、コンテンツの暗号化処理を利用者のブラウザ上で完結させることにより、運営者がコンテンツの内容を知り得ない仕組みを採用しています。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第2条（収集する情報の種類）</h2>
+<h3 class="legal-h3">2-1. 利用者が本サービスを利用する際に当方が収集する情報</h3>
+<p>当方は、本サービスの提供・運営・改善のため、次の情報を収集する場合があります。</p>
+<ol class="legal-ol"><li><strong>アクセスログ等</strong>　IPアドレス、ブラウザの種類・バージョン・言語設定、OS・デバイスの種類、アクセス日時、リクエストURL・HTTPメソッド・ステータスコード、参照元URL（Referer。ただし当方は <code>Referrer-Policy: no-referrer</code> を設定しているため、多くの場合空になります）、その他通信に付随するメタデータ。これらは本サービスの保守・障害対応・不正利用防止・セキュリティ確保のため収集されます。</li></ol>
+<ol class="legal-ol"><li><strong>本サービスの利用情報</strong>　本サービスを通じてサーバーに保存されるデータは、暗号化されたコンテンツ（暗号文）、パズルパラメータ（公開鍵相当の情報・計算量パラメータ等）、設定された有効期限に関する情報です。当方は、暗号化前のコンテンツ（平文）、復号のための鍵そのものを収集・保存しません。</li></ol>
+<ol class="legal-ol"><li><strong>問い合わせ情報</strong>　利用者が当方に問い合わせを行った際に提供された情報（氏名・メールアドレス・問い合わせ内容等）。</li></ol>
+<h3 class="legal-h3">2-2. 当方が収集しない情報</h3>
+<p>当方は、本サービスの設計上、次の情報を収集しません。</p>
+<ul class="legal-ul"><li>暗号化前のコンテンツの内容（平文）</li><li>復号のための鍵（x_final等）そのもの</li><li>利用者を識別するためのアカウント情報（本サービスはアカウント登録を要しません）</li></ul>
+<p>なお、当方が収集しないことが設計上の原則であっても、利用者自身がコンテンツに個人情報を含めた場合、その平文は利用者の端末上にのみ存在し、暗号文として保存されます。当方はその内容を把握しませんが、利用者は自己の責任において取り扱うものとします。</p>
+<hr class="legal-hr">
+<h2 class="legal-h2">第3条（情報の利用目的）</h2>
+<p>当方は、収集した情報を以下の目的で利用します。</p>
+<ol class="legal-ol"><li>本サービスの提供、維持、改善及び新機能の開発</li></ol>
+<ol class="legal-ol"><li>本サービスの安全性・可用性の確保、不正アクセス・不正利用の防止・対応</li></ol>
+<ol class="legal-ol"><li>障害・エラーの調査・対応</li></ol>
+<ol class="legal-ol"><li>利用者からの問い合わせへの対応</li></ol>
+<ol class="legal-ol"><li>本サービスの利用状況の分析・統計（個人を特定しない形での集計・分析）</li></ol>
+<ol class="legal-ol"><li>法令の遵守、利用規約の執行、当方の権利・財産・安全の保護</li></ol>
+<ol class="legal-ol"><li>その他、利用者の同意を得た目的</li></ol>
+<p>当方は、上記の目的の範囲を超えて個人情報を利用しません。利用目的を変更する場合は、法令の定めに従い対応します。</p>
+<hr class="legal-hr">
+<h2 class="legal-h2">第4条（第三者への提供）</h2>
+<ol class="legal-ol"><li>当方は、次の各号のいずれかに該当する場合を除き、利用者の個人情報を第三者に提供しません。</li></ol>
+<ul class="legal-ul"><li>(1) 利用者の同意がある場合</li><li>(2) 法令に基づく場合（裁判所・警察・検察等の公的機関からの適法な要請を含む）</li><li>(3) 人の生命、身体又は財産の保護のために必要がある場合であって、利用者の同意を得ることが困難な場合</li><li>(4) 公衆衛生の向上又は児童の健全な育成の推進のために特に必要がある場合であって、利用者の同意を得ることが困難な場合</li><li>(5) 国の機関若しくは地方公共団体又はその委託を受けた者が法令の定める事務を遂行することに対して協力する必要がある場合であって、利用者の同意を得ることにより当該事務の遂行に支障を及ぼすおそれがある場合</li><li>(6) 事業の承継（合併・会社分割・事業譲渡等）に伴い個人情報を引き継ぐ場合（利用規約第19条参照）</li></ul>
+<ol class="legal-ol"><li>当方は、個人情報を含むデータを、統計的・集計的な形（個人を特定できない形）に加工した上で、第三者に提供し、又は公表することがあります。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第5条（業務委託及び第三者サービスの利用）</h2>
+<ol class="legal-ol"><li>当方は、本サービスの提供にあたり、次に掲げる第三者サービスを利用しており、本サービスの利用に伴い収集された情報（アクセスログ等を含む）が当該第三者に提供される場合があります。</li></ol>
+<ul class="legal-ul"><li><strong>Cloudflare, Inc.</strong>（米国）：クラウドインフラストラクチャ（Cloudflare Workers・KV）、コンテンツ配信・セキュリティサービスとして利用しています。Cloudflare は本サービスのサーバーサイドインフラを提供しており、アクセスログ等の情報がCloudflareのシステムを経由します。Cloudflare のプライバシーポリシーは <code>cloudflare.com/privacypolicy</code> をご参照ください。</li><li><strong>Google LLC</strong>（米国）：Google Fonts（ウェブフォント配信）として利用しています。Google Fontsの利用時には、利用者のIPアドレス等の情報がGoogleに送信される場合があります。GoogleのプライバシーポリシーはGoogle公式サイトをご参照ください。</li></ul>
+<ol class="legal-ol"><li>当方は、個人情報の取扱いを第三者に委託する場合、委託先の選定にあたり適切な安全管理措置を講じていることを確認するとともに、委託先との間で個人情報の取扱いに関する契約を締結する等、必要かつ適切な監督を行います。</li></ol>
+<ol class="legal-ol"><li>第三者サービスのプライバシーに関する取扱いについては、当該第三者の定めるプライバシーポリシー等が適用されます。当方は、第三者サービスのプライバシーに関する取扱いについて責任を負いません。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第6条（クッキー（Cookie）及びローカルストレージの利用）</h2>
+<ol class="legal-ol"><li><strong>ローカルストレージ</strong>　本サービスは、復号完了時に、当該パズルの復号鍵（x_final）を利用者の端末のローカルストレージに保存します。これは、同一ブラウザから同一URLに再アクセスした際に計算を省略し即座に復号を完了させるためのものです（いわゆる「キャッシュ」）。ローカルストレージに保存された情報は、利用者の端末にのみ保存され、当方のサーバーには送信されません。保存された情報は有効期限（当該コンテンツの設定時間＋30日）の経過後に自動削除されます。利用者はブラウザの設定からローカルストレージを手動で削除することができます。</li></ol>
+<ol class="legal-ol"><li><strong>クッキー</strong>　本サービスは、現時点において、当方が主体的に設置するクッキーを利用していません。ただし、第5条に定めるCloudflare等の第三者サービスが独自にクッキーを設置する場合があります。当該クッキーについては各第三者のプライバシーポリシーをご参照ください。</li></ol>
+<ol class="legal-ol"><li><strong>解析ツール</strong>　当方は、現時点において、本サービス上でGoogle Analytics等のサードパーティ解析ツールを利用していません。将来的に利用する場合は、本ポリシーを更新の上、利用者に告知します。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第7条（個人情報の安全管理）</h2>
+<ol class="legal-ol"><li>当方は、収集した個人情報について、漏洩、滅失又は毀損の防止その他の安全管理のために、技術的・組織的に適切な措置を講じます。</li></ol>
+<ol class="legal-ol"><li>本サービスとサーバー間の通信はHTTPS（TLS）により暗号化されます。</li></ol>
+<ol class="legal-ol"><li>当方は、安全管理措置として次の措置を実施しています。</li></ol>
+<ul class="legal-ul"><li>通信の暗号化（HTTPS/TLS）</li><li>セキュリティヘッダーの付与（X-Frame-Options, X-Content-Type-Options, Strict-Transport-Security等）</li><li>クラウドインフラ（Cloudflare）による基盤レベルのセキュリティ対策</li></ul>
+<ol class="legal-ol"><li>ただし、インターネットを経由した通信及び電子的な記録の保存は、完全なセキュリティを保証するものではありません。当方は、セキュリティ侵害（不正アクセス・データ漏洩等）が生じた場合でも、当方の故意又は重過失がない限り、責任を負いません。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第8条（個人情報の保存期間）</h2>
+<ol class="legal-ol"><li>アクセスログ等は、本サービスの保守・障害対応・不正利用防止のために必要な期間保存します。</li></ol>
+<ol class="legal-ol"><li>サーバーに保存された暗号文・パズルデータは、利用者が設定した有効期限（復号時間 ＋ 1か月）の経過後、自動的に削除されます。</li></ol>
+<ol class="legal-ol"><li>問い合わせ情報は、問い合わせへの対応及びその後のフォローアップのために必要な期間保存します。</li></ol>
+<ol class="legal-ol"><li>当方は、保存期間を超えた個人情報を速やかに削除するよう努めます。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第9条（個人情報の開示・訂正・利用停止等）</h2>
+<ol class="legal-ol"><li>利用者は、個人情報保護法の定めに基づき、当方が保有する自己の個人情報について、開示、内容の訂正・追加・削除、利用の停止・消去、第三者への提供の停止を請求することができます。</li></ol>
+<ol class="legal-ol"><li>前項の請求を行う場合は、第12条に定める問い合わせ先までご連絡ください。当方は、ご本人確認の上、法令の定めに従い合理的な期間内に対応します。</li></ol>
+<ol class="legal-ol"><li>開示等の請求に際し、法令の定めにより当方が対応しないことが認められる場合、当方は当該請求に応じないことがあります。その場合は、理由をご連絡します。</li></ol>
+<ol class="legal-ol"><li>ただし、本サービスの技術的な性質上、当方は暗号化前のコンテンツ（平文）及び復号鍵を保有していないため、これらに関する開示・提供は技術的に不可能です。この点をあらかじめご了承ください。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第10条（未成年者のプライバシー）</h2>
+<ol class="legal-ol"><li>本サービスは13歳未満の者を対象としておらず、13歳未満の者から意図的に個人情報を収集しません。</li></ol>
+<ol class="legal-ol"><li>保護者の方が、13歳未満のお子様が本サービスを利用し個人情報を提供したことを知った場合は、第12条の連絡先までご連絡ください。当方は速やかに対応します。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第11条（ポリシーの変更）</h2>
+<ol class="legal-ol"><li>当方は、法令の改正、本サービスの内容変更、その他の事情により、本ポリシーを改訂することがあります。</li></ol>
+<ol class="legal-ol"><li>本ポリシーを変更する場合、変更後の内容を本ウェブサイト上に掲示します。重要な変更を行う場合は、本ウェブサイト上での告知その他の適切な方法により利用者にお知らせするよう努めます。</li></ol>
+<ol class="legal-ol"><li>変更後の本ポリシーは、本ウェブサイト上に掲示された時点から効力を生じます。変更後に本サービスを利用した場合、変更後の本ポリシーに同意したものとみなされます。</li></ol>
+<hr class="legal-hr">
+<h2 class="legal-h2">第12条（お問い合わせ窓口）</h2>
+<p>本ポリシーに関するご意見、ご質問、個人情報の開示等の請求その他のお問い合わせは、以下の連絡先にご連絡ください。</p>
+<p><strong>Brake.（個人事業主）</strong><br>
+電子メール：<code>info@brake.run</code></p>
+<p>当方は、お問い合わせ内容を確認の上、合理的な期間内にご返答するよう努めます。</p>
+</div>
+</main>
+${FOOTER}
+<script>
+${HEADER_JS}
+</script>
+</body>
+</html>`;
+
 const HTML_PHILOSOPHY = `<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -5588,6 +6037,16 @@ async function innerFetch(request, env, ctx) {
         // 思想ページ
         if (path === '/philosophy') {
             return new Response(HTML_PHILOSOPHY, { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'public, max-age=3600' } });
+        }
+
+        // 利用規約
+        if (path === '/terms') {
+            return new Response(HTML_TERMS, { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'public, max-age=3600' } });
+        }
+
+        // プライバシーポリシー
+        if (path === '/privacy') {
+            return new Response(HTML_PRIVACY, { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'public, max-age=3600' } });
         }
 
         // トップページ
