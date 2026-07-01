@@ -1804,17 +1804,17 @@ ${HEADER_CSS}
   padding:100px 24px;
 }
 .howto-section-inner{
-  max-width:1280px;
+  max-width:1000px;
   margin:0 auto;
 }
 .howto-section-eyebrow{
   font-family:'Inter','Noto Sans JP',sans-serif;
-  font-size:11px;
-  font-weight:500;
+  font-size:16px;
+  font-weight:600;
   color:#00ff8c;
-  letter-spacing:0.05em;
-  text-shadow:0 0 7px rgba(0,255,140,.45),0 0 14px rgba(0,255,140,.2);
-  margin-bottom:16px;
+  letter-spacing:0.08em;
+  text-shadow:0 0 10px rgba(0,255,140,.55),0 0 20px rgba(0,255,140,.25);
+  margin-bottom:20px;
   text-align:center;
 }
 .howto-section-heading{
@@ -1824,6 +1824,16 @@ ${HEADER_CSS}
   color:#fff;
   margin-bottom:40px;
   line-height:1.4;
+}
+.howto-section-main-heading{
+  font-family:'Noto Sans JP',sans-serif;
+  font-weight:700;
+  font-size:clamp(28px,4vw,44px);
+  color:#fff;
+  text-align:center;
+  letter-spacing:-0.01em;
+  line-height:1.2;
+  margin-bottom:32px;
 }
 /* トグルボタン */
 .howto-toggle{
@@ -1914,31 +1924,35 @@ ${HEADER_CSS}
    ============================================================ */
 .showcase{
   display:grid;
-  grid-template-columns:1fr 340px;
+  grid-template-columns:1.5fr 1fr;
   gap:40px;
-  align-items:start;
+  align-items:center;
 }
 .sc-left{min-width:0;}
-.sc-stage{overflow:hidden;border-radius:16px;}
+.sc-stage{
+  overflow:hidden;
+  border-radius:16px;
+  aspect-ratio:4/3;
+  background:rgba(255,255,255,0.03);
+  border:0.5px solid rgba(61,220,132,0.25);
+  box-shadow:0 0 40px rgba(61,220,132,0.08);
+}
 .sc-track{
   display:flex;
   gap:16px;
+  height:100%;
   will-change:transform;
   transition:transform 500ms cubic-bezier(0.4,0,0.2,1);
 }
 .sc-slide{
   flex-shrink:0;
-  border-radius:12px;
-  background:rgba(255,255,255,0.03);
-  border:0.5px solid rgba(61,220,132,0.25);
-  box-shadow:0 0 30px rgba(61,220,132,0.08);
   opacity:0.4;
   transition:opacity 300ms;
   overflow:hidden;
 }
 .sc-slide.active{opacity:1;}
 .sc-slide-img{
-  aspect-ratio:4/3;
+  height:100%;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -1983,8 +1997,8 @@ ${HEADER_CSS}
   gap:4px;
 }
 .sc-item{
-  padding:14px 16px;
-  border-radius:10px;
+  padding:16px;
+  border-radius:12px;
   cursor:pointer;
   transition:background 300ms;
   background:transparent;
@@ -1992,7 +2006,7 @@ ${HEADER_CSS}
 .sc-item.active{background:rgba(61,220,132,0.08);}
 .sc-item-num{
   font-family:'Inter',sans-serif;
-  font-size:30px;
+  font-size:32px;
   font-weight:700;
   line-height:1;
   color:rgba(61,220,132,0.3);
@@ -2002,8 +2016,8 @@ ${HEADER_CSS}
 .sc-item.active .sc-item-num{color:#3ddc84;}
 .sc-item-title{
   font-family:'Noto Sans JP',sans-serif;
-  font-weight:700;
-  font-size:16px;
+  font-weight:500;
+  font-size:18px;
   color:rgba(255,255,255,.85);
   margin-bottom:4px;
   transition:color 300ms;
@@ -2011,9 +2025,9 @@ ${HEADER_CSS}
 .sc-item.active .sc-item-title{color:#fff;}
 .sc-item-desc{
   font-family:'Noto Sans JP',sans-serif;
-  font-size:13px;
-  color:rgba(255,255,255,.55);
-  line-height:1.7;
+  font-size:14px;
+  color:rgba(255,255,255,.6);
+  line-height:1.6;
 }
 .sc-progress{
   display:flex;
@@ -2037,11 +2051,158 @@ ${HEADER_CSS}
   display:none;
   margin-top:14px;
 }
+/* スマホ専用カルーセルラッパー：PCでは非表示 */
+.sender-mob{display:none;}
+.sender-pc{display:grid;} /* .howto-cols のgridを継承 */
+/* ============================================================
+   3D カバーフローカルーセル（スマホ版 .sender-mob 内）
+   ============================================================ */
+.cflow-wrap{
+  position:relative;
+  padding-bottom:44px;
+  user-select:none;
+  -webkit-user-select:none;
+}
+.cflow-viewport{
+  perspective:1000px;
+  overflow:hidden;
+  padding:24px 0;
+  position:relative;
+}
+.cflow-stage{
+  position:relative;
+  height:320px;
+  transform-style:preserve-3d;
+}
+.cflow-card{
+  position:absolute;
+  left:50%;
+  top:0;
+  width:72%;
+  background:rgba(255,255,255,0.03);
+  border:0.5px solid rgba(61,220,132,0.15);
+  border-radius:16px;
+  overflow:hidden;
+  transition:transform 500ms cubic-bezier(0.3,0,0.2,1),
+             opacity 500ms cubic-bezier(0.3,0,0.2,1),
+             box-shadow 500ms cubic-bezier(0.3,0,0.2,1),
+             border-color 500ms cubic-bezier(0.3,0,0.2,1);
+  cursor:pointer;
+}
+.cflow-card.cf-active{
+  transform:translateX(-50%) translateZ(60px) rotateY(0deg);
+  opacity:1;
+  border-color:rgba(61,220,132,0.6);
+  box-shadow:0 0 40px rgba(61,220,132,0.2);
+  z-index:10;
+}
+.cflow-card.cf-prev{
+  transform:translateX(calc(-50% - 130px)) translateZ(-140px) rotateY(35deg) scale(0.85);
+  opacity:0.5;
+  z-index:5;
+  border-color:rgba(61,220,132,0.1);
+  box-shadow:none;
+}
+.cflow-card.cf-next{
+  transform:translateX(calc(-50% + 130px)) translateZ(-140px) rotateY(-35deg) scale(0.85);
+  opacity:0.5;
+  z-index:5;
+  border-color:rgba(61,220,132,0.1);
+  box-shadow:none;
+}
+.cflow-card.cf-hidden{
+  transform:translateX(-50%) translateZ(-200px) scale(0.6);
+  opacity:0;
+  pointer-events:none;
+  z-index:1;
+}
+.cflow-img{
+  aspect-ratio:4/3;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  color:#3ddc84;
+}
+.cflow-img-label{
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;
+  color:rgba(255,255,255,.2);
+  letter-spacing:1px;
+}
+.cflow-meta{padding:14px 18px 18px;}
+.cflow-step{
+  font-family:'Inter','Noto Sans JP',sans-serif;
+  font-size:11px;
+  font-weight:500;
+  color:#3ddc84;
+  letter-spacing:0.05em;
+  margin-bottom:5px;
+}
+.cflow-title{
+  font-family:'Noto Sans JP',sans-serif;
+  font-weight:700;
+  font-size:15px;
+  color:#fff;
+  margin-bottom:5px;
+}
+.cflow-desc{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:12px;
+  color:rgba(255,255,255,.6);
+  line-height:1.6;
+}
+.cflow-btn{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background:rgba(61,220,132,0.1);
+  border:1px solid rgba(61,220,132,0.35);
+  color:#3ddc84;
+  font-size:12px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:20;
+  transition:background 200ms;
+  -webkit-tap-highlight-color:transparent;
+  outline:none;
+}
+.cflow-btn:active{background:rgba(61,220,132,0.3);}
+.cflow-prev{left:4px;}
+.cflow-next{right:4px;}
+.cflow-dots{
+  position:absolute;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.cflow-dot{
+  width:10px;
+  height:10px;
+  border-radius:0;
+  background:transparent;
+  border:1px solid rgba(61,220,132,0.4);
+  transition:background 600ms,transform 600ms,border-color 600ms;
+  cursor:pointer;
+  -webkit-tap-highlight-color:transparent;
+}
+.cflow-dot.active{
+  background:#3ddc84;
+  border-color:#3ddc84;
+  transform:scale(1.3);
+}
 @media(max-width:680px){
-  .showcase{grid-template-columns:1fr;gap:0;}
-  .sc-right{display:none;}
-  .sc-slide-meta{display:block;}
-  .sc-progress-mob{display:flex;}
+  .sender-pc{display:none;}
+  .sender-mob{display:block;}
 }
 
 /* ============================================================
@@ -2345,7 +2506,8 @@ ${HEADER_HTML}
      ============================================================ -->
 <section class="howto-section" id="howto">
   <div class="howto-section-inner">
-    <div class="howto-section-eyebrow"><span class="eb-dot" style="width:10px;height:10px;background:#00ff8c;box-shadow:0 0 8px rgba(0,255,140,.8);display:inline-block;margin-right:12px;vertical-align:middle"></span>使い方</div>
+    <div class="howto-section-eyebrow"><span class="eb-dot" style="width:14px;height:14px;background:#00ff8c;box-shadow:0 0 12px rgba(0,255,140,.9);display:inline-block;margin-right:14px;vertical-align:middle;border-radius:2px"></span>使い方</div>
+    <h2 class="howto-section-main-heading">置いて、決めて、送る。</h2>
 
     <!-- トグル -->
     <div class="howto-toggle">
@@ -2355,78 +2517,73 @@ ${HEADER_HTML}
 
     <!-- 送る人パネル -->
     <div class="howto-panel active" id="panel-sender">
-      <div class="showcase" id="showcase">
-        <!-- 左：画像カルーセル -->
-        <div class="sc-left">
-          <div class="sc-stage" id="sc-stage">
-            <div class="sc-track" id="sc-track">
-              <!-- STEP 01 -->
-              <div class="sc-slide active" data-sc="0">
-                <div class="sc-slide-img">
-                  <svg class="sc-slide-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                  <div class="sc-slide-img-label">[ img ]</div>
+      <!-- PC: 3カラムグリッド -->
+      <div class="howto-cols sender-pc">
+        <div class="howto-col">
+          <div class="howto-col-img"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#3ddc84"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+          <div class="howto-col-step">STEP 01</div>
+          <div class="howto-col-title">置く</div>
+          <div class="howto-col-desc">渡したいもの（URL・テキスト・写真・動画）をドロップする。</div>
+        </div>
+        <div class="howto-col">
+          <div class="howto-col-img"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#3ddc84"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="howto-col-step">STEP 02</div>
+          <div class="howto-col-title">時間を決める</div>
+          <div class="howto-col-desc">解読にかかる時間を指定。その時間が、相手の「余白」になる。</div>
+        </div>
+        <div class="howto-col">
+          <div class="howto-col-img"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#3ddc84"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div>
+          <div class="howto-col-step">STEP 03</div>
+          <div class="howto-col-title">共有</div>
+          <div class="howto-col-desc">生成されたリンクを送るだけ。中身はまだ誰も開けない。</div>
+        </div>
+      </div>
+      <!-- スマホ: 3D カバーフローカルーセル -->
+      <div class="sender-mob">
+        <div class="cflow-wrap">
+          <div class="cflow-viewport">
+            <div class="cflow-stage" id="cflow-stage">
+              <div class="cflow-card cf-active" data-ci="0">
+                <div class="cflow-img">
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <div class="cflow-img-label">[ img ]</div>
                 </div>
-                <div class="sc-slide-meta">
-                  <div class="sc-slide-meta-step">STEP 01</div>
-                  <div class="sc-slide-meta-title">置く</div>
-                  <div class="sc-slide-meta-desc">渡したいもの（URL・テキスト・写真・動画）をドロップする。</div>
+                <div class="cflow-meta">
+                  <div class="cflow-step">STEP 01</div>
+                  <div class="cflow-title">置く</div>
+                  <div class="cflow-desc">渡したいもの（URL・テキスト・写真・動画）をドロップする。</div>
                 </div>
               </div>
-              <!-- STEP 02 -->
-              <div class="sc-slide" data-sc="1">
-                <div class="sc-slide-img">
-                  <svg class="sc-slide-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  <div class="sc-slide-img-label">[ img ]</div>
+              <div class="cflow-card cf-next" data-ci="1">
+                <div class="cflow-img">
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <div class="cflow-img-label">[ img ]</div>
                 </div>
-                <div class="sc-slide-meta">
-                  <div class="sc-slide-meta-step">STEP 02</div>
-                  <div class="sc-slide-meta-title">時間を決める</div>
-                  <div class="sc-slide-meta-desc">解読にかかる時間を指定。その時間が、相手の「余白」になる。</div>
+                <div class="cflow-meta">
+                  <div class="cflow-step">STEP 02</div>
+                  <div class="cflow-title">時間を決める</div>
+                  <div class="cflow-desc">解読にかかる時間を指定。その時間が、相手の「余白」になる。</div>
                 </div>
               </div>
-              <!-- STEP 03 -->
-              <div class="sc-slide" data-sc="2">
-                <div class="sc-slide-img">
-                  <svg class="sc-slide-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                  <div class="sc-slide-img-label">[ img ]</div>
+              <div class="cflow-card cf-hidden" data-ci="2">
+                <div class="cflow-img">
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                  <div class="cflow-img-label">[ img ]</div>
                 </div>
-                <div class="sc-slide-meta">
-                  <div class="sc-slide-meta-step">STEP 03</div>
-                  <div class="sc-slide-meta-title">共有</div>
-                  <div class="sc-slide-meta-desc">生成されたリンクを送るだけ。中身はまだ誰も開けない。</div>
+                <div class="cflow-meta">
+                  <div class="cflow-step">STEP 03</div>
+                  <div class="cflow-title">共有</div>
+                  <div class="cflow-desc">生成されたリンクを送るだけ。中身はまだ誰も開けない。</div>
                 </div>
               </div>
             </div>
+            <button class="cflow-btn cflow-prev" id="cflow-prev" aria-label="前へ">&#9664;</button>
+            <button class="cflow-btn cflow-next" id="cflow-next" aria-label="次へ">&#9654;</button>
           </div>
-          <!-- モバイル用プログレスバー -->
-          <div class="sc-progress sc-progress-mob" id="sc-progress-mob">
-            <div class="sc-bar"><div class="sc-bar-fill"></div></div>
-            <div class="sc-bar"><div class="sc-bar-fill"></div></div>
-            <div class="sc-bar"><div class="sc-bar-fill"></div></div>
-          </div>
-        </div>
-        <!-- 右：STEPリスト（PC） -->
-        <div class="sc-right">
-          <div class="sc-item active" data-sc-item="0">
-            <div class="sc-item-num">01</div>
-            <div class="sc-item-title">置く</div>
-            <div class="sc-item-desc">渡したいもの（URL・テキスト・写真・動画）をドロップする。</div>
-          </div>
-          <div class="sc-item" data-sc-item="1">
-            <div class="sc-item-num">02</div>
-            <div class="sc-item-title">時間を決める</div>
-            <div class="sc-item-desc">解読にかかる時間を指定。その時間が、相手の「余白」になる。</div>
-          </div>
-          <div class="sc-item" data-sc-item="2">
-            <div class="sc-item-num">03</div>
-            <div class="sc-item-title">共有</div>
-            <div class="sc-item-desc">生成されたリンクを送るだけ。中身はまだ誰も開けない。</div>
-          </div>
-          <!-- PC用プログレスバー -->
-          <div class="sc-progress" id="sc-progress-pc">
-            <div class="sc-bar"><div class="sc-bar-fill"></div></div>
-            <div class="sc-bar"><div class="sc-bar-fill"></div></div>
-            <div class="sc-bar"><div class="sc-bar-fill"></div></div>
+          <div class="cflow-dots" id="cflow-dots">
+            <span class="cflow-dot active" data-ci="0"></span>
+            <span class="cflow-dot" data-ci="1"></span>
+            <span class="cflow-dot" data-ci="2"></span>
           </div>
         </div>
       </div>
@@ -2568,6 +2725,7 @@ function switchHowto(panel, btn) {
 
   function scInit(){
     var W = scStage.offsetWidth;
+    if(!W) return;
     scSlideW = Math.round(W * 0.78);
     scSlides.forEach(function(s){ s.style.width = scSlideW + 'px'; });
     scTrack.style.marginLeft = Math.round((W - scSlideW) / 2) + 'px';
@@ -2642,9 +2800,113 @@ function switchHowto(panel, btn) {
     }
   }, {passive:true});
 
-  scInit();
-  window.addEventListener('resize', scInit);
-  setTimeout(function(){ scGo(0, false); }, 100);
+  var scStarted = false;
+  function scStart(){
+    scInit();
+    if(scStage.offsetWidth && !scStarted){
+      scStarted = true;
+      scGo(0, false);
+    }
+  }
+  scStart();
+  window.addEventListener('resize', function(){
+    scInit();
+    if(scStage.offsetWidth && !scStarted){ scStarted = true; scGo(0, false); }
+  });
+  setTimeout(scStart, 100);
+})();
+
+// ============================================================
+// 3D カバーフローカルーセル（スマホ版）
+// ============================================================
+(function(){
+  var CF_N = 3;
+  var cfIdx = 0;
+  var cfAutoTimer = null;
+  var cfWheelLock = false;
+
+  var cfStage = document.getElementById('cflow-stage');
+  if(!cfStage) return;
+  var cfCards = Array.from(cfStage.querySelectorAll('.cflow-card'));
+  var cfDotWrap = document.getElementById('cflow-dots');
+  var cfDots = cfDotWrap ? Array.from(cfDotWrap.querySelectorAll('.cflow-dot')) : [];
+  var cfPrevBtn = document.getElementById('cflow-prev');
+  var cfNextBtn = document.getElementById('cflow-next');
+
+  function cfUpdate(idx){
+    cfCards.forEach(function(card, i){
+      card.classList.remove('cf-active','cf-prev','cf-next','cf-hidden');
+      var rel = ((i - idx) % CF_N + CF_N) % CF_N;
+      if(rel === 0)          card.classList.add('cf-active');
+      else if(rel === CF_N - 1) card.classList.add('cf-prev');  // -1 mod N
+      else if(rel === 1)    card.classList.add('cf-next');
+      else                  card.classList.add('cf-hidden');
+    });
+    cfDots.forEach(function(dot, i){
+      dot.classList.toggle('active', i === idx);
+    });
+  }
+
+  function cfGo(idx){
+    cfIdx = ((idx % CF_N) + CF_N) % CF_N;
+    cfUpdate(cfIdx);
+  }
+
+  function cfStop(){
+    clearInterval(cfAutoTimer);
+    cfAutoTimer = null;
+  }
+
+  function cfManual(idx){
+    cfStop();
+    cfGo(idx);
+  }
+
+  // 自動再生（操作で完全停止・再開しない）
+  cfAutoTimer = setInterval(function(){
+    cfGo((cfIdx + 1) % CF_N);
+  }, 3000);
+
+  // ボタン
+  if(cfPrevBtn) cfPrevBtn.addEventListener('click', function(){
+    cfManual((cfIdx - 1 + CF_N) % CF_N);
+  });
+  if(cfNextBtn) cfNextBtn.addEventListener('click', function(){
+    cfManual((cfIdx + 1) % CF_N);
+  });
+
+  // ドット
+  cfDots.forEach(function(dot, i){
+    dot.addEventListener('click', function(){ cfManual(i); });
+  });
+
+  // 脇カードクリックで移動
+  cfCards.forEach(function(card, i){
+    card.addEventListener('click', function(){
+      if(i !== cfIdx) cfManual(i);
+    });
+  });
+
+  // スワイプ
+  var cfTouchX = 0;
+  cfStage.addEventListener('touchstart', function(e){
+    cfTouchX = e.touches[0].clientX;
+  }, {passive:true});
+  cfStage.addEventListener('touchend', function(e){
+    var dx = e.changedTouches[0].clientX - cfTouchX;
+    if(Math.abs(dx) > 40){
+      cfManual(dx < 0 ? (cfIdx + 1) % CF_N : (cfIdx - 1 + CF_N) % CF_N);
+    }
+  }, {passive:true});
+
+  // ホイール横スクロール（ロック付き）
+  cfStage.addEventListener('wheel', function(e){
+    if(Math.abs(e.deltaX) < 10) return;
+    if(cfWheelLock) return;
+    cfWheelLock = true;
+    cfManual(e.deltaX > 0 ? (cfIdx + 1) % CF_N : (cfIdx - 1 + CF_N) % CF_N);
+    setTimeout(function(){ cfWheelLock = false; }, 600);
+  }, {passive:true});
 })();
 
 // ============================================================
