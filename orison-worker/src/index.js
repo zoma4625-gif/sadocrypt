@@ -1426,7 +1426,7 @@ ${HEADER_CSS}
 
 /* ラベル行 */
 .result-label-row{ display:flex; align-items:center; gap:8px; margin-bottom:16px; }
-.result-green-dot{ width:7px; height:7px; background:#3ddc84; border-radius:1px; flex-shrink:0; box-shadow:0 0 6px rgba(61,220,132,0.6); }
+.result-green-dot{ width:7px; height:7px; background:#3ddc84; border-radius:0; flex-shrink:0; box-shadow:0 0 6px rgba(61,220,132,0.6); }
 .result-label-text{ font-family:'Noto Sans JP',sans-serif; font-size:13px; font-weight:500; letter-spacing:0.02em; color:rgba(255,255,255,0.7); }
 /* QRサムネイルボタン */
 .qr-thumb-btn{ width:46px; height:46px; background:#fff; border:0.5px solid rgba(45,212,150,0.35); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; padding:2px; overflow:hidden; transition:opacity .15s; }
@@ -1804,7 +1804,7 @@ ${HEADER_CSS}
   padding:100px 24px;
 }
 .howto-section-inner{
-  max-width:1000px;
+  max-width:1200px;
   margin:0 auto;
 }
 .howto-section-eyebrow{
@@ -1866,7 +1866,7 @@ ${HEADER_CSS}
 .howto-cols{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:32px;
+  gap:48px;
 }
 @media(max-width:640px){
   .howto-cols{grid-template-columns:1fr;}
@@ -1874,9 +1874,11 @@ ${HEADER_CSS}
 .howto-col{
   display:flex;
   flex-direction:column;
-  gap:16px;
+  gap:24px;
+  text-align:center;
 }
 .howto-col-img{
+  order:3;
   width:100%;
   aspect-ratio:4/3;
   background:rgba(255,255,255,.04);
@@ -1891,22 +1893,31 @@ ${HEADER_CSS}
   letter-spacing:1px;
 }
 .howto-col-step{
+  order:1;
   font-family:'Inter','Noto Sans JP',sans-serif;
-  font-size:12px;
+  font-size:14px;
   font-weight:500;
   color:#00ff8c;
   letter-spacing:0.05em;
   text-shadow:0 0 7px rgba(0,255,140,.45),0 0 14px rgba(0,255,140,.2);
 }
 .howto-col-title{
+  order:2;
   font-family:'Noto Sans JP',sans-serif;
   font-weight:700;
-  font-size:17px;
+  font-size:22px;
   color:#fff;
+  line-height:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
 }
+.howto-col-title svg{order:1;flex-shrink:0;display:block;align-self:center;}
 .howto-col-desc{
+  order:4;
   font-family:'Noto Sans JP',sans-serif;
-  font-size:14px;
+  font-size:16px;
   color:rgba(255,255,255,.82);
   line-height:1.8;
 }
@@ -2064,7 +2075,7 @@ ${HEADER_CSS}
   -webkit-user-select:none;
 }
 .cflow-viewport{
-  perspective:1000px;
+  perspective:1400px;
   overflow:hidden;
   padding:24px 0;
   position:relative;
@@ -2079,39 +2090,39 @@ ${HEADER_CSS}
   left:50%;
   top:0;
   width:72%;
-  background:rgba(255,255,255,0.03);
+  background:#0e1712;
   border:0.5px solid rgba(61,220,132,0.15);
   border-radius:16px;
   overflow:hidden;
-  transition:transform 500ms cubic-bezier(0.3,0,0.2,1),
-             opacity 500ms cubic-bezier(0.3,0,0.2,1),
-             box-shadow 500ms cubic-bezier(0.3,0,0.2,1),
-             border-color 500ms cubic-bezier(0.3,0,0.2,1);
+  transition:transform 550ms cubic-bezier(0.32,0.72,0.28,1),
+             opacity 550ms cubic-bezier(0.32,0.72,0.28,1),
+             box-shadow 550ms cubic-bezier(0.32,0.72,0.28,1),
+             border-color 550ms cubic-bezier(0.32,0.72,0.28,1);
   cursor:pointer;
 }
 .cflow-card.cf-active{
-  transform:translateX(-50%) translateZ(60px) rotateY(0deg);
+  transform:translateX(-50%) translateZ(40px) rotateY(0deg) scale(1);
   opacity:1;
   border-color:rgba(61,220,132,0.6);
-  box-shadow:0 0 40px rgba(61,220,132,0.2);
+  box-shadow:0 0 40px rgba(61,220,132,0.18);
   z-index:10;
 }
 .cflow-card.cf-prev{
-  transform:translateX(calc(-50% - 130px)) translateZ(-140px) rotateY(35deg) scale(0.85);
-  opacity:0.5;
+  transform:translateX(calc(-50% - 116px)) translateZ(-90px) rotateY(14deg) scale(0.92);
+  opacity:0.85;
   z-index:5;
-  border-color:rgba(61,220,132,0.1);
+  border-color:rgba(61,220,132,0.12);
   box-shadow:none;
 }
 .cflow-card.cf-next{
-  transform:translateX(calc(-50% + 130px)) translateZ(-140px) rotateY(-35deg) scale(0.85);
-  opacity:0.5;
+  transform:translateX(calc(-50% + 116px)) translateZ(-90px) rotateY(-14deg) scale(0.92);
+  opacity:0.85;
   z-index:5;
-  border-color:rgba(61,220,132,0.1);
+  border-color:rgba(61,220,132,0.12);
   box-shadow:none;
 }
 .cflow-card.cf-hidden{
-  transform:translateX(-50%) translateZ(-200px) scale(0.6);
+  transform:translateX(-50%) translateZ(-180px) scale(0.6);
   opacity:0;
   pointer-events:none;
   z-index:1;
@@ -2146,7 +2157,13 @@ ${HEADER_CSS}
   font-size:15px;
   color:#fff;
   margin-bottom:5px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-direction:row-reverse;
+  justify-content:flex-end;
 }
+.cflow-title svg{flex-shrink:0;}
 .cflow-desc{
   font-family:'Noto Sans JP',sans-serif;
   font-size:12px;
@@ -2506,7 +2523,7 @@ ${HEADER_HTML}
      ============================================================ -->
 <section class="howto-section" id="howto">
   <div class="howto-section-inner">
-    <div class="howto-section-eyebrow"><span class="eb-dot" style="width:14px;height:14px;background:#00ff8c;box-shadow:0 0 12px rgba(0,255,140,.9);display:inline-block;margin-right:14px;vertical-align:middle;border-radius:2px"></span>使い方</div>
+    <div class="howto-section-eyebrow"><span class="eb-dot" style="width:14px;height:14px;background:#00ff8c;box-shadow:0 0 12px rgba(0,255,140,.9);display:inline-block;margin-right:14px;vertical-align:middle;border-radius:0"></span>使い方</div>
     <h2 class="howto-section-main-heading">置いて、決めて、送る。</h2>
 
     <!-- トグル -->
@@ -2520,70 +2537,70 @@ ${HEADER_HTML}
       <!-- PC: 3カラムグリッド -->
       <div class="howto-cols sender-pc">
         <div class="howto-col">
-          <div class="howto-col-img"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#3ddc84"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#3ddc84"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
           <div class="howto-col-step">STEP 01</div>
-          <div class="howto-col-title">置く</div>
-          <div class="howto-col-desc">渡したいもの（URL・テキスト・写真・動画）をドロップする。</div>
+          <div class="howto-col-title"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>置く</div>
+          <div class="howto-col-desc">渡したいもの（URL・テキスト・ファイル）をドロップする。</div>
         </div>
         <div class="howto-col">
-          <div class="howto-col-img"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#3ddc84"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#3ddc84"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
           <div class="howto-col-step">STEP 02</div>
-          <div class="howto-col-title">時間を決める</div>
-          <div class="howto-col-desc">解読にかかる時間を指定。その時間が、相手の「余白」になる。</div>
+          <div class="howto-col-title"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>時間を決める</div>
+          <div class="howto-col-desc">復号にかかる時間を指定。</div>
         </div>
         <div class="howto-col">
-          <div class="howto-col-img"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#3ddc84"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div>
+          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#3ddc84"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div>
           <div class="howto-col-step">STEP 03</div>
-          <div class="howto-col-title">共有</div>
-          <div class="howto-col-desc">生成されたリンクを送るだけ。中身はまだ誰も開けない。</div>
+          <div class="howto-col-title"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>共有</div>
+          <div class="howto-col-desc">生成されたリンクを送るだけ。</div>
         </div>
       </div>
-      <!-- スマホ: 3D カバーフローカルーセル -->
+      <!-- スマホ: 3D カバーフローカルーセル（送る人） -->
       <div class="sender-mob">
         <div class="cflow-wrap">
           <div class="cflow-viewport">
-            <div class="cflow-stage" id="cflow-stage">
-              <div class="cflow-card cf-active" data-ci="0">
+            <div class="cflow-stage">
+              <div class="cflow-card cf-active">
                 <div class="cflow-img">
                   <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                   <div class="cflow-img-label">[ img ]</div>
                 </div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 01</div>
-                  <div class="cflow-title">置く</div>
-                  <div class="cflow-desc">渡したいもの（URL・テキスト・写真・動画）をドロップする。</div>
+                  <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>置く</div>
+                  <div class="cflow-desc">渡したいもの（URL・テキスト・ファイル）をドロップする。</div>
                 </div>
               </div>
-              <div class="cflow-card cf-next" data-ci="1">
+              <div class="cflow-card cf-next">
                 <div class="cflow-img">
                   <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                   <div class="cflow-img-label">[ img ]</div>
                 </div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 02</div>
-                  <div class="cflow-title">時間を決める</div>
-                  <div class="cflow-desc">解読にかかる時間を指定。その時間が、相手の「余白」になる。</div>
+                  <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>時間を決める</div>
+                  <div class="cflow-desc">復号にかかる時間を指定。</div>
                 </div>
               </div>
-              <div class="cflow-card cf-hidden" data-ci="2">
+              <div class="cflow-card cf-hidden">
                 <div class="cflow-img">
                   <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                   <div class="cflow-img-label">[ img ]</div>
                 </div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 03</div>
-                  <div class="cflow-title">共有</div>
-                  <div class="cflow-desc">生成されたリンクを送るだけ。中身はまだ誰も開けない。</div>
+                  <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>共有</div>
+                  <div class="cflow-desc">生成されたリンクを送るだけ。</div>
                 </div>
               </div>
             </div>
-            <button class="cflow-btn cflow-prev" id="cflow-prev" aria-label="前へ">&#9664;</button>
-            <button class="cflow-btn cflow-next" id="cflow-next" aria-label="次へ">&#9654;</button>
+            <button class="cflow-btn cflow-prev" aria-label="前へ">&#9664;</button>
+            <button class="cflow-btn cflow-next" aria-label="次へ">&#9654;</button>
           </div>
-          <div class="cflow-dots" id="cflow-dots">
-            <span class="cflow-dot active" data-ci="0"></span>
-            <span class="cflow-dot" data-ci="1"></span>
-            <span class="cflow-dot" data-ci="2"></span>
+          <div class="cflow-dots">
+            <span class="cflow-dot active"></span>
+            <span class="cflow-dot"></span>
+            <span class="cflow-dot"></span>
           </div>
         </div>
       </div>
@@ -2591,24 +2608,74 @@ ${HEADER_HTML}
 
     <!-- 受け取る人パネル -->
     <div class="howto-panel" id="panel-receiver">
-      <div class="howto-cols">
+      <!-- PC: 3カラムグリッド -->
+      <div class="howto-cols sender-pc">
         <div class="howto-col">
-          <div class="howto-col-img">[ img ]</div>
+          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#3ddc84"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
           <div class="howto-col-step">STEP 01</div>
-          <div class="howto-col-title">開く</div>
-          <div class="howto-col-desc">届いたリンクを開くと、その場で復号がはじまる。</div>
+          <div class="howto-col-title"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>開く</div>
+          <div class="howto-col-desc">リンクを踏むとその場で復号がはじまる。</div>
         </div>
         <div class="howto-col">
-          <div class="howto-col-img">[ img ]</div>
+          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#3ddc84"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
           <div class="howto-col-step">STEP 02</div>
-          <div class="howto-col-title">待つ</div>
-          <div class="howto-col-desc">設定された時間が経つまで待つ。画面を見ている必要はない。</div>
+          <div class="howto-col-title"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>待つ</div>
+          <div class="howto-col-desc">ブラウザを開いたまま待つ。</div>
         </div>
         <div class="howto-col">
-          <div class="howto-col-img">[ img ]</div>
+          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#3ddc84"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
           <div class="howto-col-step">STEP 03</div>
-          <div class="howto-col-title">受け取る</div>
-          <div class="howto-col-desc">時間の末に、中身がようやく姿を現す。</div>
+          <div class="howto-col-title"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>受け取る</div>
+          <div class="howto-col-desc">復号が終わると自動でリンクに遷移する。</div>
+        </div>
+      </div>
+      <!-- スマホ: 3D カバーフローカルーセル（受け取る人） -->
+      <div class="sender-mob">
+        <div class="cflow-wrap">
+          <div class="cflow-viewport">
+            <div class="cflow-stage">
+              <div class="cflow-card cf-active">
+                <div class="cflow-img">
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                  <div class="cflow-img-label">[ img ]</div>
+                </div>
+                <div class="cflow-meta">
+                  <div class="cflow-step">STEP 01</div>
+                  <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>開く</div>
+                  <div class="cflow-desc">リンクを踏むとその場で復号がはじまる。</div>
+                </div>
+              </div>
+              <div class="cflow-card cf-next">
+                <div class="cflow-img">
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <div class="cflow-img-label">[ img ]</div>
+                </div>
+                <div class="cflow-meta">
+                  <div class="cflow-step">STEP 02</div>
+                  <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>待つ</div>
+                  <div class="cflow-desc">ブラウザを開いたまま待つ。</div>
+                </div>
+              </div>
+              <div class="cflow-card cf-hidden">
+                <div class="cflow-img">
+                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                  <div class="cflow-img-label">[ img ]</div>
+                </div>
+                <div class="cflow-meta">
+                  <div class="cflow-step">STEP 03</div>
+                  <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3ddc84" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>受け取る</div>
+                  <div class="cflow-desc">復号が終わると自動でリンクに遷移する。</div>
+                </div>
+              </div>
+            </div>
+            <button class="cflow-btn cflow-prev" aria-label="前へ">&#9664;</button>
+            <button class="cflow-btn cflow-next" aria-label="次へ">&#9654;</button>
+          </div>
+          <div class="cflow-dots">
+            <span class="cflow-dot active"></span>
+            <span class="cflow-dot"></span>
+            <span class="cflow-dot"></span>
+          </div>
         </div>
       </div>
     </div>
@@ -2818,95 +2885,97 @@ function switchHowto(panel, btn) {
 
 // ============================================================
 // 3D カバーフローカルーセル（スマホ版）
+// 送る人・受け取る人の両パネルに適用
 // ============================================================
 (function(){
-  var CF_N = 3;
-  var cfIdx = 0;
-  var cfAutoTimer = null;
-  var cfWheelLock = false;
+  function initCflow(wrap){
+    var CF_N = 3;
+    var cfIdx = 0;
+    var cfAutoTimer = null;
+    var cfWheelLock = false;
 
-  var cfStage = document.getElementById('cflow-stage');
-  if(!cfStage) return;
-  var cfCards = Array.from(cfStage.querySelectorAll('.cflow-card'));
-  var cfDotWrap = document.getElementById('cflow-dots');
-  var cfDots = cfDotWrap ? Array.from(cfDotWrap.querySelectorAll('.cflow-dot')) : [];
-  var cfPrevBtn = document.getElementById('cflow-prev');
-  var cfNextBtn = document.getElementById('cflow-next');
+    var cfStage = wrap.querySelector('.cflow-stage');
+    if(!cfStage) return;
+    var cfCards = Array.from(cfStage.querySelectorAll('.cflow-card'));
+    var cfDots  = Array.from(wrap.querySelectorAll('.cflow-dot'));
+    var cfPrevBtn = wrap.querySelector('.cflow-prev');
+    var cfNextBtn = wrap.querySelector('.cflow-next');
 
-  function cfUpdate(idx){
-    cfCards.forEach(function(card, i){
-      card.classList.remove('cf-active','cf-prev','cf-next','cf-hidden');
-      var rel = ((i - idx) % CF_N + CF_N) % CF_N;
-      if(rel === 0)          card.classList.add('cf-active');
-      else if(rel === CF_N - 1) card.classList.add('cf-prev');  // -1 mod N
-      else if(rel === 1)    card.classList.add('cf-next');
-      else                  card.classList.add('cf-hidden');
-    });
-    cfDots.forEach(function(dot, i){
-      dot.classList.toggle('active', i === idx);
-    });
-  }
-
-  function cfGo(idx){
-    cfIdx = ((idx % CF_N) + CF_N) % CF_N;
-    cfUpdate(cfIdx);
-  }
-
-  function cfStop(){
-    clearInterval(cfAutoTimer);
-    cfAutoTimer = null;
-  }
-
-  function cfManual(idx){
-    cfStop();
-    cfGo(idx);
-  }
-
-  // 自動再生（操作で完全停止・再開しない）
-  cfAutoTimer = setInterval(function(){
-    cfGo((cfIdx + 1) % CF_N);
-  }, 3000);
-
-  // ボタン
-  if(cfPrevBtn) cfPrevBtn.addEventListener('click', function(){
-    cfManual((cfIdx - 1 + CF_N) % CF_N);
-  });
-  if(cfNextBtn) cfNextBtn.addEventListener('click', function(){
-    cfManual((cfIdx + 1) % CF_N);
-  });
-
-  // ドット
-  cfDots.forEach(function(dot, i){
-    dot.addEventListener('click', function(){ cfManual(i); });
-  });
-
-  // 脇カードクリックで移動
-  cfCards.forEach(function(card, i){
-    card.addEventListener('click', function(){
-      if(i !== cfIdx) cfManual(i);
-    });
-  });
-
-  // スワイプ
-  var cfTouchX = 0;
-  cfStage.addEventListener('touchstart', function(e){
-    cfTouchX = e.touches[0].clientX;
-  }, {passive:true});
-  cfStage.addEventListener('touchend', function(e){
-    var dx = e.changedTouches[0].clientX - cfTouchX;
-    if(Math.abs(dx) > 40){
-      cfManual(dx < 0 ? (cfIdx + 1) % CF_N : (cfIdx - 1 + CF_N) % CF_N);
+    function cfUpdate(idx){
+      cfCards.forEach(function(card, i){
+        card.classList.remove('cf-active','cf-prev','cf-next','cf-hidden');
+        var rel = ((i - idx) % CF_N + CF_N) % CF_N;
+        if(rel === 0)             card.classList.add('cf-active');
+        else if(rel === CF_N - 1) card.classList.add('cf-prev');
+        else if(rel === 1)        card.classList.add('cf-next');
+        else                      card.classList.add('cf-hidden');
+      });
+      cfDots.forEach(function(dot, i){
+        dot.classList.toggle('active', i === idx);
+      });
     }
-  }, {passive:true});
 
-  // ホイール横スクロール（ロック付き）
-  cfStage.addEventListener('wheel', function(e){
-    if(Math.abs(e.deltaX) < 10) return;
-    if(cfWheelLock) return;
-    cfWheelLock = true;
-    cfManual(e.deltaX > 0 ? (cfIdx + 1) % CF_N : (cfIdx - 1 + CF_N) % CF_N);
-    setTimeout(function(){ cfWheelLock = false; }, 600);
-  }, {passive:true});
+    function cfGo(idx){
+      cfIdx = ((idx % CF_N) + CF_N) % CF_N;
+      cfUpdate(cfIdx);
+    }
+
+    function cfStop(){
+      clearInterval(cfAutoTimer);
+      cfAutoTimer = null;
+    }
+
+    function cfManual(idx){
+      cfStop();
+      cfGo(idx);
+    }
+
+    // 自動再生（操作で完全停止・再開しない）
+    cfAutoTimer = setInterval(function(){
+      cfGo((cfIdx + 1) % CF_N);
+    }, 3000);
+
+    cfUpdate(cfIdx);
+
+    if(cfPrevBtn) cfPrevBtn.addEventListener('click', function(){
+      cfManual((cfIdx - 1 + CF_N) % CF_N);
+    });
+    if(cfNextBtn) cfNextBtn.addEventListener('click', function(){
+      cfManual((cfIdx + 1) % CF_N);
+    });
+
+    cfDots.forEach(function(dot, i){
+      dot.addEventListener('click', function(){ cfManual(i); });
+    });
+
+    cfCards.forEach(function(card, i){
+      card.addEventListener('click', function(){
+        if(i !== cfIdx) cfManual(i);
+      });
+    });
+
+    var cfTouchX = 0;
+    cfStage.addEventListener('touchstart', function(e){
+      cfTouchX = e.touches[0].clientX;
+    }, {passive:true});
+    cfStage.addEventListener('touchend', function(e){
+      var dx = e.changedTouches[0].clientX - cfTouchX;
+      if(Math.abs(dx) > 40){
+        cfManual(dx < 0 ? (cfIdx + 1) % CF_N : (cfIdx - 1 + CF_N) % CF_N);
+      }
+    }, {passive:true});
+
+    cfStage.addEventListener('wheel', function(e){
+      if(Math.abs(e.deltaX) < 10) return;
+      if(cfWheelLock) return;
+      cfWheelLock = true;
+      cfManual(e.deltaX > 0 ? (cfIdx + 1) % CF_N : (cfIdx - 1 + CF_N) % CF_N);
+      setTimeout(function(){ cfWheelLock = false; }, 600);
+    }, {passive:true});
+  }
+
+  // 送る人・受け取る人 各パネル内の .cflow-wrap を初期化
+  Array.from(document.querySelectorAll('.sender-mob .cflow-wrap')).forEach(initCflow);
 })();
 
 // ============================================================
