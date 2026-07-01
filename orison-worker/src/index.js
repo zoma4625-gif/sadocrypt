@@ -947,6 +947,8 @@ const HERO_BG_CSS = `.hero-canvas{ position:absolute; inset:0; width:100%; heigh
   pointer-events:none;
   z-index:0;
   overflow:hidden;
+  -webkit-mask-image:linear-gradient(to right,black 0%,black calc(50% - 440px),transparent calc(50% - 320px),transparent calc(50% + 320px),black calc(50% + 440px),black 100%);
+  mask-image:linear-gradient(to right,black 0%,black calc(50% - 440px),transparent calc(50% - 320px),transparent calc(50% + 320px),black calc(50% + 440px),black 100%);
 }
 .hero-vignette{
   position:absolute;
@@ -1700,25 +1702,23 @@ ${HEADER_CSS}
 .whats-section{
   width:100%;
   background:#000;
-  padding:100px 24px;
+  padding:160px 24px;
   text-align:center;
 }
 .whats-inner{
-  max-width:1080px;
+  max-width:1200px;
   margin:0 auto;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:64px;
-  text-align:left;
-  align-items:start;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
 }
 .whats-col-eyebrow{
   font-family:'Inter','Noto Sans JP',sans-serif;
-  font-size:13px;
-  font-weight:500;
-  letter-spacing:0.05em;
+  font-size:16px;
+  font-weight:600;
+  letter-spacing:0.08em;
   color:#00ff8c;
-  text-shadow:0 0 4px rgba(0,255,140,.22),0 0 8px rgba(0,255,140,.10);
+  text-shadow:0 0 5px rgba(0,255,140,.28),0 0 10px rgba(0,255,140,.12);
   display:inline-flex;
   align-items:center;
   gap:12px;
@@ -1735,39 +1735,61 @@ ${HEADER_CSS}
 .whats-col-body{
   font-family:'Noto Sans JP',sans-serif;
   font-weight:400;
-  font-size:16px;
-  color:rgba(255,255,255,.82);
-  line-height:1.95;
-  margin-bottom:28px;
+  font-size:18px;
+  color:rgba(255,255,255,.65);
+  line-height:1.9;
+  max-width:780px;
+  width:100%;
+  margin-bottom:64px;
 }
 .whats-link{
   font-family:'Share Tech Mono',monospace;
-  font-size:14px;
+  font-size:15px;
   color:#00ff8c;
   text-decoration:none;
   letter-spacing:.05em;
 }
-.who-item{
-  margin-bottom:24px;
+.whats-links{
+  display:flex;
+  gap:28px;
+  justify-content:center;
+  flex-wrap:wrap;
 }
-.who-item-title{
+.who-grid{
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:22px;
+  margin-bottom:64px;
+}
+.who-card{
+  border:0.5px solid rgba(0,255,140,.2);
+  border-radius:14px;
+  padding:34px 28px;
+  text-align:left;
+}
+.who-card-title{
   font-family:'Noto Sans JP',sans-serif;
-  font-weight:700;
-  font-size:16px;
+  font-weight:500;
+  font-size:18px;
   color:#fff;
-  margin-bottom:6px;
+  margin-bottom:12px;
 }
-.who-item-desc{
+.who-card-desc{
   font-family:'Noto Sans JP',sans-serif;
-  font-size:14px;
-  color:rgba(255,255,255,.82);
+  font-size:15px;
+  color:rgba(255,255,255,.55);
   line-height:1.7;
 }
 @media(max-width:680px){
-  .whats-inner{
-    grid-template-columns:1fr;
-    gap:48px;
-  }
+  .whats-section{padding:90px 20px;}
+  .whats-heading{font-size:26px;}
+  .whats-col-body{font-size:15px;margin-bottom:40px;}
+  .who-grid{grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:40px;}
+  .who-card{padding:22px 18px;}
+  .who-card-title{font-size:15px;}
+  .who-card-desc{font-size:13px;}
+  .whats-links{flex-direction:column;align-items:center;gap:16px;}
 }
 .section-eyebrow{
   font-family:'Inter','Noto Sans JP',sans-serif;
@@ -1784,10 +1806,12 @@ ${HEADER_CSS}
 .whats-heading{
   font-family:'Noto Sans JP',sans-serif;
   font-weight:700;
-  font-size:clamp(20px,3.5vw,32px);
+  font-size:44px;
   color:#fff;
-  line-height:1.6;
-  margin-bottom:36px;
+  line-height:1.4;
+  max-width:980px;
+  width:100%;
+  margin-bottom:32px;
   letter-spacing:.02em;
 }
 .whats-body{
@@ -2098,11 +2122,13 @@ ${HEADER_CSS}
   border:0.5px solid rgba(0,255,140,0.15);
   border-radius:16px;
   overflow:hidden;
-  transition:transform 550ms cubic-bezier(0.32,0.72,0.28,1),
-             opacity 550ms cubic-bezier(0.32,0.72,0.28,1),
-             box-shadow 550ms cubic-bezier(0.32,0.72,0.28,1),
-             border-color 550ms cubic-bezier(0.32,0.72,0.28,1);
+  transition:transform 450ms cubic-bezier(0.32,0.72,0.28,1),
+             opacity 450ms cubic-bezier(0.32,0.72,0.28,1),
+             box-shadow 450ms cubic-bezier(0.32,0.72,0.28,1),
+             border-color 450ms cubic-bezier(0.32,0.72,0.28,1);
   cursor:pointer;
+  will-change:transform;
+  backface-visibility:hidden;
 }
 .cflow-card.cf-active{
   transform:translateX(-50%) translateZ(40px) rotateY(0deg) scale(1);
@@ -2168,7 +2194,7 @@ ${HEADER_CSS}
   flex-direction:row-reverse;
   justify-content:flex-end;
 }
-.cflow-title svg{flex-shrink:0;}
+.cflow-title svg{flex-shrink:0;transform:translateY(2px);}
 .cflow-desc{
   font-family:'Noto Sans JP',sans-serif;
   font-size:12px;
@@ -2495,33 +2521,30 @@ ${HEADER_HTML}
      ============================================================ -->
 <section class="whats-section" id="whats">
   <div class="whats-inner">
-    <div class="whats-col-left">
-      <div class="whats-col-eyebrow">Brake.とは?</div>
-      <div class="whats-heading">Brake.は、タイムロック暗号を使った暗号化Webサービスです。</div>
-      <div class="whats-col-body">URLやテキストを暗号化し、「1分後」「1時間後」「1日後」にしか開けないリンクを生成します。画像、動画、音声、文書なども暗号化できます（最大5MBまで）。</div>
-      <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;">
-        <a href="/time-lock" class="whats-link" style="display:inline-flex;align-items:center;gap:8px;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>タイムロック暗号とは？ →</a>
-        <a href="/philosophy" class="whats-link" style="display:inline-flex;align-items:center;gap:8px;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M21 11.5a8.38 8.38 0 01-9 8.5 8.5 8.5 0 01-3.8-.9L3 20l1.9-5.2A8.38 8.38 0 013 11.5 8.5 8.5 0 0112 3a8.38 8.38 0 019 8.5z"/></svg>なぜ待たせるのか →</a>
+    <div class="whats-col-eyebrow">Brake.とは</div>
+    <div class="whats-heading">Brake.は、タイムロック暗号を使った暗号化Webサービスです。</div>
+    <div class="whats-col-body">URLやテキストを暗号化し、「1分後」「1時間後」「1日後」にしか開けないリンクを生成します。画像、動画、音声、文書なども暗号化できます（最大5MBまで）。</div>
+    <div class="who-grid">
+      <div class="who-card">
+        <div class="who-card-title">コンテンツをちゃんと見てほしい人に。</div>
+        <div class="who-card-desc">閲覧の難易度を上げ、意味のあるコンテンツがスクロールに流されるのを防ぎます。</div>
+      </div>
+      <div class="who-card">
+        <div class="who-card-title">商品のリリースや重大発表に。</div>
+        <div class="who-card-desc">解禁時間を設計し、待つことができる人たちの間でだけ情報が共有されます。</div>
+      </div>
+      <div class="who-card">
+        <div class="who-card-title">知り合いに待つ時間を贈りたい人に。</div>
+        <div class="who-card-desc">情報量にブレーキをかけ、待ってる間にひと呼吸。</div>
+      </div>
+      <div class="who-card">
+        <div class="who-card-title">ほかにも</div>
+        <div class="who-card-desc">使い方は、あなた次第。サプライズやタイムカプセルにも。</div>
       </div>
     </div>
-    <div class="whats-col-right">
-      <div class="whats-col-eyebrow">使われ方のイメージ</div>
-      <div class="who-item">
-        <div class="who-item-title">コンテンツをちゃんと見てほしい人に。</div>
-        <div class="who-item-desc">閲覧の難易度を上げ、意味のあるコンテンツがスクロールに流されるのを防ぎます。</div>
-      </div>
-      <div class="who-item">
-        <div class="who-item-title">商品のリリースや重大発表に。</div>
-        <div class="who-item-desc">解禁時間を設計し、待つことができる人たちの間でだけ情報が共有されます。</div>
-      </div>
-      <div class="who-item">
-        <div class="who-item-title">知り合いに待つ時間を贈りたい人に。</div>
-        <div class="who-item-desc">情報量にブレーキをかけ、待ってる間にひと呼吸。</div>
-      </div>
-      <div class="who-item">
-        <div class="who-item-title">ほかにも</div>
-        <div class="who-item-desc">使い方は、あなた次第。サプライズやタイムカプセルにも。</div>
-      </div>
+    <div class="whats-links">
+      <a href="/time-lock" class="whats-link" style="display:inline-flex;align-items:center;gap:8px;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>タイムロック暗号とは？ →</a>
+      <a href="/philosophy" class="whats-link" style="display:inline-flex;align-items:center;gap:8px;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M21 11.5a8.38 8.38 0 01-9 8.5 8.5 8.5 0 01-3.8-.9L3 20l1.9-5.2A8.38 8.38 0 013 11.5 8.5 8.5 0 0112 3a8.38 8.38 0 019 8.5z"/></svg>なぜ待たせるのか →</a>
     </div>
   </div>
 </section>
@@ -2778,6 +2801,15 @@ function switchHowto(panel, btn) {
   document.querySelectorAll('.howto-toggle-btn').forEach(function(el){ el.classList.remove('active'); });
   document.getElementById('panel-' + panel).classList.add('active');
   btn.classList.add('active');
+  // 受け取る人：初回のみ index 0 にリセットして自動再生を停止（2回目以降は前回の状態を保持）
+  if(panel === 'receiver'){
+    var rWrap = document.querySelector('#panel-receiver .cflow-wrap');
+    if(rWrap && !rWrap._cfFirstShown){
+      rWrap._cfFirstShown = true;
+      if(rWrap._cfStop) rWrap._cfStop();
+      if(rWrap._cfGo)   rWrap._cfGo(0);
+    }
+  }
 }
 
 // ============================================================
@@ -2896,29 +2928,48 @@ function switchHowto(panel, btn) {
 // 送る人・受け取る人の両パネルに適用
 // ============================================================
 (function(){
+  // カード各状態の数値定義（CSSクラスと整合）
+  var S = {
+    active: { tx:   0, tz:  40, ry:   0, sc: 1.00, op: 1.00, zi: 10 },
+    prev:   { tx:-116, tz: -90, ry:  14, sc: 0.92, op: 0.85, zi:  5 },
+    next:   { tx: 116, tz: -90, ry: -14, sc: 0.92, op: 0.85, zi:  5 },
+    hidden: { tx:   0, tz:-180, ry:   0, sc: 0.60, op: 0.00, zi:  1 }
+  };
+  function lerp(a,b,t){ return a+(b-a)*t; }
+  function lerpS(s0,s1,t){
+    return { tx:lerp(s0.tx,s1.tx,t), tz:lerp(s0.tz,s1.tz,t),
+             ry:lerp(s0.ry,s1.ry,t), sc:lerp(s0.sc,s1.sc,t),
+             op:lerp(s0.op,s1.op,t), zi:t<0.5?s0.zi:s1.zi };
+  }
+  function applyS(card, s){
+    card.style.transform = 'translateX(calc(-50% + '+s.tx+'px)) translateZ('+s.tz+'px) rotateY('+s.ry+'deg) scale('+s.sc+')';
+    card.style.opacity   = s.op;
+    card.style.zIndex    = s.zi;
+  }
+
   function initCflow(wrap){
     var CF_N = 3;
     var cfIdx = 0;
     var cfAutoTimer = null;
     var cfWheelLock = false;
 
-    var cfStage = wrap.querySelector('.cflow-stage');
+    var cfStage   = wrap.querySelector('.cflow-stage');
     if(!cfStage) return;
-    var cfCards = Array.from(cfStage.querySelectorAll('.cflow-card'));
-    var cfDots  = Array.from(wrap.querySelectorAll('.cflow-dot'));
+    var cfCards   = Array.from(cfStage.querySelectorAll('.cflow-card'));
+    var cfDots    = Array.from(wrap.querySelectorAll('.cflow-dot'));
     var cfPrevBtn = wrap.querySelector('.cflow-prev');
     var cfNextBtn = wrap.querySelector('.cflow-next');
 
-    function cfUpdate(idx){
+    // CSSクラスだけを更新（inline styleはそのまま）
+    function cfUpdateClasses(idx){
       cfCards.forEach(function(card, i){
         card.classList.remove('cf-active','cf-prev','cf-next','cf-hidden','cf-edge-hide');
-        var rel = ((i - idx) % CF_N + CF_N) % CF_N;
-        if(rel === 0)             card.classList.add('cf-active');
-        else if(rel === CF_N - 1) card.classList.add('cf-prev');
-        else if(rel === 1)        card.classList.add('cf-next');
-        else                      card.classList.add('cf-hidden');
+        var r = ((i - idx) % CF_N + CF_N) % CF_N;
+        if(r === 0)           card.classList.add('cf-active');
+        else if(r === CF_N-1) card.classList.add('cf-prev');
+        else if(r === 1)      card.classList.add('cf-next');
+        else                  card.classList.add('cf-hidden');
       });
-      // 先頭/末尾では隣接ループカードを非表示（チラ見せなし）
       if(idx === 0){
         var p = cfCards.find(function(c){ return c.classList.contains('cf-prev'); });
         if(p) p.classList.add('cf-edge-hide');
@@ -2927,9 +2978,18 @@ function switchHowto(panel, btn) {
         var n = cfCards.find(function(c){ return c.classList.contains('cf-next'); });
         if(n) n.classList.add('cf-edge-hide');
       }
-      cfDots.forEach(function(dot, i){
-        dot.classList.toggle('active', i === idx);
+      cfDots.forEach(function(dot, i){ dot.classList.toggle('active', i === idx); });
+    }
+
+    // inline styleをクリアしてCSSクラスに制御を返す（transition有効）
+    function cfUpdate(idx){
+      cfCards.forEach(function(card){
+        card.style.transition = '';
+        card.style.transform  = '';
+        card.style.opacity    = '';
+        card.style.zIndex     = '';
       });
+      cfUpdateClasses(idx);
     }
 
     function cfGo(idx){
@@ -2947,37 +3007,37 @@ function switchHowto(panel, btn) {
       cfGo(idx);
     }
 
-    // 自動再生（操作で完全停止・再開しない）
-    cfAutoTimer = setInterval(function(){
-      cfGo((cfIdx + 1) % CF_N);
-    }, 3000);
+    // 自動再生（手動操作で完全停止・再開しない）
+    cfAutoTimer = setInterval(function(){ cfGo((cfIdx + 1) % CF_N); }, 3000);
 
     cfUpdate(cfIdx);
 
-    if(cfPrevBtn) cfPrevBtn.addEventListener('click', function(){
-      cfManual((cfIdx - 1 + CF_N) % CF_N);
-    });
-    if(cfNextBtn) cfNextBtn.addEventListener('click', function(){
-      cfManual((cfIdx + 1) % CF_N);
-    });
+    // ボタン：pointerdown で即反応（モバイルの click 300ms 遅延を回避）
+    function addInstantBtn(el, fn){
+      if(!el) return;
+      var fired = false;
+      el.addEventListener('pointerdown', function(){ fired = true; fn(); });
+      // pointerdown が発火しなかった環境のフォールバック
+      el.addEventListener('click', function(){ if(fired){ fired = false; } else { fn(); } });
+    }
+    addInstantBtn(cfPrevBtn, function(){ cfManual((cfIdx - 1 + CF_N) % CF_N); });
+    addInstantBtn(cfNextBtn, function(){ cfManual((cfIdx + 1) % CF_N); });
 
     cfDots.forEach(function(dot, i){
       dot.addEventListener('click', function(){ cfManual(i); });
     });
 
     cfCards.forEach(function(card, i){
-      card.addEventListener('click', function(){
-        if(i !== cfIdx) cfManual(i);
-      });
+      card.addEventListener('click', function(){ if(i !== cfIdx) cfManual(i); });
     });
 
-    // ドラッグ追従タッチ
+    // ── タッチスクラブ（1枚分の遷移を指でなぞる形式）──
     var cfDragX = 0, cfDragY = 0, cfDragging = false, cfDragLocked = false;
 
     cfStage.addEventListener('touchstart', function(e){
-      cfDragX    = e.touches[0].clientX;
-      cfDragY    = e.touches[0].clientY;
-      cfDragging = false;
+      cfDragX     = e.touches[0].clientX;
+      cfDragY     = e.touches[0].clientY;
+      cfDragging  = false;
       cfDragLocked = false;
     }, {passive:true});
 
@@ -2987,47 +3047,80 @@ function switchHowto(panel, btn) {
       var dy = e.touches[0].clientY - cfDragY;
 
       if(!cfDragging){
-        // 最初の数pxで縦/横を判定
         if(Math.abs(dy) > Math.abs(dx) + 3){ cfDragLocked = true; return; }
         if(Math.abs(dx) > 5){ cfDragging = true; } else return;
       }
 
       e.preventDefault();
 
-      // 端では引っ張りなし（クランプ）
-      if(cfIdx === 0 && dx > 0)          dx = 0;
-      if(cfIdx === CF_N - 1 && dx < 0)   dx = 0;
+      var cardW  = cfCards[0] ? cfCards[0].offsetWidth : 220;
+      var rawFrac = -dx / cardW;  // 正=次へ、負=前へ
+      var goNext  = rawFrac >= 0;
 
-      cfStage.style.transition = 'none';
-      cfStage.style.transform  = 'translateX(' + dx + 'px)';
+      // 端では抵抗感（0.3倍クランプ）
+      if(cfIdx === 0          && !goNext) rawFrac *= 0.3;
+      if(cfIdx === CF_N - 1  &&  goNext) rawFrac *= 0.3;
+
+      var frac = Math.min(1, Math.abs(rawFrac));
+
+      // 各カードをスクラブ描画
+      cfCards.forEach(function(card, i){
+        var r = ((i - cfIdx) % CF_N + CF_N) % CF_N;
+        var from, to;
+        if(goNext){
+          if(r === 0)           { from = S.active; to = S.next;   }
+          else if(r === 1)      { from = S.next;   to = S.active; }
+          else if(r === CF_N-1) { from = S.prev;   to = S.hidden; }
+          else                  { from = S.hidden;  to = S.hidden; }
+        } else {
+          if(r === 0)           { from = S.active; to = S.prev;   }
+          else if(r === CF_N-1) { from = S.prev;   to = S.active; }
+          else if(r === 1)      { from = S.next;   to = S.hidden; }
+          else                  { from = S.hidden;  to = S.hidden; }
+        }
+        card.style.transition = 'none';
+        applyS(card, lerpS(from, to, frac));
+      });
     }, {passive:false});
 
     cfStage.addEventListener('touchend', function(e){
       if(!cfDragging){
-        cfStage.style.transform  = '';
-        cfStage.style.transition = '';
-        return;
+        cfUpdate(cfIdx); return;
       }
       cfDragging = false;
 
-      var dx = e.changedTouches[0].clientX - cfDragX;
-      if(cfIdx === 0 && dx > 0)         dx = 0;
-      if(cfIdx === CF_N - 1 && dx < 0)  dx = 0;
+      var dx     = e.changedTouches[0].clientX - cfDragX;
+      var cardW  = cfCards[0] ? cfCards[0].offsetWidth : 220;
+      var rawFrac = -dx / cardW;
+      var goNext  = rawFrac >= 0;
+      var frac    = Math.abs(rawFrac);
 
-      var cardW = cfCards[0] ? cfCards[0].offsetWidth : 220;
+      // 端クランプ後の実効 frac
+      if(cfIdx === 0         && !goNext) frac *= 0.3;
+      if(cfIdx === CF_N - 1  &&  goNext) frac *= 0.3;
 
-      if(Math.abs(dx) > cardW * 0.32){
-        // 閾値超え → ナビゲーション（stage を即リセット、カードCSS遷移が処理）
-        cfStage.style.transition = 'none';
-        cfStage.style.transform  = '';
-        cfManual(dx < 0 ? (cfIdx + 1) % CF_N : (cfIdx - 1 + CF_N) % CF_N);
+      if(frac > 0.35){
+        // 遷移確定：CSSクラスを更新して transition アニメに引き渡す
+        cfIdx = ((( goNext ? cfIdx + 1 : cfIdx - 1) % CF_N) + CF_N) % CF_N;
+        cfStop();
+        cfUpdateClasses(cfIdx);
+        cfCards.forEach(function(card){ card.style.transition = ''; });
+        requestAnimationFrame(function(){
+          cfCards.forEach(function(card){
+            card.style.transform = '';
+            card.style.opacity   = '';
+            card.style.zIndex    = '';
+          });
+        });
       } else {
-        // スナップバック（stage に一時transitionを付けて戻す）
-        cfStage.style.transition = 'transform 280ms cubic-bezier(0.32,0.72,0.28,1)';
-        cfStage.style.transform  = '';
-        cfStage.addEventListener('transitionend', function onSnap(){
-          cfStage.style.transition = '';
-          cfStage.removeEventListener('transitionend', onSnap);
+        // スナップバック：現在の scrub 位置から元のクラス位置へアニメで戻る
+        cfCards.forEach(function(card){ card.style.transition = ''; });
+        requestAnimationFrame(function(){
+          cfCards.forEach(function(card){
+            card.style.transform = '';
+            card.style.opacity   = '';
+            card.style.zIndex    = '';
+          });
         });
       }
     }, {passive:true});
@@ -3039,6 +3132,10 @@ function switchHowto(panel, btn) {
       cfManual(e.deltaX > 0 ? (cfIdx + 1) % CF_N : (cfIdx - 1 + CF_N) % CF_N);
       setTimeout(function(){ cfWheelLock = false; }, 600);
     }, {passive:true});
+
+    // switchHowto（受け取る人初回リセット）から参照できるよう公開
+    wrap._cfGo   = cfGo;
+    wrap._cfStop = cfStop;
   }
 
   // 送る人・受け取る人 各パネル内の .cflow-wrap を初期化
