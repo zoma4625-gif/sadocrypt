@@ -1907,6 +1907,141 @@ ${HEADER_CSS}
 @keyframes panel-fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 
 /* ============================================================
+   ショーケースカルーセル（送る人パネル）
+   ============================================================ */
+.showcase{
+  display:grid;
+  grid-template-columns:1fr 260px;
+  gap:40px;
+  align-items:start;
+}
+.sc-left{min-width:0;}
+.sc-stage{overflow:hidden;border-radius:16px;}
+.sc-track{
+  display:flex;
+  gap:16px;
+  will-change:transform;
+  transition:transform 500ms cubic-bezier(0.4,0,0.2,1);
+}
+.sc-slide{
+  flex-shrink:0;
+  border-radius:12px;
+  background:rgba(255,255,255,0.03);
+  border:0.5px solid rgba(61,220,132,0.25);
+  box-shadow:0 0 30px rgba(61,220,132,0.08);
+  opacity:0.4;
+  transition:opacity 300ms;
+  overflow:hidden;
+}
+.sc-slide.active{opacity:1;}
+.sc-slide-img{
+  aspect-ratio:4/3;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+}
+.sc-slide-icon{color:#3ddc84;}
+.sc-slide-img-label{
+  font-family:'Share Tech Mono',monospace;
+  font-size:11px;
+  color:rgba(255,255,255,.2);
+  letter-spacing:1px;
+}
+.sc-slide-meta{
+  display:none;
+  padding:18px 20px 20px;
+}
+.sc-slide-meta-step{
+  font-family:'Inter','Noto Sans JP',sans-serif;
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:.05em;
+  color:#3ddc84;
+  margin-bottom:6px;
+}
+.sc-slide-meta-title{
+  font-family:'Noto Sans JP',sans-serif;
+  font-weight:700;
+  font-size:16px;
+  color:#fff;
+  margin-bottom:6px;
+}
+.sc-slide-meta-desc{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:13px;
+  color:rgba(255,255,255,.55);
+  line-height:1.7;
+}
+.sc-right{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.sc-item{
+  padding:14px 16px;
+  border-radius:10px;
+  cursor:pointer;
+  transition:background 300ms;
+  background:transparent;
+}
+.sc-item.active{background:rgba(61,220,132,0.08);}
+.sc-item-num{
+  font-family:'Inter',sans-serif;
+  font-size:30px;
+  font-weight:700;
+  line-height:1;
+  color:rgba(61,220,132,0.3);
+  margin-bottom:4px;
+  transition:color 300ms;
+}
+.sc-item.active .sc-item-num{color:#3ddc84;}
+.sc-item-title{
+  font-family:'Noto Sans JP',sans-serif;
+  font-weight:700;
+  font-size:16px;
+  color:rgba(255,255,255,.85);
+  margin-bottom:4px;
+  transition:color 300ms;
+}
+.sc-item.active .sc-item-title{color:#fff;}
+.sc-item-desc{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:13px;
+  color:rgba(255,255,255,.55);
+  line-height:1.7;
+}
+.sc-progress{
+  display:flex;
+  gap:6px;
+  margin-top:20px;
+}
+.sc-bar{
+  flex:1;
+  height:3px;
+  border-radius:2px;
+  overflow:hidden;
+  background:rgba(255,255,255,.15);
+}
+.sc-bar-fill{
+  height:100%;
+  width:0%;
+  border-radius:2px;
+  background:#3ddc84;
+}
+.sc-progress-mob{
+  display:none;
+  margin-top:14px;
+}
+@media(max-width:680px){
+  .showcase{grid-template-columns:1fr;gap:0;}
+  .sc-right{display:none;}
+  .sc-slide-meta{display:block;}
+  .sc-progress-mob{display:flex;}
+}
+
+/* ============================================================
    Why Brake? セクション（黒背景）
    ============================================================ */
 .why-section{
@@ -2217,24 +2352,79 @@ ${HEADER_HTML}
 
     <!-- 送る人パネル -->
     <div class="howto-panel active" id="panel-sender">
-      <div class="howto-cols">
-        <div class="howto-col">
-          <div class="howto-col-img">[ img ]</div>
-          <div class="howto-col-step">STEP 01</div>
-          <div class="howto-col-title">置く</div>
-          <div class="howto-col-desc">渡したいもの（URL・テキスト・写真・動画）をドロップする。</div>
+      <div class="showcase" id="showcase">
+        <!-- 左：画像カルーセル -->
+        <div class="sc-left">
+          <div class="sc-stage" id="sc-stage">
+            <div class="sc-track" id="sc-track">
+              <!-- STEP 01 -->
+              <div class="sc-slide active" data-sc="0">
+                <div class="sc-slide-img">
+                  <svg class="sc-slide-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  <div class="sc-slide-img-label">[ img ]</div>
+                </div>
+                <div class="sc-slide-meta">
+                  <div class="sc-slide-meta-step">STEP 01</div>
+                  <div class="sc-slide-meta-title">置く</div>
+                  <div class="sc-slide-meta-desc">渡したいもの（URL・テキスト・写真・動画）をドロップする。</div>
+                </div>
+              </div>
+              <!-- STEP 02 -->
+              <div class="sc-slide" data-sc="1">
+                <div class="sc-slide-img">
+                  <svg class="sc-slide-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  <div class="sc-slide-img-label">[ img ]</div>
+                </div>
+                <div class="sc-slide-meta">
+                  <div class="sc-slide-meta-step">STEP 02</div>
+                  <div class="sc-slide-meta-title">時間を決める</div>
+                  <div class="sc-slide-meta-desc">解読にかかる時間を指定。その時間が、相手の「余白」になる。</div>
+                </div>
+              </div>
+              <!-- STEP 03 -->
+              <div class="sc-slide" data-sc="2">
+                <div class="sc-slide-img">
+                  <svg class="sc-slide-icon" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                  <div class="sc-slide-img-label">[ img ]</div>
+                </div>
+                <div class="sc-slide-meta">
+                  <div class="sc-slide-meta-step">STEP 03</div>
+                  <div class="sc-slide-meta-title">共有</div>
+                  <div class="sc-slide-meta-desc">生成されたリンクを送るだけ。中身はまだ誰も開けない。</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- モバイル用プログレスバー -->
+          <div class="sc-progress sc-progress-mob" id="sc-progress-mob">
+            <div class="sc-bar"><div class="sc-bar-fill"></div></div>
+            <div class="sc-bar"><div class="sc-bar-fill"></div></div>
+            <div class="sc-bar"><div class="sc-bar-fill"></div></div>
+          </div>
         </div>
-        <div class="howto-col">
-          <div class="howto-col-img">[ img ]</div>
-          <div class="howto-col-step">STEP 02</div>
-          <div class="howto-col-title">時間を決める</div>
-          <div class="howto-col-desc">解読にかかる時間を指定。その時間が、相手の「余白」になる。</div>
-        </div>
-        <div class="howto-col">
-          <div class="howto-col-img">[ img ]</div>
-          <div class="howto-col-step">STEP 03</div>
-          <div class="howto-col-title">共有</div>
-          <div class="howto-col-desc">生成されたリンクを送るだけ。中身はまだ誰も開けない。</div>
+        <!-- 右：STEPリスト（PC） -->
+        <div class="sc-right">
+          <div class="sc-item active" data-sc-item="0">
+            <div class="sc-item-num">01</div>
+            <div class="sc-item-title">置く</div>
+            <div class="sc-item-desc">渡したいもの（URL・テキスト・写真・動画）をドロップする。</div>
+          </div>
+          <div class="sc-item" data-sc-item="1">
+            <div class="sc-item-num">02</div>
+            <div class="sc-item-title">時間を決める</div>
+            <div class="sc-item-desc">解読にかかる時間を指定。その時間が、相手の「余白」になる。</div>
+          </div>
+          <div class="sc-item" data-sc-item="2">
+            <div class="sc-item-num">03</div>
+            <div class="sc-item-title">共有</div>
+            <div class="sc-item-desc">生成されたリンクを送るだけ。中身はまだ誰も開けない。</div>
+          </div>
+          <!-- PC用プログレスバー -->
+          <div class="sc-progress" id="sc-progress-pc">
+            <div class="sc-bar"><div class="sc-bar-fill"></div></div>
+            <div class="sc-bar"><div class="sc-bar-fill"></div></div>
+            <div class="sc-bar"><div class="sc-bar-fill"></div></div>
+          </div>
         </div>
       </div>
     </div>
@@ -2354,6 +2544,105 @@ function switchHowto(panel, btn) {
   document.getElementById('panel-' + panel).classList.add('active');
   btn.classList.add('active');
 }
+
+// ============================================================
+// ショーケースカルーセル
+// ============================================================
+(function(){
+  var SC_GAP = 16;
+  var SC_DURATION = 3000;
+  var scIdx = 0;
+  var scTimer = null;
+  var scHovered = false;
+  var scSlideW = 0;
+  var scStage = document.getElementById('sc-stage');
+  var scTrack = document.getElementById('sc-track');
+  if(!scStage || !scTrack) return;
+  var scSlides = Array.from(document.querySelectorAll('#sc-track .sc-slide'));
+  var scItems = Array.from(document.querySelectorAll('#showcase .sc-item'));
+  var scBarsPC = Array.from(document.querySelectorAll('#sc-progress-pc .sc-bar'));
+  var scBarsMob = Array.from(document.querySelectorAll('#sc-progress-mob .sc-bar'));
+
+  function scInit(){
+    var W = scStage.offsetWidth;
+    scSlideW = Math.round(W * 0.78);
+    scSlides.forEach(function(s){ s.style.width = scSlideW + 'px'; });
+    scTrack.style.marginLeft = Math.round((W - scSlideW) / 2) + 'px';
+    scTrack.style.transition = 'none';
+    scTrack.style.transform = 'translateX(' + (-scIdx * (scSlideW + SC_GAP)) + 'px)';
+  }
+
+  function scSetBars(idx){
+    [scBarsPC, scBarsMob].forEach(function(bars){
+      bars.forEach(function(bar, i){
+        var fill = bar.querySelector('.sc-bar-fill');
+        bar.classList.remove('done', 'active');
+        if(i < idx){
+          fill.style.transition = 'none';
+          fill.style.width = '100%';
+          fill.style.background = 'rgba(61,220,132,0.5)';
+          bar.classList.add('done');
+        } else {
+          fill.style.transition = 'none';
+          fill.style.width = '0%';
+          fill.style.background = '#3ddc84';
+        }
+      });
+      if(bars.length > idx){
+        var activeFill = bars[idx].querySelector('.sc-bar-fill');
+        bars[idx].classList.add('active');
+        requestAnimationFrame(function(){
+          requestAnimationFrame(function(){
+            activeFill.style.transition = 'width ' + SC_DURATION + 'ms linear';
+            activeFill.style.width = '100%';
+          });
+        });
+      }
+    });
+  }
+
+  function scGo(idx, animate){
+    scIdx = idx;
+    scTrack.style.transition = animate ? 'transform 500ms cubic-bezier(0.4,0,0.2,1)' : 'none';
+    scTrack.style.transform = 'translateX(' + (-idx * (scSlideW + SC_GAP)) + 'px)';
+    scSlides.forEach(function(s, i){ s.classList.toggle('active', i === idx); });
+    scItems.forEach(function(el, i){ el.classList.toggle('active', i === idx); });
+    scSetBars(idx);
+    scRestartTimer();
+  }
+
+  function scRestartTimer(){
+    clearTimeout(scTimer);
+    if(!scHovered) scTimer = setTimeout(function(){ scGo((scIdx + 1) % scSlides.length, true); }, SC_DURATION);
+  }
+
+  scItems.forEach(function(item, i){
+    item.addEventListener('click', function(){ scGo(i, true); });
+    item.addEventListener('mouseenter', function(){
+      scHovered = true;
+      clearTimeout(scTimer);
+      if(scIdx !== i) scGo(i, true);
+    });
+    item.addEventListener('mouseleave', function(){
+      scHovered = false;
+      scRestartTimer();
+    });
+  });
+
+  var touchStartX = 0;
+  scStage.addEventListener('touchstart', function(e){ touchStartX = e.touches[0].clientX; }, {passive:true});
+  scStage.addEventListener('touchend', function(e){
+    var dx = e.changedTouches[0].clientX - touchStartX;
+    if(Math.abs(dx) > 40){
+      if(dx < 0 && scIdx < scSlides.length - 1) scGo(scIdx + 1, true);
+      if(dx > 0 && scIdx > 0) scGo(scIdx - 1, true);
+    }
+  }, {passive:true});
+
+  scInit();
+  window.addEventListener('resize', scInit);
+  setTimeout(function(){ scGo(0, false); }, 100);
+})();
 
 // ============================================================
 // クライアントサイド暗号化（CLAUDE.md準拠: 暗号化はブラウザJSで完結）
