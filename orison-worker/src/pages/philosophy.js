@@ -60,7 +60,7 @@ ${HERO_BG_CSS}
 }
 .phil-h1{
   font-family:'Noto Sans JP',sans-serif;
-  font-weight:500;
+  font-weight:700;
   font-size:40px;
   color:#fff;
   line-height:1.3;
@@ -68,8 +68,8 @@ ${HERO_BG_CSS}
 }
 .phil-lead{
   font-family:'Noto Sans JP',sans-serif;
-  font-size:15px;
-  color:rgba(255,255,255,0.55);
+  font-size:16px;
+  color:rgba(255,255,255,0.65);
   line-height:2;
   margin-bottom:60px;
 }
@@ -81,22 +81,24 @@ ${HERO_BG_CSS}
 }
 .phil-body{
   font-family:'Noto Sans JP',sans-serif;
-  font-size:15px;
-  color:rgba(255,255,255,0.72);
+  font-weight:400;
+  font-size:16px;
+  color:rgba(255,255,255,.82);
   line-height:2.1;
   margin-bottom:20px;
 }
 .phil-body-em{
   font-family:'Noto Sans JP',sans-serif;
-  font-size:16px;
+  font-weight:700;
+  font-size:18px;
   color:#fff;
   line-height:2.1;
   margin-bottom:60px;
 }
 .phil-subhead{
   font-family:'Noto Sans JP',sans-serif;
-  font-weight:500;
-  font-size:19px;
+  font-weight:700;
+  font-size:22px;
   color:#fff;
   margin-bottom:20px;
 }
@@ -116,8 +118,8 @@ ${HERO_BG_CSS}
   border-left:1px solid rgba(0,255,140,0.35);
   padding-left:20px;
   font-family:'Noto Sans JP',sans-serif;
-  font-size:15px;
-  color:rgba(255,255,255,0.82);
+  font-size:16px;
+  color:rgba(255,255,255,0.9);
   line-height:1.9;
 }
 .phil-close{
@@ -128,21 +130,21 @@ ${HERO_BG_CSS}
 }
 .phil-close-line1{
   font-family:'Noto Sans JP',sans-serif;
-  font-size:16px;
+  font-size:17px;
   color:rgba(255,255,255,0.72);
   margin-bottom:12px;
 }
 .phil-close-line2{
   font-family:'Noto Sans JP',sans-serif;
-  font-weight:500;
-  font-size:19px;
+  font-weight:700;
+  font-size:22px;
   color:#fff;
   margin-bottom:8px;
 }
 .phil-close-line3{
   font-family:'Noto Sans JP',sans-serif;
-  font-weight:500;
-  font-size:19px;
+  font-weight:700;
+  font-size:22px;
   color:#00ff8c;
 }
 .phil-cta{display:flex;justify-content:center;}
