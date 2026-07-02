@@ -45,6 +45,15 @@ ${HEADER_CSS}
 ${HERO_BG_CSS}
 /* 解説は通常フローで上から。背景の上に乗せる */
 .content-wrap{position:relative;z-index:2;}
+/* 事実カード */
+.tl-fact-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:48px}
+@media(max-width:640px){.tl-fact-grid{grid-template-columns:1fr}}
+.tl-fact-card{border:0.5px solid rgba(0,255,140,0.3);border-radius:8px;background:rgba(0,255,140,0.04);padding:20px 24px}
+.tl-fact-title{font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:16px;color:#fff;margin-bottom:8px;line-height:1.5}
+.tl-fact-desc{font-family:'Noto Sans JP',sans-serif;font-weight:400;font-size:16px;color:rgba(255,255,255,.82);line-height:2}
+/* 締めブロック */
+.tl-close{border-top:0.5px solid rgba(255,255,255,0.08);padding-top:32px;text-align:center;margin-top:64px}
+.tl-close-line2{font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:22px;color:#fff;margin-top:12px;line-height:1.5}
 </style>
 </head>
 <body>
@@ -60,22 +69,40 @@ ${HERO_BG_HTML}
 <main class="content-wrap">
   <div class="tl-eyebrow">WHAT'S TIME-LOCK CRYPTOGRAPHY?</div>
   <h1 class="tl-h1">タイムロック暗号とは</h1>
-  <p class="tl-body">タイムロック暗号（Time-Lock Puzzle）は、「送信者を含む誰も、あらかじめ決められた時間が経過するまで復号できない」ことを数学的に保証する暗号方式です。「情報を未来へ送る」ことを目標に、1996年に Ron Rivest、Adi Shamir、David Wagner によって提案され、技術が確立されました。Rivest と Shamir は、RSA暗号の生みの親でもあります。</p>
-  <p class="tl-body">最新鋭のコンピュータでも解くのに時間がかかる複雑なパズルをその場で生成し、パズルの答えを鍵とした錠前でリンクやファイルを完全にロックします。</p>
+  <p class="tl-body">タイムロック暗号（Time-Lock Puzzle）は、<span style="color:#fff;font-weight:700">「送信者を含む誰も、決められた時間が経過するまで復号できない」</span>ことを数学的に保証する暗号方式です。1996年、暗号学者 Ron Rivest、Adi Shamir、David Wagner によって提案されました。Rivest と Shamir は、RSA暗号の生みの親でもあります。</p>
+  <div class="tl-fact-grid">
+    <div class="tl-fact-card">
+      <div class="tl-fact-title">鍵は、まだ存在しない</div>
+      <div class="tl-fact-desc">復号鍵は、計算が終わるまでこの世のどこにもありません。</div>
+    </div>
+    <div class="tl-fact-card">
+      <div class="tl-fact-title">近道は、数学的に存在しない</div>
+      <div class="tl-fact-desc">並列化もスーパーコンピュータも、この計算には効きません。</div>
+    </div>
+    <div class="tl-fact-card">
+      <div class="tl-fact-title">すべてブラウザで完結する</div>
+      <div class="tl-fact-desc">元のデータも鍵の素材も、サーバーには一度も渡りません。</div>
+    </div>
+  </div>
 
   <h2 class="tl-h2">仕組み</h2>
-  <p class="tl-body">パズルの中身は、シンプルな平方計算のくり返しです。x を二乗して巨大数Nで割り、その余りをまた二乗してNで割る。その余りをまた二乗して…。このプロセスを数万回〜数億回マシンにくり返させることで任意の計算負荷を発生させ、復号までにかかる時間を自由に調整することができます。</p>
+  <p class="tl-body">パズルの中身は、シンプルな平方計算のくり返しです。x を二乗して巨大な数 N で割り、余りを求める。その余りをまた二乗して、また割る。この一歩を、数万回から数億回、機械にくり返させます。</p>
+  <p class="tl-body">計算の回数は、指定された復号時間から逆算して決まります。長く待たせたければ、多く計算させる。<span style="color:#fff;font-weight:700">仕掛けは、それだけです。</span></p>
   <div class="tl-code"><span>x → x² → x⁴ → x⁸ → …&nbsp;(mod N)</span><span class="tl-code-note">N&nbsp;=&nbsp;2048bit&nbsp;(約617桁)</span></div>
 
-  <h2 class="tl-h2">なぜスキップできないのか</h2>
-  <p class="tl-body">計算を速く行うには、マシンを並列化し、複数の計算機やコアで処理を分散させる方法がありますが、タイムロックの逐次計算方式にはこれが効きません。</p>
-  <p class="tl-body">前述の式を見ると、各ステップは一つ前のステップの答えを入力にしているのがわかります。一つ前の答えが分からなければ次に進めないので、並列マシンによる同時並行処理は不可能になっています。</p>
-  <p class="tl-body">結果として、復号にかかる時間はCPUのシングルスレッド性能と設定された計算回数だけに依存することになります。</p>
+  <h2 class="tl-h2">なぜ、スキップできないのか</h2>
+  <p class="tl-body">各ステップの入力は、一つ前のステップの答えです。前の答えが分からなければ、次の計算は始められません。</p>
+  <p class="tl-body">つまりこの計算は、原理的に分担ができません。マシンを1万台並べても、1台で順番に解くのと同じ速さにしかならない。計算力ではなく、<span style="color:#fff;font-weight:700">順序そのものが壁</span>になっています。</p>
+  <p class="tl-body">結果として、復号までの時間を決める要素は、CPU1コアの速度と計算回数の2つだけになります。1コアの速度はコンピュータの中で最も進化の遅い部分であり、だからこそ「待ち時間」の見積もりは大きくは狂いません。</p>
 
   <h2 class="tl-h2">Brake. での実装</h2>
-  <p class="tl-body">Brake. では、暗号化リクエストを受けとるとまずランダムな底 <code class="tl-var">x₀</code> と、2つの巨大な素数 <code class="tl-var">p, q</code> を生成します。さらに <code class="tl-var">p, q</code> の積 <code class="tl-var">N</code> を法（modulus）とした逐次平方パズル（時間鍵）が作成され、ファイルに鍵がかけられます。逐次計算をどれくらい行うかは、指定された復号時間から逆算して決定されます。</p>
-  <p class="tl-body">暗号化プロセスはすべて、ユーザーのブラウザ内（JavaScript の BigInt）だけで完結します。サーバーには暗号化されたデータと、パズルの情報だけが送られ、元データや鍵がサーバーに渡ることはありません。これにより、万が一悪意のある第三者に攻撃を受けても、ファイルの中身が漏洩することはありません。</p>
-  <p class="tl-body">復号が始まると、計算はユーザーのデバイス（PC、スマホ）が行います。</p>
+  <p class="tl-body">Brake. は暗号化のリクエストを受けとると、ランダムな底 <code class="tl-var">x₀</code> と、2つの巨大な素数 <code class="tl-var">p, q</code> を生成します。その積 <code class="tl-var">N</code> を法とした逐次平方パズル——時間鍵——が作られ、データに鍵がかかります。</p>
+  <p class="tl-body">この過程はすべて、ユーザーのブラウザの中（JavaScript の BigInt）だけで完結します。サーバーに送られるのは、暗号化済みのデータとパズルの情報だけ。元のデータも、鍵の素材も、サーバーには一度も渡りません。<span style="color:#fff;font-weight:700">運営者である私たちにも、中身を見る手段がありません。</span></p>
+  <p class="tl-body">復号が始まると、計算を行うのは開く側の端末——PCやスマートフォンです。開けるかどうかを決めるのは、権限でもパスワードでもなく、計算を終えたかどうか。それだけです。</p>
+  <div class="tl-close">
+    <p class="tl-body" style="margin-bottom:0">Brake. を信頼する必要は、ありません。</p>
+    <p class="tl-close-line2">時間を保証しているのは私たちではなく、<span class="hl">計算量</span>だからです。</p>
+  </div>
 </main>
 
 <!-- フッター -->
