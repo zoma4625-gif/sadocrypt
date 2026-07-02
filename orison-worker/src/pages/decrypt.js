@@ -438,6 +438,7 @@ body{
 <script>
 const P=JSON.parse(document.getElementById('puzzle-data').textContent);
 const CACHE_KEY='sadocrypt_cache_'+P.id;
+const RESUME_KEY='brake_resume_'+P.id;
 
 // キャッシュの読み書き（有効期限付きJSON形式）
 // 旧フォーマット（生文字列）・期限切れはともに自動削除して再計算扱いにする
@@ -459,6 +460,25 @@ function writeCache(key,xFinalHex){
     var ttlMs=(Number(P.target_seconds)+30*24*3600)*1000;
     localStorage.setItem(key,JSON.stringify({v:xFinalHex,exp:Date.now()+ttlMs}));
   }catch(e){}
+}
+
+// レジューム用途中保存の読み込み
+// パース失敗・データ不正の場合は null を返してゼロから開始する（壊れた保存で復号不能にならないように）
+function loadResume(){
+  try{
+    var raw=localStorage.getItem(RESUME_KEY);
+    if(!raw) return null;
+    var d=JSON.parse(raw);
+    if(typeof d.x!=='string'||typeof d.i!=='string') return null;
+    var rx=BigInt('0x'+d.x);
+    var ri=BigInt(d.i);
+    // i が 0 以下または total 以上なら無効（保存タイミング的にありえないが念のため）
+    if(ri<=0n||ri>=BigInt(P.cc)) return null;
+    return {x:rx,i:ri};
+  }catch(e){
+    try{localStorage.removeItem(RESUME_KEY);}catch(_){}
+    return null;
+  }
 }
 
 // 復号推定時間が1時間超の場合にのみ警告を表示（キャッシュヒット時はスキップ）
@@ -610,8 +630,9 @@ async function run(){
   const cached=readCache(CACHE_KEY);
   if(cached){
     try{
+      // 完了キャッシュヒット時は途中保存も削除してからスキップ
+      try{localStorage.removeItem(RESUME_KEY);}catch(_){}
       const decBuf=await decryptWithXFinal(cached);
-      // キャッシュヒット時はスピナーを即座に発散させてから結果表示
       startSpinner();
       pendingDoneCallback=function(){showResult(decBuf);};
       triggerCollapse();
@@ -655,8 +676,18 @@ async function run(){
   // 経過時間ベースのchunked setTimeout方式（全ブラウザ対応・UIフリーズなし）
   // 1000回ごとにDate.nowをチェックし、50ms経過していたらイベントループに制御を返す
   // → 高速デバイスは多く回り、低速デバイスは少なく回って自動調整
-  let x=x0;
-  let i=0n;
+
+  // 途中保存（レジューム）を読んで初期値を決定。壊れていればゼロから。
+  const savedResume=loadResume();
+  let x=savedResume?savedResume.x:x0;
+  let i=savedResume?savedResume.i:0n;
+  // レジューム開始時は進捗バーと displayBase を復元値に合わせる
+  if(savedResume){
+    displayBase=i;
+    document.getElementById('pbar').style.width=(Number(i)*100/totalNum).toFixed(2)+'%';
+  }
+  let lastSaveTime=Date.now();
+
   while(i<total){
     const chunkStart=Date.now();
     let c=0;
@@ -671,7 +702,14 @@ async function run(){
     displayBase=i;
     const pct=Number(i)*100/totalNum;
     document.getElementById('pbar').style.width=pct.toFixed(2)+'%';
-    if(i<total) await new Promise(r=>setTimeout(r,0));
+    if(i<total){
+      await new Promise(r=>setTimeout(r,0));
+      // 5秒ごとに途中状態を保存（setItem 失敗は握りつぶす）
+      if(Date.now()-lastSaveTime>=5000){
+        try{localStorage.setItem(RESUME_KEY,JSON.stringify({x:x.toString(16),i:i.toString()}));}catch(_){}
+        lastSaveTime=Date.now();
+      }
+    }
   }
 
   // 完了: ザワめきを止めて正確な値を表示
@@ -682,6 +720,8 @@ async function run(){
 
   const xFinalHex=x.toString(16);
   writeCache(CACHE_KEY,xFinalHex);
+  // 完了したので途中保存を削除
+  try{localStorage.removeItem(RESUME_KEY);}catch(_){}
 
   const decBuf=await decryptWithXFinal(xFinalHex);
 
