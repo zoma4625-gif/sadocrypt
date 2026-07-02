@@ -1125,8 +1125,8 @@ ${HEADER_CSS}
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:center;
-  padding:60px 24px 80px;
+  justify-content:flex-start;
+  padding:max(80px,calc(50vh - 135px)) 24px 80px;
   text-align:center;
 }
 .hero-catch{
@@ -1393,24 +1393,20 @@ ${HEADER_CSS}
    生成結果表示（白カード・入力カードと対に揃える）
    ============================================================ */
 
-/* hero-body を相対基準にする（result-anchor の absolute 配置の基準） */
-/* ※ .hero-body には既に position:relative が設定されているため追加不要 */
-
-/* 結果アンカー：通常フローでは高さ0、中身は絶対配置で浮かせる（押しのけ防止） */
-.result-anchor{
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  top: calc(50% + 200px);
-  width: calc(100% - 48px);
+/* 結果カード外ラッパー（.hero 外・通常フロー）
+   margin-top は JS で動的に計算し、hero 底辺ではなくフォーム直下に配置する。
+   高さは content に委ねる（空のとき = 0、カード挿入後 = カード高さ）。
+   padding は hero-body(0 24px)に合わせてスマホ幅での左右ズレを防ぐ。 */
+#result-section {
+  /* hero-form-wrap 内に移動済み。padding:0 24px は不要（親の幅=560pxをそのまま継承） */
+  margin-top: 40px;         /* form-card 外枠下端〜result-section 外枠上端 40px */
+}
+/* .result-section はすでに width:100% / max-width:540px を持つ。
+   親(#result-section)のpaddingがなくなったので max-width:560px で form-card と幅を揃える */
+#result-section .result-section {
   max-width: 560px;
-  z-index: 3;
-  pointer-events: none; /* 空のときクリックを透過 */
+  margin: 0;
 }
-@media(max-width:640px){
-  .result-anchor{ top: calc(50% + 180px); }
-}
-.result-anchor .result-section{ pointer-events: auto; }
 
 @keyframes card-glow-in{
   0%{ box-shadow:0 0 0 2px rgba(0,255,140,0.6), 0 0 56px rgba(0,255,140,0.7), 0 8px 32px rgba(0,255,140,0.3); }
@@ -2525,7 +2521,7 @@ ${HEADER_HTML}
               <button type="button" class="preset-chip" data-tv="1" data-tu="m">1分</button>
               <button type="button" class="preset-chip" data-tv="5" data-tu="m">5分</button>
             </div>
-            <input type="number" id="tv" value="10" min="1" class="time-val-input" inputmode="numeric" autocomplete="off">
+            <input type="number" id="tv" value="10" min="1" max="2592000" class="time-val-input" inputmode="numeric" autocomplete="off">
             <select id="tu" class="time-unit-select">
               <option value="s">秒</option>
               <option value="m">分</option>
@@ -2537,10 +2533,10 @@ ${HEADER_HTML}
         </form>
         <div id="res"></div>
       </div>
+      <!-- 生成結果：form-card の兄弟・hero-form-wrap(max-width:560px)内に配置して幅と間隔を親に依存させる -->
+      <div id="result-section"></div>
     </div>
 
-    <!-- 生成結果（JS で挿入）: result-anchor で通常フローから外し押しのけを防ぐ -->
-    <div id="result-section" class="result-anchor"></div>
   </div>
 </section>
 
@@ -3257,6 +3253,7 @@ function readFileAsArrayBuffer(file){
 }
 
 const BENCHMARK_SPEED = 376223;
+const MAX_LOCK_S_CLI = 30 * 24 * 60 * 60;  // 30日（無料版上限）
 function calcChainCount(targetSeconds) {
   return Math.floor(targetSeconds * BENCHMARK_SPEED);
 }
@@ -3351,6 +3348,13 @@ fileCancelBtn.addEventListener('click', function(){
   var chips=document.querySelectorAll('.preset-chip');
   var tvEl=document.getElementById('tv');
   var tuEl=document.getElementById('tu');
+  function maxForUnit(u){
+    if(u==='s') return MAX_LOCK_S_CLI;
+    if(u==='m') return Math.floor(MAX_LOCK_S_CLI/60);
+    if(u==='h') return Math.floor(MAX_LOCK_S_CLI/3600);
+    if(u==='d') return 30;
+    return MAX_LOCK_S_CLI;
+  }
   function syncChips(){
     var tv=tvEl.value, tu=tuEl.value;
     chips.forEach(function(c){
@@ -3368,9 +3372,18 @@ fileCancelBtn.addEventListener('click', function(){
     // 全角数字を半角に変換
     var v=tvEl.value.replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0);});
     if(v!==tvEl.value) tvEl.value=v;
+    // 30日上限クランプ
+    var max=maxForUnit(tuEl.value);
+    if(Number(tvEl.value)>max) tvEl.value=max;
     syncChips();
   });
-  tuEl.addEventListener('change',syncChips);
+  tuEl.addEventListener('change',function(){
+    // 単位が変わったら max 属性を更新し、現在値を上限に合わせてクランプ
+    var max=maxForUnit(tuEl.value);
+    tvEl.setAttribute('max',max);
+    if(Number(tvEl.value)>max) tvEl.value=max;
+    syncChips();
+  });
 })();
 
 function clearFileSelection(){
@@ -4174,6 +4187,12 @@ async function doEncrypt(){
   else if(u==='h') s*=3600;
   else if(u==='d') s*=86400;
 
+  if(s > MAX_LOCK_S_CLI){
+    showEncError('解錠時間は最大30日までです');
+    btn.disabled = false;
+    return;
+  }
+
   if(!selectedFile && !contentInput.value.trim()){
     showEncError('URLまたはファイルを指定してください');
     return;
@@ -4329,14 +4348,33 @@ function buildResultSection(resultSection, shareUrl, targetSeconds){
     var qrBtn = document.getElementById('qr-thumb-btn');
     if(qrBtn) qrBtn.addEventListener('click', function(){ showQrModal(shareUrl, targetSeconds); });
     setTimeout(function(){
+      var resEl = document.getElementById('result-section');
       var catchEl = document.querySelector('.hero-catch');
       var headerEl = document.querySelector('.hero-header');
-      if(catchEl){
-        var headerH = headerEl ? headerEl.offsetHeight : 0;
-        var rect = catchEl.getBoundingClientRect();
-        var target = window.scrollY + rect.top - headerH - 24;
-        window.scrollTo({ top: target, behavior:'smooth' });
+      if(!resEl) return;
+      var headerH = headerEl ? headerEl.offsetHeight : 0;
+      var vp = window.innerHeight;
+      var resRect = resEl.getBoundingClientRect();
+      var resAbsTop = window.scrollY + resRect.top;
+      var resAbsBottom = window.scrollY + resRect.bottom;
+      // hero-catch をヘッダー直下(+16px余白)に持ってくるスクロール位置
+      var catchTarget = catchEl
+        ? Math.max(0, window.scrollY + catchEl.getBoundingClientRect().top - headerH - 16)
+        : Math.max(0, resAbsTop - headerH - 16);
+      // catchTarget でスクロールしたとき result-section 下端がビューポート内に収まるか
+      var resBottomInVp = resAbsBottom - catchTarget;
+      var target;
+      if(resBottomInVp <= vp - 16){
+        // 収まる → catch 基準（コピー〜結果まで一望）
+        target = catchTarget;
+      } else if(resRect.height <= vp - headerH - 32){
+        // 収まらない・result カードがビューポートより小さい → 下端をビューポート下端 16px 上に
+        target = Math.max(0, resAbsBottom - vp + 16);
+      } else {
+        // result カード自体がビューポートより大きい → 上端をヘッダー直下に
+        target = Math.max(0, resAbsTop - headerH - 16);
       }
+      window.scrollTo({ top: target, behavior:'smooth' });
     }, 120);
   });
 }
@@ -5257,6 +5295,8 @@ run().catch(function(e){
 // Worker Router
 // ============================================================
 
+const MAX_LOCK_SECONDS = 30 * 24 * 60 * 60;  // 30日（無料版上限）
+
 /**
  * POST /api/save
  * クライアントサイドで暗号化済みのパズルデータを保存する
@@ -5297,6 +5337,8 @@ async function handleSave(request, env) {
             return bad('cc が不正です');
         if (target_seconds !== undefined && (!Number.isFinite(Number(target_seconds)) || Number(target_seconds) < 0))
             return bad('target_seconds が不正です');
+        if (target_seconds !== undefined && Number(target_seconds) > MAX_LOCK_SECONDS)
+            return bad('解錠時間は最大30日までです');
         if (file_name !== undefined && (typeof file_name !== 'string' || file_name.length > 255))
             return bad('file_name が不正です');
         if (mime_type !== undefined && (typeof mime_type !== 'string' || mime_type.length > 100))
@@ -5305,9 +5347,12 @@ async function handleSave(request, env) {
         const puzzleId = uuidv4().slice(0, 8);
 
         // 有効期限: 復号時間 + 1ヶ月（CLAUDE.md準拠）
-        const decryptSeconds = target_seconds > 0
-            ? Math.ceil(target_seconds)
-            : Math.ceil(Number(cc) / 376223);
+        const decryptSeconds = Math.min(
+            target_seconds > 0
+                ? Math.ceil(target_seconds)
+                : Math.ceil(Number(cc) / 376223),
+            MAX_LOCK_SECONDS
+        );
         const oneMonth = 30 * 24 * 60 * 60;
         const ttl = decryptSeconds + oneMonth;
 
