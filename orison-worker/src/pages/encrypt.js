@@ -2114,49 +2114,27 @@ function switchHowto(panel, btn) {
 
 // ============================================================
 // クライアントサイド暗号化（CLAUDE.md準拠: 暗号化はブラウザJSで完結）
+// BigInt計算は crypto-worker.js（Web Worker）で実行
 // ============================================================
 
-function modPow(base, exp, mod) {
-  if(mod===1n)return 0n;
-  let r=1n;base=((base%mod)+mod)%mod;
-  while(exp>0n){if(exp&1n)r=(r*base)%mod;exp>>=1n;base=(base*base)%mod}
-  return r;
-}
-
-function gcd(a,b){a=a<0n?-a:a;b=b<0n?-b:b;while(b){[a,b]=[b,a%b]}return a;}
-function lcm(a,b){return(a/gcd(a,b))*b;}
-
-function randomBigInt(min,max){
-  const range=max-min+1n,bits=range.toString(2).length;
-  let r;
-  do{
-    r=0n;
-    for(let i=0;i<bits;i+=32){const c=crypto.getRandomValues(new Uint32Array(1))[0];r=(r<<32n)|BigInt(c);}
-    r=r&((1n<<BigInt(bits))-1n);
-  }while(r>=range);
-  return r+min;
-}
-
-function isPrime(n,k=15){
-  if(n<2n)return false;if(n===2n||n===3n)return true;if(n%2n===0n)return false;
-  let s=0n,d=n-1n;while(d%2n===0n){s++;d/=2n;}
-  for(let i=0;i<k;i++){
-    const a=randomBigInt(2n,n-2n);let x=modPow(a,d,n);
-    if(x===1n||x===n-1n)continue;
-    let ok=false;
-    for(let j=0n;j<s-1n;j++){x=modPow(x,2n,n);if(x===n-1n){ok=true;break;}}
-    if(!ok)return false;
-  }
-  return true;
-}
-
-function generatePrime(bits){
-  while(true){
-    let n=0n;
-    for(let i=0;i<bits;i+=32){const c=crypto.getRandomValues(new Uint32Array(1))[0];n=(n<<32n)|BigInt(c);}
-    n|=(1n<<BigInt(bits-1))|1n;n&=(1n<<BigInt(bits))-1n;
-    if(isPrime(n))return n;
-  }
+function runCryptoWorker(chainCount) {
+  return new Promise(function(resolve, reject) {
+    if (typeof Worker === 'undefined') {
+      reject(new Error('お使いのブラウザはWeb Workerに対応していません。最新のブラウザをご利用ください。'));
+      return;
+    }
+    const w = new Worker('/crypto-worker.js');
+    w.onmessage = function(e) {
+      w.terminate();
+      if (e.data.error) { reject(new Error(e.data.error)); return; }
+      resolve(e.data);
+    };
+    w.onerror = function(e) {
+      w.terminate();
+      reject(new Error(e.message || 'Worker error'));
+    };
+    w.postMessage({ bits: 1024, chainCount: chainCount });
+  });
 }
 
 function hexToUint8(h){
@@ -2202,49 +2180,31 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
 // テキスト/URL暗号化
 async function encryptContent(content, targetSeconds) {
-  const bits = 1024;
-  const p = generatePrime(bits);
-  const q = generatePrime(bits);
-  const N = p * q;
-  let x0;
-  while(true){x0=randomBigInt(2n,N-2n);if(gcd(x0,N)===1n)break;}
   const chainCount = calcChainCount(targetSeconds);
-  const lambda = lcm(p-1n, q-1n);
-  const exponent = modPow(2n, BigInt(chainCount), lambda);
-  const xFinal = modPow(x0, exponent, N);
-  const xHex = xFinal.toString(16);
-  const xBytes = hexToUint8(xHex);
+  const { x0, N, xFinal } = await runCryptoWorker(chainCount);
+  const xBytes = hexToUint8(xFinal);
   const hash = await crypto.subtle.digest('SHA-256', xBytes);
   const key = await crypto.subtle.importKey('raw', hash, {name:'AES-GCM'}, false, ['encrypt']);
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const encoded = new TextEncoder().encode(content);
   const ciphertext = await crypto.subtle.encrypt({name:'AES-GCM',iv,tagLength:128}, key, encoded);
   return {
-    x0: x0.toString(), N: N.toString(), chainCount,
+    x0: x0, N: N, chainCount,
     iv: uint8ToBase64(iv), ct: uint8ToBase64(new Uint8Array(ciphertext))
   };
 }
 
 // ファイル暗号化（バイナリ対応）
 async function encryptFile(fileBuffer, fileName, mimeType, targetSeconds) {
-  const bits = 1024;
-  const p = generatePrime(bits);
-  const q = generatePrime(bits);
-  const N = p * q;
-  let x0;
-  while(true){x0=randomBigInt(2n,N-2n);if(gcd(x0,N)===1n)break;}
   const chainCount = calcChainCount(targetSeconds);
-  const lambda = lcm(p-1n, q-1n);
-  const exponent = modPow(2n, BigInt(chainCount), lambda);
-  const xFinal = modPow(x0, exponent, N);
-  const xHex = xFinal.toString(16);
-  const xBytes = hexToUint8(xHex);
+  const { x0, N, xFinal } = await runCryptoWorker(chainCount);
+  const xBytes = hexToUint8(xFinal);
   const hash = await crypto.subtle.digest('SHA-256', xBytes);
   const key = await crypto.subtle.importKey('raw', hash, {name:'AES-GCM'}, false, ['encrypt']);
   const iv = crypto.getRandomValues(new Uint8Array(12));
   const ciphertext = await crypto.subtle.encrypt({name:'AES-GCM',iv,tagLength:128}, key, fileBuffer);
   return {
-    x0: x0.toString(), N: N.toString(), chainCount,
+    x0: x0, N: N, chainCount,
     iv: uint8ToBase64(iv), ct: uint8ToBase64(new Uint8Array(ciphertext)),
     is_file: true, file_name: fileName, mime_type: mimeType
   };
