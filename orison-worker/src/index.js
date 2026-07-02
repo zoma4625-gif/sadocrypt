@@ -1737,7 +1737,7 @@ ${HEADER_CSS}
   font-size:18px;
   color:rgba(255,255,255,.65);
   line-height:1.9;
-  max-width:780px;
+  max-width:820px;
   width:100%;
   margin-bottom:64px;
 }
@@ -2423,7 +2423,10 @@ ${HEADER_CSS}
 }
 /* ===== トップへ戻るボタン ===== */
 #brake-top-btn{
-  position:fixed;bottom:28px;right:24px;
+  position:fixed;
+  /* bottom:28px → top指定に変更。ヘッダー高(~92px)+余白 を下限にし貫通を防ぐ */
+  top:max(100px,calc(100vh - 124px));
+  right:24px;
   width:96px;height:96px;border-radius:50%;
   background:#050807;border:1.5px solid rgba(0,255,140,.5);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -2440,7 +2443,7 @@ ${HEADER_CSS}
 #brake-top-btn .btn-logo span{color:#00ff8c;}
 #brake-top-btn .btn-sub{font-family:'Noto Sans JP',sans-serif;font-size:9.5px;color:rgba(255,255,255,.5);margin-top:4px;letter-spacing:.04em;}
 @media(max-width:680px){
-  #brake-top-btn{width:72px;height:72px;bottom:20px;right:16px;}
+  #brake-top-btn{width:72px;height:72px;top:max(84px,calc(100vh - 92px));right:16px;}
   #brake-top-btn .btn-logo{font-size:10px;}
   #brake-top-btn .btn-sub{font-size:8px;}
 }
