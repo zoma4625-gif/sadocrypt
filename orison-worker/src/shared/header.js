@@ -161,7 +161,7 @@ export const HEADER_HTML = `  <!-- モバイルメニューオーバーレイ（
     <div class="mobile-menu-links">
       <a href="/#howto" id="mmlink-howto">使い方</a>
       <a href="/time-lock" id="mmlink-why">仕組み</a>
-      <a href="/philosophy" id="mmlink-phil">思想</a>
+      <a href="/philosophy" id="mmlink-phil">なぜ？</a>
       <a href="/#privacy" id="mmlink-privacy">プライバシー</a>
       <a href="mailto:info@brake.run" id="mmlink-contact">お問い合わせ</a>
     </div>
@@ -174,7 +174,7 @@ export const HEADER_HTML = `  <!-- モバイルメニューオーバーレイ（
     <nav class="hero-nav">
       <a href="/#howto">使い方</a>
       <a href="/time-lock">仕組み</a>
-      <a href="/philosophy">思想</a>
+      <a href="/philosophy">なぜ？</a>
       <a href="/#privacy">プライバシー</a>
       <a href="mailto:info@brake.run">お問い合わせ</a>
     </nav>

@@ -32,7 +32,7 @@ ${HEADER_CSS}
 .tl-scrim{position:absolute;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:680px;height:100vh;background:linear-gradient(to right,rgba(0,0,0,0) 0%,rgba(0,0,0,.7) 20%,rgba(0,0,0,.7) 80%,rgba(0,0,0,0) 100%);z-index:1;pointer-events:none;}
 ${HERO_BG_CSS}
 .phil-wrap{
-  max-width:880px;
+  max-width:640px;
   margin:0 auto;
   padding:140px 24px 100px;
   width:100%;
@@ -40,86 +40,110 @@ ${HERO_BG_CSS}
   position:relative;
   z-index:2;
 }
-.phil-eyebrow{
+.phil-label{
   display:flex;
-  justify-content:center;
   align-items:center;
-  gap:10px;
-  font-family:'Share Tech Mono',monospace;
-  font-size:13px;
-  color:#00ff8c;
-  letter-spacing:3px;
-  margin-bottom:32px;
+  gap:8px;
+  margin-bottom:28px;
 }
-.phil-eyebrow-dot{
-  width:9px;
-  height:9px;
+.phil-label-dot{
+  width:8px;
+  height:8px;
   background:#00ff8c;
-  border-radius:0;
   flex-shrink:0;
+}
+.phil-label-text{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:12px;
+  color:#00ff8c;
+  letter-spacing:0.12em;
 }
 .phil-h1{
   font-family:'Noto Sans JP',sans-serif;
-  font-weight:700;
-  font-size:clamp(36px,5.5vw,52px);
+  font-weight:500;
+  font-size:40px;
   color:#fff;
-  text-align:center;
-  line-height:1.45;
-  letter-spacing:-0.01em;
+  line-height:1.3;
   margin-bottom:28px;
 }
 .phil-lead{
   font-family:'Noto Sans JP',sans-serif;
-  font-size:17px;
-  color:rgba(255,255,255,0.5);
-  text-align:center;
-  line-height:1.9;
-  margin-bottom:64px;
+  font-size:15px;
+  color:rgba(255,255,255,0.55);
+  line-height:2;
+  margin-bottom:60px;
 }
-.phil-cards{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:20px;
-  margin-bottom:64px;
+.phil-div{
+  width:32px;
+  height:1px;
+  background:rgba(0,255,140,0.5);
+  margin-bottom:40px;
 }
-.phil-card{
-  padding:36px 32px;
-  border-radius:20px;
-}
-.phil-card-normal{
-  background:rgba(255,255,255,0.03);
-  border:0.5px solid rgba(255,255,255,0.1);
-}
-.phil-card-brake{
-  background:rgba(0,255,140,0.06);
-  border:1px solid rgba(0,255,140,0.35);
-  box-shadow:0 0 34px rgba(0,255,140,0.08);
-}
-.phil-card-label{
+.phil-body{
   font-family:'Noto Sans JP',sans-serif;
-  font-size:13px;
-  margin-bottom:24px;
+  font-size:15px;
+  color:rgba(255,255,255,0.72);
+  line-height:2.1;
+  margin-bottom:20px;
 }
-.phil-card-label-normal{color:rgba(255,255,255,0.4);}
-.phil-card-label-brake{color:#00ff8c;}
-.phil-card-item{
+.phil-body-em{
   font-family:'Noto Sans JP',sans-serif;
   font-size:16px;
-  line-height:1.7;
-  padding:14px 0;
-  border-top:1px solid rgba(255,255,255,0.07);
+  color:#fff;
+  line-height:2.1;
+  margin-bottom:60px;
 }
-.phil-card-item:first-child{border-top:none;padding-top:0;}
-.phil-card-item:last-child{padding-bottom:0;}
-.phil-card-normal .phil-card-item{color:rgba(255,255,255,0.65);}
-.phil-card-brake .phil-card-item{color:#fff;border-top-color:rgba(0,255,140,0.12);}
-.phil-close{
+.phil-subhead{
   font-family:'Noto Sans JP',sans-serif;
-  font-size:18px;
-  color:rgba(255,255,255,0.7);
-  text-align:center;
+  font-weight:500;
+  font-size:19px;
+  color:#fff;
+  margin-bottom:20px;
+}
+.phil-list-intro{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:15px;
+  color:rgba(255,255,255,0.5);
+  margin-bottom:24px;
+}
+.phil-list{
+  display:flex;
+  flex-direction:column;
+  gap:22px;
+  margin-bottom:60px;
+}
+.phil-list-item{
+  border-left:1px solid rgba(0,255,140,0.35);
+  padding-left:20px;
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:15px;
+  color:rgba(255,255,255,0.82);
   line-height:1.9;
-  margin-bottom:56px;
+}
+.phil-close{
+  border-top:0.5px solid rgba(255,255,255,0.08);
+  padding-top:32px;
+  text-align:center;
+  margin-bottom:60px;
+}
+.phil-close-line1{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:16px;
+  color:rgba(255,255,255,0.72);
+  margin-bottom:12px;
+}
+.phil-close-line2{
+  font-family:'Noto Sans JP',sans-serif;
+  font-weight:500;
+  font-size:19px;
+  color:#fff;
+  margin-bottom:8px;
+}
+.phil-close-line3{
+  font-family:'Noto Sans JP',sans-serif;
+  font-weight:500;
+  font-size:19px;
+  color:#00ff8c;
 }
 .phil-cta{display:flex;justify-content:center;}
 .phil-cta-btn{
@@ -135,8 +159,8 @@ ${HERO_BG_CSS}
   display:inline-block;
 }
 .phil-cta-btn:hover{opacity:.85;}
-@media(max-width:680px){
-  .phil-cards{grid-template-columns:1fr;}
+@media(max-width:640px){
+  .phil-h1{font-size:32px;}
   .phil-wrap{padding:120px 20px 80px;}
 }
 </style>
@@ -146,30 +170,49 @@ ${HEADER_HTML}
 <div class="tl-bg">${HERO_BG_HTML}</div>
 <div class="tl-scrim"></div>
 <div class="phil-wrap">
-  <div class="phil-eyebrow">
-    <span class="phil-eyebrow-dot"></span>
-    思想
+
+  <div class="phil-label">
+    <span class="phil-label-dot"></span>
+    <span class="phil-label-text">なぜ？</span>
   </div>
-  <h1 class="phil-h1">なぜ、あえて「待たせる」のか。</h1>
-  <p class="phil-lead">すぐに開けることが、あたりまえになった。<br>Brake. は、その逆を選ぶ。</p>
-  <div class="phil-cards">
-    <div class="phil-card phil-card-normal">
-      <div class="phil-card-label phil-card-label-normal">普通のメッセージ</div>
-      <div class="phil-card-item">届いた瞬間に読める</div>
-      <div class="phil-card-item">受け取った側がペースを決める</div>
-      <div class="phil-card-item">情報の重みは内容だけで決まる</div>
-    </div>
-    <div class="phil-card phil-card-brake">
-      <div class="phil-card-label phil-card-label-brake">Brake. を使ったメッセージ</div>
-      <div class="phil-card-item">設定された時間が来ないと読めない</div>
-      <div class="phil-card-item">送った側が「開封のタイミング」を設計できる</div>
-      <div class="phil-card-item">待った時間の分だけ重みが乗る</div>
-    </div>
+
+  <h1 class="phil-h1">なぜ、あえて<br>「待たせる」のか。</h1>
+
+  <p class="phil-lead">届いた瞬間に開ける。<br>それが当たり前になったのは、ほんの20年ほどのことです。</p>
+
+  <div class="phil-div"></div>
+
+  <p class="phil-body">速さは、多くの問題を解決してきました。<br>けれど同時に、「待つ」という選択肢そのものを、私たちから取り上げました。</p>
+  <p class="phil-body">開けるものは、開けてしまう。読めるものは、読んでしまう。<br>これは意志の弱さではありません。すぐ開けられるように作られたものを前に、人は待てない。そういうふうにできています。</p>
+  <p class="phil-body-em">だから Brake. は、<span class="hl">意志に頼らない方法</span>を用意しました。</p>
+
+  <div class="phil-div"></div>
+
+  <p class="phil-subhead">Brake. は、鍵を預かりません。</p>
+  <p class="phil-body">暗号を解く鍵は、決められた量の計算が終わるまで、この世のどこにも存在しません。運営者にも取り出せず、送った本人にすら、途中で開ける手段はありません。</p>
+  <p class="phil-body">時間を保証しているのは、約束でも規約でもなく、計算量です。1996年に暗号学者 Rivest、Shamir、Wagner が示した Time-Lock Puzzle という仕組みを、Brake. はブラウザの上でそのまま動かしています。</p>
+  <p class="phil-body-em">「待たせる」は演出ではなく、<span class="hl">数学的な事実</span>です。</p>
+
+  <div class="phil-div"></div>
+
+  <p class="phil-list-intro">開けられない時間で、できること。</p>
+  <div class="phil-list">
+    <div class="phil-list-item">誕生日の0時ちょうどに開く手紙は、誰にもフライングできません。</div>
+    <div class="phil-list-item">1年後の自分に宛てたメモは、書いた本人にも、先に読み返せません。</div>
+    <div class="phil-list-item">予想や約束に先に封をしておけば、開いた瞬間が、そのまま答え合わせになります。</div>
+    <div class="phil-list-item">勢いのまま書いた言葉に、時差をつけることもできます。届くのは、頭が冷えたあとでかまわないはずです。</div>
   </div>
-  <p class="phil-close">情報が一瞬で消費される時代に、<br>「待つ」という余白を、もう一度。</p>
+
+  <div class="phil-close">
+    <p class="phil-close-line1">速くするための道具は、もう十分にあります。</p>
+    <p class="phil-close-line2">Brake. が引き受けるのは、遅らせること。</p>
+    <p class="phil-close-line3">それだけを、正確にやります。</p>
+  </div>
+
   <div class="phil-cta">
     <a href="/" class="phil-cta-btn">Brake. を試す →</a>
   </div>
+
 </div>
 ${FOOTER}
 <script>
