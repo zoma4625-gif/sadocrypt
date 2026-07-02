@@ -40,6 +40,9 @@ ${HERO_BG_CSS}
   position:relative;
   z-index:2;
 }
+/* ヒーローブロック：中央揃え */
+.phil-hero{text-align:center;}
+.phil-hero .phil-label{justify-content:center;}
 .phil-label{
   display:flex;
   align-items:center;
@@ -73,12 +76,6 @@ ${HERO_BG_CSS}
   line-height:2;
   margin-bottom:60px;
 }
-.phil-div{
-  width:32px;
-  height:1px;
-  background:rgba(0,255,140,0.5);
-  margin-bottom:40px;
-}
 .phil-body{
   font-family:'Noto Sans JP',sans-serif;
   font-weight:400;
@@ -108,20 +105,12 @@ ${HERO_BG_CSS}
   color:rgba(255,255,255,0.5);
   margin-bottom:24px;
 }
-.phil-list{
-  display:flex;
-  flex-direction:column;
-  gap:22px;
-  margin-bottom:60px;
-}
-.phil-list-item{
-  border-left:1px solid rgba(0,255,140,0.35);
-  padding-left:20px;
-  font-family:'Noto Sans JP',sans-serif;
-  font-size:16px;
-  color:rgba(255,255,255,0.9);
-  line-height:1.9;
-}
+/* 2×2 カードグリッド */
+.phil-card-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:60px}
+@media(max-width:480px){.phil-card-grid{grid-template-columns:1fr}}
+.phil-card{border:0.5px solid rgba(0,255,140,0.3);background:rgba(0,255,140,0.04);border-radius:10px;padding:20px 24px}
+.phil-card-title{font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:16px;color:#fff;margin-bottom:8px;line-height:1.5}
+.phil-card-desc{font-family:'Noto Sans JP',sans-serif;font-size:16px;color:rgba(255,255,255,0.9);line-height:1.9}
 .phil-close{
   border-top:0.5px solid rgba(255,255,255,0.08);
   padding-top:32px;
@@ -173,42 +162,62 @@ ${HEADER_HTML}
 <div class="tl-scrim"></div>
 <div class="phil-wrap">
 
-  <div class="phil-label">
-    <span class="phil-label-dot"></span>
-    <span class="phil-label-text">なぜ？</span>
+  <!-- ヒーロー：中央揃え -->
+  <div class="phil-hero">
+    <div class="phil-label">
+      <span class="phil-label-dot"></span>
+      <span class="phil-label-text">なぜ？</span>
+    </div>
+    <h1 class="phil-h1">なぜ、あえて<br>「待たせる」のか。</h1>
+    <p class="phil-lead">届いた瞬間に開けるメッセージが当たり前になったのは、ほんの20年ほどのことです。<br>Brake. は、その反対のもの——<span style="color:#fff;font-weight:700">決められた時間まで、誰にも開けられないメッセージ</span>——を作るためのサービスです。</p>
   </div>
 
-  <h1 class="phil-h1">なぜ、あえて<br>「待たせる」のか。</h1>
+  <!-- セクション① -->
+  <div class="phil-label">
+    <span class="phil-label-dot"></span>
+    <span class="phil-label-text">01 — なぜ必要か</span>
+  </div>
+  <p class="phil-body">すぐに届き、すぐに開けることは、多くの場面で役に立ちます。一方で、開封までの時間を意図的に確保する手段は、ほとんど残されていません。開けられる状態のものを開けずにおくには、受け取った側の意志に頼るしかないのが現状です。</p>
+  <p class="phil-body-em">Brake. が用意したのは、<span class="hl">意志に頼らずに済む方法</span>です。</p>
 
-  <p class="phil-lead">届いた瞬間に開ける。<br>それが当たり前になったのは、ほんの20年ほどのことです。</p>
-
-  <div class="phil-div"></div>
-
-  <p class="phil-body">速さは、多くの問題を解決してきました。<br>けれど同時に、「待つ」という選択肢そのものを、私たちから取り上げました。</p>
-  <p class="phil-body">開けるものは、開けてしまう。読めるものは、読んでしまう。<br>これは意志の弱さではありません。すぐ開けられるように作られたものを前に、人は待てない。そういうふうにできています。</p>
-  <p class="phil-body-em">だから Brake. は、<span class="hl">意志に頼らない方法</span>を用意しました。</p>
-
-  <div class="phil-div"></div>
-
+  <!-- セクション② -->
+  <div class="phil-label">
+    <span class="phil-label-dot"></span>
+    <span class="phil-label-text">02 — なぜ開けられないか</span>
+  </div>
   <p class="phil-subhead">Brake. は、鍵を預かりません。</p>
   <p class="phil-body">暗号を解く鍵は、決められた量の計算が終わるまで、この世のどこにも存在しません。運営者にも取り出せず、送った本人にすら、途中で開ける手段はありません。</p>
-  <p class="phil-body">時間を保証しているのは、約束でも規約でもなく、計算量です。1996年に暗号学者 Rivest、Shamir、Wagner が示した Time-Lock Puzzle という仕組みを、Brake. はブラウザの上でそのまま動かしています。</p>
-  <p class="phil-body-em">「待たせる」は演出ではなく、<span class="hl">数学的な事実</span>です。</p>
+  <p class="phil-body">この時間の保証は、約束や規約によるものではなく、<span class="hl">計算量</span>によるものです。1996年に暗号学者 Rivest、Shamir、Wagner が示した Time-Lock Puzzle という仕組みを、Brake. はブラウザの上でそのまま動かしています。「待たせる」は演出ではなく、<span class="hl">数学的な性質</span>です。</p>
 
-  <div class="phil-div"></div>
-
-  <p class="phil-list-intro">開けられない時間で、できること。</p>
-  <div class="phil-list">
-    <div class="phil-list-item">誕生日の0時ちょうどに開く手紙は、誰にもフライングできません。</div>
-    <div class="phil-list-item">1年後の自分に宛てたメモは、書いた本人にも、先に読み返せません。</div>
-    <div class="phil-list-item">予想や約束に先に封をしておけば、開いた瞬間が、そのまま答え合わせになります。</div>
-    <div class="phil-list-item">勢いのまま書いた言葉に、時差をつけることもできます。届くのは、頭が冷えたあとでかまわないはずです。</div>
+  <!-- セクション③ -->
+  <div class="phil-label">
+    <span class="phil-label-dot"></span>
+    <span class="phil-label-text">03 — なにに使えるか</span>
+  </div>
+  <p class="phil-list-intro">開けられない時間は、たとえば次のように使えます。</p>
+  <div class="phil-card-grid">
+    <div class="phil-card">
+      <div class="phil-card-title">誕生日の0時に開く手紙</div>
+      <div class="phil-card-desc">設定した時刻より前に開ける方法は、誰にもありません。</div>
+    </div>
+    <div class="phil-card">
+      <div class="phil-card-title">1年後の自分へのメモ</div>
+      <div class="phil-card-desc">書いた本人も、先に読み返すことはできません。</div>
+    </div>
+    <div class="phil-card">
+      <div class="phil-card-title">予想や約束の封</div>
+      <div class="phil-card-desc">開いた瞬間が、そのまま答え合わせになります。</div>
+    </div>
+    <div class="phil-card">
+      <div class="phil-card-title">勢いで書いた言葉の時差</div>
+      <div class="phil-card-desc">届くのは、頭が冷えたあとになります。</div>
+    </div>
   </div>
 
   <div class="phil-close">
-    <p class="phil-close-line1">速くするための道具は、もう十分にあります。</p>
-    <p class="phil-close-line2">Brake. が引き受けるのは、遅らせること。</p>
-    <p class="phil-close-line3">それだけを、正確にやります。</p>
+    <p class="phil-close-line1">速くするための道具は、すでに十分にあります。</p>
+    <p class="phil-close-line2">Brake. にできるのは、遅らせることだけです。</p>
+    <p class="phil-close-line3">それを、正確にやります。</p>
   </div>
 
   <div class="phil-cta">
