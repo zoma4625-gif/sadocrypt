@@ -364,6 +364,7 @@ function renderHistory() {
 // ============================================================
 
 const HEADER_CSS = `:root{--brake-green:#00ff8c}
+.hl{color:#00ff8c}
 /* ============================================================
    Brake. ロゴ共通
    ============================================================ */
@@ -1114,6 +1115,8 @@ body{
   background:#000;
 }
 ${HERO_BG_CSS}
+.tl-bg{position:absolute;top:0;left:0;width:100%;height:100vh;overflow:hidden;z-index:0;pointer-events:none;background:#000;}
+.tl-scrim{position:absolute;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:680px;height:100vh;background:linear-gradient(to right,rgba(0,0,0,0) 0%,rgba(0,0,0,.7) 20%,rgba(0,0,0,.7) 80%,rgba(0,0,0,0) 100%);-webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 35%,black 65%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0%,black 35%,black 65%,transparent 100%);z-index:1;pointer-events:none;}
 ${HEADER_CSS}
 .hero-body{
   position:relative;
@@ -1702,7 +1705,7 @@ ${HEADER_CSS}
 .whats-section{
   width:100%;
   background:#000;
-  padding:160px 24px;
+  padding:60px 24px;
   text-align:center;
 }
 .whats-inner{
@@ -1718,7 +1721,7 @@ ${HEADER_CSS}
   font-weight:600;
   letter-spacing:0.08em;
   color:#00ff8c;
-  text-shadow:0 0 5px rgba(0,255,140,.28),0 0 10px rgba(0,255,140,.12);
+  text-shadow:none;
   display:inline-flex;
   align-items:center;
   gap:12px;
@@ -1729,7 +1732,7 @@ ${HEADER_CSS}
   width:10px;
   height:10px;
   background:#00ff8c;
-  box-shadow:0 0 8px rgba(0,255,140,.8);
+  box-shadow:none;
   display:inline-block;
 }
 .whats-col-body{
@@ -1782,7 +1785,7 @@ ${HEADER_CSS}
   line-height:1.7;
 }
 @media(max-width:680px){
-  .whats-section{padding:90px 20px;}
+  .whats-section{padding:60px 20px;}
   .whats-heading{font-size:26px;}
   .whats-col-body{font-size:15px;margin-bottom:40px;}
   .who-grid{grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:40px;}
@@ -1797,7 +1800,7 @@ ${HEADER_CSS}
   font-weight:500;
   color:#00ff8c;
   letter-spacing:0.05em;
-  text-shadow:0 0 4px rgba(0,255,140,.22),0 0 8px rgba(0,255,140,.10);
+  text-shadow:none;
   margin-bottom:28px;
 }
 .eb-prompt{ letter-spacing:0; margin-right:5px; opacity:.85; }
@@ -1828,7 +1831,7 @@ ${HEADER_CSS}
 .howto-section{
   width:100%;
   background:#000;
-  padding:100px 24px;
+  padding:60px 24px;
 }
 .howto-section-inner{
   max-width:1200px;
@@ -1840,7 +1843,7 @@ ${HEADER_CSS}
   font-weight:600;
   color:#00ff8c;
   letter-spacing:0.08em;
-  text-shadow:0 0 5px rgba(0,255,140,.28),0 0 10px rgba(0,255,140,.12);
+  text-shadow:none;
   margin-bottom:20px;
   text-align:center;
 }
@@ -2259,7 +2262,7 @@ ${HEADER_CSS}
 .why-section{
   width:100%;
   background:#000;
-  padding:100px 24px;
+  padding:68px 24px;
 }
 .why-inner{
   max-width:800px;
@@ -2445,6 +2448,7 @@ ${HEADER_CSS}
   #brake-top-btn .btn-logo{font-size:10px;}
   #brake-top-btn .btn-sub{font-size:8px;}
 }
+@media(max-width:767px){ .pc-br{ display:none; } }
 </style>
 </head>
 <body>
@@ -2479,7 +2483,8 @@ ${HEADER_CSS}
      1. ヒーロー
      ============================================================ -->
 <section class="hero">
-${HERO_BG_HTML}
+<div class="tl-bg">${HERO_BG_HTML}</div>
+<div class="tl-scrim"></div>
 
 ${HEADER_HTML}
 
@@ -2545,11 +2550,11 @@ ${HEADER_HTML}
 <section class="whats-section" id="whats">
   <div class="whats-inner">
     <div class="whats-col-eyebrow">Brake.とは</div>
-    <div class="whats-heading">Brake.は、タイムロック暗号を使った暗号化Webサービスです。</div>
-    <div class="whats-col-body">URLやテキストを暗号化し、「1分後」「1時間後」「1日後」にしか開けないリンクを生成します。画像、動画、音声、文書なども暗号化できます（最大5MBまで）。</div>
+    <div class="whats-heading">Brake.は、タイムロック暗号を使った<br class="pc-br">暗号化Webサービスです。</div>
+    <div class="whats-col-body">URLやテキストを暗号化し、「1分後」「1時間後」「1日後」にしか開けないリンクを生成します。<br class="pc-br">画像、動画、音声、文書なども暗号化できます（最大5MBまで）。</div>
     <div class="who-grid">
       <div class="who-card">
-        <div class="who-card-title">コンテンツをちゃんと見てほしい人に。</div>
+        <div class="who-card-title">コンテンツをちゃんと<br class="pc-br">見てほしい人に。</div>
         <div class="who-card-desc">閲覧の難易度を上げ、意味のあるコンテンツがスクロールに流されるのを防ぎます。</div>
       </div>
       <div class="who-card">
@@ -2557,7 +2562,7 @@ ${HEADER_HTML}
         <div class="who-card-desc">解禁時間を設計し、待つことができる人たちの間でだけ情報が共有されます。</div>
       </div>
       <div class="who-card">
-        <div class="who-card-title">知り合いに待つ時間を贈りたい人に。</div>
+        <div class="who-card-title">知り合いに待つ時間を<br class="pc-br">贈りたい人に。</div>
         <div class="who-card-desc">情報量にブレーキをかけ、待ってる間にひと呼吸。</div>
       </div>
       <div class="who-card">
@@ -2577,7 +2582,7 @@ ${HEADER_HTML}
      ============================================================ -->
 <section class="howto-section" id="howto">
   <div class="howto-section-inner">
-    <div class="howto-section-eyebrow"><span class="eb-dot" style="width:14px;height:14px;background:#00ff8c;box-shadow:0 0 12px rgba(0,255,140,.9);display:inline-block;margin-right:14px;vertical-align:middle;border-radius:0"></span>使い方</div>
+    <div class="howto-section-eyebrow"><span class="eb-dot" style="width:14px;height:14px;background:#00ff8c;display:inline-block;margin-right:14px;vertical-align:middle;border-radius:0"></span>使い方</div>
     <h2 class="howto-section-main-heading">置いて、決めて、送る。</h2>
 
     <!-- トグル -->
@@ -2594,7 +2599,7 @@ ${HEADER_HTML}
           <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#00ff8c"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
           <div class="howto-col-step">STEP 01</div>
           <div class="howto-col-title"><span>置く</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-          <div class="howto-col-desc">渡したいもの（URL・テキスト・ファイル）をドロップする。</div>
+          <div class="howto-col-desc">渡したいもの（URL・テキスト・ファイル）を<br class="pc-br">ドロップする。</div>
         </div>
         <div class="howto-col">
           <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#00ff8c"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
@@ -2622,7 +2627,7 @@ ${HEADER_HTML}
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 01</div>
                   <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>置く</div>
-                  <div class="cflow-desc">渡したいもの（URL・テキスト・ファイル）をドロップする。</div>
+                  <div class="cflow-desc">渡したいもの（URL・テキスト・ファイル）を<br class="pc-br">ドロップする。</div>
                 </div>
               </div>
               <div class="cflow-card cf-next">
@@ -2743,14 +2748,14 @@ ${HEADER_HTML}
 <!-- ============================================================
      6. プライバシーセクション（2カラム）
      ============================================================ -->
-<section style="width:100%;background:#000;padding:100px 24px" id="privacy">
+<section style="width:100%;background:#000;padding:60px 24px" id="privacy">
   <div style="max-width:1100px;margin:0 auto">
-    <div class="section-eyebrow" style="margin-bottom:40px"><span class="eb-dot" style="width:10px;height:10px;background:#00ff8c;box-shadow:0 0 8px rgba(0,255,140,.8);display:inline-block;margin-right:12px;vertical-align:middle"></span>プライバシー</div>
+    <div class="section-eyebrow" style="margin-bottom:40px"><span class="eb-dot" style="width:10px;height:10px;background:#00ff8c;display:inline-block;margin-right:12px;vertical-align:middle"></span>プライバシー</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start">
       <!-- 左: ビジュアルプレースホルダ -->
       <div style="border:1px solid rgba(0,255,140,.15);border-radius:16px;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;background:rgba(0,255,140,.02)">
         <div style="text-align:center">
-          <div style="font-family:'Inter','Noto Sans JP',sans-serif;font-size:17px;font-weight:500;color:#00ff8c;letter-spacing:0.05em;margin-bottom:16px;text-shadow:0 0 4px rgba(0,255,140,.22),0 0 8px rgba(0,255,140,.10);display:inline-flex;align-items:center;gap:14px"><span style="width:11px;height:11px;background:#00ff8c;display:inline-block;box-shadow:0 0 8px rgba(0,255,140,.8)"></span>PRIVACY FIRST</div>
+          <div style="font-family:'Inter','Noto Sans JP',sans-serif;font-size:17px;font-weight:500;color:#00ff8c;letter-spacing:0.05em;margin-bottom:16px;display:inline-flex;align-items:center;gap:14px"><span style="width:11px;height:11px;background:#00ff8c;display:inline-block"></span>PRIVACY FIRST</div>
           <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(0,255,140,.15);letter-spacing:.05em">ブラウザ内で完結</div>
         </div>
       </div>
@@ -3098,12 +3103,12 @@ function switchHowto(panel, btn) {
         var r = ((i - cfIdx) % CF_N + CF_N) % CF_N;
         var from, to;
         if(goNext){
-          if(r === 0)           { from = S.active; to = S.next;   }
+          if(r === 0)           { from = S.active; to = S.prev;   }
           else if(r === 1)      { from = S.next;   to = S.active; }
           else if(r === CF_N-1) { from = S.prev;   to = S.hidden; }
           else                  { from = S.hidden;  to = S.hidden; }
         } else {
-          if(r === 0)           { from = S.active; to = S.prev;   }
+          if(r === 0)           { from = S.active; to = S.next;   }
           else if(r === CF_N-1) { from = S.prev;   to = S.active; }
           else if(r === 1)      { from = S.next;   to = S.hidden; }
           else                  { from = S.hidden;  to = S.hidden; }
@@ -4428,7 +4433,7 @@ function doCopiedAnim(){
   var btn = document.getElementById('brake-top-btn');
   if(!btn) return;
   function onScroll(){
-    if(window.pageYOffset > 80){
+    if(window.pageYOffset > window.innerHeight){
       btn.classList.add('visible');
     } else {
       btn.classList.remove('visible');
@@ -4439,6 +4444,13 @@ function doCopiedAnim(){
   btn.addEventListener('click', function(e){
     e.preventDefault();
     window.scrollTo({top:0,behavior:'smooth'});
+    // PC(pointer:fine)のみ、スクロール完了後に入力欄へフォーカス
+    if(window.matchMedia('(pointer:fine)').matches){
+      setTimeout(function(){
+        var inp = document.getElementById('content-input');
+        if(inp) inp.focus();
+      }, 450);
+    }
   });
 })();
 </script>
