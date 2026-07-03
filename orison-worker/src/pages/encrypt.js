@@ -639,7 +639,7 @@ ${HEADER_CSS}
 .whats-section{
   width:100%;
   background:#000;
-  padding:60px 24px;
+  padding:45px 24px;
   text-align:center;
 }
 .whats-inner{
@@ -786,7 +786,7 @@ ${HEADER_CSS}
 .howto-section{
   width:100%;
   background:#000;
-  padding:60px 24px;
+  padding:45px 24px;
 }
 .howto-section-inner{
   max-width:1200px;
@@ -1718,7 +1718,7 @@ ${HEADER_HTML}
 <!-- ============================================================
      6. プライバシーセクション（2カラム）
      ============================================================ -->
-<section style="width:100%;background:#000;padding:60px 24px" id="privacy">
+<section style="width:100%;background:#000;padding:45px 24px" id="privacy">
   <div style="max-width:1100px;margin:0 auto">
     <div class="section-eyebrow" style="margin-bottom:40px"><span class="eb-dot" style="width:10px;height:10px;background:#00ff8c;display:inline-block;margin-right:12px;vertical-align:middle"></span>プライバシー</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start">
