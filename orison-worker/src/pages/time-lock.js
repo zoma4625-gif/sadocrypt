@@ -45,6 +45,15 @@ ${HEADER_CSS}
 ${HERO_BG_CSS}
 /* 解説は通常フローで上から。背景の上に乗せる */
 .content-wrap{position:relative;z-index:2;}
+/* 緑強調を terms と同じ緑太字(#00ff8c + font-weight:600)に統一 */
+.content-wrap .hl{font-weight:600;}
+/* 締めCTAボタン（ダーク・控えめ版） */
+.tl-cta{display:flex;justify-content:center;margin-top:60px;padding-bottom:20px;}
+.tl-cta-btn{background:#000;border:1px solid #00ff8c;padding:14px 28px;border-radius:10px;text-decoration:none;display:inline-flex;align-items:baseline;gap:8px;transition:background .2s,border-color .2s;}
+.tl-cta-btn:hover{background:rgba(0,255,140,.07);border-color:rgba(0,255,140,.9);}
+.tl-cta-logo{font-family:'Orbitron',sans-serif;font-weight:900;font-size:18px;color:#fff;letter-spacing:.02em;line-height:1;}
+.tl-cta-dot{color:#00ff8c;text-shadow:0 0 10px rgba(0,255,140,.6);}
+.tl-cta-text{font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:14px;color:#fff;line-height:1;}
 </style>
 </head>
 <body>
@@ -76,6 +85,12 @@ ${HERO_BG_HTML}
   <p class="tl-body">Brake. では、暗号化リクエストを受けとるとまずランダムな底 <code class="tl-var">x₀</code> と、2つの巨大な素数 <code class="tl-var">p, q</code> を生成します。さらに <code class="tl-var">p, q</code> の積 <code class="tl-var">N</code> を法（modulus）とした逐次平方パズル（時間鍵）が作成され、ファイルに鍵がかけられます。逐次計算をどれくらい行うかは、指定された復号時間から逆算して決定されます。</p>
   <p class="tl-body">暗号化プロセスはすべて、ユーザーのブラウザ内（JavaScript の BigInt）だけで完結します。サーバーには暗号化されたデータと、パズルの情報だけが送られ、<span style="color:#fff;font-weight:700">元データや鍵がサーバーに渡ることはありません。</span>これにより、万が一悪意のある第三者に攻撃を受けても、ファイルの中身が漏洩することはありません。</p>
   <p class="tl-body">復号が始まると、計算はユーザーのデバイス（PC、スマホ）が行います。</p>
+
+  <div class="tl-cta">
+    <a href="/" class="tl-cta-btn">
+      <span class="tl-cta-logo">Brake<span class="tl-cta-dot">.</span></span><span class="tl-cta-text">を試す →</span>
+    </a>
+  </div>
 </main>
 
 <!-- フッター -->

@@ -22,137 +22,92 @@ export const HTML_PHILOSOPHY = `<!DOCTYPE html>
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Noto+Sans+JP:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#000;color:#fff;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;}
 ${HEADER_CSS}
-/* 背景アニメ（/time-lock と同一） */
 .tl-bg{position:absolute;top:0;left:0;width:100%;height:100vh;overflow:hidden;z-index:0;pointer-events:none;background:#000;}
 .tl-scrim{position:absolute;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:680px;height:100vh;background:linear-gradient(to right,rgba(0,0,0,0) 0%,rgba(0,0,0,.7) 20%,rgba(0,0,0,.7) 80%,rgba(0,0,0,0) 100%);z-index:1;pointer-events:none;}
 ${HERO_BG_CSS}
 .phil-wrap{
-  max-width:640px;
+  max-width:760px;
   margin:0 auto;
-  padding:140px 24px 100px;
+  padding:160px 24px 100px;
   width:100%;
   flex:1;
   position:relative;
   z-index:2;
 }
-/* ヒーローブロック：中央揃え */
-.phil-hero{text-align:center;}
-.phil-hero .phil-label{justify-content:center;}
-.phil-label{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  margin-bottom:28px;
-}
-.phil-label-dot{
-  width:8px;
-  height:8px;
-  background:#00ff8c;
-  flex-shrink:0;
-}
-.phil-label-text{
-  font-family:'Noto Sans JP',sans-serif;
-  font-size:12px;
-  color:#00ff8c;
-  letter-spacing:0.12em;
-}
+/* time-lock の .tl-eyebrow と同規格（テキストのみ変更） */
+.tl-eyebrow{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;letter-spacing:3px;color:#00ff8c;text-transform:uppercase;text-shadow:0 0 5px rgba(0,255,140,.3),0 0 9px rgba(0,255,140,.15);display:flex;justify-content:center;align-items:center;gap:12px;margin-bottom:24px}
+.tl-eyebrow::before{content:"";width:10px;height:10px;background:#00ff8c;box-shadow:0 0 8px rgba(0,255,140,.8);display:inline-block}
 .phil-h1{
   font-family:'Noto Sans JP',sans-serif;
   font-weight:700;
   font-size:40px;
   color:#fff;
-  line-height:1.3;
-  margin-bottom:28px;
+  line-height:1.4;
+  margin-bottom:48px;
+  text-align:center;
+  white-space:nowrap;
 }
-.phil-lead{
+/* time-lock と同じ縦線スタイル */
+.phil-h2{
   font-family:'Noto Sans JP',sans-serif;
-  font-size:16px;
-  color:rgba(255,255,255,0.65);
-  line-height:2;
-  margin-bottom:60px;
+  font-weight:700;
+  font-size:20px;
+  color:#fff;
+  line-height:1.5;
+  margin:48px 0 20px;
+  padding-left:14px;
+  border-left:2px solid #00ff8c;
 }
 .phil-body{
   font-family:'Noto Sans JP',sans-serif;
   font-weight:400;
   font-size:16px;
   color:rgba(255,255,255,.82);
-  line-height:2.1;
+  line-height:2;
   margin-bottom:20px;
 }
-.phil-body-em{
-  font-family:'Noto Sans JP',sans-serif;
-  font-weight:700;
-  font-size:18px;
-  color:#fff;
-  line-height:2.1;
-  margin-bottom:60px;
-}
-.phil-subhead{
-  font-family:'Noto Sans JP',sans-serif;
-  font-weight:700;
-  font-size:22px;
-  color:#fff;
-  margin-bottom:20px;
-}
-.phil-list-intro{
-  font-family:'Noto Sans JP',sans-serif;
-  font-size:15px;
-  color:rgba(255,255,255,0.5);
-  margin-bottom:24px;
-}
-/* 2×2 カードグリッド */
-.phil-card-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:60px}
+/* C案カード */
+.phil-card-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:40px;margin-bottom:60px}
 @media(max-width:480px){.phil-card-grid{grid-template-columns:1fr}}
-.phil-card{border:0.5px solid rgba(0,255,140,0.3);background:rgba(0,255,140,0.04);border-radius:10px;padding:20px 24px}
-.phil-card-title{font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:16px;color:#fff;margin-bottom:8px;line-height:1.5}
-.phil-card-desc{font-family:'Noto Sans JP',sans-serif;font-size:16px;color:rgba(255,255,255,0.9);line-height:1.9}
-.phil-close{
-  border-top:0.5px solid rgba(255,255,255,0.08);
-  padding-top:32px;
-  text-align:center;
-  margin-bottom:60px;
-}
-.phil-close-line1{
-  font-family:'Noto Sans JP',sans-serif;
-  font-size:17px;
-  color:rgba(255,255,255,0.72);
-  margin-bottom:12px;
-}
-.phil-close-line2{
-  font-family:'Noto Sans JP',sans-serif;
-  font-weight:700;
-  font-size:22px;
-  color:#fff;
-  margin-bottom:8px;
-}
-.phil-close-line3{
-  font-family:'Noto Sans JP',sans-serif;
-  font-weight:700;
-  font-size:22px;
-  color:#00ff8c;
-}
+.phil-card{background:#0c0c0c;border-left:2px solid #00ff8c;border-radius:0 12px 12px 0;padding:24px 26px}
+.phil-card-title{font-family:'Noto Sans JP',sans-serif;font-weight:500;font-size:15px;color:#fff;margin-bottom:10px}
+.phil-card-desc{font-family:'Noto Sans JP',sans-serif;font-size:14px;color:rgba(255,255,255,.55);line-height:1.9}
 .phil-cta{display:flex;justify-content:center;}
 .phil-cta-btn{
   background:#00ff8c;
-  color:#000;
-  font-family:'Noto Sans JP',sans-serif;
-  font-weight:700;
-  font-size:16px;
+  color:#0a0a0a;
   padding:14px 28px;
   border-radius:10px;
   text-decoration:none;
   transition:opacity .2s;
-  display:inline-block;
+  display:inline-flex;
+  align-items:baseline;
+  gap:8px;
 }
 .phil-cta-btn:hover{opacity:.85;}
+.phil-cta-logo{
+  font-family:'Orbitron',sans-serif;
+  font-weight:900;
+  font-size:18px;
+  color:#0a0a0a;
+  letter-spacing:.02em;
+  line-height:1;
+}
+.phil-cta-text{
+  font-family:'Noto Sans JP',sans-serif;
+  font-weight:700;
+  font-size:14px;
+  color:#0a0a0a;
+  line-height:1;
+}
 @media(max-width:640px){
-  .phil-h1{font-size:32px;}
-  .phil-wrap{padding:120px 20px 80px;}
+  .phil-h1{font-size:28px;white-space:normal;}
+  .phil-wrap{padding:140px 20px 80px;}
 }
 </style>
 </head>
@@ -162,66 +117,48 @@ ${HEADER_HTML}
 <div class="tl-scrim"></div>
 <div class="phil-wrap">
 
-  <!-- ヒーロー：中央揃え -->
-  <div class="phil-hero">
-    <div class="phil-label">
-      <span class="phil-label-dot"></span>
-      <span class="phil-label-text">なぜ？</span>
-    </div>
-    <h1 class="phil-h1">なぜ、あえて<br>「待たせる」のか。</h1>
-    <p class="phil-lead">届いた瞬間に開けるメッセージが当たり前になったのは、ほんの20年ほどのことです。<br>Brake. は、その反対のもの——<span style="color:#fff;font-weight:700">決められた時間まで、誰にも開けられないメッセージ</span>——を作るためのサービスです。</p>
-  </div>
+  <div class="tl-eyebrow">WHY TIME-LOCK CRYPTOGRAPHY?</div>
+  <h1 class="phil-h1">なぜ、あえて「待たせる」のか。</h1>
 
-  <!-- セクション① -->
-  <div class="phil-label">
-    <span class="phil-label-dot"></span>
-    <span class="phil-label-text">01 — なぜ必要か</span>
-  </div>
-  <p class="phil-body">すぐに届き、すぐに開けることは、多くの場面で役に立ちます。一方で、開封までの時間を意図的に確保する手段は、ほとんど残されていません。開けられる状態のものを開けずにおくには、受け取った側の意志に頼るしかないのが現状です。</p>
-  <p class="phil-body-em">Brake. が用意したのは、<span class="hl">意志に頼らずに済む方法</span>です。</p>
+  <p class="phil-body">かつて、何かを見るには、もっと待つ必要がありました。手紙が届くのを待ち、写真が現像されるのを待ち、続きが放送される翌週を待つ。待つことは特別ではなく、あらゆるものに、開くまでの時間が含まれていました。</p>
+  <p class="phil-body">その時間は、ほとんど消えました。今はたいてい、届いた瞬間に開けます。速くなったこと自体は役に立っています。ただ、そのぶん、私たちが一日に触れる情報の量は、処理できる範囲をとうに超えました。次から次へと届き、開き、応え、また次へ。これは意志の弱さではなく、仕組みとして、そうなっています。</p>
+  <p class="phil-body">Brake. は、その流れに一箇所、ブレーキをかけます。決められた時間まで、誰にも開けられないメッセージ。すぐには開けない、ただそれだけのことです。</p>
 
-  <!-- セクション② -->
-  <div class="phil-label">
-    <span class="phil-label-dot"></span>
-    <span class="phil-label-text">02 — なぜ開けられないか</span>
-  </div>
-  <p class="phil-subhead">Brake. は、鍵を預かりません。</p>
-  <p class="phil-body">暗号を解く鍵は、決められた量の計算が終わるまで、この世のどこにも存在しません。運営者にも取り出せず、送った本人にすら、途中で開ける手段はありません。</p>
-  <p class="phil-body">この時間の保証は、約束や規約によるものではなく、<span class="hl">計算量</span>によるものです。1996年に暗号学者 Rivest、Shamir、Wagner が示した Time-Lock Puzzle という仕組みを、Brake. はブラウザの上でそのまま動かしています。「待たせる」は演出ではなく、<span class="hl">数学的な性質</span>です。</p>
+  <h2 class="phil-h2">送る人にとって</h2>
+  <p class="phil-body">すぐに開けられるものは、片手間に消費されていきます。開いて、確かめて、次へ。同じものでも、待って開けたときは、届き方が変わります。すぐ開けられないなら、人はその瞬間に立ち会うことになる。ながら見のついでには開けられません。行列に並んだ店の味が少し特別に感じられるように、待った時間は、中身の価値の一部になります。</p>
+  <p class="phil-body">そして、すぐに開けられないものは、急いでいる人には向きません。待てる人だけが、その先にたどり着きます。それは裏を返せば、同じだけの熱を持った人どうしが集まるということです。待ち時間は、関心の薄い注目をやわらかく遠ざけ、本当に届けたい相手のための時間を守ります。</p>
 
-  <!-- セクション③ -->
-  <div class="phil-label">
-    <span class="phil-label-dot"></span>
-    <span class="phil-label-text">03 — なにに使えるか</span>
-  </div>
-  <p class="phil-list-intro">開けられない時間は、たとえば次のように使えます。</p>
+  <h2 class="phil-h2">受け取る人にとって</h2>
+  <p class="phil-body">開けられるものは、開けるまでどこかに引っかかります。未読、未開封、あとで見ようと思ったまま。手元にあるだけで、少し気になり続けます。Brake. のメッセージには、それがありません。時が来るまで開けようがないので、気にしようがない。</p>
+  <p class="phil-body">鍵を計算しているあいだ、画面はただ待つことになります。その時間は、何かをしなくてもいい時間です。お茶を淹れてもいいし、伸びをしてもいい。目を離していても、計算は勝手に進みます。加速し続ける一日の中に、速くできないものがひとつあること。それは、めずらしく急かされない時間です。</p>
+
+  <h2 class="phil-h2">待つことを、取り戻す</h2>
+  <p class="phil-body">Brake. がしているのは、二つのことです。ひとつは、コンテンツに、かつて待って開いた頃の力を取り戻すこと。もうひとつは、次から次へと処理させられる情報の流れに、ひとつだけブレーキをかけること。</p>
+  <p class="phil-body">送る人は、届けたいものを、届けたい時間ごと手渡せます。受け取る人は、開くまでのあいだ、何もしなくていい時間を受け取ります。速くするための道具は、もう十分にあります。Brake. にできるのは、遅らせることだけです。それを、正確に。</p>
+
   <div class="phil-card-grid">
     <div class="phil-card">
-      <div class="phil-card-title">誕生日の0時に開く手紙</div>
-      <div class="phil-card-desc">設定した時刻より前に開ける方法は、誰にもありません。</div>
+      <div class="phil-card-title">個人から、大切な人へ</div>
+      <div class="phil-card-desc">誕生日や記念日の0時に届く手紙。開ける瞬間に、立ち会える。</div>
     </div>
     <div class="phil-card">
-      <div class="phil-card-title">1年後の自分へのメモ</div>
-      <div class="phil-card-desc">書いた本人も、先に読み返すことはできません。</div>
+      <div class="phil-card-title">発信者から、ファンへ</div>
+      <div class="phil-card-desc">待てる人にだけ、先に届ける。時間をかけた人から、順に受け取る。</div>
     </div>
     <div class="phil-card">
-      <div class="phil-card-title">予想や約束の封</div>
-      <div class="phil-card-desc">開いた瞬間が、そのまま答え合わせになります。</div>
+      <div class="phil-card-title">企業から、世の中へ</div>
+      <div class="phil-card-desc">手間をかけてでも開こうとする、本気の相手にだけ届く。通りすがりの注目は、自然と離れていく。</div>
     </div>
     <div class="phil-card">
-      <div class="phil-card-title">勢いで書いた言葉の時差</div>
-      <div class="phil-card-desc">届くのは、頭が冷えたあとになります。</div>
+      <div class="phil-card-title">いまの自分から、未来の自分へ</div>
+      <div class="phil-card-desc">1年後に開く約束や目標。書いた本人も、先には読み返せない。</div>
     </div>
-  </div>
-
-  <div class="phil-close">
-    <p class="phil-close-line1">速くするための道具は、すでに十分にあります。</p>
-    <p class="phil-close-line2">Brake. にできるのは、遅らせることだけです。</p>
-    <p class="phil-close-line3">それを、正確にやります。</p>
   </div>
 
   <div class="phil-cta">
-    <a href="/" class="phil-cta-btn">Brake. を試す →</a>
+    <a href="/" class="phil-cta-btn">
+      <span class="phil-cta-logo">Brake.</span><span class="phil-cta-text">を試す →</span>
+    </a>
   </div>
 
 </div>

@@ -143,6 +143,7 @@ export const HEADER_CSS = `:root{--brake-green:#00ff8c}
   transition:color .15s;
 }
 .hero-nav a:hover{color:#00ff8c}
+.hero-nav a.nav-active,.mobile-menu-links a.nav-active{color:#00ff8c}
 /* スマホ対応 */
 @media(max-width:767px){
   .hero-header{padding:20px 24px;}
@@ -252,4 +253,15 @@ export const HEADER_JS = `// ===================================================
     if(!ticking){ window.requestAnimationFrame(onScroll); ticking=true; }
   });
   window.addEventListener('resize',function(){ if(!isMobile()) header.style.transform='translateY(0)'; });
+})();
+
+// アクティブナビハイライト（pathname 判定・別ページのみ）
+(function(){
+  var path=window.location.pathname;
+  var map={'/time-lock':'mmlink-why','/philosophy':'mmlink-phil'};
+  if(!map[path]) return;
+  var desk=document.querySelector('.hero-nav a[href="'+path+'"]');
+  if(desk) desk.classList.add('nav-active');
+  var mob=document.getElementById(map[path]);
+  if(mob) mob.classList.add('nav-active');
 })();`;

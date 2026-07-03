@@ -726,6 +726,9 @@ ${HEADER_CSS}
   .who-card-desc{font-size:13px;}
   .whats-links{flex-direction:column;align-items:center;gap:16px;}
 }
+/* 固定ヘッダー高さ分（約86px）だけアンカー着地をずらす */
+#whats,#howto,#privacy{scroll-margin-top:90px}
+@media(max-width:767px){#whats,#howto,#privacy{scroll-margin-top:72px}}
 .section-eyebrow{
   font-family:'Inter','Noto Sans JP',sans-serif;
   font-size:14px;
