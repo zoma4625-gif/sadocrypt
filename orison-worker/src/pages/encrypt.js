@@ -700,9 +700,11 @@ ${HEADER_CSS}
   margin-bottom:64px;
 }
 .who-card{
-  border:0.5px solid rgba(0,255,140,.2);
-  border-radius:14px;
-  padding:34px 28px;
+  background:#0c0c0c;
+  border:none;
+  border-left:2px solid #00ff8c;
+  border-radius:0 12px 12px 0;
+  padding:24px 26px;
   text-align:left;
 }
 .who-card-title{
@@ -723,7 +725,7 @@ ${HEADER_CSS}
   .whats-heading{font-size:26px;}
   .whats-col-body{font-size:15px;margin-bottom:40px;}
   .who-grid{grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:40px;}
-  .who-card{padding:22px 18px;}
+  .who-card{padding:20px 22px;}
   .who-card-title{font-size:15px;}
   .who-card-desc{font-size:13px;}
   .whats-links{flex-direction:column;align-items:center;gap:16px;}
