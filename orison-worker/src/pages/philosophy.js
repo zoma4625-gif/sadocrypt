@@ -14,12 +14,15 @@ export const HTML_PHILOSOPHY = `<!DOCTYPE html>
 <meta property="og:description" content="Brake.の思想。情報が一瞬で消費される時代に、「待つ」という余白をもう一度。">
 <meta property="og:url" content="https://brake.run/philosophy">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="なぜ、待たせるのか | Brake.">
+<meta name="twitter:description" content="Brake.の思想。情報が一瞬で消費される時代に、「待つ」という余白をもう一度。">
 <link rel="canonical" href="https://brake.run/philosophy">
 <link rel="alternate" hreflang="ja" href="https://brake.run/philosophy">
 <link rel="alternate" hreflang="x-default" href="https://brake.run/philosophy">
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"なぜ、待たせるのか","description":"Brake.の思想。情報が一瞬で消費される時代に、「待つ」という余白をもう一度。","url":"https://brake.run/philosophy","inLanguage":"ja","publisher":{"@type":"Organization","name":"Brake."}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">

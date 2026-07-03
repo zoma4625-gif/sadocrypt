@@ -14,6 +14,8 @@ export const HTML_TIME_LOCK = `<!DOCTYPE html>
 <meta property="og:description" content="タイムロック暗号の仕組みを解説。Rivest-Shamir-Wagner方式の逐次2乗計算で、設定した時間が経過しないと復号できない暗号を実現します。">
 <meta property="og:url" content="https://brake.run/time-lock">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="タイムロック暗号とは | Brake.">
+<meta name="twitter:description" content="タイムロック暗号の仕組みを解説。Rivest-Shamir-Wagner方式の逐次2乗計算で、設定した時間が経過しないと復号できない暗号を実現します。">
 <link rel="canonical" href="https://brake.run/time-lock">
 <link rel="alternate" hreflang="ja" href="https://brake.run/time-lock">
 <link rel="alternate" hreflang="x-default" href="https://brake.run/time-lock">

@@ -35,6 +35,7 @@ export async function router(request, env, ctx) {
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://brake.run/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
   <url><loc>https://brake.run/time-lock</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://brake.run/philosophy</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>`;
             return new Response(xml, {
                 headers: { 'Content-Type': 'application/xml;charset=utf-8', 'Cache-Control': 'public, max-age=86400' }

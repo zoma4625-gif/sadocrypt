@@ -14,6 +14,8 @@ export const HTML_ENCRYPT = `<!DOCTYPE html>
 <meta property="og:description" content="ファイルやURLに"時間の鍵"をかける。設定した時間が来るまで誰も解読できない、タイムロック暗号化サービス。">
 <meta property="og:url" content="https://brake.run/">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Brake. – タイムロック暗号化サービス">
+<meta name="twitter:description" content="ファイルやURLに&quot;時間の鍵&quot;をかける。設定した時間が来るまで誰も解読できない、タイムロック暗号化サービス。">
 <link rel="canonical" href="https://brake.run/">
 <link rel="alternate" hreflang="ja" href="https://brake.run/">
 <link rel="alternate" hreflang="x-default" href="https://brake.run/">
@@ -3306,6 +3308,17 @@ function showQrModal(url, targetSeconds){
     timeText.style.cssText='font-family:"Noto Sans JP",sans-serif;font-size:12px;color:#aaa;';
     timeText.textContent='復号 = '+_fmtUnlockTime(targetSeconds);
     modal.appendChild(timeText);
+    var ttlSec=targetSeconds+30*24*60*60;
+    var expiresDate=new Date(Date.now()+ttlSec*1000);
+    var ey=expiresDate.getFullYear();
+    var em=expiresDate.getMonth()+1;
+    var ed=expiresDate.getDate();
+    var ehh=String(expiresDate.getHours()).padStart(2,'0');
+    var emm=String(expiresDate.getMinutes()).padStart(2,'0');
+    var expText=document.createElement('p');
+    expText.style.cssText='font-family:"Noto Sans JP",sans-serif;font-size:11px;color:rgba(0,0,0,0.35);';
+    expText.textContent='有効期限：'+ey+'年'+em+'月'+ed+'日 '+ehh+':'+emm;
+    modal.appendChild(expText);
   }
   overlay.appendChild(modal);
   document.body.appendChild(overlay);

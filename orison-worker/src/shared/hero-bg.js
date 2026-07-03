@@ -93,6 +93,15 @@ export const HERO_BG_JS = `(function(){
   var spinReleased=false, releaseDecayFrames=0;
   var linkGrowFrac=1.0; // スピン終了後: 0=非表示, 1=通常描画
 
+  // === 省電力 & アクセシビリティ ===
+  var rafId=0, animPaused=false;
+  var prefersReducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // OSで「動きを減らす」設定が実行時に変わった場合にも追従
+  window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',function(e){
+    prefersReducedMotion=e.matches;
+    if(!prefersReducedMotion && !animPaused) scheduleFrame();
+  });
+
   function projectSpin(p){
     var a=p._ang0+spinPhase*p._fall;
     var rx=Math.cos(a)*p._rad;
@@ -151,6 +160,12 @@ export const HERO_BG_JS = `(function(){
     linkGrowFrac=0; // スピン中はリンク線を完全非表示
   }
 
+  // アニメのスケジュール（省電力・reduced-motion 両対応）
+  function scheduleFrame(){
+    if(animPaused||prefersReducedMotion||document.hidden||rafId) return;
+    rafId=requestAnimationFrame(function(now){ rafId=0; frame(now); });
+  }
+
   function strokeSegment(src,dst,startFrac,endFrac,op){
     var dx=dst.x-src.x, dy=dst.y-src.y, len=Math.sqrt(dx*dx+dy*dy)||1; var ux=dx/len, uy=dy/len;
     var oSrc=edgeOffset(src,ux,uy)/len, oDst=edgeOffset(dst,-ux,-uy)/len;
@@ -198,7 +213,7 @@ export const HERO_BG_JS = `(function(){
         if(fi>0.002){ctx.fillStyle='rgba('+G+','+fi.toFixed(3)+')';ctx.fillRect(x,y,sz,sz);}
         ctx.restore();
       }
-      requestAnimationFrame(frame);
+      scheduleFrame();
       return; // 常にearly-return: fall-through廃止（spinActive中はリンク線を一切描画しない）
     }
 
@@ -320,9 +335,20 @@ export const HERO_BG_JS = `(function(){
         ctx.restore();
       }
     }
-    requestAnimationFrame(frame);
+    scheduleFrame();
   }
   window.startSpin=startSpin;
   window.releaseSpin=releaseSpin;
-  requestAnimationFrame(frame);
+  // 初期描画: reduced-motion でも1フレーム描いてセルを表示。その後 scheduleFrame() がループ継続を判断する
+  requestAnimationFrame(function(now){ frame(now); });
+  // 非表示タブで省電力停止 / 表示に戻ったら再開
+  document.addEventListener('visibilitychange',function(){
+    if(document.hidden){
+      animPaused=true;
+      if(rafId){ cancelAnimationFrame(rafId); rafId=0; }
+    } else {
+      animPaused=false;
+      scheduleFrame();
+    }
+  });
 })();`;
