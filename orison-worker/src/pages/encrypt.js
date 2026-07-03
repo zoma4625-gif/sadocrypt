@@ -702,17 +702,32 @@ ${HEADER_CSS}
 .who-card{
   background:#0c0c0c;
   border:none;
-  border-left:2px solid #00ff8c;
+  border-left:2px dashed #00ff8c;
   border-radius:0 12px 12px 0;
-  padding:24px 26px;
+  padding:20px 18px;
   text-align:left;
+}
+.who-card-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:8px;
+}
+.who-card-icon{
+  font-size:32px;
+  line-height:1;
+  opacity:.6;
+  flex-shrink:0;
+  pointer-events:none;
+  user-select:none;
 }
 .who-card-title{
   font-family:'Noto Sans JP',sans-serif;
   font-weight:500;
   font-size:18px;
   color:#fff;
-  margin-bottom:12px;
+  margin-bottom:0;
 }
 .who-card-desc{
   font-family:'Noto Sans JP',sans-serif;
@@ -725,7 +740,8 @@ ${HEADER_CSS}
   .whats-heading{font-size:26px;}
   .whats-col-body{font-size:15px;margin-bottom:40px;}
   .who-grid{grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:40px;}
-  .who-card{padding:20px 22px;}
+  .who-card{padding:20px 16px;}
+  .who-card-icon{font-size:26px;}
   .who-card-title{font-size:15px;}
   .who-card-desc{font-size:13px;}
   .whats-links{flex-direction:column;align-items:center;gap:16px;}
@@ -1496,19 +1512,31 @@ ${HEADER_HTML}
     <div class="whats-col-body">URLやテキストを暗号化し、「1分後」「1時間後」「1日後」にしか開けないリンクを生成します。<br class="pc-br">画像、動画、音声、文書なども暗号化できます（最大5MBまで）。</div>
     <div class="who-grid">
       <div class="who-card">
-        <div class="who-card-title">コンテンツをちゃんと<br class="pc-br">見てほしい人に。</div>
+        <div class="who-card-head">
+          <div class="who-card-title">コンテンツをちゃんと<br class="pc-br">見てほしい人に。</div>
+          <span class="who-card-icon">🔍</span>
+        </div>
         <div class="who-card-desc">閲覧の難易度を上げ、意味のあるコンテンツがスクロールに流されるのを防ぎます。</div>
       </div>
       <div class="who-card">
-        <div class="who-card-title">商品のリリースや重大発表に。</div>
+        <div class="who-card-head">
+          <div class="who-card-title">商品のリリースや重大発表に。</div>
+          <span class="who-card-icon">🚀</span>
+        </div>
         <div class="who-card-desc">解禁時間を設計し、待つことができる人たちの間でだけ情報が共有されます。</div>
       </div>
       <div class="who-card">
-        <div class="who-card-title">知り合いに待つ時間を<br class="pc-br">贈りたい人に。</div>
+        <div class="who-card-head">
+          <div class="who-card-title">知り合いに待つ時間を<br class="pc-br">贈りたい人に。</div>
+          <span class="who-card-icon">⏳</span>
+        </div>
         <div class="who-card-desc">情報量にブレーキをかけ、待ってる間にひと呼吸。</div>
       </div>
       <div class="who-card">
-        <div class="who-card-title">ほかにも</div>
+        <div class="who-card-head">
+          <div class="who-card-title">ほかにも</div>
+          <span class="who-card-icon">💡</span>
+        </div>
         <div class="who-card-desc">使い方は、あなた次第。サプライズやタイムカプセルにも。</div>
       </div>
     </div>
