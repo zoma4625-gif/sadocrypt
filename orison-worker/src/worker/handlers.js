@@ -17,7 +17,7 @@ export async function handleSave(request, env) {
             });
         }
 
-        const { x0, N, cc, iv, ct, target_seconds, is_file, file_name, mime_type } = await request.json();
+        const { x0, N, cc, iv, ct, target_seconds, is_file, file_name, mime_type, scene } = await request.json();
 
         // 必須フィールド存在チェック
         if (!x0 || !N || !cc || !iv || !ct) {
@@ -49,6 +49,10 @@ export async function handleSave(request, env) {
         if (mime_type !== undefined && (typeof mime_type !== 'string' || mime_type.length > 100))
             return bad('mime_type が不正です');
 
+        // scene ホワイトリスト検証（リスト外・未指定は "auto" に落とす）
+        const SCENE_LIST = ['auto','flow','rain','rings','candle','moon','pulse','stars','orbit','ripple','weave','wall','dawn'];
+        const safeScene = (typeof scene === 'string' && SCENE_LIST.includes(scene)) ? scene : 'auto';
+
         const puzzleId = uuidv4().slice(0, 8);
 
         // 有効期限: 復号時間 + 1ヶ月（CLAUDE.md準拠）
@@ -71,6 +75,7 @@ export async function handleSave(request, env) {
             iv: iv,
             ct: ct,
             target_seconds: target_seconds || 0,
+            scene: safeScene,
             created: Date.now(),
             expires_at: expiresAt
         };
@@ -141,7 +146,8 @@ export async function handleSharedPuzzle(request, env, puzzleId, htmlDecrypt) {
         ct: puzzle.ct,
         is_file: puzzle.is_file || false,
         file_name: puzzle.file_name || null,
-        mime_type: puzzle.mime_type || null
+        mime_type: puzzle.mime_type || null,
+        scene: puzzle.scene || 'auto'   // 旧データ(sceneなし)は 'auto' 扱い
     });
     const html = htmlDecrypt.replace('__PUZZLE__', () => puzzleJSON);
 

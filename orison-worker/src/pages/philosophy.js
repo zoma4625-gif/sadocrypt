@@ -1,6 +1,5 @@
 import { HEADER_CSS, HEADER_HTML, HEADER_JS } from '../shared/header.js';
 import { FOOTER } from '../shared/footer.js';
-import { HERO_BG_CSS, HERO_BG_HTML, HERO_BG_JS } from '../shared/hero-bg.js';
 
 export const HTML_PHILOSOPHY = `<!DOCTYPE html>
 <html lang="ja">
@@ -25,14 +24,11 @@ export const HTML_PHILOSOPHY = `<!DOCTYPE html>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"なぜ、待たせるのか","description":"Brake.の思想。情報が一瞬で消費される時代に、「待つ」という余白をもう一度。","url":"https://brake.run/philosophy","inLanguage":"ja","publisher":{"@type":"Organization","name":"Brake."}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;color:#fff;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;}
+body{background:linear-gradient(170deg,#faf6ee 0%,#f4eee1 55%,#efe6d5 100%);color:#3c3a36;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;position:relative;overflow-x:hidden;}
 ${HEADER_CSS}
-.tl-bg{position:absolute;top:0;left:0;width:100%;height:100vh;overflow:hidden;z-index:0;pointer-events:none;background:#000;}
-.tl-scrim{position:absolute;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:680px;height:100vh;background:linear-gradient(to right,rgba(0,0,0,0) 0%,rgba(0,0,0,.7) 20%,rgba(0,0,0,.7) 80%,rgba(0,0,0,0) 100%);z-index:1;pointer-events:none;}
-${HERO_BG_CSS}
 .phil-wrap{
   max-width:760px;
   margin:0 auto;
@@ -42,48 +38,47 @@ ${HERO_BG_CSS}
   position:relative;
   z-index:2;
 }
-/* time-lock の .tl-eyebrow と同規格（テキストのみ変更） */
-.tl-eyebrow{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:500;letter-spacing:3px;color:#00ff8c;text-transform:uppercase;text-shadow:0 0 5px rgba(0,255,140,.3),0 0 9px rgba(0,255,140,.15);display:flex;justify-content:center;align-items:center;gap:12px;margin-bottom:24px}
-.tl-eyebrow::before{content:"";width:10px;height:10px;background:#00ff8c;box-shadow:0 0 8px rgba(0,255,140,.8);display:inline-block}
+.tl-eyebrow{font-family:'Inter','Noto Sans JP',sans-serif;font-size:13px;font-weight:500;letter-spacing:3px;color:#c9865e;text-transform:uppercase;display:flex;justify-content:center;align-items:center;gap:12px;margin-bottom:24px}
+.tl-eyebrow::before{content:"";width:10px;height:10px;background:#c9865e;display:inline-block}
 .phil-h1{
   font-family:'Noto Sans JP',sans-serif;
   font-weight:700;
   font-size:40px;
-  color:#fff;
+  color:#3c3a36;
   line-height:1.4;
   margin-bottom:48px;
   text-align:center;
   white-space:nowrap;
 }
-/* time-lock と同じ縦線スタイル */
 .phil-h2{
   font-family:'Noto Sans JP',sans-serif;
   font-weight:700;
   font-size:20px;
-  color:#fff;
+  color:#3c3a36;
   line-height:1.5;
   margin:48px 0 20px;
   padding-left:14px;
-  border-left:2px solid #00ff8c;
+  border-left:2px solid #ef8a63;
 }
 .phil-body{
   font-family:'Noto Sans JP',sans-serif;
   font-weight:400;
   font-size:16px;
-  color:rgba(255,255,255,.82);
+  color:rgba(60,55,48,.75);
   line-height:2;
   margin-bottom:20px;
 }
-/* C案カード */
+/* カードグリッド */
 .phil-card-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:40px;margin-bottom:60px}
 @media(max-width:480px){.phil-card-grid{grid-template-columns:1fr}}
-.phil-card{background:#0c0c0c;border-left:2px solid #00ff8c;border-radius:0 12px 12px 0;padding:24px 26px}
-.phil-card-title{font-family:'Noto Sans JP',sans-serif;font-weight:500;font-size:15px;color:#fff;margin-bottom:10px}
-.phil-card-desc{font-family:'Noto Sans JP',sans-serif;font-size:14px;color:rgba(255,255,255,.55);line-height:1.9}
+.phil-card{background:#fffdf9;border:1px solid rgba(60,55,48,.08);border-radius:16px;border-left:2px solid #ef8a63;padding:24px 26px}
+.phil-card-title{font-family:'Noto Sans JP',sans-serif;font-weight:500;font-size:15px;color:#c9865e;margin-bottom:10px}
+.phil-card-desc{font-family:'Noto Sans JP',sans-serif;font-size:14px;color:rgba(60,55,48,.55);line-height:1.9}
 .phil-cta{display:flex;justify-content:center;}
 .phil-cta-btn{
-  background:#00ff8c;
-  color:#0a0a0a;
+  background:linear-gradient(135deg,#ef8a63 0%,#d99a70 45%,#8fa88f 100%);
+  border:none;
+  color:#fff;
   padding:14px 28px;
   border-radius:10px;
   text-decoration:none;
@@ -94,10 +89,10 @@ ${HERO_BG_CSS}
 }
 .phil-cta-btn:hover{opacity:.85;}
 .phil-cta-logo{
-  font-family:'Orbitron',sans-serif;
-  font-weight:900;
+  font-family:'Inter','Noto Sans JP',sans-serif;
+  font-weight:800;
   font-size:18px;
-  color:#0a0a0a;
+  color:#fff;
   letter-spacing:.02em;
   line-height:1;
 }
@@ -105,7 +100,7 @@ ${HERO_BG_CSS}
   font-family:'Noto Sans JP',sans-serif;
   font-weight:700;
   font-size:14px;
-  color:#0a0a0a;
+  color:#fff;
   line-height:1;
 }
 @media(max-width:640px){
@@ -115,9 +110,9 @@ ${HERO_BG_CSS}
 </style>
 </head>
 <body>
+<div style="position:fixed;top:-140px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(ellipse,rgba(239,138,99,.32) 0%,transparent 68%);pointer-events:none;z-index:0;"></div>
+<div style="position:fixed;bottom:-80px;left:-120px;width:380px;height:380px;border-radius:50%;background:radial-gradient(ellipse,rgba(143,168,143,.26) 0%,transparent 68%);pointer-events:none;z-index:0;"></div>
 ${HEADER_HTML}
-<div class="tl-bg">${HERO_BG_HTML}</div>
-<div class="tl-scrim"></div>
 <div class="phil-wrap">
 
   <div class="tl-eyebrow">WHY TIME-LOCK CRYPTOGRAPHY?</div>
@@ -167,7 +162,6 @@ ${HEADER_HTML}
 </div>
 ${FOOTER}
 <script>
-${HERO_BG_JS}
 ${HEADER_JS}
 </script>
 </body>

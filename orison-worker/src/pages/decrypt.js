@@ -9,6 +9,7 @@ export const HTML_DECRYPT = `<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="/scenes.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 
@@ -366,9 +367,116 @@ body{
   border-color:#00ff8c;
   color:#00ff8c;
 }
+
+/* ============================================================
+   便箋ステージ（明転レイヤー・結果背景）
+   ============================================================ */
+#result-stage{
+  position:fixed;inset:0;z-index:40;
+  background:linear-gradient(160deg,#efe6d8 0%,#e6d9c6 50%,#dccbb2 100%);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+  opacity:0;
+  transition:opacity .8s ease;
+  pointer-events:none;
+}
+#result-stage::before{
+  content:'';
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse at 30% 20%,rgba(255,255,250,.5),transparent 60%);
+  pointer-events:none;
+}
+#result-stage.visible{
+  opacity:1;
+  pointer-events:auto;
+}
+
+/* 便箋カード本体 */
+.letter-card{
+  position:relative;
+  width:100%;max-width:420px;
+  background:rgba(255,250,242,.97);
+  border-radius:12px;
+  padding:24px 24px 18px;
+  box-shadow:0 14px 40px rgba(80,55,25,.22),0 2px 6px rgba(80,55,25,.12);
+  font-family:'Noto Sans JP',sans-serif;
+  z-index:1;
+}
+
+/* 便箋: 本文(テキスト) */
+.letter-body{
+  font-size:15px;line-height:1.9;color:#3a2c1c;
+  min-height:64px;white-space:pre-wrap;word-break:break-word;
+  max-height:50vh;overflow-y:auto;
+}
+
+/* 便箋: URLリンク行 */
+.letter-url-row{
+  background:rgba(90,60,30,.06);border-radius:10px;
+  padding:16px;display:flex;align-items:center;gap:10px;
+}
+.letter-url-text{
+  font-family:'JetBrains Mono',monospace;font-size:12px;
+  color:#3a2c1c;flex:1;min-width:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.letter-url-icon{flex-shrink:0;color:rgba(90,60,30,.5);}
+
+/* 便箋: ファイル名 / サイズ */
+.letter-fname{font-size:12px;color:rgba(58,44,28,.85);font-weight:700;}
+.letter-fsize{font-size:10px;color:rgba(90,60,30,.45);font-family:'JetBrains Mono',monospace;margin-top:2px;}
+
+/* 便箋: その他ファイル行 */
+.letter-file-row{
+  background:rgba(90,60,30,.06);border-radius:10px;
+  padding:18px 16px;display:flex;align-items:center;gap:14px;
+}
+.letter-file-icon{flex-shrink:0;color:rgba(90,60,30,.45);}
+
+/* 便箋: 画像/動画 */
+.letter-media{width:100%;border-radius:8px;max-height:46vh;object-fit:contain;display:block;}
+.letter-video{width:100%;border-radius:8px;max-height:46vh;display:block;}
+
+/* 便箋: 音声 */
+.letter-audio{width:100%;display:block;}
+
+/* 便箋: フッター */
+.letter-foot{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-top:14px;padding-top:12px;
+  border-top:1px solid rgba(90,60,30,.14);
+  gap:8px;flex-wrap:wrap;
+}
+.letter-date{
+  font-family:'JetBrains Mono',monospace;font-size:10px;
+  letter-spacing:.1em;color:rgba(90,60,30,.5);
+  flex-shrink:0;
+}
+.letter-foot-btns{display:flex;gap:8px;flex-shrink:0;}
+
+/* 便箋: ボタン */
+.letter-btn{
+  background:#3a2c1c;border:none;border-radius:8px;
+  color:rgba(255,246,235,.95);font-size:12px;
+  padding:7px 16px;cursor:pointer;
+  font-family:'Noto Sans JP',sans-serif;
+  white-space:nowrap;
+}
+.letter-btn:hover{background:#503d2a;}
+.letter-btn2{
+  background:none;border:1px solid rgba(90,60,30,.3);
+  border-radius:8px;color:rgba(90,60,30,.7);font-size:12px;
+  padding:6px 14px;cursor:pointer;
+  font-family:'Noto Sans JP',sans-serif;
+  white-space:nowrap;
+}
+.letter-btn2:hover{border-color:rgba(90,60,30,.6);color:rgba(90,60,30,1);}
 </style>
 </head>
 <body>
+
+<!-- シーン全画面ステージ（scenes.js が制御） -->
+<div id="scene-stage" style="position:fixed;inset:0;z-index:50;background:#050505;display:none"></div>
 
 <!-- 復号中カード -->
 <div class="dec-card" id="dec-card">
@@ -429,9 +537,14 @@ body{
   <span class="dec-time-warn-icon">// </span><span id="dec-time-warn-text"></span>
 </div>
 
-<!-- 結果カード（完了後に表示） -->
-<div class="result-card" id="result-card">
+<!-- 旧結果カード（緑端末風・非表示のまま残す） -->
+<div class="result-card" id="result-card" style="display:none">
   <div class="result-card-inner" id="result-card-inner"></div>
+</div>
+
+<!-- 便箋ステージ（明転レイヤー）-->
+<div id="result-stage">
+  <div class="letter-card" id="letter-card"></div>
 </div>
 
 <script type="application/json" id="puzzle-data">__PUZZLE__</script>
@@ -439,6 +552,19 @@ body{
 const P=JSON.parse(document.getElementById('puzzle-data').textContent);
 const CACHE_KEY='sadocrypt_cache_'+P.id;
 const RESUME_KEY='brake_resume_'+P.id;
+
+// 待ち画面 scene の決定
+// auto のときはページ読み込み時に12種から均等ランダムで1つ選ぶ
+var sceneId = (function(){
+  var SCENES=['flow','rain','rings','candle','moon','pulse','stars','orbit','ripple','weave','wall','dawn'];
+  var s = P.scene || 'auto';
+  if(s === 'auto'){
+    var ids = (window.BRAKE_SCENES && window.BRAKE_SCENES.autoIds) ? window.BRAKE_SCENES.autoIds : SCENES;
+    return ids[Math.floor(Math.random() * ids.length)];
+  }
+  return SCENES.indexOf(s) !== -1 ? s : SCENES[0];
+})();
+console.log('[scene]', sceneId);
 
 // キャッシュの読み書き（有効期限付きJSON形式）
 // 旧フォーマット（生文字列）・期限切れはともに自動削除して再計算扱いにする
@@ -647,6 +773,17 @@ async function run(){
   // スピナー開始
   startSpinner();
 
+  // シーンステージ
+  var stage = document.getElementById('scene-stage');
+  var sceneHandle = null;
+  var firstChunkDone = false;
+  var remainTimer = null;
+  var rate = 376223;
+  if(window.BRAKE_SCENES && stage){
+    document.getElementById('dec-card').style.display = 'none';
+    stage.style.display = 'block';
+  }
+
   // 2乗チェーン計算（ブラウザで逐次実行）
   const total=cc;
   const totalNum=Number(total);
@@ -664,6 +801,7 @@ async function run(){
       const jitterVal=displayBase+BigInt(Math.floor(Math.random()*1000));
       const capped=jitterVal>total?total:jitterVal;
       document.getElementById('cur').textContent=capped.toLocaleString('ja-JP');
+      if(sceneHandle){ var jn=Number(capped); sceneHandle.update(jn/totalNum,jn,totalNum); }
     },40);
   }
 
@@ -673,52 +811,116 @@ async function run(){
 
   startJitter();
 
-  // 経過時間ベースのchunked setTimeout方式（全ブラウザ対応・UIフリーズなし）
-  // 1000回ごとにDate.nowをチェックし、50ms経過していたらイベントループに制御を返す
-  // → 高速デバイスは多く回り、低速デバイスは少なく回って自動調整
-
   // 途中保存（レジューム）を読んで初期値を決定。壊れていればゼロから。
   const savedResume=loadResume();
-  let x=savedResume?savedResume.x:x0;
-  let i=savedResume?savedResume.i:0n;
-  // レジューム開始時は進捗バーと displayBase を復元値に合わせる
+  const startX=savedResume?savedResume.x:x0;
+  const startIter=savedResume?Number(savedResume.i):0;
   if(savedResume){
-    displayBase=i;
-    document.getElementById('pbar').style.width=(Number(i)*100/totalNum).toFixed(2)+'%';
+    displayBase=BigInt(startIter);
+    document.getElementById('pbar').style.width=(startIter*100/totalNum).toFixed(2)+'%';
   }
-  let lastSaveTime=Date.now();
+  var loopStartTime=Date.now();
+  var loopStartI=startIter;
 
-  while(i<total){
-    const chunkStart=Date.now();
-    let c=0;
+  // シーンマウント（初回chunkで一度だけ実行。Worker・フォールバック共通）
+  function mountScene(iNum){
+    if(firstChunkDone||!window.BRAKE_SCENES||!stage) return;
+    firstChunkDone=true;
+    var elapsed=(Date.now()-loopStartTime)/1000;
+    var done=iNum-loopStartI;
+    if(done>0&&elapsed>0) rate=done/elapsed;
+    var eta=(totalNum-iNum)/rate;
+    var opensAt=new Date(Date.now()+eta*1000);
+    var opensAtText=opensAt.getFullYear()+'年'+(opensAt.getMonth()+1)+'月'+opensAt.getDate()+'日 '+String(opensAt.getHours())+':'+('0'+opensAt.getMinutes()).slice(-2)+' にひらきます';
+    sceneHandle=window.BRAKE_SCENES.mount(sceneId,stage,{opensAtText:opensAtText});
+    remainTimer=setInterval(function(){
+      if(!sceneHandle) return;
+      var rem=(totalNum-Number(displayBase))/rate;
+      var remText;
+      if(rem>=3600){remText='あと '+Math.ceil(rem/3600)+'時間';}
+      else if(rem>=60){remText='あと '+Math.ceil(rem/60)+'分';}
+      else{remText='あと '+Math.ceil(rem)+'秒';}
+      sceneHandle.setRemaining(remText);
+    },1000);
+  }
+
+  let x_final;
+  let workerUsed=false;
+
+  // ── Worker経路（new Worker 失敗 / onerror はフォールバックへ） ──────────
+  try{
+    x_final=await new Promise(function(resolve,reject){
+      var worker=new Worker('/decrypt-worker.js');
+      worker.onmessage=function(e){
+        var msg=e.data;
+        if(msg.type==='progress'){
+          var iNum=msg.i;
+          displayBase=BigInt(iNum);
+          document.getElementById('pbar').style.width=(iNum*100/totalNum).toFixed(2)+'%';
+          if(sceneHandle) sceneHandle.update(iNum/totalNum,iNum,totalNum);
+          if(iNum>0) mountScene(iNum);
+        }else if(msg.type==='checkpoint'){
+          // メインスレッド版と同じ保存形式 {x:hex, i:decimal}（相互互換）
+          try{localStorage.setItem(RESUME_KEY,JSON.stringify({x:msg.x.toString(16),i:msg.i.toString()}));}catch(_){}
+        }else if(msg.type==='done'){
+          worker.terminate();
+          resolve(msg.x);
+        }
+      };
+      worker.onerror=function(err){
+        worker.terminate();
+        reject(err);
+      };
+      worker.postMessage({cmd:'start',x:startX,N:N,startIter:startIter,total:totalNum});
+    });
+    workerUsed=true;
+  }catch(workerErr){
+    // Worker失敗 → フォールバック（以下のメインスレッドループ）
+  }
+
+  // ── フォールバック: メインスレッドchunked計算（Worker不可・onerror時） ──
+  if(!workerUsed){
+    let x=startX;
+    let i=BigInt(startIter);
+    loopStartTime=Date.now(); // レート計算のために再セット
+    let lastSaveTime=Date.now();
     while(i<total){
-      x=(x*x)%N;
-      i++;
-      if(++c>=1000){
-        c=0;
-        if(Date.now()-chunkStart>=50) break;
+      const chunkStart=Date.now();
+      let c=0;
+      while(i<total){
+        x=(x*x)%N;
+        i++;
+        if(++c>=1000){
+          c=0;
+          if(Date.now()-chunkStart>=50) break;
+        }
+      }
+      displayBase=i;
+      const pct=Number(i)*100/totalNum;
+      document.getElementById('pbar').style.width=pct.toFixed(2)+'%';
+      var p01=Number(i)/totalNum;
+      if(sceneHandle) sceneHandle.update(p01,Number(i),totalNum);
+      if(Number(i)>0) mountScene(Number(i));
+      if(i<total){
+        await new Promise(r=>setTimeout(r,0));
+        if(Date.now()-lastSaveTime>=5000){
+          try{localStorage.setItem(RESUME_KEY,JSON.stringify({x:x.toString(16),i:i.toString()}));}catch(_){}
+          lastSaveTime=Date.now();
+        }
       }
     }
-    displayBase=i;
-    const pct=Number(i)*100/totalNum;
-    document.getElementById('pbar').style.width=pct.toFixed(2)+'%';
-    if(i<total){
-      await new Promise(r=>setTimeout(r,0));
-      // 5秒ごとに途中状態を保存（setItem 失敗は握りつぶす）
-      if(Date.now()-lastSaveTime>=5000){
-        try{localStorage.setItem(RESUME_KEY,JSON.stringify({x:x.toString(16),i:i.toString()}));}catch(_){}
-        lastSaveTime=Date.now();
-      }
-    }
+    x_final=x;
   }
 
-  // 完了: ザワめきを止めて正確な値を表示
+  // ── 完了（Worker・フォールバック共通） ────────────────────────────────
   stopJitter();
+  if(remainTimer){clearInterval(remainTimer);remainTimer=null;}
   document.getElementById('cur').textContent=total.toLocaleString('ja-JP');
   document.getElementById('pbar').style.width='100%';
+  if(sceneHandle){sceneHandle.update(1.0,totalNum,totalNum);}
   await new Promise(r=>setTimeout(r,50));
 
-  const xFinalHex=x.toString(16);
+  const xFinalHex=x_final.toString(16);
   writeCache(CACHE_KEY,xFinalHex);
   // 完了したので途中保存を削除
   try{localStorage.removeItem(RESUME_KEY);}catch(_){}
@@ -726,99 +928,173 @@ async function run(){
   const decBuf=await decryptWithXFinal(xFinalHex);
 
   // スピナー発散 → 完了表示
-  pendingDoneCallback=function(){showResult(decBuf);};
-  triggerCollapse();
+  if(sceneHandle){
+    sceneHandle.finish(function(){
+      // scene-stage をフェードアウト
+      stage.style.transition='opacity .6s ease';
+      stage.style.opacity='0';
+      setTimeout(function(){stage.style.display='none';},650);
+      // 入れ替わりで result-stage を明転（暗→明）
+      var rs=document.getElementById('result-stage');
+      if(rs){ setTimeout(function(){ rs.classList.add('visible'); },100); }
+      showResult(decBuf);
+    });
+  }else{
+    pendingDoneCallback=function(){
+      var rs=document.getElementById('result-stage');
+      if(rs) rs.classList.add('visible');
+      showResult(decBuf);
+    };
+    triggerCollapse();
+  }
 }
 
 // ============================================================
-// 結果表示（MIME タイプで分岐）
+// 結果表示（便箋カード）
 // ============================================================
 function showResult(decBuf){
-  document.title = '復号しました | Brake.';
-  // dec-card は消さない（ハッシュ数値・進捗バーをそのまま残す）
-  // スピナーがいた位置（dec-spinner-wrap）にチェックマークを重ねて表示
-  const doneEl=document.getElementById('dec-done');
-  doneEl.classList.add('visible');
-  // ステータステキストを「復号完了」に切り替え（同一要素のテキストを差し替えて位置を固定）
-  const statusSubEl=document.getElementById('dec-status-sub');
-  if(statusSubEl) statusSubEl.textContent='DECRYPTED';
-  const labelEl=document.getElementById('dec-label');
-  if(labelEl) labelEl.textContent='復号完了';
-  // 600ms後に結果カードを表示
-  setTimeout(function(){
-    renderResult(decBuf);
-  },600);
+  document.title='復号しました | Brake.';
+  renderResult(decBuf);
 }
 
 function renderResult(decBuf){
-  const resultCard=document.getElementById('result-card');
-  const inner=document.getElementById('result-card-inner');
-  resultCard.style.display='block';
-  document.getElementById('dec-card').style.display='none';
-  var tw=document.getElementById('dec-time-warn');
-  if(tw) tw.style.display='none';
+  var card=document.getElementById('letter-card');
+  if(!card) return;
+
+  // 復号完了時刻
+  var now=new Date();
+  var dateStr=now.getFullYear()+'.'+('0'+(now.getMonth()+1)).slice(-2)+'.'+('0'+now.getDate()).slice(-2)+' '+('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2);
+  var dateLabel=dateStr+' にひらきました';
+
+  // ダウンロードリンク生成ヘルパー
+  function dlLink(blobUrl,fname,label){
+    return '<a href="'+blobUrl+'" download="'+escHtml(fname)+'" class="letter-btn">'+escHtml(label)+'</a>';
+  }
+
+  // ファイルサイズ表示
+  function fmtSize(bytes){
+    if(bytes<1024) return bytes+'B';
+    if(bytes<1024*1024) return (bytes/1024).toFixed(1)+'KB';
+    return (bytes/1024/1024).toFixed(2)+'MB';
+  }
+
+  var inner='';
 
   if(P.is_file){
-    const mime=P.mime_type||'application/octet-stream';
-    const blob=new Blob([decBuf],{type:mime});
-    const blobUrl=URL.createObjectURL(blob);
-    const fname=P.file_name||'decrypted_file';
-    let html='';
+    var mime=P.mime_type||'application/octet-stream';
+    var blob=new Blob([decBuf],{type:mime});
+    var blobUrl=URL.createObjectURL(blob);
+    var fname=P.file_name||'decrypted_file';
+    var sizeStr=fmtSize(decBuf.byteLength);
+    var ext=(fname.split('.').pop()||'').toUpperCase();
 
     if(mime.startsWith('image/')){
-      // 画像: インラインプレビュー + ダウンロードボタン
-      html='<img src="'+blobUrl+'" class="result-media" alt="'+escHtml(fname)+'">';
-      html+='<br><a href="'+blobUrl+'" download="'+escHtml(fname)+'" class="dl-btn">&#x2B07; ダウンロード</a>';
+      inner='<img src="'+blobUrl+'" class="letter-media" alt="'+escHtml(fname)+'">';
+      inner+='<div class="letter-foot">';
+      inner+='<div><div class="letter-fname">'+escHtml(fname)+'</div><div class="letter-fsize">'+sizeStr+'</div></div>';
+      inner+='<div class="letter-foot-btns">'+dlLink(blobUrl,fname,'ダウンロード')+'</div>';
+      inner+='</div>';
     }else if(mime.startsWith('video/')){
-      // 動画: インラインプレイヤー + ダウンロードボタン
-      html='<video src="'+blobUrl+'" class="result-media" controls></video>';
-      html+='<br><a href="'+blobUrl+'" download="'+escHtml(fname)+'" class="dl-btn">&#x2B07; ダウンロード</a>';
+      inner='<video src="'+blobUrl+'" class="letter-video" controls></video>';
+      inner+='<div class="letter-foot">';
+      inner+='<div><div class="letter-fname">'+escHtml(fname)+'</div><div class="letter-fsize">'+sizeStr+'</div></div>';
+      inner+='<div class="letter-foot-btns">'+dlLink(blobUrl,fname,'ダウンロード')+'</div>';
+      inner+='</div>';
     }else if(mime.startsWith('audio/')){
-      // 音声: インラインプレイヤー + ダウンロードボタン
-      html='<audio src="'+blobUrl+'" controls style="width:100%;margin-bottom:12px"></audio>';
-      html+='<br><a href="'+blobUrl+'" download="'+escHtml(fname)+'" class="dl-btn">&#x2B07; ダウンロード</a>';
+      inner='<audio src="'+blobUrl+'" class="letter-audio" controls></audio>';
+      inner+='<div class="letter-foot">';
+      inner+='<div><div class="letter-fname">'+escHtml(fname)+'</div><div class="letter-fsize">'+sizeStr+'</div></div>';
+      inner+='<div class="letter-foot-btns">'+dlLink(blobUrl,fname,'ダウンロード')+'</div>';
+      inner+='</div>';
     }else{
-      // その他: ダウンロードボタンのみ
-      html='<a href="'+blobUrl+'" download="'+escHtml(fname)+'" class="dl-btn">&#x2B07; '+escHtml(fname)+'</a>';
-      // 自動ダウンロード
+      // その他ファイル（文書等）
+      var svgFile='<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
+      inner='<div class="letter-file-row"><div class="letter-file-icon">'+svgFile+'</div>';
+      inner+='<div><div class="letter-fname">'+escHtml(fname)+'</div>';
+      inner+='<div class="letter-fsize">'+sizeStr+'　·　'+ext+'</div></div></div>';
+      inner+='<div class="letter-foot" style="justify-content:flex-end">';
+      inner+='<div class="letter-foot-btns">'+dlLink(blobUrl,fname,'ダウンロード')+'</div>';
+      inner+='</div>';
+      // 自動ダウンロード（その他形式のみ）
       setTimeout(function(){
-        const a=document.createElement('a');
-        a.href=blobUrl;a.download=fname;a.click();
-      },300);
+        var a=document.createElement('a');a.href=blobUrl;a.download=fname;a.click();
+      },400);
     }
-    inner.innerHTML=html;
+
+    // 最下部に日時ラベル
+    inner+='<div style="margin-top:8px;text-align:left"><div class="letter-date">'+escHtml(dateLabel)+'</div></div>';
+
   }else{
-    // テキスト/URL
-    const content=new TextDecoder().decode(decBuf);
+    // テキスト / URL
+    var content=new TextDecoder().decode(decBuf);
+
     if(isSafeURL(content)){
-      // http/https のみリンク化（2秒後に自動遷移）
-      inner.innerHTML='<div class="result-text-content"><a href="'+escHtml(content)+'" class="result-url-link" target="_blank">'+escHtml(content)+'</a></div>';
-      setTimeout(function(){if(isSafeURL(content))window.location.href=content;},2000);
-    }else{
-      // テキストはそのまま表示（ラベル行右端にコピーボタン）
-      var svgCopy='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
-      var svgCheck='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
-      inner.innerHTML='<div class="dec-result-header"><span class="dec-result-label">DECRYPTED TEXT</span><button class="dec-copy-btn" id="dec-copy-btn" aria-label="コピー">'+svgCopy+'</button></div><div class="result-text-content" id="dec-text-body"></div>';
-      document.getElementById('dec-text-body').textContent=content; // XSS回避: textContentで設定
+      // URL タイプ
+      var svgLink='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
+      inner='<div class="letter-url-row"><div class="letter-url-icon">'+svgLink+'</div>';
+      inner+='<div class="letter-url-text" id="letter-url-text">'+escHtml(content)+'</div></div>';
+      inner+='<div class="letter-foot">';
+      inner+='<div class="letter-date">'+escHtml(dateLabel)+'</div>';
+      inner+='<div class="letter-foot-btns">';
+      inner+='<button class="letter-btn2" id="letter-copy-btn">コピー</button>';
+      inner+='<a href="'+escHtml(content)+'" target="_blank" class="letter-btn">ひらく →</a>';
+      inner+='</div></div>';
+      // コピーボタン配線
       (function(cpContent){
-        var dcb=document.getElementById('dec-copy-btn');
-        if(!dcb) return;
-        dcb.addEventListener('click',function(){
-          function onCopied(){
-            var b=document.getElementById('dec-copy-btn');
-            if(!b) return;
-            b.innerHTML=svgCheck;
-            setTimeout(function(){ var b2=document.getElementById('dec-copy-btn'); if(b2) b2.innerHTML=svgCopy; },1500);
-          }
-          navigator.clipboard.writeText(cpContent).then(onCopied).catch(function(){
-            var ta=document.createElement('textarea');ta.value=cpContent;document.body.appendChild(ta);ta.select();
+        setTimeout(function(){
+          var btn=document.getElementById('letter-copy-btn');
+          if(!btn) return;
+          btn.addEventListener('click',function(){
+            navigator.clipboard.writeText(cpContent).then(function(){
+              btn.textContent='コピー済';
+              setTimeout(function(){ btn.textContent='コピー'; },1500);
+            }).catch(function(){
+              var ta=document.createElement('textarea');ta.value=cpContent;
+              document.body.appendChild(ta);ta.select();
+              try{document.execCommand('copy');}catch(e){}
+              document.body.removeChild(ta);
+              btn.textContent='コピー済';
+              setTimeout(function(){ btn.textContent='コピー'; },1500);
+            });
+          });
+        },0);
+      })(content);
+      // 2秒後に自動遷移
+      setTimeout(function(){if(isSafeURL(content))window.location.href=content;},2000);
+
+    }else{
+      // テキストタイプ
+      inner='<div class="letter-body" id="letter-text-body"></div>';
+      inner+='<div class="letter-foot">';
+      inner+='<div class="letter-date">'+escHtml(dateLabel)+'</div>';
+      inner+='<div class="letter-foot-btns"><button class="letter-btn2" id="letter-copy-btn">コピー</button></div>';
+      inner+='</div>';
+      card.innerHTML=inner;
+      // XSS回避: textContent で設定
+      document.getElementById('letter-text-body').textContent=content;
+      // コピーボタン配線
+      (function(cpContent){
+        var btn=document.getElementById('letter-copy-btn');
+        if(!btn) return;
+        btn.addEventListener('click',function(){
+          navigator.clipboard.writeText(cpContent).then(function(){
+            btn.textContent='コピー済';
+            setTimeout(function(){ btn.textContent='コピー'; },1500);
+          }).catch(function(){
+            var ta=document.createElement('textarea');ta.value=cpContent;
+            document.body.appendChild(ta);ta.select();
             try{document.execCommand('copy');}catch(e){}
-            document.body.removeChild(ta);onCopied();
+            document.body.removeChild(ta);
+            btn.textContent='コピー済';
+            setTimeout(function(){ btn.textContent='コピー'; },1500);
           });
         });
       })(content);
+      return; // テキストは上で innerHTML 済み
     }
   }
+
+  card.innerHTML=inner;
 }
 
 function escHtml(s){

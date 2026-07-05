@@ -1,10 +1,13 @@
-export const HEADER_CSS = `:root{--brake-green:#00ff8c}
-.hl{color:#00ff8c}
-/* ============================================================
+export const HEADER_CSS = `/* ============================================================
    Brake. ロゴ共通
    ============================================================ */
-.brake-logo{font-family:'Orbitron',sans-serif;font-weight:900;color:#fff;letter-spacing:.02em;line-height:1}
-.brake-dot{color:#00ff8c;text-shadow:0 0 10px rgba(0,255,140,.6)}
+.brake-logo{font-family:'Inter','Noto Sans JP',sans-serif;font-weight:800;color:#3c3a36;letter-spacing:.02em;line-height:1}
+.brake-dot{
+  background:linear-gradient(135deg,#ef8a63 0%,#d99a70 45%,#8fa88f 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
 
 .hero-header{
   position:fixed;
@@ -17,8 +20,8 @@ export const HEADER_CSS = `:root{--brake-green:#00ff8c}
   justify-content:space-between;
   padding:28px 40px;
   width:100%;
-  background:#000;
-  border-bottom:1px solid rgba(255,255,255,.1);
+  background:#faf6ee;
+  border-bottom:1px solid rgba(60,55,48,.1);
   transition:transform .25s ease;
   box-sizing:border-box;
 }
@@ -40,17 +43,17 @@ export const HEADER_CSS = `:root{--brake-green:#00ff8c}
 .hamburger-btn span{
   display:block;
   width:22px;height:2px;
-  background:#fff;
+  background:rgba(60,55,48,.6);
   border-radius:2px;
   transition:background .15s;
 }
-.hamburger-btn:hover span{background:#00ff8c}
+.hamburger-btn:hover span{background:#3c3a36}
 /* サイドパネルオーバーレイ（スマホ用） */
 #mobile-menu-overlay{
   display:none;
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.55);
+  background:rgba(60,55,48,.45);
   z-index:10100;
   opacity:0;
   transition:opacity .32s cubic-bezier(.4,0,.2,1);
@@ -66,13 +69,13 @@ export const HEADER_CSS = `:root{--brake-green:#00ff8c}
   position:fixed;
   top:0;right:0;bottom:0;
   width:68%;
-  background:#0a0a0a;
+  background:#fffdf9;
   z-index:10200;
   flex-direction:column;
   transform:translateX(100%);
   transition:transform .32s cubic-bezier(.4,0,.2,1);
   pointer-events:none;
-  border-left:1px solid rgba(255,255,255,.08);
+  border-left:1px solid rgba(60,55,48,.08);
 }
 #mobile-menu.open{
   transform:translateX(0);
@@ -88,13 +91,13 @@ export const HEADER_CSS = `:root{--brake-green:#00ff8c}
   background:none;
   border:none;
   cursor:pointer;
-  color:#fff;
+  color:rgba(60,55,48,.6);
   font-size:24px;
   line-height:1;
   padding:4px;
   transition:color .15s;
 }
-.mobile-menu-close:hover{color:#00ff8c}
+.mobile-menu-close:hover{color:#c9865e}
 .mobile-menu-links{
   flex:1;
   display:flex;
@@ -105,10 +108,10 @@ export const HEADER_CSS = `:root{--brake-green:#00ff8c}
   font-family:'Noto Sans JP',sans-serif;
   font-size:18px;
   font-weight:500;
-  color:#fff;
+  color:rgba(60,55,48,.7);
   text-decoration:none;
   padding:18px 0;
-  border-bottom:1px solid rgba(255,255,255,.08);
+  border-bottom:1px solid rgba(60,55,48,.08);
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -116,18 +119,17 @@ export const HEADER_CSS = `:root{--brake-green:#00ff8c}
 }
 .mobile-menu-links a::after{
   content:'→';
-  color:#00ff8c;
+  color:#c9865e;
   font-size:16px;
 }
-.mobile-menu-links a:hover{color:#00ff8c}
+.mobile-menu-links a:hover{color:#c9865e}
 .mobile-menu-footer{
   padding:24px 24px 40px;
   text-align:center;
-  font-family:'JetBrains Mono',monospace;
+  font-family:'Inter','Noto Sans JP',sans-serif;
   font-size:11px;
-  color:rgba(0,255,140,.75);
+  color:rgba(60,55,48,.45);
   letter-spacing:.1em;
-  text-shadow:0 0 8px rgba(0,255,140,.5);
 }
 .hero-nav{
   display:flex;
@@ -138,12 +140,12 @@ export const HEADER_CSS = `:root{--brake-green:#00ff8c}
   font-family:'Noto Sans JP',sans-serif;
   font-size:16px;
   font-weight:500;
-  color:rgba(255,255,255,.8);
+  color:rgba(60,55,48,.7);
   text-decoration:none;
   transition:color .15s;
 }
-.hero-nav a:hover{color:#00ff8c}
-.hero-nav a.nav-active,.mobile-menu-links a.nav-active{color:#00ff8c}
+.hero-nav a:hover{color:#3c3a36}
+.hero-nav a.nav-active,.mobile-menu-links a.nav-active{color:#c9865e}
 /* スマホ対応 */
 @media(max-width:767px){
   .hero-header{padding:20px 24px;}
@@ -160,10 +162,10 @@ export const HEADER_HTML = `  <!-- モバイルメニューオーバーレイ（
       <button class="mobile-menu-close" id="mobile-menu-close" aria-label="メニューを閉じる">&#x2715;</button>
     </div>
     <div class="mobile-menu-links">
-      <a href="/#howto" id="mmlink-howto">使い方</a>
+      <a href="/about" id="mmlink-about">Brake.とは</a>
       <a href="/time-lock" id="mmlink-why">仕組み</a>
       <a href="/philosophy" id="mmlink-phil">なぜ？</a>
-      <a href="/#privacy" id="mmlink-privacy">プライバシー</a>
+      <a href="/privacy" id="mmlink-privacy">プライバシー</a>
       <a href="mailto:info@brake.run" id="mmlink-contact">お問い合わせ</a>
     </div>
     <div class="mobile-menu-footer">© 2026 Brake. · TIME-LOCK ENCRYPTION</div>
@@ -173,10 +175,10 @@ export const HEADER_HTML = `  <!-- モバイルメニューオーバーレイ（
   <header class="hero-header">
     <a href="/" class="brake-logo" style="text-decoration:none;color:inherit">Brake<span class="brake-dot">.</span></a>
     <nav class="hero-nav">
-      <a href="/#howto">使い方</a>
+      <a href="/about">Brake.とは</a>
       <a href="/time-lock">仕組み</a>
       <a href="/philosophy">なぜ？</a>
-      <a href="/#privacy">プライバシー</a>
+      <a href="/privacy">プライバシー</a>
       <a href="mailto:info@brake.run">お問い合わせ</a>
     </nav>
     <button class="hamburger-btn" id="hamburger-btn" aria-label="メニューを開く">
@@ -258,7 +260,7 @@ export const HEADER_JS = `// ===================================================
 // アクティブナビハイライト（pathname 判定・別ページのみ）
 (function(){
   var path=window.location.pathname;
-  var map={'/time-lock':'mmlink-why','/philosophy':'mmlink-phil'};
+  var map={'/about':'mmlink-about','/time-lock':'mmlink-why','/philosophy':'mmlink-phil','/privacy':'mmlink-privacy'};
   if(!map[path]) return;
   var desk=document.querySelector('.hero-nav a[href="'+path+'"]');
   if(desk) desk.classList.add('nav-active');

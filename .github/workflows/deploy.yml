@@ -60,9 +60,10 @@ jobs:
           # マーカーは各ページの生成HTMLと同期していること。
           # src/index.js の title/meta/JSON-LD を変更したら、対応するマーカーもここで更新する。
           # 「|」は ASCII パイプ (U+007C)。全角パイプ・縦線と取り違えないこと。
-          check 'https://brake.run/'           'タイムロック暗号化サービス'            '/'
+          check 'https://brake.run/'           'とどく時間を、えらべる'                '/'
           check 'https://brake.run/time-lock'  'Rivest-Shamir-Wagner方式の逐次2乗計算' '/time-lock'
           check 'https://brake.run/philosophy' 'なぜ、待たせるのか'                    '/philosophy'
+          check 'https://brake.run/about'      'Brake.とは | Brake.'                   '/about'
           check 'https://brake.run/terms'      '利用規約 | Brake.'                     '/terms'
           check 'https://brake.run/privacy'    'プライバシーポリシー | Brake.'          '/privacy'
 

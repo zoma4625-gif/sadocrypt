@@ -1,21 +1,20 @@
 import { HEADER_CSS, HEADER_HTML, HEADER_JS } from '../shared/header.js';
 import { FOOTER } from '../shared/footer.js';
-import { HERO_BG_CSS, HERO_BG_HTML, HERO_BG_JS } from '../shared/hero-bg.js';
 
 export const HTML_ENCRYPT = `<!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Brake. – タイムロック暗号化サービス</title>
-<meta name="description" content="ファイルやURLに"時間の鍵"をかける。設定した時間が来るまで誰も解読できない、タイムロック暗号化サービス。">
+<title>Brake. – とどく時間を、えらべる</title>
+<meta name="description" content="中身を入れて、ひらく時間を決めるだけ。設定した時間が来るまで誰も開けられないリンクを生成します。タイムロック暗号化サービス Brake.">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Brake. – タイムロック暗号化サービス">
-<meta property="og:description" content="ファイルやURLに"時間の鍵"をかける。設定した時間が来るまで誰も解読できない、タイムロック暗号化サービス。">
+<meta property="og:title" content="Brake. – とどく時間を、えらべる">
+<meta property="og:description" content="中身を入れて、ひらく時間を決めるだけ。設定した時間が来るまで誰も開けられないリンクを生成します。タイムロック暗号化サービス Brake.">
 <meta property="og:url" content="https://brake.run/">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Brake. – タイムロック暗号化サービス">
-<meta name="twitter:description" content="ファイルやURLに&quot;時間の鍵&quot;をかける。設定した時間が来るまで誰も解読できない、タイムロック暗号化サービス。">
+<meta name="twitter:title" content="Brake. – とどく時間を、えらべる">
+<meta name="twitter:description" content="中身を入れて、ひらく時間を決めるだけ。設定した時間が来るまで誰も開けられないリンクを生成します。タイムロック暗号化サービス Brake.">
 <link rel="canonical" href="https://brake.run/">
 <link rel="alternate" hreflang="ja" href="https://brake.run/">
 <link rel="alternate" hreflang="x-default" href="https://brake.run/">
@@ -41,7 +40,20 @@ body{
 }
 
 /* ============================================================
-   ヒーロー: 黒背景 + CRT走査線 + ビネット
+   デザイントークン
+   ============================================================ */
+:root{
+  --iri-grad: linear-gradient(170deg,#faf6ee 0%,#f4eee1 55%,#efe6d5 100%);
+  --ink: #3c3a36;
+  --ink-soft: rgba(60,55,48,.55);
+  --ink-faint: rgba(60,55,48,.15);
+  --ink-ghost: rgba(60,55,48,.05);
+  --card: #fffdf9;
+  --accent-grad: linear-gradient(135deg,#ef8a63 0%,#d99a70 45%,#8fa88f 100%);
+}
+
+/* ============================================================
+   ヒーロー: 虹色グラデ背景（LP用）
    ============================================================ */
 .hero{
   position:relative;
@@ -50,12 +62,35 @@ body{
   display:flex;
   flex-direction:column;
   overflow:hidden;
-  background:#000;
+  background:var(--iri-grad);
 }
-${HERO_BG_CSS}
-.tl-bg{position:absolute;top:0;left:0;width:100%;height:100vh;overflow:hidden;z-index:0;pointer-events:none;background:#000;}
-.tl-scrim{position:absolute;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:680px;height:100vh;background:linear-gradient(to right,rgba(0,0,0,0) 0%,rgba(0,0,0,.7) 20%,rgba(0,0,0,.7) 80%,rgba(0,0,0,0) 100%);-webkit-mask-image:linear-gradient(to bottom,transparent 0%,black 35%,black 65%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0%,black 35%,black 65%,transparent 100%);z-index:1;pointer-events:none;}
+.hero-blob1{
+  position:absolute;
+  top:-140px;right:-100px;
+  width:500px;height:500px;
+  border-radius:50%;
+  background:radial-gradient(ellipse,rgba(239,138,99,.32) 0%,transparent 68%);
+  pointer-events:none;
+  z-index:1;
+}
+.hero-blob2{
+  position:absolute;
+  bottom:-80px;left:-120px;
+  width:380px;height:380px;
+  border-radius:50%;
+  background:radial-gradient(ellipse,rgba(143,168,143,.26) 0%,transparent 68%);
+  pointer-events:none;
+  z-index:1;
+}
 ${HEADER_CSS}
+/* ============================================================
+   ヘッダー: LP スコープ — 背景のみ透明化（ink色はheader.jsで共通定義）
+   ============================================================ */
+.hero .hero-header{
+  background:transparent;
+  border-bottom-color:var(--ink-faint);
+}
+
 .hero-body{
   position:relative;
   z-index:2;
@@ -64,24 +99,25 @@ ${HEADER_CSS}
   flex-direction:column;
   align-items:center;
   justify-content:flex-start;
-  padding:max(80px,calc(50vh - 135px)) 24px 80px;
+  padding:max(48px,calc(30vh - 81px)) 24px 80px;
   text-align:center;
 }
 .hero-catch{
   font-family:'Noto Sans JP',sans-serif;
   font-weight:700;
-  font-size:clamp(26px,5vw,52px);
-  color:#fff;
+  font-size:26px;
+  color:var(--ink);
   line-height:1.4;
   margin-bottom:20px;
   letter-spacing:.02em;
 }
+@media(max-width:680px){.hero-catch{font-size:22px;}}
 .hero-sub{
   font-family:'Noto Sans JP',sans-serif;
-  font-size:clamp(14px,2vw,18px);
-  color:rgba(255,255,255,.55);
+  font-size:13px;
+  color:var(--ink-soft);
   margin-bottom:48px;
-  letter-spacing:.04em;
+  letter-spacing:.06em;
 }
 .hero-form-wrap{
   width:100%;
@@ -92,36 +128,92 @@ ${HEADER_CSS}
    フォーム領域（白カード）
    ============================================================ */
 .form-card{
-  background:#fff;
-  border:1px solid #e8e8e5;
-  border-radius:22px;
-  box-shadow:0 4px 24px rgba(0,0,0,0.06);
+  background:var(--card);
+  border:none;
+  border-radius:20px;
+  box-shadow:0 20px 60px rgba(80,80,90,.18),0 2px 8px rgba(80,80,90,.08);
   overflow:visible; /* +ボタンの下向きツールチップを枠外に出すため */
+  padding:22px;
+  max-width:520px;
+  width:100%;
 }
 .url-input-wrap{
-  padding:24px 26px 0;
+  padding:0;
+  margin-bottom:12px;
 }
 .url-input{
   width:100%;
   border:none;
   outline:none;
-  background:transparent;
+  background:var(--ink-ghost);
+  border-radius:12px;
   font-family:'Inter',sans-serif;
-  font-size:17px;
-  color:#1a1a18;
-  padding:4px 0 16px;
-  caret-color:#1a1a18;
+  font-size:14px;
+  color:var(--ink);
+  padding:14px 16px;
+  caret-color:var(--ink);
 }
-.url-input::placeholder{color:#b4b4ac;font-family:'Noto Sans JP',sans-serif;}
-.url-input:disabled{color:#aaa;cursor:not-allowed}
+.url-input::placeholder{color:rgba(60,55,48,.35);font-family:'Noto Sans JP',sans-serif;}
+.url-input:disabled{color:rgba(60,55,48,.3);cursor:not-allowed}
+/* ============================================================
+   セグメント切替
+   ============================================================ */
+.fi-seg{display:flex;gap:6px;background:rgba(60,55,48,.06);border-radius:12px;
+  padding:4px;margin-bottom:14px;}
+.fi-seg span{flex:1;text-align:center;font-size:12px;padding:8px 0;
+  border-radius:9px;color:rgba(60,55,48,.55);cursor:pointer;}
+.fi-seg .on{background:#fff;color:var(--ink);font-weight:500;
+  box-shadow:0 1px 4px rgba(60,55,48,.12);}
+/* ============================================================
+   時間スライダー・ライブ表示
+   ============================================================ */
+#time-slider{width:100%;margin:14px 0 4px;-webkit-appearance:none;height:6px;
+  border-radius:3px;outline:none;
+  background:linear-gradient(90deg,#e8a987,#c9bd9a,#a8bba0,#8fa5b0);}
+#time-slider::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;
+  border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(60,55,48,.3);
+  cursor:pointer;border:none;}
+#time-slider::-moz-range-thumb{width:24px;height:24px;
+  border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(60,55,48,.3);
+  cursor:pointer;border:none;}
+#time-live{text-align:center;font-size:13px;color:var(--ink);margin-top:0;}
+/* ============================================================
+   ライブ表示行 + その他カスタム入力
+   ============================================================ */
+.fi-liverow{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px;}
+#time-other{font-size:12px;border-radius:999px;padding:6px 14px;background:#fff;border:1px solid rgba(60,55,48,.15);color:rgba(60,55,48,.6);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .12s,color .12s,border-color .12s;}
+#time-other.on{background:var(--accent-grad);color:#fff;border-color:transparent;}
+.fi-custom{display:none;justify-content:center;align-items:center;gap:8px;margin-top:10px;}
+.fi-custom.show{display:flex;}
+#tv{width:72px;border:1px solid rgba(60,55,48,.15);background:#fff;border-radius:10px;
+  padding:9px 10px;font-size:13px;color:#3c3a36;outline:none;text-align:center;
+  -moz-appearance:textfield;ime-mode:disabled;}
+#tv::-webkit-inner-spin-button,#tv::-webkit-outer-spin-button{-webkit-appearance:none}
+#tu{border:1px solid rgba(60,55,48,.15);background:#fff;border-radius:10px;
+  padding:9px 12px;font-size:13px;color:#3c3a36;outline:none;-webkit-appearance:none;
+  cursor:pointer;text-align:center;text-align-last:center;}
+.fi-custom>span{font-size:12px;color:rgba(60,55,48,.55);}
+/* ============================================================
+   シーン選択行
+   ============================================================ */
+.fi-sec{font-size:11px;color:rgba(60,55,48,.5);letter-spacing:.08em;
+  margin:18px 2px 8px;}
+.fi-scene-row{display:flex;align-items:center;gap:12px;
+  background:rgba(60,55,48,.04);border-radius:12px;padding:10px 12px;}
+.fi-scene-thumb{width:56px;border-radius:9px;overflow:hidden;flex:none;background:#1a1512;}
+.fi-scene-thumb .t{height:34px;position:relative;}
+.fi-scene-name{flex:1;font-size:13px;color:#3c3a36;}
+.fi-scene-name small{display:block;font-size:10px;color:rgba(60,55,48,.45);margin-top:2px;}
+.fi-scene-change{font-size:12px;border-radius:999px;padding:7px 16px;background:#fff;
+  border:1px solid rgba(60,55,48,.15);color:rgba(60,55,48,.7);cursor:pointer;}
 .file-selected-bar{
   display:none;
   align-items:center;
   gap:8px;
-  padding:8px 20px 0;
+  padding:0 0 8px;
   font-family:'Share Tech Mono',monospace;
   font-size:12px;
-  color:#555;
+  color:var(--ink-soft);
 }
 .file-selected-bar.visible{display:flex}
 .file-selected-name{
@@ -129,24 +221,24 @@ ${HEADER_CSS}
   overflow:hidden;
   text-overflow:ellipsis;
   white-space:nowrap;
-  color:#1a1a18;
+  color:var(--ink);
 }
 .file-cancel-btn{
   background:none;
   border:none;
   cursor:pointer;
-  color:#aaa;
+  color:var(--ink-soft);
   font-size:16px;
   line-height:1;
   padding:0 2px;
   flex-shrink:0;
 }
-.file-cancel-btn:hover{color:#555}
+.file-cancel-btn:hover{color:var(--ink)}
 .form-bar{
   display:flex;
   align-items:center;
   gap:8px;
-  padding:14px 20px;
+  padding:0 0 12px;
 }
 /* + ボタン：アイコンのみ（枠・背景なし） */
 .btn-plus{
@@ -158,8 +250,8 @@ ${HEADER_CSS}
   padding:2px;
 }
 .btn-plus svg{display:block;width:24px;height:24px;flex-shrink:0}
-.btn-plus svg line{stroke:#333;stroke-width:1.8;stroke-linecap:round;transition:stroke .15s}
-.btn-plus:hover svg line{stroke:#111}
+.btn-plus svg line{stroke:rgba(60,55,48,.5);stroke-width:1.8;stroke-linecap:round;transition:stroke .15s}
+.btn-plus:hover svg line{stroke:var(--ink)}
 .btn-plus.active svg line{stroke:#00ff8c}
 /* スペーサー */
 .form-bar-spacer{flex:1;min-width:0;}
@@ -176,78 +268,105 @@ ${HEADER_CSS}
 }
 .preset-chips::-webkit-scrollbar{display:none}
 .preset-chip{
-  background:#f4f4f4;
-  border:1px solid #d8d8d8;
-  border-radius:9px;
-  padding:6px 12px;
+  background:#fff;
+  border:1px solid var(--ink-faint);
+  border-radius:999px;
+  padding:7px 14px;
   font-family:'Inter','Noto Sans JP',sans-serif;
   font-size:12px;
   font-weight:500;
   line-height:1;
-  color:#333;
+  color:rgba(60,55,48,.7);
   cursor:pointer;
   display:flex;align-items:center;justify-content:center;
   transition:border-color .12s,background .12s,box-shadow .12s,color .12s;
   white-space:nowrap;
   flex-shrink:0;
 }
-.preset-chip:hover{border-color:#999;background:#ebebeb}
-/* active: box-shadowで1.5px濃グレー枠のみ → 背景・太さ変えずレイアウト幅も不変 */
+.preset-chip:hover{border-color:var(--ink-soft);}
 .preset-chip.active{
-  border-color:transparent;
-  box-shadow:inset 0 0 0 1.5px #555;
+  background:var(--accent-grad);
+  color:#fff;
+  border:1px solid transparent;
+  font-weight:500;
+  box-shadow:0 2px 8px rgba(200,140,100,.35);
 }
+/* 待ち画面ピッカー */
+.scene-picker-chip{background:#fff;border:1px solid var(--ink-faint);border-radius:999px;padding:7px 14px;font-family:'Inter','Noto Sans JP',sans-serif;font-size:12px;font-weight:500;line-height:1;color:rgba(60,55,48,.7);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .12s,background .12s;white-space:nowrap;flex-shrink:0;max-width:9em;overflow:hidden;text-overflow:ellipsis;}
+.scene-picker-chip:hover{border-color:var(--ink-soft);}
+.scene-modal{position:fixed;inset:0;background:rgba(60,55,48,.45);z-index:200;display:none;align-items:center;justify-content:center;padding:16px;}
+.scene-modal.open{display:flex;}
+.scene-modal-box{background:#fffdf9;border:1px solid rgba(60,55,48,.1);border-radius:20px;padding:22px;max-width:720px;width:100%;box-shadow:0 20px 60px rgba(60,55,48,.15);}
+.scene-modal-title{font-size:12px;color:rgba(60,55,48,.5);letter-spacing:.08em;margin-bottom:12px;}
+.scene-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+@media(max-width:680px){.scene-grid{grid-template-columns:repeat(3,1fr);}}
+.scene-tile{cursor:pointer;border-radius:10px;overflow:hidden;border:2px solid rgba(60,55,48,.1);background:#fff;transition:border-color .2s;display:flex;flex-direction:column;}
+.scene-tile.sel{border-color:#ef8a63;}
+.scene-thumb{height:88px;flex:none;position:relative;overflow:hidden;background:#050505;}
+@media(max-width:680px){.scene-thumb{height:72px;}}
+.scene-tile-name{font-size:11px;color:rgba(60,55,48,.75);text-align:center;padding:6px 2px 8px;letter-spacing:.04em;line-height:1.3;min-height:2.6em;display:flex;align-items:center;justify-content:center;background:#fff;}
+.scene-dot-breath{animation:sceneBreath 4.8s ease-in-out infinite;}
+@keyframes sceneBreath{0%,100%{transform:translateX(-50%) scale(1);opacity:.4;}50%{transform:translateX(-50%) scale(1.8);opacity:.9;}}
 /* 数値・単位フィールド */
 .time-val-input{
-  border:1px solid #c4c4c4;
+  border:1px solid var(--ink-faint);
   border-radius:8px;
   width:46px;
   text-align:center;
   font-family:'Inter','Noto Sans JP',sans-serif;
   font-size:13px;
   font-weight:600;
-  color:#1a1a1a;
+  color:var(--ink);
   padding:5px 4px;
   outline:none;
-  background:transparent;
+  background:#fff;
   -moz-appearance:textfield;
   ime-mode:disabled;
   flex-shrink:0;
 }
 .time-val-input::-webkit-inner-spin-button,
 .time-val-input::-webkit-outer-spin-button{-webkit-appearance:none}
-.time-val-input:focus{border-color:#888}
+.time-val-input:focus{border-color:var(--ink-soft)}
 .time-unit-select{
-  border:1px solid #c4c4c4;
+  border:1px solid var(--ink-faint);
   border-radius:8px;
   font-family:'Inter','Noto Sans JP',sans-serif;
   font-size:13px;
   font-weight:500;
-  color:#1a1a1a;
+  color:var(--ink);
   padding:5px 6px;
   outline:none;
-  background:transparent;
+  background:#fff;
   cursor:pointer;
   -webkit-appearance:none;
   text-align:center;
   text-align-last:center;
   flex-shrink:0;
 }
-.time-unit-select:focus{border-color:#888}
+.time-unit-select:focus{border-color:var(--ink-soft)}
 .btn-run{
-  width:46px;height:46px;
-  border-radius:12px;
+  width:100%;
   border:none;
-  background:#0a0e0c;
+  border-radius:14px;
+  padding:15px 0;
+  font-size:14px;
+  font-weight:600;
   color:#fff;
+  background:var(--accent-grad);
+  box-shadow:0 8px 24px rgba(200,130,90,.35);
   cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  transition:background .15s,transform .1s;
-  flex-shrink:0;
+  transition:opacity .15s,transform .1s;
 }
-.btn-run:hover{background:#222}
-.btn-run:active{transform:scale(0.94)}
-.btn-run:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+.btn-run:hover{opacity:0.88;}
+.btn-run:active{transform:scale(0.98);}
+.btn-run:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+.form-run-wrap{ margin-top:12px; }
+.form-run-note{
+  font-size:11px;
+  color:rgba(60,55,48,.45);
+  text-align:center;
+  margin-top:10px;
+}
 .loading-bar{
   display:flex;align-items:center;gap:10px;
   padding:14px 20px;
@@ -336,83 +455,60 @@ ${HEADER_CSS}
    高さは content に委ねる（空のとき = 0、カード挿入後 = カード高さ）。
    padding は hero-body(0 24px)に合わせてスマホ幅での左右ズレを防ぐ。 */
 #result-section {
-  /* hero-form-wrap 内に移動済み。padding:0 24px は不要（親の幅=560pxをそのまま継承） */
-  margin-top: 40px;         /* form-card 外枠下端〜result-section 外枠上端 40px */
-}
-/* .result-section はすでに width:100% / max-width:540px を持つ。
-   親(#result-section)のpaddingがなくなったので max-width:560px で form-card と幅を揃える */
-#result-section .result-section {
-  max-width: 560px;
-  margin: 0;
-}
-
-@keyframes card-glow-in{
-  0%{ box-shadow:0 0 0 2px rgba(0,255,140,0.6), 0 0 56px rgba(0,255,140,0.7), 0 8px 32px rgba(0,255,140,0.3); }
-  100%{ box-shadow:0 0 0 1.5px rgba(0,255,140,0.25), 0 0 36px rgba(0,255,140,0.4), 0 8px 32px rgba(0,255,140,0.15); }
+  margin-top: 0;
 }
 .result-section{
-  background:#0a0e0c;
-  border:2px solid rgba(0,255,140,0.7);
-  border-radius:22px;
-  box-shadow:0 0 0 1.5px rgba(0,255,140,0.25), 0 0 36px rgba(0,255,140,0.4), 0 8px 32px rgba(0,255,140,0.15);
+  max-width:520px;
   width:100%;
-  max-width:540px;
-  margin:0 auto;
-  padding:20px 20px 16px;
+  background:#fffdf9;
+  border-radius:20px;
+  padding:22px;
+  box-shadow:0 20px 60px rgba(80,80,90,.18),0 2px 8px rgba(80,80,90,.08);
+  margin:26px auto 0;
   opacity:0;
   transform:translateY(18px);
   transition:opacity .5s ease, transform .5s ease;
 }
-.result-section.show{ opacity:1; transform:translateY(0); animation:card-glow-in .6s ease .4s both; }
-.result-section-inner{ position:relative; }
-
-/* ラベル行 */
-.result-label-row{ display:flex; align-items:center; gap:8px; margin-bottom:16px; }
-.result-green-dot{ width:7px; height:7px; background:#00ff8c; border-radius:0; flex-shrink:0; box-shadow:0 0 6px rgba(0,255,140,0.6); }
-.result-label-text{ font-family:'Noto Sans JP',sans-serif; font-size:13px; font-weight:500; letter-spacing:0.02em; color:rgba(255,255,255,0.7); }
-/* QRサムネイルボタン */
-.qr-thumb-btn{ width:46px; height:46px; background:#fff; border:0.5px solid rgba(0,255,140,0.35); border-radius:8px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; padding:2px; overflow:hidden; transition:opacity .15s; }
-.qr-thumb-btn:hover{ opacity:0.8; }
-.qr-thumb-btn canvas,.qr-thumb-btn img{ display:block; }
-/* スペーサー */
-.result-spacer{ flex:1; }
-/* 共有・開く：同サイズ */
-.result-share-btn, .result-open-btn{ flex-shrink:0; width:96px; height:46px; border-radius:10px; display:flex; align-items:center; justify-content:center; gap:6px; cursor:pointer; padding:0 10px; transition:background .15s; font-family:'Noto Sans JP',sans-serif; font-size:13px; font-weight:500; }
-/* 共有：緑（主役） */
-.result-share-btn{ background:rgba(0,255,140,0.16); border:0.5px solid rgba(0,255,140,0.4); color:#00ff8c; }
-.result-share-btn:hover{ background:rgba(0,255,140,0.24); }
-/* 開く：無彩色（サブ） */
-.result-open-btn{ background:transparent; border:1px solid #4a4f4c; color:#9aa49f; }
-.result-open-btn:hover{ background:rgba(255,255,255,0.06); border-color:#666; }
-
-/* URL帯 */
-.result-url-wrap{ display:flex; align-items:center; gap:10px; background:#f0f0f0; border-radius:12px; padding:0 14px 0 20px; height:48px; cursor:pointer; margin-bottom:12px; }
-.result-url-textarea{ position:relative; flex:1; min-width:0; height:100%; }
-.result-url-text, .result-url-copied{
-  position:absolute; left:0; top:50%; transform:translateY(-50%);
-  font-family:'Inter',sans-serif; font-size:clamp(14px,4vw,18px);
-  font-weight:500; line-height:1; /* 同一指定で高さを揃え、translateY(-50%)のズレをなくす */
-  white-space:nowrap;
-  max-width:100%; overflow:hidden; text-overflow:ellipsis;
-  transform-origin:left center;
-}
-.result-url-text{ color:#1a1a1a; transition:transform .2s ease, opacity .2s ease; }
-.result-url-copied{ color:#999; opacity:0; pointer-events:none; }
-/* コピーボタン：アイコンのみ（枠なし・背景なし） */
-.copy-btn{ width:36px; height:36px; background:none; border:none; border-radius:9px; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; padding:0; transition:opacity .15s; }
-.copy-btn:hover{ opacity:0.6; }
-.copy-btn svg{ width:20px; height:20px; display:block; }
-
-/* 下段 */
-.result-bottom-row{ display:flex; align-items:center; gap:10px; margin-top:8px; }
-.result-share-btn svg, .result-open-btn svg{ width:15px; height:15px; display:block; flex-shrink:0; }
+.result-section.show{ opacity:1; transform:translateY(0); }
+/* (a) ヘッダー */
+.rs-head{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.rs-check{width:22px;height:22px;border-radius:50%;
+  background:linear-gradient(135deg,#e08c62,#8fa88f);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-size:12px;}
+.rs-title{font-size:14px;font-weight:600;color:#3c3a36;font-family:'Noto Sans JP',sans-serif;}
+/* (b) URL行 */
+.rs-url{display:flex;align-items:center;gap:8px;
+  background:rgba(60,55,48,.05);border-radius:12px;padding:13px 14px;}
+.rs-url-text{flex:1;min-width:0;font-size:14px;color:#3c3a36;
+  font-family:'JetBrains Mono',monospace;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;}
+.rs-copy-btn{width:34px;height:34px;border-radius:9px;
+  border:1px solid rgba(60,55,48,.18);background:#fff;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;flex-shrink:0;transition:opacity .15s;}
+.rs-copy-btn:hover{opacity:0.7;}
+/* (c) 下段 */
+.rs-bottom{display:flex;justify-content:space-between;align-items:flex-end;margin-top:16px;}
+.rs-qr{width:76px;height:76px;border-radius:10px;background:#fff;
+  border:1px solid rgba(60,55,48,.12);display:flex;align-items:center;
+  justify-content:center;cursor:pointer;overflow:hidden;padding:4px;flex-shrink:0;}
+.rs-qr:hover{opacity:0.85;}
+.rs-buttons{display:flex;flex-direction:column;gap:8px;}
+.rs-share-btn{border:none;border-radius:11px;padding:11px 20px;font-size:13px;
+  font-weight:600;color:#fff;
+  background:linear-gradient(135deg,#e08c62 0%,#c9986f 45%,#8fa88f 100%);
+  box-shadow:0 4px 14px rgba(200,130,90,.3);cursor:pointer;
+  font-family:'Noto Sans JP',sans-serif;}
+.rs-open-btn{background:#fff;border:1px solid rgba(60,55,48,.18);
+  border-radius:11px;padding:11px 20px;font-size:13px;
+  color:rgba(60,55,48,.75);cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
 
 /* ============================================================
    ドラッグ&ドロップオーバーレイ
    ============================================================ */
 #drop-overlay{
   position:fixed;inset:0;z-index:9998;
-  background:rgba(5,20,12,0.82);
+  background:rgba(60,55,48,.5);
   display:none;
   align-items:center;justify-content:center;
   pointer-events:none;
@@ -423,7 +519,7 @@ ${HEADER_CSS}
 }
 #drop-frame{
   position:fixed;inset:16px;
-  border:2px dashed rgba(0,255,140,0.6);
+  border:2px dashed rgba(60,55,48,.4);
   border-radius:16px;
   pointer-events:none;
 }
@@ -633,122 +729,9 @@ ${HEADER_CSS}
   text-transform:uppercase;
 }
 
-/* ============================================================
-   What's Brake? セクション（黒背景）
-   ============================================================ */
-.whats-section{
-  width:100%;
-  background:#000;
-  padding:45px 24px;
-  text-align:center;
-}
-.whats-inner{
-  max-width:1200px;
-  margin:0 auto;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-}
-.whats-col-eyebrow{
-  font-family:'Inter','Noto Sans JP',sans-serif;
-  font-size:16px;
-  font-weight:600;
-  letter-spacing:0.08em;
-  color:#00ff8c;
-  text-shadow:none;
-  display:inline-flex;
-  align-items:center;
-  gap:12px;
-  margin-bottom:24px;
-}
-.whats-col-eyebrow::before{
-  content:"";
-  width:10px;
-  height:10px;
-  background:#00ff8c;
-  box-shadow:none;
-  display:inline-block;
-}
-.whats-col-body{
-  font-family:'Noto Sans JP',sans-serif;
-  font-weight:400;
-  font-size:18px;
-  color:rgba(255,255,255,.65);
-  line-height:1.9;
-  max-width:820px;
-  width:100%;
-  margin-bottom:64px;
-}
-.whats-link{
-  font-family:'Share Tech Mono',monospace;
-  font-size:15px;
-  color:#00ff8c;
-  text-decoration:none;
-  letter-spacing:.05em;
-}
-.whats-links{
-  display:flex;
-  gap:28px;
-  justify-content:center;
-  flex-wrap:wrap;
-}
-.who-grid{
-  width:100%;
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:22px;
-  margin-bottom:64px;
-}
-.who-card{
-  background:#0c0c0c;
-  border:none;
-  border-left:2px dashed #00ff8c;
-  border-radius:0 12px 12px 0;
-  padding:20px 18px;
-  text-align:left;
-}
-.who-card-head{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:8px;
-  margin-bottom:8px;
-}
-.who-card-icon{
-  font-size:32px;
-  line-height:1;
-  opacity:.6;
-  flex-shrink:0;
-  pointer-events:none;
-  user-select:none;
-}
-.who-card-title{
-  font-family:'Noto Sans JP',sans-serif;
-  font-weight:500;
-  font-size:18px;
-  color:#fff;
-  margin-bottom:0;
-}
-.who-card-desc{
-  font-family:'Noto Sans JP',sans-serif;
-  font-size:15px;
-  color:rgba(255,255,255,.55);
-  line-height:1.7;
-}
-@media(max-width:680px){
-  .whats-section{padding:60px 20px;}
-  .whats-heading{font-size:26px;}
-  .whats-col-body{font-size:15px;margin-bottom:40px;}
-  .who-grid{grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:40px;}
-  .who-card{padding:20px 16px;}
-  .who-card-icon{font-size:26px;}
-  .who-card-title{font-size:15px;}
-  .who-card-desc{font-size:13px;}
-  .whats-links{flex-direction:column;align-items:center;gap:16px;}
-}
 /* 固定ヘッダー高さ分（約86px）だけアンカー着地をずらす */
-#whats,#howto,#privacy{scroll-margin-top:90px}
-@media(max-width:767px){#whats,#howto,#privacy{scroll-margin-top:72px}}
+#howto{scroll-margin-top:90px}
+@media(max-width:767px){#howto{scroll-margin-top:72px}}
 .section-eyebrow{
   font-family:'Inter','Noto Sans JP',sans-serif;
   font-size:14px;
@@ -761,31 +744,12 @@ ${HEADER_CSS}
 .eb-prompt{ letter-spacing:0; margin-right:5px; opacity:.85; }
 .eb-cursor{ letter-spacing:0; margin-left:4px; animation:ebBlink 1.1s steps(1) infinite; }
 @keyframes ebBlink{ 0%,50%{opacity:1} 51%,100%{opacity:0} }
-.whats-heading{
-  font-family:'Noto Sans JP',sans-serif;
-  font-weight:700;
-  font-size:44px;
-  color:#fff;
-  line-height:1.4;
-  max-width:980px;
-  width:100%;
-  margin-bottom:32px;
-  letter-spacing:.02em;
-}
-.whats-body{
-  font-family:'Shippori Mincho',serif;
-  font-size:16px;
-  color:rgba(255,255,255,.6);
-  line-height:2;
-  margin-bottom:16px;
-}
-
 /* ============================================================
    使い方セクション（黒背景・黒文字）
    ============================================================ */
 .howto-section{
   width:100%;
-  background:#000;
+  background:#f4f1ea;
   padding:45px 24px;
 }
 .howto-section-inner{
@@ -796,8 +760,8 @@ ${HEADER_CSS}
   font-family:'Inter','Noto Sans JP',sans-serif;
   font-size:16px;
   font-weight:600;
-  color:#00ff8c;
-  letter-spacing:0.08em;
+  color:#c9865e;
+  letter-spacing:.3em;
   text-shadow:none;
   margin-bottom:20px;
   text-align:center;
@@ -806,7 +770,7 @@ ${HEADER_CSS}
   font-family:'Noto Sans JP',sans-serif;
   font-weight:700;
   font-size:clamp(20px,3vw,28px);
-  color:#fff;
+  color:#3c3a36;
   margin-bottom:40px;
   line-height:1.4;
 }
@@ -814,7 +778,7 @@ ${HEADER_CSS}
   font-family:'Noto Sans JP',sans-serif;
   font-weight:700;
   font-size:clamp(28px,4vw,44px);
-  color:#fff;
+  color:#3c3a36;
   text-align:center;
   letter-spacing:-0.01em;
   line-height:1.2;
@@ -827,25 +791,26 @@ ${HEADER_CSS}
   margin-bottom:48px;
   margin-left:auto;
   margin-right:auto;
-  border:1px solid rgba(255,255,255,.15);
   border-radius:8px;
-  overflow:hidden;
   width:fit-content;
 }
 .howto-toggle-btn{
   padding:10px 28px;
   font-family:'Noto Sans JP',sans-serif;
   font-size:13px;
-  font-weight:700;
-  color:rgba(255,255,255,.4);
-  background:transparent;
-  border:none;
+  font-weight:500;
+  color:rgba(60,55,48,.6);
+  background:#fff;
+  border:1px solid rgba(60,55,48,.15);
   cursor:pointer;
-  transition:background .15s,color .15s;
+  transition:background .15s,color .15s,box-shadow .15s;
 }
 .howto-toggle-btn.active{
-  background:#fff;
-  color:#111;
+  background:var(--accent-grad);
+  color:#fff;
+  border:1px solid transparent;
+  font-weight:500;
+  box-shadow:0 2px 8px rgba(200,140,100,.3);
 }
 /* 3カラム */
 .howto-cols{
@@ -866,32 +831,32 @@ ${HEADER_CSS}
   order:3;
   width:100%;
   aspect-ratio:4/3;
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.08);
+  background:rgba(60,55,48,.04);
+  border:1px solid rgba(60,55,48,.08);
   border-radius:12px;
   display:flex;
   align-items:center;
   justify-content:center;
   font-family:'Share Tech Mono',monospace;
   font-size:11px;
-  color:rgba(255,255,255,.2);
+  color:rgba(60,55,48,.2);
   letter-spacing:1px;
 }
+.howto-col-img svg{color:#c9865e;}
 .howto-col-step{
   order:1;
-  font-family:'Inter','Noto Sans JP',sans-serif;
+  font-family:'JetBrains Mono',monospace;
   font-size:14px;
   font-weight:500;
-  color:#00ff8c;
-  letter-spacing:0.05em;
-  text-shadow:0 0 4px rgba(0,255,140,.22),0 0 8px rgba(0,255,140,.10);
+  color:#c9865e;
+  letter-spacing:.2em;
 }
 .howto-col-title{
   order:2;
   font-family:'Noto Sans JP',sans-serif;
   font-weight:700;
   font-size:22px;
-  color:#fff;
+  color:#3c3a36;
   line-height:1;
   display:flex;
   align-items:center;
@@ -899,12 +864,12 @@ ${HEADER_CSS}
   gap:10px;
 }
 .howto-col-title span{line-height:1;}
-.howto-col-title svg{flex-shrink:0;display:flex;align-items:center;transform:translateY(2px);}
+.howto-col-title svg{flex-shrink:0;display:flex;align-items:center;transform:translateY(2px);stroke:#c9865e;}
 .howto-col-desc{
   order:4;
   font-family:'Noto Sans JP',sans-serif;
   font-size:16px;
-  color:rgba(255,255,255,.82);
+  color:rgba(60,55,48,.55);
   line-height:1.8;
 }
 .howto-panel{
@@ -930,9 +895,9 @@ ${HEADER_CSS}
   overflow:hidden;
   border-radius:16px;
   aspect-ratio:4/3;
-  background:rgba(255,255,255,0.03);
-  border:0.5px solid rgba(0,255,140,0.25);
-  box-shadow:0 0 40px rgba(0,255,140,0.08);
+  background:#fffdf9;
+  border:1px solid rgba(60,55,48,.08);
+  box-shadow:0 8px 28px rgba(80,80,90,.10);
 }
 .sc-track{
   display:flex;
@@ -956,11 +921,11 @@ ${HEADER_CSS}
   justify-content:center;
   gap:10px;
 }
-.sc-slide-icon{color:#00ff8c;}
+.sc-slide-icon{color:#c9865e;}
 .sc-slide-img-label{
   font-family:'Share Tech Mono',monospace;
   font-size:11px;
-  color:rgba(255,255,255,.2);
+  color:rgba(60,55,48,.2);
   letter-spacing:1px;
 }
 .sc-slide-meta{
@@ -968,24 +933,24 @@ ${HEADER_CSS}
   padding:18px 20px 20px;
 }
 .sc-slide-meta-step{
-  font-family:'Inter','Noto Sans JP',sans-serif;
+  font-family:'JetBrains Mono',monospace;
   font-size:11px;
   font-weight:500;
-  letter-spacing:.05em;
-  color:#00ff8c;
+  letter-spacing:.2em;
+  color:#c9865e;
   margin-bottom:6px;
 }
 .sc-slide-meta-title{
   font-family:'Noto Sans JP',sans-serif;
   font-weight:700;
   font-size:16px;
-  color:#fff;
+  color:#3c3a36;
   margin-bottom:6px;
 }
 .sc-slide-meta-desc{
   font-family:'Noto Sans JP',sans-serif;
   font-size:13px;
-  color:rgba(255,255,255,.55);
+  color:rgba(60,55,48,.55);
   line-height:1.7;
 }
 .sc-right{
@@ -1000,30 +965,30 @@ ${HEADER_CSS}
   transition:background 300ms;
   background:transparent;
 }
-.sc-item.active{background:rgba(0,255,140,0.08);}
+.sc-item.active{background:rgba(200,140,100,.08);}
 .sc-item-num{
   font-family:'Inter',sans-serif;
   font-size:32px;
   font-weight:700;
   line-height:1;
-  color:rgba(0,255,140,0.3);
+  color:rgba(200,140,100,.3);
   margin-bottom:4px;
   transition:color 300ms;
 }
-.sc-item.active .sc-item-num{color:#00ff8c;}
+.sc-item.active .sc-item-num{color:#c9865e;}
 .sc-item-title{
   font-family:'Noto Sans JP',sans-serif;
   font-weight:500;
   font-size:18px;
-  color:rgba(255,255,255,.85);
+  color:rgba(60,55,48,.85);
   margin-bottom:4px;
   transition:color 300ms;
 }
-.sc-item.active .sc-item-title{color:#fff;}
+.sc-item.active .sc-item-title{color:#3c3a36;}
 .sc-item-desc{
   font-family:'Noto Sans JP',sans-serif;
   font-size:14px;
-  color:rgba(255,255,255,.6);
+  color:rgba(60,55,48,.55);
   line-height:1.6;
 }
 .sc-progress{
@@ -1036,13 +1001,13 @@ ${HEADER_CSS}
   height:3px;
   border-radius:2px;
   overflow:hidden;
-  background:rgba(255,255,255,.15);
+  background:rgba(60,55,48,.12);
 }
 .sc-bar-fill{
   height:100%;
   width:0%;
   border-radius:2px;
-  background:#00ff8c;
+  background:#c9865e;
 }
 .sc-progress-mob{
   display:none;
@@ -1076,10 +1041,11 @@ ${HEADER_CSS}
   left:50%;
   top:0;
   width:72%;
-  background:#0e1712;
-  border:0.5px solid rgba(0,255,140,0.15);
+  background:#fffdf9;
+  border:1px solid rgba(60,55,48,.08);
   border-radius:16px;
   overflow:hidden;
+  box-shadow:0 8px 28px rgba(80,80,90,.10);
   transition:transform 450ms cubic-bezier(0.32,0.72,0.28,1),
              opacity 450ms cubic-bezier(0.32,0.72,0.28,1),
              box-shadow 450ms cubic-bezier(0.32,0.72,0.28,1),
@@ -1091,22 +1057,22 @@ ${HEADER_CSS}
 .cflow-card.cf-active{
   transform:translateX(-50%) translateZ(40px) rotateY(0deg) scale(1);
   opacity:1;
-  border-color:rgba(0,255,140,0.6);
-  box-shadow:0 0 40px rgba(0,255,140,0.18);
+  border-color:rgba(200,140,100,.4);
+  box-shadow:0 8px 28px rgba(80,80,90,.10);
   z-index:10;
 }
 .cflow-card.cf-prev{
   transform:translateX(calc(-50% - 116px)) translateZ(-90px) rotateY(14deg) scale(0.92);
   opacity:0.85;
   z-index:5;
-  border-color:rgba(0,255,140,0.12);
+  border-color:rgba(60,55,48,.08);
   box-shadow:none;
 }
 .cflow-card.cf-next{
   transform:translateX(calc(-50% + 116px)) translateZ(-90px) rotateY(-14deg) scale(0.92);
   opacity:0.85;
   z-index:5;
-  border-color:rgba(0,255,140,0.12);
+  border-color:rgba(60,55,48,.08);
   box-shadow:none;
 }
 .cflow-card.cf-hidden{
@@ -1123,28 +1089,28 @@ ${HEADER_CSS}
   align-items:center;
   justify-content:center;
   gap:10px;
-  color:#00ff8c;
+  color:#c9865e;
 }
 .cflow-img-label{
   font-family:'Share Tech Mono',monospace;
   font-size:11px;
-  color:rgba(255,255,255,.2);
+  color:rgba(60,55,48,.2);
   letter-spacing:1px;
 }
 .cflow-meta{padding:14px 18px 18px;}
 .cflow-step{
-  font-family:'Inter','Noto Sans JP',sans-serif;
+  font-family:'JetBrains Mono',monospace;
   font-size:11px;
   font-weight:500;
-  color:#00ff8c;
-  letter-spacing:0.05em;
+  color:#c9865e;
+  letter-spacing:.2em;
   margin-bottom:5px;
 }
 .cflow-title{
   font-family:'Noto Sans JP',sans-serif;
   font-weight:700;
   font-size:15px;
-  color:#fff;
+  color:#3c3a36;
   margin-bottom:5px;
   display:flex;
   align-items:center;
@@ -1152,11 +1118,11 @@ ${HEADER_CSS}
   flex-direction:row-reverse;
   justify-content:flex-end;
 }
-.cflow-title svg{flex-shrink:0;transform:translateY(2px);}
+.cflow-title svg{flex-shrink:0;transform:translateY(2px);stroke:#c9865e;}
 .cflow-desc{
   font-family:'Noto Sans JP',sans-serif;
   font-size:12px;
-  color:rgba(255,255,255,.6);
+  color:rgba(60,55,48,.55);
   line-height:1.6;
 }
 .cflow-btn{
@@ -1166,9 +1132,9 @@ ${HEADER_CSS}
   width:36px;
   height:36px;
   border-radius:50%;
-  background:rgba(0,255,140,0.1);
-  border:1px solid rgba(0,255,140,0.35);
-  color:#00ff8c;
+  background:rgba(60,55,48,.06);
+  border:1px solid rgba(60,55,48,.2);
+  color:rgba(60,55,48,.6);
   font-size:12px;
   cursor:pointer;
   display:flex;
@@ -1179,7 +1145,7 @@ ${HEADER_CSS}
   -webkit-tap-highlight-color:transparent;
   outline:none;
 }
-.cflow-btn:active{background:rgba(0,255,140,0.3);}
+.cflow-btn:active{background:rgba(60,55,48,.12);}
 .cflow-prev{left:4px;}
 .cflow-next{right:4px;}
 .cflow-dots{
@@ -1195,15 +1161,15 @@ ${HEADER_CSS}
   width:10px;
   height:10px;
   border-radius:0;
-  background:transparent;
-  border:1px solid rgba(0,255,140,0.4);
+  background:rgba(60,55,48,.15);
+  border:1px solid rgba(60,55,48,.15);
   transition:background 600ms,transform 600ms,border-color 600ms;
   cursor:pointer;
   -webkit-tap-highlight-color:transparent;
 }
 .cflow-dot.active{
-  background:#00ff8c;
-  border-color:#00ff8c;
+  background:#c9865e;
+  border-color:#c9865e;
   transform:scale(1.3);
 }
 @media(max-width:680px){
@@ -1319,88 +1285,83 @@ ${HEADER_CSS}
 }
 
 /* ============================================================
-   フッター（サイバーテイスト）
+   フッター（LP スコープ・ライト）
    ============================================================ */
-.site-footer{
+.lp-footer{
   width:100%;
-  background:#000;
-  font-family:'Share Tech Mono',monospace;
+  background:#ece7dc;
 }
-.footer-section{
-  width:100%;
-  max-width:600px;
+.lp-footer-inner{
+  max-width:700px;
   margin:0 auto;
-  padding:32px 24px;
-}
-.footer-section--border{
-  border-top:1px solid rgba(0,255,140,0.15);
-}
-.footer-privacy{
-  list-style:none;
+  padding:40px 24px 32px;
   display:flex;
   flex-direction:column;
-  gap:10px;
+  align-items:center;
+  gap:28px;
+  border-bottom:1px solid rgba(60,55,48,.12);
 }
-.footer-privacy li{
-  font-family:'Share Tech Mono',monospace;
-  font-size:11px;
-  color:rgba(255,255,255,0.45);
-  letter-spacing:0.5px;
-  line-height:1.6;
+.lp-footer-logo{
+  font-family:'Orbitron',sans-serif;
+  font-weight:900;
+  font-size:2rem;
+  color:#3c3a36;
+  text-decoration:none;
+  letter-spacing:.02em;
+  line-height:1;
 }
-.priv-bullet{
-  color:rgba(0,255,140,0.5);
-  margin-right:6px;
+.lp-footer-logo-dot{
+  background:linear-gradient(135deg,#ef8a63,#8fa88f);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
 }
-.footer-links{
+.lp-footer-links{
   display:flex;
   flex-wrap:wrap;
   gap:20px;
   justify-content:center;
 }
-.footer-link{
-  font-family:'Share Tech Mono',monospace;
-  font-size:11px;
-  color:rgba(0,255,140,0.5);
+.lp-footer-link{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:14px;
+  color:rgba(60,55,48,.55);
   text-decoration:none;
-  letter-spacing:1px;
   transition:color .15s;
 }
-.footer-link:hover{color:#00ff8c}
-.footer-copy{
+.lp-footer-link:hover{color:#3c3a36;}
+.lp-footer-copy{
   width:100%;
-  max-width:600px;
+  max-width:700px;
   margin:0 auto;
   padding:20px 24px 32px;
-  border-top:1px solid rgba(0,255,140,0.1);
   font-family:'Share Tech Mono',monospace;
-  font-size:10px;
-  color:rgba(0,255,140,0.3);
-  letter-spacing:2px;
+  font-size:11px;
+  color:rgba(60,55,48,.4);
+  letter-spacing:.15em;
   text-transform:uppercase;
   text-align:center;
 }
 /* ===== トップへ戻るボタン ===== */
 #brake-top-btn{
   position:fixed;
-  /* bottom:28px → top指定に変更。ヘッダー高(~92px)+余白 を下限にし貫通を防ぐ */
   top:max(100px,calc(100vh - 124px));
   right:24px;
   width:96px;height:96px;border-radius:50%;
-  background:#050807;border:1.5px solid rgba(0,255,140,.5);
+  background:var(--accent-grad);color:#fff;border:none;
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   gap:0;cursor:pointer;z-index:900;
   opacity:0;transform:translateY(20px);
-  transition:opacity .35s ease,transform .35s ease,border-color .2s,box-shadow .2s;
+  transition:opacity .35s ease,transform .35s ease,box-shadow .2s;
   pointer-events:none;
   text-decoration:none;
 }
 #brake-top-btn.visible{opacity:1;transform:translateY(0);pointer-events:auto;}
-#brake-top-btn:hover{border-color:rgba(0,255,140,.85);box-shadow:0 0 18px rgba(0,255,140,.22);}
+#brake-top-btn:hover{box-shadow:0 8px 24px rgba(200,130,90,.35);}
 #brake-top-btn .btn-chevron{display:flex;align-items:center;justify-content:center;margin-bottom:5px;}
 #brake-top-btn .btn-logo{font-family:'Orbitron',sans-serif;font-weight:900;font-size:12.5px;color:#fff;letter-spacing:.01em;line-height:1;}
-#brake-top-btn .btn-logo span{color:#00ff8c;}
-#brake-top-btn .btn-sub{font-family:'Noto Sans JP',sans-serif;font-size:9.5px;color:rgba(255,255,255,.5);margin-top:4px;letter-spacing:.04em;}
+#brake-top-btn .btn-logo span{color:#fff;}
+#brake-top-btn .btn-sub{font-family:'Noto Sans JP',sans-serif;font-size:9.5px;color:rgba(255,255,255,.7);margin-top:4px;letter-spacing:.04em;}
 @media(max-width:680px){
   #brake-top-btn{width:72px;height:72px;top:max(84px,calc(100vh - 92px));right:16px;}
   #brake-top-btn .btn-logo{font-size:10px;}
@@ -1441,26 +1402,30 @@ ${HEADER_CSS}
      1. ヒーロー
      ============================================================ -->
 <section class="hero">
-<div class="tl-bg">${HERO_BG_HTML}</div>
-<div class="tl-scrim"></div>
-
+<div class="hero-blob1"></div>
+<div class="hero-blob2"></div>
 ${HEADER_HTML}
 
   <!-- ヒーロー本文 -->
   <div class="hero-body">
-    <h1 class="hero-catch">ファイルに"時間の鍵"をかける。</h1>
-    <div class="hero-sub">ファイルを置いて、時間を決めるだけ。</div>
+    <h1 class="hero-catch">とどく時間を、えらべる。</h1>
+    <div class="hero-sub">中身を入れて、ひらく時間を決めるだけ。</div>
 
     <!-- 暗号化フォーム（既存のまま流用） -->
     <div class="hero-form-wrap">
       <div class="form-card" id="form-card">
         <form id="f">
+          <div class="fi-seg" id="input-seg">
+            <span data-mode="text" class="on">テキスト</span>
+            <span data-mode="url">URL</span>
+            <span data-mode="file">ファイル</span>
+          </div>
           <div class="url-input-wrap">
             <input
               class="url-input"
               type="text"
               id="content-input"
-              placeholder="ここにURLを入力..."
+              placeholder="ここにメッセージを書く..."
               autocomplete="off"
             >
           </div>
@@ -1469,28 +1434,33 @@ ${HEADER_HTML}
             <span class="file-selected-name" id="file-selected-name"></span>
             <button type="button" class="file-cancel-btn" id="file-cancel-btn" title="ファイルを取り消す">✕</button>
           </div>
-          <div class="form-bar">
-            <button type="button" class="btn-plus" id="btn-plus" aria-label="ファイルを暗号化" data-tip="ファイルを暗号化">
-              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <line x1="12" y1="5" x2="12" y2="19"/>
-                <line x1="5" y1="12" x2="19" y2="12"/>
-              </svg>
-            </button>
-            <div class="form-bar-spacer"></div>
-            <div class="preset-chips" id="preset-chips">
-              <button type="button" class="preset-chip active" data-tv="10" data-tu="s">10秒</button>
-              <button type="button" class="preset-chip" data-tv="30" data-tu="s">30秒</button>
-              <button type="button" class="preset-chip" data-tv="1" data-tu="m">1分</button>
-              <button type="button" class="preset-chip" data-tv="5" data-tu="m">5分</button>
-            </div>
-            <input type="number" id="tv" value="10" min="1" max="2592000" class="time-val-input" inputmode="numeric" autocomplete="off">
-            <select id="tu" class="time-unit-select">
+          <input type="range" id="time-slider" min="0" max="14" step="1" value="0">
+          <div class="fi-liverow">
+            <div id="time-live"></div>
+            <button type="button" id="time-other">カスタム</button>
+          </div>
+          <div class="fi-custom" id="time-custom">
+            <input type="number" id="tv" value="10" min="1" max="2592000" inputmode="numeric" autocomplete="off">
+            <select id="tu">
               <option value="s">秒</option>
               <option value="m">分</option>
               <option value="h">時間</option>
               <option value="d">日</option>
             </select>
-            <button type="button" class="btn-run" id="btn" aria-label="暗号化して生成" data-tip="暗号化して生成"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+            <span>後にひらく</span>
+          </div>
+          <div class="fi-sec">待っているあいだの画面</div>
+          <div class="fi-scene-row">
+            <div class="fi-scene-thumb" id="scene-thumb"><div class="t" style="background:linear-gradient(to top,#2a1f14,#0a0806 60%,#040404);position:relative;"><div style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:40px;height:18px;background:radial-gradient(ellipse,rgba(255,166,87,.4),transparent 70%);"></div><div style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:rgba(255,240,224,.9);"></div></div></div>
+            <div class="fi-scene-name">
+              <span id="scene-name-label">夜明け</span>
+              <small>受け取った人が待つあいだに表示されます</small>
+            </div>
+            <button type="button" class="fi-scene-change" id="scene-picker-btn">えらぶ ▾</button>
+          </div>
+          <div class="form-run-wrap">
+            <button type="button" class="btn-run" id="btn" aria-label="暗号化して生成" data-tip="暗号化して生成">時間の鍵をかける</button>
+            <div class="form-run-note">リンクが1つできます。渡した相手は、時間が来るまでひらけません。</div>
           </div>
         </form>
         <div id="res"></div>
@@ -1503,56 +1473,11 @@ ${HEADER_HTML}
 </section>
 
 <!-- ============================================================
-     2. What's Brake?
-     ============================================================ -->
-<section class="whats-section" id="whats">
-  <div class="whats-inner">
-    <div class="whats-col-eyebrow">Brake.とは</div>
-    <div class="whats-heading">Brake.は、タイムロック暗号を使った<br class="pc-br">暗号化Webサービスです。</div>
-    <div class="whats-col-body">URLやテキストを暗号化し、「1分後」「1時間後」「1日後」にしか開けないリンクを生成します。<br class="pc-br">画像、動画、音声、文書なども暗号化できます（最大5MBまで）。</div>
-    <div class="who-grid">
-      <div class="who-card">
-        <div class="who-card-head">
-          <div class="who-card-title">コンテンツをちゃんと<br class="pc-br">見てほしい人に。</div>
-          <span class="who-card-icon">🔍</span>
-        </div>
-        <div class="who-card-desc">閲覧の難易度を上げ、意味のあるコンテンツがスクロールに流されるのを防ぎます。</div>
-      </div>
-      <div class="who-card">
-        <div class="who-card-head">
-          <div class="who-card-title">商品のリリースや重大発表に。</div>
-          <span class="who-card-icon">🚀</span>
-        </div>
-        <div class="who-card-desc">解禁時間を設計し、待つことができる人たちの間でだけ情報が共有されます。</div>
-      </div>
-      <div class="who-card">
-        <div class="who-card-head">
-          <div class="who-card-title">知り合いに待つ時間を<br class="pc-br">贈りたい人に。</div>
-          <span class="who-card-icon">⏳</span>
-        </div>
-        <div class="who-card-desc">情報量にブレーキをかけ、待ってる間にひと呼吸。</div>
-      </div>
-      <div class="who-card">
-        <div class="who-card-head">
-          <div class="who-card-title">ほかにも</div>
-          <span class="who-card-icon">💡</span>
-        </div>
-        <div class="who-card-desc">使い方は、あなた次第。サプライズやタイムカプセルにも。</div>
-      </div>
-    </div>
-    <div class="whats-links">
-      <a href="/time-lock" class="whats-link" style="display:inline-flex;align-items:center;gap:8px;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>タイムロック暗号とは？ →</a>
-      <a href="/philosophy" class="whats-link" style="display:inline-flex;align-items:center;gap:8px;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M21 11.5a8.38 8.38 0 01-9 8.5 8.5 8.5 0 01-3.8-.9L3 20l1.9-5.2A8.38 8.38 0 013 11.5 8.5 8.5 0 0112 3a8.38 8.38 0 019 8.5z"/></svg>なぜ待たせるのか →</a>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================
-     3. 使い方（白背景・Uber風）
+     2. 使い方（白背景・Uber風）
      ============================================================ -->
 <section class="howto-section" id="howto">
   <div class="howto-section-inner">
-    <div class="howto-section-eyebrow"><span class="eb-dot" style="width:14px;height:14px;background:#00ff8c;display:inline-block;margin-right:14px;vertical-align:middle;border-radius:0"></span>使い方</div>
+    <div class="howto-section-eyebrow"><span class="eb-dot" style="width:14px;height:14px;background:#c9865e;display:inline-block;margin-right:14px;vertical-align:middle;border-radius:0"></span>使い方</div>
     <h2 class="howto-section-main-heading">置いて、決めて、送る。</h2>
 
     <!-- トグル -->
@@ -1566,19 +1491,19 @@ ${HEADER_HTML}
       <!-- PC: 3カラムグリッド -->
       <div class="howto-cols sender-pc">
         <div class="howto-col">
-          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#00ff8c"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#c9865e"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
           <div class="howto-col-step">STEP 01</div>
           <div class="howto-col-title"><span>置く</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
           <div class="howto-col-desc">渡したいもの（URL・テキスト・ファイル）を<br class="pc-br">ドロップする。</div>
         </div>
         <div class="howto-col">
-          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#00ff8c"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#c9865e"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
           <div class="howto-col-step">STEP 02</div>
           <div class="howto-col-title"><span>時間を決める</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
           <div class="howto-col-desc">復号にかかる時間を指定。</div>
         </div>
         <div class="howto-col">
-          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#00ff8c"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div>
+          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#c9865e"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div>
           <div class="howto-col-step">STEP 03</div>
           <div class="howto-col-title"><span>共有</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div>
           <div class="howto-col-desc">生成されたリンクを送るだけ。</div>
@@ -1640,19 +1565,19 @@ ${HEADER_HTML}
       <!-- PC: 3カラムグリッド -->
       <div class="howto-cols sender-pc">
         <div class="howto-col">
-          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#00ff8c"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#c9865e"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
           <div class="howto-col-step">STEP 01</div>
           <div class="howto-col-title"><span>開く</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
           <div class="howto-col-desc">リンクを踏むとその場で復号がはじまる。</div>
         </div>
         <div class="howto-col">
-          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#00ff8c"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#c9865e"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
           <div class="howto-col-step">STEP 02</div>
           <div class="howto-col-title"><span>待つ</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
           <div class="howto-col-desc">ブラウザを開いたまま待つ。</div>
         </div>
         <div class="howto-col">
-          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#00ff8c"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#c9865e"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
           <div class="howto-col-step">STEP 03</div>
           <div class="howto-col-title"><span>受け取る</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
           <div class="howto-col-desc">復号が終わると自動でリンクに遷移する。</div>
@@ -1716,69 +1641,26 @@ ${HEADER_HTML}
      ============================================================ -->
 
 <!-- ============================================================
-     6. プライバシーセクション（2カラム）
+     6. フッター
      ============================================================ -->
-<section style="width:100%;background:#000;padding:45px 24px" id="privacy">
-  <div style="max-width:1100px;margin:0 auto">
-    <div class="section-eyebrow" style="margin-bottom:40px"><span class="eb-dot" style="width:10px;height:10px;background:#00ff8c;display:inline-block;margin-right:12px;vertical-align:middle"></span>プライバシー</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start">
-      <!-- 左: ビジュアルプレースホルダ -->
-      <div style="border:1px solid rgba(0,255,140,.15);border-radius:16px;aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;background:rgba(0,255,140,.02)">
-        <div style="text-align:center">
-          <div style="font-family:'Inter','Noto Sans JP',sans-serif;font-size:17px;font-weight:500;color:#00ff8c;letter-spacing:0.05em;margin-bottom:16px;display:inline-flex;align-items:center;gap:14px"><span style="width:11px;height:11px;background:#00ff8c;display:inline-block"></span>PRIVACY FIRST</div>
-          <div style="font-family:'Share Tech Mono',monospace;font-size:11px;color:rgba(0,255,140,.15);letter-spacing:.05em">ブラウザ内で完結</div>
-        </div>
-      </div>
-      <!-- 右: テキスト -->
-      <div style="display:flex;flex-direction:column;gap:1.6rem">
-        <div>
-          <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
-            <div style="width:8px;height:8px;background:#00ff8c;flex-shrink:0;margin-top:6px"></div>
-            <div style="font-family:'Noto Sans JP',sans-serif;font-size:18px;color:#e8efeb;font-weight:500">暗号化はすべてブラウザ内で完結</div>
-          </div>
-          <div style="padding-left:22px;font-family:'Noto Sans JP',sans-serif;font-size:14px;color:rgba(255,255,255,.82);line-height:1.7">あなたのファイルやメッセージは、お使いの端末の中だけで暗号化されます。元のデータがそのままサーバーへ送られることはありません。</div>
-        </div>
-        <div>
-          <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
-            <div style="width:8px;height:8px;background:#00ff8c;flex-shrink:0;margin-top:6px"></div>
-            <div style="font-family:'Noto Sans JP',sans-serif;font-size:18px;color:#e8efeb;font-weight:500">サーバーに平文・鍵を一切送らない</div>
-          </div>
-          <div style="padding-left:22px;font-family:'Noto Sans JP',sans-serif;font-size:14px;color:rgba(255,255,255,.82);line-height:1.7">暗号を解くための鍵も、中身そのものも、私たちのサーバーには届きません。だから運営者であっても、あなたの中身を見ることはできません。</div>
-        </div>
-        <div>
-          <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
-            <div style="width:8px;height:8px;background:#00ff8c;flex-shrink:0;margin-top:6px"></div>
-            <div style="font-family:'Noto Sans JP',sans-serif;font-size:18px;color:#e8efeb;font-weight:500">保存されるのは暗号文とパズルのみ</div>
-          </div>
-          <div style="padding-left:22px;font-family:'Noto Sans JP',sans-serif;font-size:14px;color:rgba(255,255,255,.82);line-height:1.7">サーバーに残るのは、解読時間を決める「パズル」と、鍵のかかった暗号文だけ。それ単体から中身を復元することはできません。</div>
-        </div>
-        <div>
-          <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:8px">
-            <div style="width:8px;height:8px;background:#00ff8c;flex-shrink:0;margin-top:6px"></div>
-            <div style="font-family:'Noto Sans JP',sans-serif;font-size:18px;color:#e8efeb;font-weight:500">有効期限後は自動削除</div>
-          </div>
-          <div style="padding-left:22px;font-family:'Noto Sans JP',sans-serif;font-size:14px;color:rgba(255,255,255,.82);line-height:1.7">設定した期限を過ぎたデータは自動的に消えます。いつまでも残り続けることはありません。</div>
-        </div>
-      </div>
+<footer class="lp-footer">
+  <div class="lp-footer-inner">
+    <a href="/" class="lp-footer-logo">Brake<span class="lp-footer-logo-dot">.</span></a>
+    <div class="lp-footer-links">
+      <a href="/about" class="lp-footer-link">Brake.とは</a>
+      <a href="/time-lock" class="lp-footer-link">仕組み</a>
+      <a href="/philosophy" class="lp-footer-link">なぜ？</a>
+      <a href="/privacy" class="lp-footer-link">プライバシーポリシー</a>
+      <a href="/terms" class="lp-footer-link">利用規約</a>
+      <a href="mailto:info@brake.run" class="lp-footer-link">お問い合わせ</a>
     </div>
   </div>
-  <style>
-    @media(max-width:767px){
-      #privacy [style*="grid-template-columns:1fr 1fr"]{
-        grid-template-columns:1fr !important;
-      }
-    }
-  </style>
-</section>
-
-<!-- ============================================================
-     7. フッター
-     ============================================================ -->
-${FOOTER}
+  <div class="lp-footer-copy">© 2026 Brake. · TIME-LOCK ENCRYPTION</div>
+</footer>
 
 <!-- トップへ戻るボタン -->
 <a id="brake-top-btn" href="#top" aria-label="TOPへ戻る">
-  <span class="btn-chevron"><svg width="22" height="12" viewBox="0 0 22 12" fill="none"><path d="M2 10L11 3L20 10" stroke="#00ff8c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+  <span class="btn-chevron"><svg width="22" height="12" viewBox="0 0 22 12" fill="none"><path d="M2 10L11 3L20 10" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
   <span class="btn-logo">Brake<span>.</span></span>
   <span class="btn-sub">を試す</span>
 </a>
@@ -1794,10 +1676,9 @@ ${FOOTER}
 </div>
 
 <script>
-// ============================================================
-// ヒーロー背景アニメーション（洞窟＋光の粒子）確定版
-// ============================================================
-${HERO_BG_JS}
+// startSpin/releaseSpin スタブ（LP では hero-bg.js 未使用のため）
+if(!window.startSpin)   window.startSpin   = function(){};
+if(!window.releaseSpin) window.releaseSpin = function(){};
 // ============================================================
 // 使い方トグル
 // ============================================================
@@ -2246,27 +2127,64 @@ async function encryptFile(fileBuffer, fileName, mimeType, targetSeconds) {
 }
 
 // ============================================================
-// ファイル選択UI
+// ファイル選択UI + セグメント切替
 // ============================================================
 let selectedFile = null;
+let currentSegment = 'text';
 
 const fileInput = document.getElementById('file-input');
-const btnPlus = document.getElementById('btn-plus');
 const fileSelectedBar = document.getElementById('file-selected-bar');
 const fileSelectedName = document.getElementById('file-selected-name');
 const fileCancelBtn = document.getElementById('file-cancel-btn');
 const contentInput = document.getElementById('content-input');
+const urlInputWrap = contentInput ? contentInput.closest('.url-input-wrap') : null;
 
-btnPlus.addEventListener('click', function(){
-  fileInput.click();
+function setSegment(mode){
+  currentSegment = mode;
+  document.querySelectorAll('#input-seg span').forEach(function(s){
+    s.classList.toggle('on', s.dataset.mode === mode);
+  });
+  if(mode === 'text'){
+    if(urlInputWrap) urlInputWrap.style.display = '';
+    fileSelectedBar.classList.remove('visible');
+    contentInput.disabled = false;
+    contentInput.placeholder = 'ここにメッセージを書く...';
+  } else if(mode === 'url'){
+    if(urlInputWrap) urlInputWrap.style.display = '';
+    fileSelectedBar.classList.remove('visible');
+    contentInput.disabled = false;
+    contentInput.placeholder = 'https://...';
+  } else if(mode === 'file'){
+    fileInput.click();
+  }
+}
+
+document.querySelectorAll('#input-seg span').forEach(function(s){
+  s.addEventListener('click', function(){
+    var mode = s.dataset.mode;
+    if(mode === 'file'){
+      currentSegment = 'file';
+      document.querySelectorAll('#input-seg span').forEach(function(t){
+        t.classList.toggle('on', t.dataset.mode === 'file');
+      });
+      fileInput.click();
+    } else {
+      if(selectedFile) clearFileSelection();
+      setSegment(mode);
+    }
+  });
 });
 
 fileInput.addEventListener('change', function(){
   if(fileInput.files && fileInput.files[0]){
     selectedFile = fileInput.files[0];
     fileSelectedName.textContent = selectedFile.name;
+    if(urlInputWrap) urlInputWrap.style.display = 'none';
     fileSelectedBar.classList.add('visible');
-    btnPlus.classList.add('active');
+    currentSegment = 'file';
+    document.querySelectorAll('#input-seg span').forEach(function(s){
+      s.classList.toggle('on', s.dataset.mode === 'file');
+    });
     contentInput.disabled = true;
     contentInput.placeholder = 'ファイルを暗号化します';
     contentInput.value = '';
@@ -2277,56 +2195,208 @@ fileCancelBtn.addEventListener('click', function(){
   clearFileSelection();
 });
 
-// プリセットチップ連動
+// ============================================================
+// 時間: TIME_STOPS + チップ + スライダー + ライブ表示 三者同期
+// ============================================================
 (function(){
-  var chips=document.querySelectorAll('.preset-chip');
-  var tvEl=document.getElementById('tv');
-  var tuEl=document.getElementById('tu');
-  function maxForUnit(u){
-    if(u==='s') return MAX_LOCK_S_CLI;
-    if(u==='m') return Math.floor(MAX_LOCK_S_CLI/60);
-    if(u==='h') return Math.floor(MAX_LOCK_S_CLI/3600);
-    if(u==='d') return 30;
-    return MAX_LOCK_S_CLI;
+  var TIME_STOPS = [
+    {label:'10秒後',  v:10,  u:'s'},  {label:'30秒後',  v:30,  u:'s'},
+    {label:'1分後',   v:1,   u:'m'},  {label:'5分後',   v:5,   u:'m'},
+    {label:'10分後',  v:10,  u:'m'},  {label:'30分後',  v:30,  u:'m'},
+    {label:'1時間後', v:1,   u:'h'},  {label:'3時間後', v:3,   u:'h'},
+    {label:'6時間後', v:6,   u:'h'},  {label:'12時間後',v:12,  u:'h'},
+    {label:'1日後',   v:1,   u:'d'},  {label:'3日後',   v:3,   u:'d'},
+    {label:'1週間後', v:7,   u:'d'},  {label:'2週間後', v:14,  u:'d'},
+    {label:'30日後',  v:30,  u:'d'}
+  ];
+  var chips  = document.querySelectorAll('.preset-chip');
+  var tvEl   = document.getElementById('tv');
+  var tuEl   = document.getElementById('tu');
+  var slider = document.getElementById('time-slider');
+  var liveEl = document.getElementById('time-live');
+
+  function toSec(v, u){
+    if(u==='s') return v;
+    if(u==='m') return v*60;
+    if(u==='h') return v*3600;
+    if(u==='d') return v*86400;
+    return v;
   }
-  function syncChips(){
-    var tv=tvEl.value, tu=tuEl.value;
+
+  function fmtDate(sec){
+    var d = new Date(Date.now() + sec*1000);
+    var hh = String(d.getHours()).padStart(2,'0');
+    var mm = String(d.getMinutes()).padStart(2,'0');
+    return (d.getMonth()+1) + '月' + d.getDate() + '日 ' + hh + ':' + mm;
+  }
+
+  function updateLive(){
+    var v = parseInt(tvEl.value,10)||1;
+    var u = tuEl.value;
+    var sec = toSec(v, u);
+    var stop = null;
+    for(var k=0;k<TIME_STOPS.length;k++){
+      if(TIME_STOPS[k].v===v && TIME_STOPS[k].u===u){ stop=TIME_STOPS[k]; break; }
+    }
+    var suffixMap = {s:'秒後',m:'分後',h:'時間後',d:'日後'};
+    var label = stop ? stop.label : (v + (suffixMap[u]||'後'));
+    liveEl.innerHTML = '<b>' + label + '</b> — ' + fmtDate(sec) + ' にひらきます';
+  }
+
+  function nearestStopIndex(){
+    var v = parseInt(tvEl.value,10)||1;
+    var u = tuEl.value;
+    var sec = toSec(v, u);
+    var best = 0, bestDiff = Infinity;
+    for(var i=0;i<TIME_STOPS.length;i++){
+      var d = Math.abs(toSec(TIME_STOPS[i].v, TIME_STOPS[i].u) - sec);
+      if(d < bestDiff){ bestDiff=d; best=i; }
+    }
+    return best;
+  }
+
+  function syncChipsFromTvTu(){
+    var tv = tvEl.value, tu = tuEl.value;
     chips.forEach(function(c){
       c.classList.toggle('active', c.getAttribute('data-tv')===tv && c.getAttribute('data-tu')===tu);
     });
   }
+
+  // a) チップクリック → スライダー + tv/tu + ライブ更新
   chips.forEach(function(chip){
-    chip.addEventListener('click',function(){
-      tvEl.value=chip.getAttribute('data-tv');
-      tuEl.value=chip.getAttribute('data-tu');
-      syncChips();
+    chip.addEventListener('click', function(){
+      tvEl.value = chip.getAttribute('data-tv');
+      tuEl.value = chip.getAttribute('data-tu');
+      var idx = -1;
+      for(var i=0;i<TIME_STOPS.length;i++){
+        if(TIME_STOPS[i].v===parseInt(tvEl.value,10) && TIME_STOPS[i].u===tuEl.value){ idx=i; break; }
+      }
+      if(idx>=0) slider.value = idx;
+      syncChipsFromTvTu();
+      updateLive();
     });
   });
-  tvEl.addEventListener('input',function(){
-    // 全角数字を半角に変換
-    var v=tvEl.value.replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0);});
+
+  // b) スライダー → tv/tu + チップ + ライブ更新
+  slider.addEventListener('input', function(){
+    var idx = parseInt(slider.value,10);
+    var stop = TIME_STOPS[idx];
+    tvEl.value = stop.v;
+    tuEl.value = stop.u;
+    syncChipsFromTvTu();
+    updateLive();
+  });
+
+  // c) tv/tu 手入力 → チップ全非選択 + スライダー最近傍 + ライブ更新
+  tvEl.addEventListener('input', function(){
+    var v = tvEl.value.replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0);});
     if(v!==tvEl.value) tvEl.value=v;
-    // 30日上限クランプ
-    var max=maxForUnit(tuEl.value);
+    var max=30*24*60*60;
+    if(tuEl.value==='m') max=Math.floor(max/60);
+    if(tuEl.value==='h') max=Math.floor(max/3600);
+    if(tuEl.value==='d') max=30;
     if(Number(tvEl.value)>max) tvEl.value=max;
-    syncChips();
+    chips.forEach(function(c){ c.classList.remove('active'); });
+    slider.value = nearestStopIndex();
+    updateLive();
   });
-  tuEl.addEventListener('change',function(){
-    // 単位が変わったら max 属性を更新し、現在値を上限に合わせてクランプ
-    var max=maxForUnit(tuEl.value);
-    tvEl.setAttribute('max',max);
-    if(Number(tvEl.value)>max) tvEl.value=max;
-    syncChips();
+  tuEl.addEventListener('change', function(){
+    chips.forEach(function(c){ c.classList.remove('active'); });
+    slider.value = nearestStopIndex();
+    updateLive();
   });
+
+  // 初期状態: index 0（10秒後）
+  slider.value = 0;
+  tvEl.value = TIME_STOPS[0].v;
+  tuEl.value = TIME_STOPS[0].u;
+  syncChipsFromTvTu();
+  updateLive();
+
+  // 「その他」クリック → .fi-custom の show トグル（値は変えない）
+  var timeOtherEl = document.getElementById('time-other');
+  var timeCustomEl = document.getElementById('time-custom');
+  if(timeOtherEl && timeCustomEl){
+    timeOtherEl.addEventListener('click', function(){
+      timeCustomEl.classList.toggle('show');
+      timeOtherEl.classList.toggle('on');
+    });
+  }
 })();
+
+// 待ち画面ピッカー — selectedScene に保持して saveBody に渡す
+var selectedScene = 'dawn';
+document.addEventListener('DOMContentLoaded', function(){
+  var TILE_NAMES = {
+    'auto':'おまかせ','dawn':'夜明け','rain':'計算機','moon':'月',
+    'stars':'星空','rings':'年輪','candle':'ローソク','pulse':'鼓動',
+    'orbit':'軌道','ripple':'波紋','wall':'パネル','weave':'織'
+  };
+  var pickerBtn = document.getElementById('scene-picker-btn');
+  var pickerLabel = document.getElementById('scene-name-label');
+  var modal = document.getElementById('scene-modal');
+  var grid = document.getElementById('scene-grid');
+
+  // 星空サムネ（モーダル）: 22個の点を JS で生成
+  var starsThumb = document.getElementById('scene-thumb-stars');
+  if(starsThumb){
+    for(var si=0;si<22;si++){
+      var sd=document.createElement('div');
+      var sa=(0.3+Math.random()*0.5).toFixed(2);
+      var sw=(1.2+Math.random()*0.8).toFixed(1);
+      sd.style.cssText='position:absolute;border-radius:50%;background:rgba(255,235,205,'+sa+');width:'+sw+'px;height:'+sw+'px;left:'+(2+Math.random()*95).toFixed(1)+'%;top:'+(5+Math.random()*85).toFixed(1)+'%;';
+      starsThumb.appendChild(sd);
+    }
+  }
+
+  function closeModal(){ modal.classList.remove('open'); }
+  function openModal(){ modal.classList.add('open'); }
+
+  pickerBtn.addEventListener('click', function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    openModal();
+  });
+  modal.addEventListener('click', function(e){
+    if(e.target === modal) closeModal();
+  });
+  modal.addEventListener('wheel', function(e){
+    window.scrollBy(0, e.deltaY);
+  }, {passive:true});
+  window.addEventListener('scroll', function(){
+    if(modal.classList.contains('open') && window.scrollY > window.innerHeight * 0.6){
+      closeModal();
+    }
+  }, {passive:true});
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+  });
+  grid.addEventListener('click', function(e){
+    var tile = e.target.closest('.scene-tile');
+    if(!tile) return;
+    document.querySelectorAll('.scene-tile').forEach(function(t){ t.classList.remove('sel'); });
+    tile.classList.add('sel');
+    selectedScene = tile.dataset.scene;
+    if(pickerLabel) pickerLabel.textContent = TILE_NAMES[selectedScene] || selectedScene;
+    // fi-scene-thumb のサムネを選択シーンのものに差し替え
+    var thumbWrap = document.querySelector('#scene-thumb .t');
+    var tileThumb = tile.querySelector('.scene-thumb');
+    if(thumbWrap && tileThumb){
+      thumbWrap.style.cssText = tileThumb.style.cssText + (tileThumb.style.cssText ? ';' : '') + 'position:relative;';
+      thumbWrap.innerHTML = tileThumb.innerHTML;
+    }
+    closeModal();
+  });
+
+});
 
 function clearFileSelection(){
   selectedFile = null;
   fileInput.value = '';
   fileSelectedBar.classList.remove('visible');
-  btnPlus.classList.remove('active');
+  if(urlInputWrap) urlInputWrap.style.display = '';
   contentInput.disabled = false;
-  contentInput.placeholder = 'ここにURLを入力...';
+  setSegment('text');
 }
 
 // ドラッグ&ドロップ
@@ -2342,8 +2412,12 @@ function clearFileSelection(){
     }
     selectedFile = file;
     fileSelectedName.textContent = file.name;
+    if(urlInputWrap) urlInputWrap.style.display = 'none';
     fileSelectedBar.classList.add('visible');
-    btnPlus.classList.add('active');
+    currentSegment = 'file';
+    document.querySelectorAll('#input-seg span').forEach(function(s){
+      s.classList.toggle('on', s.dataset.mode === 'file');
+    });
     contentInput.disabled = true;
     contentInput.placeholder = 'ファイルを暗号化します';
     contentInput.value = '';
@@ -3019,12 +3093,12 @@ function showEncPopup(){
     'position:fixed;top:50%;left:50%;z-index:9990;'+
     'transform:translate(-50%,-50%);opacity:0;'+
     'transition:opacity .3s ease;'+
-    'background:rgba(0,0,0,0.92);'+
-    'border:1.5px solid rgba(0,255,140,0.5);border-radius:16px;'+
+    'background:var(--card);'+
+    'border:1px solid var(--ink-faint);border-radius:16px;'+
     'padding:28px 32px 24px;'+
     'display:flex;flex-direction:column;align-items:center;gap:16px;'+
     'width:300px;pointer-events:none;'+
-    'box-shadow:0 0 40px rgba(0,0,0,0.7);';
+    'box-shadow:0 20px 60px rgba(80,80,90,.22);';
   var cvs=document.createElement('canvas');
   cvs.width=_POP_CVS_W*dpr; cvs.height=_POP_CVS_H*dpr;
   cvs.style.width=_POP_CVS_W+'px'; cvs.style.height=_POP_CVS_H+'px';
@@ -3035,20 +3109,20 @@ function showEncPopup(){
   var statusMain=document.createElement('span');
   statusMain.style.cssText=
     'font-family:"Noto Sans JP",sans-serif;font-size:15px;'+
-    'letter-spacing:0.5px;color:rgba(255,255,255,0.9);'+
+    'letter-spacing:0.5px;color:var(--ink);'+
     'transition:color .4s,font-size .4s;white-space:nowrap;';
   statusMain.textContent='暗号化しています';
   var statusDots=document.createElement('span');
   statusDots.style.cssText=
     'display:inline-block;width:18px;text-align:left;flex-shrink:0;'+
     'font-family:"Noto Sans JP",sans-serif;font-size:10px;'+
-    'letter-spacing:0;opacity:0.6;color:rgba(255,255,255,0.9);';
+    'letter-spacing:0;opacity:0.6;color:var(--ink-soft);';
   statusDiv.appendChild(statusMain);
   statusDiv.appendChild(statusDots);
   var logDiv=document.createElement('div');
   logDiv.style.cssText=
     'font-family:"JetBrains Mono",monospace;font-size:11px;'+
-    'color:rgba(0,255,140,0.75);text-align:left;min-width:200px;'+
+    'color:var(--ink-soft);text-align:left;min-width:200px;'+
     'height:49px;overflow-y:hidden;line-height:1.4;flex-shrink:0;';
   pop.appendChild(cvs);
   pop.appendChild(statusDiv);
@@ -3188,7 +3262,8 @@ async function doEncrypt(){
 
     const saveBody = {
       x0: enc.x0, N: enc.N, cc: enc.chainCount,
-      iv: enc.iv, ct: enc.ct, target_seconds: s
+      iv: enc.iv, ct: enc.ct, target_seconds: s,
+      scene: selectedScene
     };
     if(enc.is_file){
       saveBody.is_file = true;
@@ -3230,43 +3305,31 @@ function buildResultSection(resultSection, shareUrl, targetSeconds){
   var escapedUrl = shareUrl.replace(/"/g, '&quot;');
   resultSection.innerHTML =
     '<div class="result-section" id="result-card-inner">' +
-    '<div class="result-section-inner">' +
-    '<div class="result-label-row">' +
-    '<div class="result-green-dot"></div>' +
-    '<span class="result-label-text">生成されたURL</span>' +
+    '<div class="rs-head">' +
+    '<div class="rs-check">✓</div>' +
+    '<div class="rs-title">リンクができました</div>' +
     '</div>' +
-    '<div class="result-url-wrap" id="result-url-wrap">' +
-    '<div class="result-url-textarea">' +
-    '<span class="result-url-text" id="result-url-text" data-url="' + escapedUrl + '">' + escapedUrl + '</span>' +
-    '<span class="result-url-copied" id="result-url-copied">コピーしました</span>' +
-    '</div>' +
-    '<button class="copy-btn" id="copy-btn" title="コピー">' +
-    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
+    '<div class="rs-url">' +
+    '<span class="rs-url-text" id="result-url-text" data-url="' + escapedUrl + '">' + escapedUrl + '</span>' +
+    '<button class="rs-copy-btn" id="copy-btn" title="コピー">' +
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
     '</button>' +
     '</div>' +
-    '<div class="result-bottom-row">' +
-    '<button class="qr-thumb-btn" id="qr-thumb-btn" title="QRコード">' +
-    '<div id="qr-thumb-inner"></div>' +
-    '</button>' +
-    '<div class="result-spacer"></div>' +
-    '<button class="result-share-btn" id="result-share-btn" title="共有">' +
-    '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>' +
-    '共有' +
-    '</button>' +
-    '<button class="result-open-btn" id="result-open-btn" title="開く">' +
-    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
-    '開く' +
-    '</button>' +
+    '<div class="rs-bottom">' +
+    '<div class="rs-qr" id="qr-thumb-btn" title="QRコードを拡大"><div id="qr-thumb-inner"></div></div>' +
+    '<div class="rs-buttons">' +
+    '<button class="rs-share-btn" id="result-share-btn">共有</button>' +
+    '<button class="rs-open-btn" id="result-open-btn">ひらいてみる</button>' +
     '</div>' +
     '</div>' +
     '</div>';
   requestAnimationFrame(function(){
     const card = document.getElementById('result-card-inner');
     if(card) card.classList.add('show');
-    const urlWrap = document.getElementById('result-url-wrap');
-    if(urlWrap) urlWrap.addEventListener('click', function(){ copyUrl(); });
     const copyBtn = document.getElementById('copy-btn');
     if(copyBtn) copyBtn.addEventListener('click', function(e){ e.stopPropagation(); copyUrl(); });
+    const urlTextEl = document.getElementById('result-url-text');
+    if(urlTextEl){ urlTextEl.style.cursor='pointer'; urlTextEl.addEventListener('click', function(){ copyUrl(); }); }
     const openBtn = document.getElementById('result-open-btn');
     if(openBtn) openBtn.addEventListener('click', function(){ window.open(shareUrl, '_blank'); });
     var shareBtn = document.getElementById('result-share-btn');
@@ -3277,7 +3340,7 @@ function buildResultSection(resultSection, shareUrl, targetSeconds){
     });
     var qrThumb = document.getElementById('qr-thumb-inner');
     if(qrThumb && window.QRCode){
-      new QRCode(qrThumb, { text:shareUrl, width:38, height:38, colorDark:'#000000', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.L });
+      new QRCode(qrThumb, { text:shareUrl, width:62, height:62, colorDark:'#000000', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.L });
     }
     var qrBtn = document.getElementById('qr-thumb-btn');
     if(qrBtn) qrBtn.addEventListener('click', function(){ showQrModal(shareUrl, targetSeconds); });
@@ -3437,5 +3500,24 @@ function doCopiedAnim(){
   });
 })();
 </script>
+<div id="scene-modal" class="scene-modal">
+  <div class="scene-modal-box">
+    <div class="scene-modal-title">受け手が待つあいだの画面をえらぶ</div>
+    <div class="scene-grid" id="scene-grid">
+      <div class="scene-tile sel" data-scene="dawn"><div class="scene-thumb" style="background:linear-gradient(to top,#2a1f14,#0a0806 60%,#040404);"><div style="position:absolute;bottom:-24px;left:50%;transform:translateX(-50%);width:90px;height:40px;background:radial-gradient(ellipse,rgba(255,166,87,.4),transparent 70%);"></div><div class="scene-dot-breath" style="position:absolute;top:18px;left:50%;transform:translateX(-50%);width:7px;height:7px;border-radius:50%;background:rgba(255,240,224,.9);"></div></div><div class="scene-tile-name">夜明け</div></div>
+      <div class="scene-tile" data-scene="rain"><div class="scene-thumb" style="font-family:'JetBrains Mono',monospace;font-size:6px;line-height:1.7;color:rgba(255,196,138,.4);padding:6px;">a3f0 91c2<br>7b2e 04d…<br>e19a 5c77<br>30b8 f2a…<br>c4d1 88e0<br>5f27 b3c…</div><div class="scene-tile-name">計算機</div></div>
+      <div class="scene-tile" data-scene="moon"><div class="scene-thumb"><div style="position:absolute;top:14px;left:50%;transform:translateX(-50%);width:34px;height:34px;border-radius:50%;background:rgba(255,236,208,.85);box-shadow:-8px 0 0 -4px #050505 inset;"></div><div style="position:absolute;top:8px;left:16px;width:2px;height:2px;border-radius:50%;background:rgba(255,235,205,.5);"></div><div style="position:absolute;top:40px;right:14px;width:2px;height:2px;border-radius:50%;background:rgba(255,235,205,.4);"></div></div><div class="scene-tile-name">月</div></div>
+      <div class="scene-tile" data-scene="stars"><div class="scene-thumb" id="scene-thumb-stars"></div><div class="scene-tile-name">星空</div></div>
+      <div class="scene-tile" data-scene="rings"><div class="scene-thumb"><svg viewBox="0 0 120 64" style="position:absolute;inset:0;width:100%;height:100%;"><circle cx="60" cy="32" r="8" fill="none" stroke="rgba(255,180,90,.4)" stroke-width="1"/><circle cx="60" cy="32" r="14" fill="none" stroke="rgba(255,166,87,.28)" stroke-width=".8"/><circle cx="60" cy="32" r="20" fill="none" stroke="rgba(255,196,110,.32)" stroke-width="1.2"/><circle cx="60" cy="32" r="26" fill="none" stroke="rgba(255,166,87,.22)" stroke-width=".8"/></svg></div><div class="scene-tile-name">年輪</div></div>
+      <div class="scene-tile" data-scene="candle"><div class="scene-thumb"><svg viewBox="0 0 120 64" style="position:absolute;inset:0;width:100%;height:100%;"><ellipse cx="60" cy="18" rx="3" ry="7" fill="rgba(255,226,170,.9)"/><rect x="53" y="26" width="14" height="26" rx="2" fill="rgba(255,240,224,.16)" stroke="rgba(255,196,138,.35)" stroke-width=".6"/><rect x="40" y="52" width="40" height="2" rx="1" fill="rgba(255,166,87,.25)"/></svg></div><div class="scene-tile-name">ローソク</div></div>
+      <div class="scene-tile" data-scene="pulse"><div class="scene-thumb"><svg viewBox="0 0 120 64" style="position:absolute;inset:0;width:100%;height:100%;"><path d="M0 32 L30 32 L38 32 L44 14 L50 46 L56 32 L120 32" fill="none" stroke="rgba(255,196,138,.7)" stroke-width="1.2"/></svg></div><div class="scene-tile-name">鼓動</div></div>
+      <div class="scene-tile" data-scene="orbit"><div class="scene-thumb"><svg viewBox="0 0 120 64" style="position:absolute;inset:0;width:100%;height:100%;"><circle cx="60" cy="32" r="22" fill="none" stroke="rgba(255,166,87,.2)" stroke-width="1" stroke-dasharray="2 3"/><circle cx="60" cy="10" r="2.5" fill="rgba(255,240,224,.9)"/></svg></div><div class="scene-tile-name">軌道</div></div>
+      <div class="scene-tile" data-scene="ripple"><div class="scene-thumb"><svg viewBox="0 0 120 64" style="position:absolute;inset:0;width:100%;height:100%;"><circle cx="45" cy="26" r="6" fill="none" stroke="rgba(255,210,170,.5)" stroke-width=".8"/><circle cx="45" cy="27" r="12" fill="none" stroke="rgba(255,210,170,.3)" stroke-width=".8"/><circle cx="80" cy="42" r="8" fill="none" stroke="rgba(255,210,170,.35)" stroke-width=".8"/></svg></div><div class="scene-tile-name">波紋</div></div>
+      <div class="scene-tile" data-scene="wall"><div class="scene-thumb" style="display:grid;grid-template-columns:repeat(8,1fr);grid-auto-rows:1fr;gap:2px;padding:6px;"><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,196,138,.7)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span></div><div class="scene-tile-name">パネル</div></div>
+      <div class="scene-tile" data-scene="weave"><div class="scene-thumb"><svg viewBox="0 0 120 64" style="position:absolute;inset:0;width:100%;height:100%;"><line x1="25" y1="16" x2="95" y2="16" stroke="rgba(255,184,100,.3)" stroke-width="3"/><line x1="25" y1="22" x2="95" y2="22" stroke="rgba(255,198,100,.3)" stroke-width="3"/><line x1="25" y1="28" x2="95" y2="28" stroke="rgba(255,170,100,.3)" stroke-width="3"/><line x1="25" y1="34" x2="70" y2="34" stroke="rgba(255,196,138,.55)" stroke-width="3"/><circle cx="70" cy="34" r="2" fill="rgba(255,240,224,.95)"/></svg></div><div class="scene-tile-name">織</div></div>
+      <div class="scene-tile" data-scene="auto"><div class="scene-thumb" style="display:flex;align-items:center;justify-content:center;"><div style="font-family:'JetBrains Mono',monospace;font-size:22px;color:rgba(255,196,138,.7);">?</div></div><div class="scene-tile-name">おまかせ</div></div>
+    </div>
+  </div>
+</div>
 </body>
 </html>`;

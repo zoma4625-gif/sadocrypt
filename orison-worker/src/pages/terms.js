@@ -1,6 +1,5 @@
 import { HEADER_CSS, HEADER_HTML, HEADER_JS } from '../shared/header.js';
 import { FOOTER } from '../shared/footer.js';
-import { HERO_BG_CSS, HERO_BG_HTML, HERO_BG_JS } from '../shared/hero-bg.js';
 
 export const HTML_TERMS = `<!DOCTYPE html>
 <html lang="ja">
@@ -14,17 +13,17 @@ export const HTML_TERMS = `<!DOCTYPE html>
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Noto+Sans+JP:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;color:#fff;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;}
+body{background:linear-gradient(170deg,#faf6ee 0%,#f4eee1 55%,#efe6d5 100%);color:#3c3a36;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;position:relative;overflow-x:hidden;}
 ${HEADER_CSS}
 /* ===== 法的ページ共通スタイル（/terms, /privacy） ===== */
 .legal-wrap{
   max-width:820px;
   margin:0 auto;
   padding:140px 24px 120px;
-  color:rgba(255,255,255,.82);
+  color:rgba(60,55,48,.75);
   font-family:'Inter','Noto Sans JP',sans-serif;
   line-height:1.9;
   counter-reset:legal-cnt;
@@ -32,16 +31,16 @@ ${HEADER_CSS}
   z-index:2;
 }
 .legal-wrap .legal-title{
-  font-size:32px;font-weight:700;color:#fff;line-height:1.4;
+  font-size:32px;font-weight:700;color:#3c3a36;line-height:1.4;
   margin:0 0 8px;letter-spacing:-0.01em;
 }
 .legal-wrap .legal-h2{
-  font-size:20px;font-weight:600;color:#fff;line-height:1.5;
+  font-size:20px;font-weight:600;color:#3c3a36;line-height:1.5;
   margin:48px 0 16px;padding-top:8px;
   counter-reset:legal-cnt;
 }
 .legal-wrap .legal-h3{
-  font-size:16px;font-weight:600;color:rgba(255,255,255,.92);
+  font-size:16px;font-weight:600;color:rgba(60,55,48,.85);
   margin:28px 0 12px;
 }
 .legal-wrap p{ font-size:15px;margin:0 0 14px; }
@@ -62,35 +61,31 @@ ${HEADER_CSS}
 .legal-wrap .legal-ol > li::before{
   content:counter(legal-cnt) ".";
   position:absolute;left:0;
-  color:rgba(255,255,255,.82);
+  color:rgba(60,55,48,.75);
   min-width:1.8em;
 }
 .legal-wrap .legal-ul > li{ margin:0 0 8px; }
 .legal-wrap .legal-hr{
-  border:none;border-top:.5px solid rgba(255,255,255,.12);
+  border:none;border-top:.5px solid rgba(60,55,48,.12);
   margin:36px 0;
 }
-.legal-wrap strong{ color:#fff;font-weight:600; }
+.legal-wrap strong{ color:#3c3a36;font-weight:600; }
 .legal-wrap code{
-  font-family:'JetBrains Mono',monospace;
-  font-size:.9em;color:#00ff8c;
-  background:rgba(0,255,140,.08);
+  font-family:'Share Tech Mono',monospace;
+  font-size:.9em;color:#c9865e;
+  background:rgba(60,55,48,.05);
   padding:.1em .4em;border-radius:4px;
 }
 .legal-wrap .legal-note{
   margin:24px 0;padding:20px 24px;
-  border:.5px solid rgba(0,255,140,.28);
+  border:.5px solid rgba(60,55,48,.2);
   border-radius:12px;
-  background:rgba(0,255,140,.03);
+  background:rgba(60,55,48,.03);
 }
-.legal-wrap .legal-note p{ font-size:14px;color:rgba(255,255,255,.72);margin:0 0 10px; }
+.legal-wrap .legal-note p{ font-size:14px;color:rgba(60,55,48,.7);margin:0 0 10px; }
 .legal-wrap .legal-note p:last-child{ margin-bottom:0; }
-.legal-wrap .legal-note ol{ font-size:14px;color:rgba(255,255,255,.72);padding-left:1.4em;margin:8px 0 0; }
-.legal-wrap .legal-note strong{ color:#00ff8c; }
-/* 背景アニメ（/time-lock と同一） */
-.tl-bg{position:absolute;top:0;left:0;width:100%;height:100vh;overflow:hidden;z-index:0;pointer-events:none;background:#000;}
-.tl-scrim{position:absolute;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:680px;height:100vh;background:linear-gradient(to right,rgba(0,0,0,0) 0%,rgba(0,0,0,.7) 20%,rgba(0,0,0,.7) 80%,rgba(0,0,0,0) 100%);z-index:1;pointer-events:none;}
-${HERO_BG_CSS}
+.legal-wrap .legal-note ol{ font-size:14px;color:rgba(60,55,48,.7);padding-left:1.4em;margin:8px 0 0; }
+.legal-wrap .legal-note strong{ color:#c9865e; }
 @media(max-width:680px){
   .legal-wrap{ padding:80px 18px 80px; }
   .legal-wrap .legal-title{ font-size:26px; }
@@ -99,9 +94,9 @@ ${HERO_BG_CSS}
 </style>
 </head>
 <body>
+<div style="position:fixed;top:-140px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(ellipse,rgba(239,138,99,.32) 0%,transparent 68%);pointer-events:none;z-index:0;"></div>
+<div style="position:fixed;bottom:-80px;left:-120px;width:380px;height:380px;border-radius:50%;background:radial-gradient(ellipse,rgba(143,168,143,.26) 0%,transparent 68%);pointer-events:none;z-index:0;"></div>
 ${HEADER_HTML}
-<div class="tl-bg">${HERO_BG_HTML}</div>
-<div class="tl-scrim"></div>
 <main style="flex:1">
 <div class="legal-wrap">
 <h1 class="legal-title">Brake. 利用規約</h1>
@@ -290,7 +285,6 @@ ${HEADER_HTML}
 </main>
 ${FOOTER}
 <script>
-${HERO_BG_JS}
 ${HEADER_JS}
 </script>
 </body>

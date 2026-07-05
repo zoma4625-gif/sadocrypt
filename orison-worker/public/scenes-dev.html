@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>scenes dev | Brake.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#000;color:#ccc;font-family:'Noto Sans JP',sans-serif;padding:20px;}
+h1{font-size:14px;color:#888;letter-spacing:.1em;}
+.btns{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0;}
+.btns button{background:#111;color:#ffc48a;border:1px solid rgba(255,166,87,.35);border-radius:8px;
+  padding:6px 14px;font-size:12px;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
+.btns button.active{background:rgba(255,166,87,.2);color:#fff;}
+#stage{position:relative;width:100%;max-width:900px;height:480px;border-radius:14px;overflow:hidden;
+  border:1px solid rgba(255,166,87,.2);background:#050505;}
+.ctl{margin-top:12px;display:flex;align-items:center;gap:14px;font-size:12px;color:#888;}
+.ctl input[type=range]{width:280px;}
+</style>
+</head>
+<body>
+<h1>BRAKE_SCENES dev preview（デプロイ前に削除 or 残置は任意 / noindex済み）</h1>
+<div class="btns" id="btns"></div>
+<div id="stage"></div>
+<div class="ctl">
+  <label>progress <input type="range" id="prog" min="0" max="1000" value="300"></label>
+  <span id="progv">30.0%</span>
+  <label><input type="checkbox" id="autorun" checked> 自動進行</label>
+  <button id="finbtn" style="background:#1a120a;color:#ffd9ae;border:1px solid rgba(255,166,87,.5);border-radius:8px;padding:6px 14px;font-size:12px;cursor:pointer;">完了演出を再生</button>
+  <label><input type="checkbox" id="mobtgl"> モバイル幅(360×640)</label>
+  <span style="color:#666;">※画面タップで flow ⇄ 元シーン切替</span>
+</div>
+<script src="/scenes.js"></script>
+<script>
+(function(){
+var TOTAL = 3762230;
+var stage = document.getElementById('stage');
+var btnsEl = document.getElementById('btns');
+var progEl = document.getElementById('prog');
+var progV = document.getElementById('progv');
+var autoEl = document.getElementById('autorun');
+var handle = null;
+var currentId = 'dawn';
+
+var META = { opensAtText: '2026年7月3日 15:12 にひらきます' };
+
+function p(){ return Number(progEl.value)/1000; }
+
+function mountScene(id){
+  currentId = id;
+  if(handle){ handle.destroy(); handle = null; }
+  handle = window.BRAKE_SCENES.mount(id, stage, META);
+  push();
+  var bs = btnsEl.querySelectorAll('button');
+  for(var i=0;i<bs.length;i++) bs[i].className = (bs[i].dataset.id===id)?'active':'';
+}
+
+function push(){
+  if(!handle) return;
+  var pp = p();
+  var cur = Math.floor(pp*TOTAL);
+  handle.update(pp, cur, TOTAL);
+  var remSec = Math.max(0, Math.round((1-pp)*3600));
+  var remText = remSec>=60 ? ('あと ' + Math.ceil(remSec/60) + '分') : ('あと ' + remSec + '秒');
+  handle.setRemaining(remText);
+  progV.textContent = (pp*100).toFixed(1)+'%';
+}
+
+window.BRAKE_SCENES.ids.forEach(function(id){
+  var b = document.createElement('button');
+  b.textContent = id;
+  b.dataset.id = id;
+  b.onclick = function(){ mountScene(id); };
+  btnsEl.appendChild(b);
+});
+
+progEl.addEventListener('input', push);
+document.getElementById('mobtgl').onchange = function(){
+  if(this.checked){ stage.style.width='360px'; stage.style.height='640px'; }
+  else{ stage.style.width='100%'; stage.style.maxWidth='900px'; stage.style.height='480px'; }
+  mountScene(currentId); /* 幅変更後に再マウントしてモバイル分岐を反映 */
+};
+document.getElementById('finbtn').onclick = function(){
+  if(!handle) return;
+  autoEl.checked = false;
+  progEl.value = 1000;
+  push();
+  handle.finish(function(){
+    console.log('[finish] callback fired — ここで結果表示へ遷移する想定');
+  });
+};
+setInterval(function(){
+  if(autoEl.checked){
+    var v = Number(progEl.value)+1;
+    if(v>1000) v=0;
+    progEl.value = v;
+  }
+  push();
+}, 200);
+
+mountScene('dawn');
+})();
+</script>
+</body>
+</html>
