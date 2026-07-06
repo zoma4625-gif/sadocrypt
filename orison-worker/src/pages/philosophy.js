@@ -140,7 +140,7 @@ ${HEADER_HTML}
   <div class="phil-card-grid">
     <div class="phil-card">
       <div class="phil-card-title">個人から、大切な人へ</div>
-      <div class="phil-card-desc">大切なメッセージを、心の準備時間ごと送る。</div>
+      <div class="phil-card-desc">想いのこもったメッセージを、心の準備時間ごと送る。</div>
     </div>
     <div class="phil-card">
       <div class="phil-card-title">発信者から、ファンへ</div>
