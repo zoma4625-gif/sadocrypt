@@ -12,15 +12,19 @@ export const HTML_ABOUT = `<!DOCTYPE html>
 <meta property="og:title" content="Brake.とは | Brake.">
 <meta property="og:description" content="Brake.は、タイムロック暗号を使った暗号化Webサービスです。URLやファイルに「時間の鍵」をかけ、指定した時間が来るまで誰も開けられないリンクを生成します。">
 <meta property="og:url" content="https://brake.run/about">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://brake.run/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Brake.とは | Brake.">
 <meta name="twitter:description" content="Brake.は、タイムロック暗号を使った暗号化Webサービスです。URLやファイルに「時間の鍵」をかけ、指定した時間が来るまで誰も開けられないリンクを生成します。">
+<meta name="twitter:image" content="https://brake.run/og.png">
 <link rel="canonical" href="https://brake.run/about">
 <link rel="alternate" hreflang="ja" href="https://brake.run/about">
 <link rel="alternate" hreflang="x-default" href="https://brake.run/about">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Brake.とは","description":"Brake.は、タイムロック暗号を使った暗号化Webサービスです。URLやファイルに「時間の鍵」をかけ、指定した時間が来るまで誰も開けられないリンクを生成します。","url":"https://brake.run/about","inLanguage":"ja","publisher":{"@type":"Organization","name":"Brake."}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

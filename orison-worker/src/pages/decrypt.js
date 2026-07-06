@@ -5,7 +5,9 @@ export const HTML_DECRYPT = `<!DOCTYPE html>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Brake. – 復号</title>
 <meta name="robots" content="noindex,nofollow">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -471,6 +473,14 @@ body{
   white-space:nowrap;
 }
 .letter-btn2:hover{border-color:rgba(90,60,30,.6);color:rgba(90,60,30,1);}
+/* YouTube facade */
+.yt-facade{position:relative;width:100%;padding-bottom:56.25%;background:#1a1210;border-radius:8px;overflow:hidden;cursor:pointer;}
+.yt-facade img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:8px;display:block;}
+.yt-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:60px;height:60px;background:rgba(58,44,28,.78);border-radius:50%;display:flex;align-items:center;justify-content:center;pointer-events:none;transition:background .2s,transform .15s;}
+.yt-facade:hover .yt-play{background:rgba(58,44,28,.96);transform:translate(-50%,-50%) scale(1.07);}
+.yt-play svg{fill:rgba(255,246,235,.95);margin-left:5px;}
+.yt-iframe-wrap{position:absolute;inset:0;}
+.yt-iframe-wrap iframe{width:100%;height:100%;border:none;border-radius:8px;}
 </style>
 </head>
 <body>
@@ -738,6 +748,25 @@ function base64ToUint8(b64){
 }
 
 function isSafeURL(s){try{const u=new URL(s);return u.protocol==='http:'||u.protocol==='https:';}catch{return false;}}
+
+function parseVideoEmbed(url){
+  try{
+    var u=new URL(url);
+    var h=u.hostname.replace(/^www\./,'').replace(/^m\./,'');
+    var id='';
+    if(h==='youtube.com'){
+      if(u.pathname.startsWith('/shorts/')){
+        id=u.pathname.split('/shorts/')[1].split('/')[0].split('?')[0];
+      }else{
+        id=u.searchParams.get('v')||'';
+      }
+    }else if(h==='youtu.be'){
+      id=u.pathname.split('/')[1].split('?')[0];
+    }
+    if(id&&/^[A-Za-z0-9_-]{11}$/.test(id)){return{platform:'youtube',videoId:id};}
+  }catch(e){}
+  return null;
+}
 
 async function decryptWithXFinal(xFinalHex){
   const hash=await crypto.subtle.digest('SHA-256',hexToUint8(xFinalHex));
@@ -1029,7 +1058,60 @@ function renderResult(decBuf){
     var content=new TextDecoder().decode(decBuf);
 
     if(isSafeURL(content)){
-      // URL タイプ
+      // YouTube facade タイプ
+      var embed=parseVideoEmbed(content);
+      if(embed){
+        var vid=embed.videoId;
+        var playSvg='<svg width="22" height="22" viewBox="0 0 24 24"><polygon points="6,3 20,12 6,21"/></svg>';
+        inner='<div class="yt-facade" id="yt-facade"><img id="yt-thumb" alt=""><div class="yt-play">'+playSvg+'</div></div>';
+        inner+='<div class="letter-foot">';
+        inner+='<div class="letter-date">'+escHtml(dateLabel)+'</div>';
+        inner+='<div class="letter-foot-btns" style="justify-content:flex-end"><button class="letter-btn2" id="letter-copy-btn">URLコピー</button>';
+        inner+='<a href="'+escHtml(content)+'" target="_blank" rel="noopener" class="letter-btn">YouTubeで見る →</a>';
+        inner+='</div></div>';
+        card.innerHTML=inner;
+        (function(videoId,rawUrl){
+          var thumb=document.getElementById('yt-thumb');
+          var facade=document.getElementById('yt-facade');
+          if(thumb){
+            thumb.src='https://img.youtube.com/vi/'+videoId+'/hqdefault.jpg';
+            thumb.onerror=function(){this.style.display='none';};
+          }
+          if(facade){
+            facade.addEventListener('click',function(){
+              if(facade.querySelector('.yt-iframe-wrap')) return;
+              var wrap=document.createElement('div');
+              wrap.className='yt-iframe-wrap';
+              var fr=document.createElement('iframe');
+              fr.src='https://www.youtube-nocookie.com/embed/'+videoId+'?autoplay=1';
+              fr.allow='autoplay; fullscreen; encrypted-media; picture-in-picture';
+              fr.allowFullscreen=true;
+              wrap.appendChild(fr);
+              facade.appendChild(wrap);
+              facade.style.cursor='default';
+            });
+          }
+          var copyBtn=document.getElementById('letter-copy-btn');
+          if(copyBtn){
+            copyBtn.addEventListener('click',function(){
+              navigator.clipboard.writeText(rawUrl).then(function(){
+                copyBtn.textContent='コピー済';
+                setTimeout(function(){copyBtn.textContent='URLコピー';},1500);
+              }).catch(function(){
+                var ta=document.createElement('textarea');ta.value=rawUrl;
+                document.body.appendChild(ta);ta.select();
+                try{document.execCommand('copy');}catch(e2){}
+                document.body.removeChild(ta);
+                copyBtn.textContent='コピー済';
+                setTimeout(function(){copyBtn.textContent='URLコピー';},1500);
+              });
+            });
+          }
+        })(vid,content);
+        return;
+      }
+
+      // URL タイプ（YouTube以外）
       var svgLink='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
       inner='<div class="letter-url-row"><div class="letter-url-icon">'+svgLink+'</div>';
       inner+='<div class="letter-url-text" id="letter-url-text">'+escHtml(content)+'</div></div>';

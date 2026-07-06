@@ -6,21 +6,26 @@ export const HTML_ENCRYPT = `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#fdfbf5">
 <title>Brake. – とどく時間を、えらべる</title>
 <meta name="description" content="中身を入れて、ひらく時間を決めるだけ。設定した時間が来るまで誰も開けられないリンクを生成します。タイムロック暗号化サービス Brake.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Brake. – とどく時間を、えらべる">
 <meta property="og:description" content="中身を入れて、ひらく時間を決めるだけ。設定した時間が来るまで誰も開けられないリンクを生成します。タイムロック暗号化サービス Brake.">
 <meta property="og:url" content="https://brake.run/">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://brake.run/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Brake. – とどく時間を、えらべる">
 <meta name="twitter:description" content="中身を入れて、ひらく時間を決めるだけ。設定した時間が来るまで誰も開けられないリンクを生成します。タイムロック暗号化サービス Brake.">
+<meta name="twitter:image" content="https://brake.run/og.png">
 <link rel="canonical" href="https://brake.run/">
 <link rel="alternate" hreflang="ja" href="https://brake.run/">
 <link rel="alternate" hreflang="x-default" href="https://brake.run/">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Brake.","url":"https://brake.run","description":"ファイルやURLに“時間の鍵”をかける。設定した時間が来るまで誰も解読できない、タイムロック暗号化サービス。","applicationCategory":"SecurityApplication","operatingSystem":"Any","inLanguage":"ja","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,8 +34,8 @@ export const HTML_ENCRYPT = `<!DOCTYPE html>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{
-  background:#000;
-  color:#fff;
+  background:linear-gradient(170deg,#fdfbf5 0%,#f8f4ea 55%,#f3ecdd 100%);
+  color:#3c3a36;
   -webkit-font-smoothing:antialiased;
   min-height:100vh;
   display:flex;
@@ -101,6 +106,11 @@ ${HEADER_CSS}
   letter-spacing:.02em;
 }
 @media(max-width:680px){.hero-catch{font-size:22px;}}
+@media(max-width:430px){
+  .hero-body{padding:44px 20px 36px;}
+  .hero-catch{font-size:20px;margin-bottom:12px;}
+  .hero-sub{font-size:12px;margin-bottom:24px;}
+}
 .hero-sub{
   font-family:'Noto Sans JP',sans-serif;
   font-size:13px;
@@ -217,6 +227,9 @@ ${HEADER_CSS}
 .fi-scene-name small{display:block;font-size:10px;color:rgba(60,55,48,.45);margin-top:2px;}
 .fi-scene-change{font-size:12px;border-radius:999px;padding:7px 16px;background:#fff;
   border:1px solid rgba(60,55,48,.15);color:rgba(60,55,48,.7);cursor:pointer;}
+.fi-yt-hint{display:none;align-items:center;gap:7px;padding:0 0 8px;font-family:'Noto Sans JP',sans-serif;font-size:12px;color:rgba(60,55,48,.55);}
+.fi-yt-hint.visible{display:flex;}
+.fi-yt-icon{width:18px;height:18px;flex-shrink:0;color:rgba(60,55,48,.4);}
 .file-selected-bar{
   display:none;
   align-items:center;
@@ -1609,6 +1622,10 @@ ${HEADER_HTML}
             <textarea id="msg" class="fi-input" rows="1"
               placeholder="ここにメッセージ・URLを書く..."></textarea>
           </div>
+          <div class="fi-yt-hint" id="fi-yt-hint">
+            <svg class="fi-yt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="13" rx="3"/><polygon points="10,10 16,12.5 10,15" fill="currentColor" stroke="none"/></svg>
+            <span>動画が埋め込まれます</span>
+          </div>
           <div class="file-selected-bar" id="file-selected-bar">
             <span style="font-size:14px">📎</span>
             <span class="file-selected-name" id="file-selected-name"></span>
@@ -2374,12 +2391,37 @@ const contentInput = document.getElementById('msg');
 const urlInputWrap = null;
 const fiInrow = document.querySelector('.fi-inrow');
 
+// YouTube URL 判定（送り手プレビュー用）
+function detectYouTubeId(url){
+  try{
+    var u=new URL(url.trim());
+    var h=u.hostname.replace(/^www\./,'').replace(/^m\./,'');
+    var id='';
+    if(h==='youtube.com'){
+      id=u.pathname.startsWith('/shorts/')?u.pathname.split('/shorts/')[1].split('/')[0].split('?')[0]:(u.searchParams.get('v')||'');
+    }else if(h==='youtu.be'){
+      id=u.pathname.split('/')[1].split('?')[0];
+    }
+    return /^[A-Za-z0-9_-]{11}$/.test(id)?id:'';
+  }catch(e){return '';}
+}
+
+var ytHintEl=document.getElementById('fi-yt-hint');
+function updateYtHint(){
+  if(!ytHintEl) return;
+  var val=(contentInput.value||'').trim();
+  var isYt=!!(val&&detectYouTubeId(val));
+  if(isYt) ytHintEl.classList.add('visible');
+  else ytHintEl.classList.remove('visible');
+}
+
 // textarea 自動拡張
 contentInput.addEventListener('input', function(){
   contentInput.style.height = 'auto';
   var maxH = Math.floor(window.innerHeight * 0.4);
   contentInput.style.height = Math.min(contentInput.scrollHeight, maxH) + 'px';
   contentInput.style.overflowY = contentInput.scrollHeight > maxH ? 'auto' : 'hidden';
+  updateYtHint();
 });
 
 // ＋ボタンでファイル選択
@@ -2618,6 +2660,7 @@ function clearFileSelection(){
   fileInput.value = '';
   fileSelectedBar.classList.remove('visible');
   if(fiInrow) fiInrow.style.display = '';
+  updateYtHint();
 }
 
 // ドラッグ&ドロップ

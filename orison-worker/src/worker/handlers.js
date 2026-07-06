@@ -104,7 +104,7 @@ export async function handleSave(request, env) {
 // 有効期限切れエラーページ HTML
 export function buildExpiredHtml() {
     return '<!DOCTYPE html><html lang=ja><head><meta charset=UTF-8><title>Brake. – Error</title>' +
-        '<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">' +
+        '<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">' +
         '<style>body{background:#000;color:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif}' +
         '.c{text-align:center}.m{font-size:28px;margin-bottom:12px}h1{font-size:13px;font-weight:400;margin-bottom:8px}p{font-size:11px;color:rgba(255,255,255,.2)}</style>' +
         '<body><div class=c><div class=m>&#x229E;</div><h1>このパズルは存在しないか、有効期限が切れています</h1>' +
