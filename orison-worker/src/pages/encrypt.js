@@ -105,9 +105,9 @@ ${HEADER_CSS}
   margin-bottom:20px;
   letter-spacing:.02em;
 }
-@media(max-width:680px){.hero-catch{font-size:22px;}}
+@media(max-width:680px){.hero-catch{font-size:22px;}.hero-body{padding-top:88px;}}
 @media(max-width:430px){
-  .hero-body{padding:44px 20px 36px;}
+  .hero-body{padding:88px 20px 36px;}
   .hero-catch{font-size:20px;margin-bottom:12px;}
   .hero-sub{font-size:12px;margin-bottom:24px;}
 }
@@ -182,7 +182,7 @@ ${HEADER_CSS}
 @media(hover:hover){.fi-plus:hover .fi-plus-tip{opacity:1;}}
 @media(hover:none){.fi-plus-tip{display:none;}}
 .fi-input{flex:1;border:none;background:rgba(60,55,48,.05);border-radius:12px;
-  padding:14px 16px;font-size:14px;color:#3c3a36;outline:none;
+  padding:14px 16px;font-size:16px;color:#3c3a36;outline:none;
   resize:none;overflow:hidden;line-height:1.7;min-width:0;box-sizing:border-box;}
 /* ============================================================
    時間スライダー・ライブ表示
@@ -207,11 +207,11 @@ ${HEADER_CSS}
 .fi-custom{display:none;justify-content:center;align-items:center;gap:8px;margin-top:10px;}
 .fi-custom.show{display:flex;}
 #tv{width:72px;border:1px solid rgba(60,55,48,.15);background:#fff;border-radius:10px;
-  padding:9px 10px;font-size:13px;color:#3c3a36;outline:none;text-align:center;
+  padding:9px 10px;font-size:16px;color:#3c3a36;outline:none;text-align:center;
   -moz-appearance:textfield;ime-mode:disabled;}
 #tv::-webkit-inner-spin-button,#tv::-webkit-outer-spin-button{-webkit-appearance:none}
 #tu{border:1px solid rgba(60,55,48,.15);background:#fff;border-radius:10px;
-  padding:9px 12px;font-size:13px;color:#3c3a36;outline:none;-webkit-appearance:none;
+  padding:9px 12px;font-size:16px;color:#3c3a36;outline:none;-webkit-appearance:none;
   cursor:pointer;text-align:center;text-align-last:center;}
 .fi-custom>span{font-size:12px;color:rgba(60,55,48,.55);}
 /* ============================================================
@@ -1051,6 +1051,8 @@ ${HEADER_CSS}
   letter-spacing:1px;
 }
 .howto-col-img svg{color:#c9865e;}
+.howto-col-img img{width:100%;height:100%;object-fit:cover;display:block;border-radius:12px;}
+.cflow-img img{width:100%;height:100%;object-fit:cover;display:block;}
 .howto-col-step{
   order:1;
   font-family:'JetBrains Mono',monospace;
@@ -1748,19 +1750,19 @@ ${HEADER_HTML}
       <!-- PC: 3カラムグリッド -->
       <div class="howto-cols sender-pc">
         <div class="howto-col">
-          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#c9865e"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+          <div class="howto-col-img"><img src="/step-01.png" alt="メッセージやURLを置く" loading="lazy"></div>
           <div class="howto-col-step">STEP 01</div>
           <div class="howto-col-title"><span>置く</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
           <div class="howto-col-desc">渡したいもの（URL・テキスト・ファイル）を<br class="pc-br">ドロップする。</div>
         </div>
         <div class="howto-col">
-          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#c9865e"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="howto-col-img"><img src="/step-02.png" alt="ひらく時間を決める" loading="lazy"></div>
           <div class="howto-col-step">STEP 02</div>
           <div class="howto-col-title"><span>時間を決める</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
           <div class="howto-col-desc">復号にかかる時間を指定。</div>
         </div>
         <div class="howto-col">
-          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#c9865e"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div>
+          <div class="howto-col-img"><img src="/step-03.png" alt="リンクを共有する" loading="lazy"></div>
           <div class="howto-col-step">STEP 03</div>
           <div class="howto-col-title"><span>共有</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div>
           <div class="howto-col-desc">生成されたリンクを送るだけ。</div>
@@ -1772,10 +1774,7 @@ ${HEADER_HTML}
           <div class="cflow-viewport">
             <div class="cflow-stage">
               <div class="cflow-card cf-active">
-                <div class="cflow-img">
-                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                  <div class="cflow-img-label">[ img ]</div>
-                </div>
+                <div class="cflow-img"><img src="/step-01.png" alt="メッセージやURLを置く" loading="lazy"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 01</div>
                   <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>置く</div>
@@ -1783,10 +1782,7 @@ ${HEADER_HTML}
                 </div>
               </div>
               <div class="cflow-card cf-next">
-                <div class="cflow-img">
-                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  <div class="cflow-img-label">[ img ]</div>
-                </div>
+                <div class="cflow-img"><img src="/step-02.png" alt="ひらく時間を決める" loading="lazy"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 02</div>
                   <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>時間を決める</div>
@@ -1794,10 +1790,7 @@ ${HEADER_HTML}
                 </div>
               </div>
               <div class="cflow-card cf-hidden">
-                <div class="cflow-img">
-                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-                  <div class="cflow-img-label">[ img ]</div>
-                </div>
+                <div class="cflow-img"><img src="/step-03.png" alt="リンクを共有する" loading="lazy"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 03</div>
                   <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>共有</div>
