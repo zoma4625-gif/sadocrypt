@@ -93,8 +93,8 @@ ${HEADER_CSS}
 }
 .phil-cta-btn:hover{opacity:.85;}
 .phil-cta-logo{
-  font-family:'Inter','Noto Sans JP',sans-serif;
-  font-weight:800;
+  font-family:'Orbitron',sans-serif;
+  font-weight:900;
   font-size:18px;
   color:#fff;
   letter-spacing:.02em;
