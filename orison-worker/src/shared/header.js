@@ -1,3 +1,5 @@
+export const LOGO_MARK_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" style="display:block;width:100%;height:100%"><rect x="32" y="0" width="64" height="32" fill="#f0876a"/><rect x="64" y="32" width="32" height="64" fill="#e5b98c"/><rect x="0" y="64" width="64" height="32" fill="#a8bba0"/><rect x="0" y="0" width="32" height="64" fill="#8fa5b0"/><rect x="32" y="32" width="32" height="32" fill="#3c3a36"/></svg>';
+
 export const HEADER_CSS = `/* ============================================================
    Brake. ロゴ共通
    ============================================================ */
@@ -169,7 +171,7 @@ export const HEADER_HTML = `  <!-- モバイルメニューオーバーレイ（
 
   <!-- ヘッダー -->
   <header class="hero-header">
-    <a href="/" class="brake-logo" style="text-decoration:none">Brake<span class="brake-dot">.</span></a>
+    <a href="/" style="text-decoration:none;display:inline-flex;align-items:center;gap:8px"><div style="border-radius:6px;overflow:hidden;width:26px;height:26px;flex-shrink:0">${LOGO_MARK_SVG}</div><span class="brake-logo">Brake<span class="brake-dot">.</span></span></a>
     <nav class="hero-nav">
       <a href="/time-lock">仕組み</a>
       <a href="/philosophy">なぜ？</a>

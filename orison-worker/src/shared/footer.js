@@ -1,6 +1,8 @@
+import { LOGO_MARK_SVG } from './header.js';
+
 export const FOOTER = `<footer style="width:100%;background:#ece6d6;border-top:1px solid rgba(60,55,48,.1)">
   <div style="max-width:700px;margin:0 auto;padding:40px 24px 0;text-align:center">
-    <a href="/" class="brake-logo" style="font-size:2.4rem;margin-bottom:32px;text-decoration:none;color:inherit;display:inline-block">Brake<span class="brake-dot">.</span></a>
+    <a href="/" style="text-decoration:none;display:inline-flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:32px"><div style="border-radius:6px;overflow:hidden;width:32px;height:32px;flex-shrink:0">${LOGO_MARK_SVG}</div><span class="brake-logo" style="font-size:2.4rem">Brake<span class="brake-dot">.</span></span><span style="font-family:'Noto Sans JP',sans-serif;font-size:12px;color:rgba(60,55,48,.55);letter-spacing:.06em">とどく時間を、えらべる。</span></a>
     <div style="display:flex;flex-wrap:wrap;gap:40px;justify-content:center;margin-bottom:40px">
       <a href="#top" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;" style="display:inline-flex;align-items:center;gap:6px;font-family:'Noto Sans JP',sans-serif;font-size:16px;color:#c9865e;text-decoration:none;transition:opacity .15s" onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='1'"><svg width="14" height="10" viewBox="0 0 14 10" fill="none"><path d="M1 8L7 2L13 8" stroke="#c9865e" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>TOPへ戻る</a>
       <a href="https://github.com/zoma4625-gif/sadocrypt" target="_blank" rel="noopener" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:rgba(60,55,48,.7);text-decoration:none;transition:color .15s" onmouseover="this.style.color='#3c3a36';this.style.textDecoration='underline'" onmouseout="this.style.color='rgba(60,55,48,.7)';this.style.textDecoration='none'">GitHub</a>

@@ -1,4 +1,4 @@
-import { HEADER_CSS, HEADER_HTML, HEADER_JS } from '../shared/header.js';
+import { HEADER_CSS, HEADER_HTML, HEADER_JS, LOGO_MARK_SVG } from '../shared/header.js';
 import { FOOTER } from '../shared/footer.js';
 
 export const HTML_ENCRYPT = `<!DOCTYPE html>
@@ -1815,19 +1815,19 @@ ${HEADER_HTML}
       <!-- PC: 3カラムグリッド -->
       <div class="howto-cols sender-pc">
         <div class="howto-col">
-          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#c9865e"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+          <div class="howto-col-img"><img src="/recv-step-01.png" alt="リンクを開くと復号がはじまる" loading="lazy"></div>
           <div class="howto-col-step">STEP 01</div>
           <div class="howto-col-title"><span>開く</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
           <div class="howto-col-desc">リンクを踏むとその場で復号がはじまる。</div>
         </div>
         <div class="howto-col">
-          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#c9865e"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="howto-col-img"><img src="/recv-step-02.png" alt="開いたまま待つ" loading="lazy"></div>
           <div class="howto-col-step">STEP 02</div>
           <div class="howto-col-title"><span>待つ</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
           <div class="howto-col-desc">ブラウザを開いたまま待つ。</div>
         </div>
         <div class="howto-col">
-          <div class="howto-col-img"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="color:#c9865e"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+          <div class="howto-col-img"><img src="/recv-step-03.png" alt="復号が終わると受け取れる" loading="lazy"></div>
           <div class="howto-col-step">STEP 03</div>
           <div class="howto-col-title"><span>受け取る</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
           <div class="howto-col-desc">復号が終わると自動でリンクに遷移する。</div>
@@ -1839,10 +1839,7 @@ ${HEADER_HTML}
           <div class="cflow-viewport">
             <div class="cflow-stage">
               <div class="cflow-card cf-active">
-                <div class="cflow-img">
-                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-                  <div class="cflow-img-label">[ img ]</div>
-                </div>
+                <div class="cflow-img"><img src="/recv-step-01.png" alt="リンクを開くと復号がはじまる" loading="lazy"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 01</div>
                   <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>開く</div>
@@ -1850,10 +1847,7 @@ ${HEADER_HTML}
                 </div>
               </div>
               <div class="cflow-card cf-next">
-                <div class="cflow-img">
-                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                  <div class="cflow-img-label">[ img ]</div>
-                </div>
+                <div class="cflow-img"><img src="/recv-step-02.png" alt="開いたまま待つ" loading="lazy"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 02</div>
                   <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>待つ</div>
@@ -1861,10 +1855,7 @@ ${HEADER_HTML}
                 </div>
               </div>
               <div class="cflow-card cf-hidden">
-                <div class="cflow-img">
-                  <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                  <div class="cflow-img-label">[ img ]</div>
-                </div>
+                <div class="cflow-img"><img src="/recv-step-03.png" alt="復号が終わると受け取れる" loading="lazy"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 03</div>
                   <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>受け取る</div>
@@ -1895,7 +1886,7 @@ ${HEADER_HTML}
      ============================================================ -->
 <footer class="lp-footer">
   <div class="lp-footer-inner">
-    <a href="/" class="lp-footer-logo">Brake<span class="lp-footer-logo-dot">.</span></a>
+    <a href="/" style="text-decoration:none;display:inline-flex;flex-direction:column;align-items:center;gap:8px"><div style="border-radius:6px;overflow:hidden;width:32px;height:32px;flex-shrink:0">${LOGO_MARK_SVG}</div><span class="lp-footer-logo">Brake<span class="lp-footer-logo-dot">.</span></span><span style="font-family:'Noto Sans JP',sans-serif;font-size:12px;color:rgba(60,55,48,.55);letter-spacing:.06em">とどく時間を、えらべる。</span></a>
     <div class="lp-footer-links">
       <a href="https://github.com/zoma4625-gif/sadocrypt" class="lp-footer-link" target="_blank" rel="noopener">GitHub</a>
       <a href="/privacy" class="lp-footer-link">プライバシーポリシー</a>
