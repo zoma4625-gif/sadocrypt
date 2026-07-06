@@ -2527,9 +2527,18 @@ fileCancelBtn.addEventListener('click', function(){
     updateHeroLayers();
   });
 
+  // tv 入力値の正規化（全角数字・読点句点カンマ→半角ピリオド・複数小数点除去）
+  function normalizeTvInput(raw){
+    var v = raw.replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0);});
+    v = v.replace(/[、。，．,]/g,'.');
+    var first = v.indexOf('.');
+    if(first !== -1) v = v.slice(0, first+1) + v.slice(first+1).replace(/\./g,'');
+    return v;
+  }
+
   // c) tv/tu 手入力 → チップ全非選択 + スライダー最近傍 + ライブ更新
   tvEl.addEventListener('input', function(){
-    var v = tvEl.value.replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0);});
+    var v = normalizeTvInput(tvEl.value);
     if(v!==tvEl.value) tvEl.value=v;
     var max=30*24*60*60;
     if(tuEl.value==='m') max=Math.floor(max/60);
@@ -2546,6 +2555,7 @@ fileCancelBtn.addEventListener('click', function(){
     updateLive();
   });
   tvEl.addEventListener('blur', function(){
+    tvEl.value = normalizeTvInput(tvEl.value);
     var raw = parseFloat(tvEl.value);
     if(!isNaN(raw) && raw > 0){
       var rounded = Math.ceil(raw * 100) / 100;

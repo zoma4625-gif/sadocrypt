@@ -1084,8 +1084,9 @@ function renderResult(decBuf){
               wrap.className='yt-iframe-wrap';
               var fr=document.createElement('iframe');
               fr.src='https://www.youtube-nocookie.com/embed/'+videoId+'?autoplay=1';
-              fr.allow='autoplay; fullscreen; encrypted-media; picture-in-picture';
+              fr.allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
               fr.allowFullscreen=true;
+              fr.referrerPolicy='strict-origin-when-cross-origin';
               wrap.appendChild(fr);
               facade.appendChild(wrap);
               facade.style.cursor='default';
