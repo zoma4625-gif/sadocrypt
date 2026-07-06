@@ -830,7 +830,7 @@ ${HEADER_CSS}
 .whats-section{
   width:100%;
   background:#faf5ec;
-  padding:60px 24px;
+  padding:45px 24px;
   text-align:center;
 }
 .whats-inner{
@@ -930,7 +930,7 @@ ${HEADER_CSS}
   line-height:1.7;
 }
 @media(max-width:680px){
-  .whats-section{padding:60px 20px;}
+  .whats-section{padding:45px 20px;}
   .whats-heading{font-size:26px;}
   .whats-col-body{font-size:15px;margin-bottom:40px;}
   .who-grid{grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:40px;}
