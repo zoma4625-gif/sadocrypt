@@ -51,7 +51,7 @@ ${HEADER_CSS}
 .tl-cta{display:flex;justify-content:center;margin-top:60px;padding-bottom:20px;}
 .tl-cta-btn{background:linear-gradient(135deg,#ef8a63 0%,#d99a70 45%,#8fa88f 100%);border:none;padding:14px 28px;border-radius:10px;text-decoration:none;display:inline-flex;align-items:baseline;gap:8px;transition:opacity .2s;}
 .tl-cta-btn:hover{opacity:.85;}
-.tl-cta-logo{font-family:'Inter','Noto Sans JP',sans-serif;font-weight:800;font-size:18px;color:#fff;letter-spacing:.02em;line-height:1;}
+.tl-cta-logo{font-family:'Orbitron',sans-serif;font-weight:900;font-size:18px;color:#fff;letter-spacing:.02em;line-height:1;}
 .tl-cta-dot{color:#fff;}
 .tl-cta-text{font-family:'Noto Sans JP',sans-serif;font-weight:700;font-size:14px;color:#fff;line-height:1;}
 </style>

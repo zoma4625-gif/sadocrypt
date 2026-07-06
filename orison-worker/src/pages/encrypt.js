@@ -1553,7 +1553,7 @@ ${HEADER_CSS}
   top:max(100px,calc(100vh - 124px));
   right:24px;
   background:linear-gradient(135deg,#ef8a63 0%,#d99a70 45%,#8fa88f 100%);
-  color:#fff;font-size:12px;font-weight:600;border:none;
+  color:#fff;font-size:12px;font-weight:600;font-family:'Noto Sans JP',sans-serif;border:none;
   border-radius:999px;padding:12px 20px;
   box-shadow:0 8px 24px rgba(220,130,90,.35);
   cursor:pointer;z-index:900;
@@ -1898,7 +1898,7 @@ ${HEADER_HTML}
 </footer>
 
 <!-- トップへ戻るボタン -->
-<a id="brake-top-btn" href="#top" aria-label="TOPへ戻る">Brake. を試す ↑</a>
+<a id="brake-top-btn" href="#top" aria-label="TOPへ戻る"><span style="font-family:'Orbitron',sans-serif;font-weight:900">Brake.</span> を試す ↑</a>
 
 <!-- ドラッグ&ドロップオーバーレイ -->
 <div id="drop-overlay">
