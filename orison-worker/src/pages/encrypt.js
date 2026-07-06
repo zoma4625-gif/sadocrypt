@@ -105,9 +105,9 @@ ${HEADER_CSS}
   margin-bottom:20px;
   letter-spacing:.02em;
 }
-@media(max-width:680px){.hero-catch{font-size:22px;}.hero-body{padding-top:88px;}}
+@media(max-width:680px){.hero-catch{font-size:22px;}.hero-body{padding-top:112px;}}
 @media(max-width:430px){
-  .hero-body{padding:88px 20px 36px;}
+  .hero-body{padding:112px 20px 36px;}
   .hero-catch{font-size:20px;margin-bottom:12px;}
   .hero-sub{font-size:12px;margin-bottom:24px;}
 }
