@@ -2,7 +2,6 @@ import { handleSave, handleSharedPuzzle } from './handlers.js';
 import { HTML_BENCHMARK } from '../pages/benchmark.js';
 import { HTML_TIME_LOCK } from '../pages/time-lock.js';
 import { HTML_PHILOSOPHY } from '../pages/philosophy.js';
-import { HTML_ABOUT } from '../pages/about.js';
 import { HTML_TERMS } from '../pages/terms.js';
 import { HTML_PRIVACY } from '../pages/privacy.js';
 import { HTML_ENCRYPT } from '../pages/encrypt.js';
@@ -37,7 +36,6 @@ export async function router(request, env, ctx) {
   <url><loc>https://brake.run/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
   <url><loc>https://brake.run/time-lock</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://brake.run/philosophy</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://brake.run/about</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>`;
             return new Response(xml, {
                 headers: { 'Content-Type': 'application/xml;charset=utf-8', 'Cache-Control': 'public, max-age=86400' }
@@ -67,11 +65,6 @@ export async function router(request, env, ctx) {
         // 思想ページ
         if (path === '/philosophy') {
             return new Response(HTML_PHILOSOPHY, { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'public, max-age=3600' } });
-        }
-
-        // Brake.とはページ
-        if (path === '/about') {
-            return new Response(HTML_ABOUT, { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'public, max-age=3600' } });
         }
 
         // 利用規約

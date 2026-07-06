@@ -63,7 +63,6 @@ jobs:
           check 'https://brake.run/'           'とどく時間を、えらべる'                '/'
           check 'https://brake.run/time-lock'  'Rivest-Shamir-Wagner方式の逐次2乗計算' '/time-lock'
           check 'https://brake.run/philosophy' 'なぜ、待たせるのか'                    '/philosophy'
-          check 'https://brake.run/about'      'Brake.とは | Brake.'                   '/about'
           check 'https://brake.run/terms'      '利用規約 | Brake.'                     '/terms'
           check 'https://brake.run/privacy'    'プライバシーポリシー | Brake.'          '/privacy'
 

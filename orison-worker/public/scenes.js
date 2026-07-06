@@ -223,7 +223,7 @@
       }, 1300);
       H.to(cycle, m.d + (Math.random() * 6000 - 3000) + 1300);
     }
-    var first = pick();
+    var first = { t: 'ひらくのを待っています', d: 10000 };
     el.textContent = first.t;
     el.style.opacity = '1';
     H.to(cycle, first.d + (Math.random() * 6000 - 3000));

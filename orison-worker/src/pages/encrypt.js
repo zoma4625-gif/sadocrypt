@@ -43,7 +43,7 @@ body{
    デザイントークン
    ============================================================ */
 :root{
-  --iri-grad: linear-gradient(170deg,#faf6ee 0%,#f4eee1 55%,#efe6d5 100%);
+  --iri-grad: linear-gradient(170deg,#fdfbf5 0%,#f8f4ea 55%,#f3ecdd 100%);
   --ink: #3c3a36;
   --ink-soft: rgba(60,55,48,.55);
   --ink-faint: rgba(60,55,48,.15);
@@ -64,33 +64,22 @@ body{
   overflow:hidden;
   background:var(--iri-grad);
 }
-.hero-blob1{
-  position:absolute;
-  top:-140px;right:-100px;
-  width:500px;height:500px;
-  border-radius:50%;
-  background:radial-gradient(ellipse,rgba(239,138,99,.32) 0%,transparent 68%);
-  pointer-events:none;
-  z-index:1;
-}
-.hero-blob2{
-  position:absolute;
-  bottom:-80px;left:-120px;
-  width:380px;height:380px;
-  border-radius:50%;
-  background:radial-gradient(ellipse,rgba(143,168,143,.26) 0%,transparent 68%);
-  pointer-events:none;
-  z-index:1;
-}
+.hero-sky{position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to bottom,
+    #2a2d4a 0%, #3d3a5c 22%, #5a4a6a 40%, transparent 62%);
+  opacity:0;transition:opacity 1.4s ease;z-index:1;}
+.hero-glow{position:absolute;left:0;right:0;bottom:0;height:240px;pointer-events:none;
+  background:linear-gradient(to top,rgba(240,135,106,.22),rgba(229,185,140,.09) 55%,transparent);
+  transition:opacity 1.4s ease;z-index:1;}
+.hero-night{position:absolute;inset:0;pointer-events:none;opacity:0;
+  transition:opacity 1.4s ease;z-index:1;
+  background:
+    radial-gradient(1.5px 1.5px at 20% 22%, rgba(255,250,235,.9), transparent),
+    radial-gradient(1.5px 1.5px at 68% 16%, rgba(255,250,235,.7), transparent),
+    radial-gradient(1px 1px at 44% 30%, rgba(255,250,235,.6), transparent),
+    radial-gradient(1.5px 1.5px at 82% 28%, rgba(255,250,235,.8), transparent),
+    radial-gradient(1px 1px at 33% 14%, rgba(255,250,235,.5), transparent);}
 ${HEADER_CSS}
-/* ============================================================
-   ヘッダー: LP スコープ — 背景のみ透明化（ink色はheader.jsで共通定義）
-   ============================================================ */
-.hero .hero-header{
-  background:transparent;
-  border-bottom-color:var(--ink-faint);
-}
-
 .hero-body{
   position:relative;
   z-index:2;
@@ -127,7 +116,15 @@ ${HEADER_CSS}
 /* ============================================================
    フォーム領域（白カード）
    ============================================================ */
+.form-card-wrap{position:relative;}
+.paper{position:absolute;inset:0;border-radius:16px;pointer-events:none;}
+.paper1{transform:rotate(-2.4deg) translate(-10px,8px);
+  background:linear-gradient(135deg,#f2b49a,#eda06f);opacity:.55;}
+.paper2{transform:rotate(1.8deg) translate(10px,10px);
+  background:linear-gradient(135deg,#a8bba0,#8f9cc0);opacity:.45;}
 .form-card{
+  position:relative;
+  z-index:1;
   background:var(--card);
   border:none;
   border-radius:20px;
@@ -136,6 +133,8 @@ ${HEADER_CSS}
   padding:22px;
   max-width:520px;
   width:100%;
+  margin-left:auto;
+  margin-right:auto;
 }
 .url-input-wrap{
   padding:0;
@@ -156,14 +155,25 @@ ${HEADER_CSS}
 .url-input::placeholder{color:rgba(60,55,48,.35);font-family:'Noto Sans JP',sans-serif;}
 .url-input:disabled{color:rgba(60,55,48,.3);cursor:not-allowed}
 /* ============================================================
-   セグメント切替
+   入力行（＋ボタン + textarea）
    ============================================================ */
-.fi-seg{display:flex;gap:6px;background:rgba(60,55,48,.06);border-radius:12px;
-  padding:4px;margin-bottom:14px;}
-.fi-seg span{flex:1;text-align:center;font-size:12px;padding:8px 0;
-  border-radius:9px;color:rgba(60,55,48,.55);cursor:pointer;}
-.fi-seg .on{background:#fff;color:var(--ink);font-weight:500;
-  box-shadow:0 1px 4px rgba(60,55,48,.12);}
+.fi-inrow{display:flex;align-items:flex-start;gap:10px;}
+.fi-plus{flex:none;width:34px;height:48px;border:none;background:none;
+  color:rgba(60,55,48,.5);font-size:22px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;}
+.fi-plus-tip{position:absolute;bottom:calc(100% + 8px);left:0;
+  background:#3c3a36;color:#fff;font-size:11px;line-height:1.5;
+  padding:7px 10px;border-radius:8px;white-space:nowrap;
+  opacity:0;pointer-events:none;transition:opacity .15s ease;
+  box-shadow:0 4px 14px rgba(0,0,0,.2);z-index:20;}
+.fi-plus-tip::after{content:'';position:absolute;top:100%;left:12px;
+  border:5px solid transparent;border-top-color:#3c3a36;}
+@media(hover:hover){.fi-plus:hover .fi-plus-tip{opacity:1;}}
+@media(hover:none){.fi-plus-tip{display:none;}}
+.fi-input{flex:1;border:none;background:rgba(60,55,48,.05);border-radius:12px;
+  padding:14px 16px;font-size:14px;color:#3c3a36;outline:none;
+  resize:none;overflow:hidden;line-height:1.7;min-width:0;box-sizing:border-box;}
 /* ============================================================
    時間スライダー・ライブ表示
    ============================================================ */
@@ -176,11 +186,12 @@ ${HEADER_CSS}
 #time-slider::-moz-range-thumb{width:24px;height:24px;
   border-radius:50%;background:#fff;box-shadow:0 2px 8px rgba(60,55,48,.3);
   cursor:pointer;border:none;}
-#time-live{text-align:center;font-size:13px;color:var(--ink);margin-top:0;}
+#time-live{font-size:26px;font-weight:700;color:#3c3a36;letter-spacing:.02em;}
 /* ============================================================
-   ライブ表示行 + その他カスタム入力
+   所要時間表示行 + カスタム入力
    ============================================================ */
-.fi-liverow{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px;}
+.fi-durrow{display:flex;align-items:baseline;justify-content:center;gap:10px;margin-top:12px;}
+.fi-durnote{text-align:center;font-size:11px;color:rgba(60,55,48,.45);margin-top:6px;}
 #time-other{font-size:12px;border-radius:999px;padding:6px 14px;background:#fff;border:1px solid rgba(60,55,48,.15);color:rgba(60,55,48,.6);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .12s,color .12s,border-color .12s;}
 #time-other.on{background:var(--accent-grad);color:#fff;border-color:transparent;}
 .fi-custom{display:none;justify-content:center;align-items:center;gap:8px;margin-top:10px;}
@@ -198,7 +209,7 @@ ${HEADER_CSS}
    ============================================================ */
 .fi-sec{font-size:11px;color:rgba(60,55,48,.5);letter-spacing:.08em;
   margin:18px 2px 8px;}
-.fi-scene-row{display:flex;align-items:center;gap:12px;
+.fi-scene-row{display:flex;align-items:center;gap:12px;cursor:pointer;
   background:rgba(60,55,48,.04);border-radius:12px;padding:10px 12px;}
 .fi-scene-thumb{width:56px;border-radius:9px;overflow:hidden;flex:none;background:#1a1512;}
 .fi-scene-thumb .t{height:34px;position:relative;}
@@ -301,7 +312,7 @@ ${HEADER_CSS}
 .scene-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
 @media(max-width:680px){.scene-grid{grid-template-columns:repeat(3,1fr);}}
 .scene-tile{cursor:pointer;border-radius:10px;overflow:hidden;border:2px solid rgba(60,55,48,.1);background:#fff;transition:border-color .2s;display:flex;flex-direction:column;}
-.scene-tile.sel{border-color:#ef8a63;}
+.scene-tile.sel{border-color:#ef8a63;border-width:3px;}
 .scene-thumb{height:88px;flex:none;position:relative;overflow:hidden;background:#050505;}
 @media(max-width:680px){.scene-thumb{height:72px;}}
 .scene-tile-name{font-size:11px;color:rgba(60,55,48,.75);text-align:center;padding:6px 2px 8px;letter-spacing:.04em;line-height:1.3;min-height:2.6em;display:flex;align-items:center;justify-content:center;background:#fff;}
@@ -352,8 +363,8 @@ ${HEADER_CSS}
   font-size:14px;
   font-weight:600;
   color:#fff;
-  background:var(--accent-grad);
-  box-shadow:0 8px 24px rgba(200,130,90,.35);
+  background:linear-gradient(135deg,#ef8a63 0%,#d99a70 45%,#8fa88f 100%);
+  box-shadow:0 8px 24px rgba(220,130,90,.35);
   cursor:pointer;
   transition:opacity .15s,transform .1s;
 }
@@ -457,43 +468,60 @@ ${HEADER_CSS}
 #result-section {
   margin-top: 0;
 }
-.result-section{
+.rs-outer{
   max-width:520px;
   width:100%;
-  background:#fffdf9;
-  border-radius:20px;
-  padding:22px;
-  box-shadow:0 20px 60px rgba(80,80,90,.18),0 2px 8px rgba(80,80,90,.08);
   margin:26px auto 0;
+  position:relative;
   opacity:0;
   transform:translateY(18px);
   transition:opacity .5s ease, transform .5s ease;
 }
-.result-section.show{ opacity:1; transform:translateY(0); }
+.rs-outer.show{ opacity:1; transform:translateY(0); }
+.rs-paper{position:absolute;inset:0;border-radius:16px;pointer-events:none;}
+.rs-paper1{transform:rotate(2.2deg) translate(10px,9px);
+  background:linear-gradient(135deg,#eda06f,#e0b98c);opacity:.5;}
+.rs-paper2{transform:rotate(-1.7deg) translate(-9px,7px);
+  background:linear-gradient(135deg,#c9bda8,#a8bba0);opacity:.4;}
+.result-section{
+  background:#fffdf9;
+  border-radius:20px;
+  padding:26px 22px 22px;
+  box-shadow:0 20px 60px rgba(80,80,90,.18),0 2px 8px rgba(80,80,90,.08);
+  position:relative;
+  z-index:1;
+  overflow:hidden;
+}
+.rs-ribbon{position:absolute;top:0;left:0;right:0;height:5px;
+  background:linear-gradient(90deg,#ef8a63,#e5b98c,#a8bba0,#8f9cc0);}
 /* (a) ヘッダー */
 .rs-head{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
 .rs-check{width:22px;height:22px;border-radius:50%;
   background:linear-gradient(135deg,#e08c62,#8fa88f);color:#fff;
-  display:flex;align-items:center;justify-content:center;font-size:12px;}
+  display:flex;align-items:center;justify-content:center;font-size:12px;
+  box-shadow:0 3px 10px rgba(239,138,99,.4);}
 .rs-title{font-size:14px;font-weight:600;color:#3c3a36;font-family:'Noto Sans JP',sans-serif;}
 /* (b) URL行 */
 .rs-url{display:flex;align-items:center;gap:8px;
-  background:rgba(60,55,48,.05);border-radius:12px;padding:13px 14px;}
-.rs-url-text{flex:1;min-width:0;font-size:14px;color:#3c3a36;
-  font-family:'JetBrains Mono',monospace;overflow:hidden;
-  text-overflow:ellipsis;white-space:nowrap;}
-.rs-copy-btn{width:34px;height:34px;border-radius:9px;
-  border:1px solid rgba(60,55,48,.18);background:#fff;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;flex-shrink:0;transition:opacity .15s;}
-.rs-copy-btn:hover{opacity:0.7;}
+  background:rgba(239,138,99,.07);border:1px solid rgba(239,138,99,.15);
+  border-radius:12px;padding:13px 14px;cursor:pointer;
+  transition:background .25s ease;}
+.rs-url-swap{flex:1;position:relative;min-width:0;height:1.5em;}
+.rs-url-text,.rs-url-done{position:absolute;inset:0;display:flex;align-items:center;
+  transition:opacity .25s ease, transform .25s ease;}
+.rs-url-text{font-size:14px;color:#3c3a36;overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;justify-content:center;}
+.rs-url-done{font-size:13px;color:#c9865e;opacity:0;transform:scale(.8);
+  justify-content:center;}
+.rs-copy{width:34px;height:34px;border:none;background:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;flex:none;}
 /* (c) 下段 */
 .rs-bottom{display:flex;justify-content:space-between;align-items:flex-end;margin-top:16px;}
 .rs-qr{width:76px;height:76px;border-radius:10px;background:#fff;
-  border:1px solid rgba(60,55,48,.12);display:flex;align-items:center;
+  border:1px solid rgba(239,138,99,.25);display:flex;align-items:center;
   justify-content:center;cursor:pointer;overflow:hidden;padding:4px;flex-shrink:0;}
 .rs-qr:hover{opacity:0.85;}
-.rs-buttons{display:flex;flex-direction:column;gap:8px;}
+.rs-buttons{display:flex;flex-direction:row;gap:8px;align-items:center;}
 .rs-share-btn{border:none;border-radius:11px;padding:11px 20px;font-size:13px;
   font-weight:600;color:#fff;
   background:linear-gradient(135deg,#e08c62 0%,#c9986f 45%,#8fa88f 100%);
@@ -504,11 +532,62 @@ ${HEADER_CSS}
   color:rgba(60,55,48,.75);cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
 
 /* ============================================================
+   ブリッジ（フォームカード → 生成カードの導線）
+   ============================================================ */
+.brake-bridge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 520px;
+  width: 100%;
+  margin: 0 auto;
+}
+.brake-bridge[data-state="idle"] {
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.brake-bridge[data-state="running"],
+.brake-bridge[data-state="done"] {
+  height: auto;
+  opacity: 1;
+}
+.bridge-line-top,
+.bridge-line-bottom {
+  width: 2px;
+  background: linear-gradient(to bottom, rgba(239,138,99,.5), rgba(143,156,192,.4));
+  height: 0;
+  transition: height .4s ease;
+}
+.brake-bridge[data-state="running"] .bridge-line-top,
+.brake-bridge[data-state="done"]    .bridge-line-top {
+  height: 36px;
+}
+.brake-bridge[data-state="done"] .bridge-line-bottom {
+  height: 36px;
+}
+.bridge-key {
+  padding: 6px 0;
+  opacity: 0;
+  transition: opacity .3s ease;
+}
+.brake-bridge[data-state="running"] .bridge-key,
+.brake-bridge[data-state="done"]    .bridge-key {
+  opacity: 1;
+}
+.bridge-ring {
+  width: 80px;
+  height: 80px;
+  display: block;
+}
+
+/* ============================================================
    ドラッグ&ドロップオーバーレイ
    ============================================================ */
 #drop-overlay{
   position:fixed;inset:0;z-index:9998;
-  background:rgba(60,55,48,.5);
+  background:rgba(253,251,245,.92);
   display:none;
   align-items:center;justify-content:center;
   pointer-events:none;
@@ -519,7 +598,7 @@ ${HEADER_CSS}
 }
 #drop-frame{
   position:fixed;inset:16px;
-  border:2px dashed rgba(60,55,48,.4);
+  border:2px dashed rgba(60,55,48,.3);
   border-radius:16px;
   pointer-events:none;
 }
@@ -730,8 +809,124 @@ ${HEADER_CSS}
 }
 
 /* 固定ヘッダー高さ分（約86px）だけアンカー着地をずらす */
-#howto{scroll-margin-top:90px}
-@media(max-width:767px){#howto{scroll-margin-top:72px}}
+#whats,#howto{scroll-margin-top:90px}
+@media(max-width:767px){#whats,#howto{scroll-margin-top:72px}}
+/* ============================================================
+   Brake.とはセクション
+   ============================================================ */
+.whats-section{
+  width:100%;
+  background:#faf5ec;
+  padding:60px 24px;
+  text-align:center;
+}
+.whats-inner{
+  max-width:1200px;
+  margin:0 auto;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.whats-col-eyebrow{
+  font-family:'Inter','Noto Sans JP',sans-serif;
+  font-size:11px;
+  font-weight:600;
+  letter-spacing:.3em;
+  color:#c9865e;
+  text-align:center;
+  margin-bottom:24px;
+}
+.whats-col-eyebrow::before{content:none;}
+.whats-heading{
+  font-family:'Noto Sans JP',sans-serif;
+  font-weight:700;
+  font-size:44px;
+  color:#3c3a36;
+  line-height:1.4;
+  max-width:980px;
+  width:100%;
+  margin-bottom:32px;
+  letter-spacing:.02em;
+}
+.whats-col-body{
+  font-family:'Noto Sans JP',sans-serif;
+  font-weight:400;
+  font-size:18px;
+  color:rgba(60,55,48,.75);
+  line-height:1.9;
+  max-width:820px;
+  width:100%;
+  margin-bottom:64px;
+}
+.whats-link{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:15px;
+  color:#c9865e;
+  text-decoration:none;
+  letter-spacing:.02em;
+}
+.whats-link:hover{text-decoration:underline;}
+.whats-links{
+  display:flex;
+  gap:28px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+.who-grid{
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:22px;
+  margin-bottom:64px;
+}
+.who-card{
+  background:#fffdf9;
+  border:none;
+  border-left:2px dashed #ef8a63;
+  border-radius:16px;
+  padding:20px 18px;
+  text-align:left;
+  box-shadow:0 8px 28px rgba(80,80,90,.10);
+}
+.who-card-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:8px;
+}
+.who-card-icon{
+  font-size:32px;
+  line-height:1;
+  opacity:.6;
+  flex-shrink:0;
+  pointer-events:none;
+  user-select:none;
+}
+.who-card-title{
+  font-family:'Noto Sans JP',sans-serif;
+  font-weight:500;
+  font-size:18px;
+  color:#3c3a36;
+  margin-bottom:0;
+}
+.who-card-desc{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:15px;
+  color:rgba(60,55,48,.55);
+  line-height:1.7;
+}
+@media(max-width:680px){
+  .whats-section{padding:60px 20px;}
+  .whats-heading{font-size:26px;}
+  .whats-col-body{font-size:15px;margin-bottom:40px;}
+  .who-grid{grid-template-columns:repeat(2,1fr);gap:14px;margin-bottom:40px;}
+  .who-card{padding:20px 16px;}
+  .who-card-icon{font-size:26px;}
+  .who-card-title{font-size:15px;}
+  .who-card-desc{font-size:13px;}
+  .whats-links{flex-direction:column;align-items:center;gap:16px;}
+}
 .section-eyebrow{
   font-family:'Inter','Noto Sans JP',sans-serif;
   font-size:14px;
@@ -749,7 +944,7 @@ ${HEADER_CSS}
    ============================================================ */
 .howto-section{
   width:100%;
-  background:#f4f1ea;
+  background:#f3eee0;
   padding:45px 24px;
 }
 .howto-section-inner{
@@ -758,9 +953,9 @@ ${HEADER_CSS}
 }
 .howto-section-eyebrow{
   font-family:'Inter','Noto Sans JP',sans-serif;
-  font-size:16px;
+  font-size:11px;
   font-weight:600;
-  color:#c9865e;
+  color:#5f9078;
   letter-spacing:.3em;
   text-shadow:none;
   margin-bottom:20px;
@@ -1289,7 +1484,7 @@ ${HEADER_CSS}
    ============================================================ */
 .lp-footer{
   width:100%;
-  background:#ece7dc;
+  background:#ece6d6;
 }
 .lp-footer-inner{
   max-width:700px;
@@ -1310,12 +1505,7 @@ ${HEADER_CSS}
   letter-spacing:.02em;
   line-height:1;
 }
-.lp-footer-logo-dot{
-  background:linear-gradient(135deg,#ef8a63,#8fa88f);
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
-}
+.lp-footer-logo-dot{color:#ef8a63;}
 .lp-footer-links{
   display:flex;
   flex-wrap:wrap;
@@ -1347,25 +1537,20 @@ ${HEADER_CSS}
   position:fixed;
   top:max(100px,calc(100vh - 124px));
   right:24px;
-  width:96px;height:96px;border-radius:50%;
-  background:var(--accent-grad);color:#fff;border:none;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:0;cursor:pointer;z-index:900;
+  background:linear-gradient(135deg,#ef8a63 0%,#d99a70 45%,#8fa88f 100%);
+  color:#fff;font-size:12px;font-weight:600;border:none;
+  border-radius:999px;padding:12px 20px;
+  box-shadow:0 8px 24px rgba(220,130,90,.35);
+  cursor:pointer;z-index:900;
   opacity:0;transform:translateY(20px);
   transition:opacity .35s ease,transform .35s ease,box-shadow .2s;
   pointer-events:none;
   text-decoration:none;
 }
 #brake-top-btn.visible{opacity:1;transform:translateY(0);pointer-events:auto;}
-#brake-top-btn:hover{box-shadow:0 8px 24px rgba(200,130,90,.35);}
-#brake-top-btn .btn-chevron{display:flex;align-items:center;justify-content:center;margin-bottom:5px;}
-#brake-top-btn .btn-logo{font-family:'Orbitron',sans-serif;font-weight:900;font-size:12.5px;color:#fff;letter-spacing:.01em;line-height:1;}
-#brake-top-btn .btn-logo span{color:#fff;}
-#brake-top-btn .btn-sub{font-family:'Noto Sans JP',sans-serif;font-size:9.5px;color:rgba(255,255,255,.7);margin-top:4px;letter-spacing:.04em;}
+#brake-top-btn:hover{box-shadow:0 8px 32px rgba(220,130,90,.5);}
 @media(max-width:680px){
-  #brake-top-btn{width:72px;height:72px;top:max(84px,calc(100vh - 92px));right:16px;}
-  #brake-top-btn .btn-logo{font-size:10px;}
-  #brake-top-btn .btn-sub{font-size:8px;}
+  #brake-top-btn{top:max(84px,calc(100vh - 92px));right:16px;}
 }
 @media(max-width:767px){ .pc-br{ display:none; } }
 </style>
@@ -1402,8 +1587,9 @@ ${HEADER_CSS}
      1. ヒーロー
      ============================================================ -->
 <section class="hero">
-<div class="hero-blob1"></div>
-<div class="hero-blob2"></div>
+<div class="hero-sky" id="hero-sky"></div>
+<div class="hero-glow" id="hero-glow"></div>
+<div class="hero-night" id="hero-night"></div>
 ${HEADER_HTML}
 
   <!-- ヒーロー本文 -->
@@ -1413,34 +1599,29 @@ ${HEADER_HTML}
 
     <!-- 暗号化フォーム（既存のまま流用） -->
     <div class="hero-form-wrap">
+      <div class="form-card-wrap">
+        <div class="paper paper1"></div>
+        <div class="paper paper2"></div>
       <div class="form-card" id="form-card">
         <form id="f">
-          <div class="fi-seg" id="input-seg">
-            <span data-mode="text" class="on">テキスト</span>
-            <span data-mode="url">URL</span>
-            <span data-mode="file">ファイル</span>
-          </div>
-          <div class="url-input-wrap">
-            <input
-              class="url-input"
-              type="text"
-              id="content-input"
-              placeholder="ここにメッセージを書く..."
-              autocomplete="off"
-            >
+          <div class="fi-inrow">
+            <button type="button" class="fi-plus" id="btn-plus" aria-label="ファイルを追加">＋<span class="fi-plus-tip">ファイル（画像・動画・音声・文書、5MBまで）を追加</span></button>
+            <textarea id="msg" class="fi-input" rows="1"
+              placeholder="ここにメッセージ・URLを書く..."></textarea>
           </div>
           <div class="file-selected-bar" id="file-selected-bar">
             <span style="font-size:14px">📎</span>
             <span class="file-selected-name" id="file-selected-name"></span>
             <button type="button" class="file-cancel-btn" id="file-cancel-btn" title="ファイルを取り消す">✕</button>
           </div>
+          <div class="fi-sec">ひらくまでの時間</div>
           <input type="range" id="time-slider" min="0" max="14" step="1" value="0">
-          <div class="fi-liverow">
+          <div class="fi-durrow">
             <div id="time-live"></div>
-            <button type="button" id="time-other">カスタム</button>
+            <span id="time-other">カスタム</span>
           </div>
           <div class="fi-custom" id="time-custom">
-            <input type="number" id="tv" value="10" min="1" max="2592000" inputmode="numeric" autocomplete="off">
+            <input type="number" id="tv" value="10" min="0.01" max="2592000" step="0.01" inputmode="decimal" autocomplete="off">
             <select id="tu">
               <option value="s">秒</option>
               <option value="m">分</option>
@@ -1449,6 +1630,7 @@ ${HEADER_HTML}
             </select>
             <span>後にひらく</span>
           </div>
+          <div class="fi-durnote">相手がひらいてから、この時間の計算が終わるとひらきます</div>
           <div class="fi-sec">待っているあいだの画面</div>
           <div class="fi-scene-row">
             <div class="fi-scene-thumb" id="scene-thumb"><div class="t" style="background:linear-gradient(to top,#2a1f14,#0a0806 60%,#040404);position:relative;"><div style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:40px;height:18px;background:radial-gradient(ellipse,rgba(255,166,87,.4),transparent 70%);"></div><div style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:rgba(255,240,224,.9);"></div></div></div>
@@ -1460,10 +1642,23 @@ ${HEADER_HTML}
           </div>
           <div class="form-run-wrap">
             <button type="button" class="btn-run" id="btn" aria-label="暗号化して生成" data-tip="暗号化して生成">時間の鍵をかける</button>
-            <div class="form-run-note">リンクが1つできます。渡した相手は、時間が来るまでひらけません。</div>
+            <div class="form-run-note">リンクが1つできます。渡した相手は、時間の計算が終わるまでひらけません。</div>
           </div>
         </form>
         <div id="res"></div>
+      </div>
+      </div><!-- /form-card-wrap -->
+      <!-- ブリッジ（フォームカードと生成カードを繋ぐ導線） -->
+      <div class="brake-bridge" id="brake-bridge" data-state="idle">
+        <div class="bridge-line-top"></div>
+        <div class="bridge-key">
+          <svg class="bridge-ring" viewBox="0 0 130 130">
+            <defs><linearGradient id="bridge-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ef8a63"/><stop offset=".5" stop-color="#b3b39a"/><stop offset="1" stop-color="#8f9cc0"/></linearGradient></defs>
+            <circle id="bridge-enc-ring" cx="65" cy="65" r="52" fill="none" stroke-width="5" stroke-linecap="round" stroke="url(#bridge-grad)" stroke-dasharray="327" stroke-dashoffset="327" transform="rotate(-90 65 65)"/>
+            <g id="bridge-enc-key" transform="rotate(0 65 65)"><circle cx="65" cy="52" r="10" fill="none" stroke="#3c3a36" stroke-width="4.5"/><line x1="65" y1="62" x2="65" y2="86" stroke="#3c3a36" stroke-width="4.5" stroke-linecap="round"/><line x1="65" y1="78" x2="73" y2="78" stroke="#3c3a36" stroke-width="4.5" stroke-linecap="round"/><line x1="65" y1="86" x2="71" y2="86" stroke="#3c3a36" stroke-width="4.5" stroke-linecap="round"/></g>
+          </svg>
+        </div>
+        <div class="bridge-line-bottom"></div>
       </div>
       <!-- 生成結果：form-card の兄弟・hero-form-wrap(max-width:560px)内に配置して幅と間隔を親に依存させる -->
       <div id="result-section"></div>
@@ -1473,11 +1668,56 @@ ${HEADER_HTML}
 </section>
 
 <!-- ============================================================
+     1b. Brake.とは
+     ============================================================ -->
+<section class="whats-section" id="whats">
+  <div class="whats-inner">
+    <div class="whats-col-eyebrow">ABOUT</div>
+    <div class="whats-heading">Brake.は、タイムロック暗号を使った<br class="pc-br">暗号化Webサービスです。</div>
+    <div class="whats-col-body">URLやテキストを暗号化し、「1分後」「1時間後」「1日後」にしか開けないリンクを生成します。<br class="pc-br">画像、動画、音声、文書なども暗号化できます（最大5MBまで）。</div>
+    <div class="who-grid">
+      <div class="who-card">
+        <div class="who-card-head">
+          <div class="who-card-title">コンテンツをちゃんと<br class="pc-br">見てほしい人に。</div>
+          <span class="who-card-icon">🔍</span>
+        </div>
+        <div class="who-card-desc">閲覧の難易度を上げ、意味のあるコンテンツがスクロールに流されるのを防ぎます。</div>
+      </div>
+      <div class="who-card">
+        <div class="who-card-head">
+          <div class="who-card-title">商品のリリースや重大発表に。</div>
+          <span class="who-card-icon">🚀</span>
+        </div>
+        <div class="who-card-desc">解禁時間を設計し、待つことができる人たちの間でだけ情報が共有されます。</div>
+      </div>
+      <div class="who-card">
+        <div class="who-card-head">
+          <div class="who-card-title">知り合いに待つ時間を<br class="pc-br">贈りたい人に。</div>
+          <span class="who-card-icon">⏳</span>
+        </div>
+        <div class="who-card-desc">情報量にブレーキをかけ、待ってる間にひと呼吸。</div>
+      </div>
+      <div class="who-card">
+        <div class="who-card-head">
+          <div class="who-card-title">ほかにも</div>
+          <span class="who-card-icon">💡</span>
+        </div>
+        <div class="who-card-desc">使い方は、あなた次第。サプライズやタイムカプセルにも。</div>
+      </div>
+    </div>
+    <div class="whats-links">
+      <a href="/time-lock" class="whats-link" style="display:inline-flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>タイムロック暗号とは？ →</a>
+      <a href="/philosophy" class="whats-link" style="display:inline-flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M21 11.5a8.38 8.38 0 01-9 8.5 8.5 8.5 0 01-3.8-.9L3 20l1.9-5.2A8.38 8.38 0 013 11.5 8.5 8.5 0 0112 3a8.38 8.38 0 019 8.5z"/></svg>なぜ待たせるのか →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
      2. 使い方（白背景・Uber風）
      ============================================================ -->
 <section class="howto-section" id="howto">
   <div class="howto-section-inner">
-    <div class="howto-section-eyebrow"><span class="eb-dot" style="width:14px;height:14px;background:#c9865e;display:inline-block;margin-right:14px;vertical-align:middle;border-radius:0"></span>使い方</div>
+    <div class="howto-section-eyebrow">HOW TO</div>
     <h2 class="howto-section-main-heading">置いて、決めて、送る。</h2>
 
     <!-- トグル -->
@@ -1647,9 +1887,7 @@ ${HEADER_HTML}
   <div class="lp-footer-inner">
     <a href="/" class="lp-footer-logo">Brake<span class="lp-footer-logo-dot">.</span></a>
     <div class="lp-footer-links">
-      <a href="/about" class="lp-footer-link">Brake.とは</a>
-      <a href="/time-lock" class="lp-footer-link">仕組み</a>
-      <a href="/philosophy" class="lp-footer-link">なぜ？</a>
+      <a href="https://github.com/zoma4625-gif/sadocrypt" class="lp-footer-link" target="_blank" rel="noopener">GitHub</a>
       <a href="/privacy" class="lp-footer-link">プライバシーポリシー</a>
       <a href="/terms" class="lp-footer-link">利用規約</a>
       <a href="mailto:info@brake.run" class="lp-footer-link">お問い合わせ</a>
@@ -1659,19 +1897,15 @@ ${HEADER_HTML}
 </footer>
 
 <!-- トップへ戻るボタン -->
-<a id="brake-top-btn" href="#top" aria-label="TOPへ戻る">
-  <span class="btn-chevron"><svg width="22" height="12" viewBox="0 0 22 12" fill="none"><path d="M2 10L11 3L20 10" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-  <span class="btn-logo">Brake<span>.</span></span>
-  <span class="btn-sub">を試す</span>
-</a>
+<a id="brake-top-btn" href="#top" aria-label="TOPへ戻る">Brake. を試す ↑</a>
 
 <!-- ドラッグ&ドロップオーバーレイ -->
 <div id="drop-overlay">
   <div id="drop-frame"></div>
   <div id="drop-content">
-    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 16px"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
-    <div style="color:#fff;font-weight:700;font-size:20px;margin-bottom:8px;font-family:'Noto Sans JP',sans-serif">ここにファイルを置く</div>
-    <div style="color:rgba(255,255,255,.5);font-size:13px;font-family:'Noto Sans JP',sans-serif">最大5MBまで</div>
+    <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#ef8a63" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:block;margin:0 auto 16px"><polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/></svg>
+    <div style="color:#3c3a36;font-weight:700;font-size:20px;margin-bottom:8px;font-family:'Noto Sans JP',sans-serif">ここにファイルを置く</div>
+    <div style="color:rgba(60,55,48,.5);font-size:13px;font-family:'Noto Sans JP',sans-serif">最大5MBまで</div>
   </div>
 </div>
 
@@ -2136,58 +2370,30 @@ const fileInput = document.getElementById('file-input');
 const fileSelectedBar = document.getElementById('file-selected-bar');
 const fileSelectedName = document.getElementById('file-selected-name');
 const fileCancelBtn = document.getElementById('file-cancel-btn');
-const contentInput = document.getElementById('content-input');
-const urlInputWrap = contentInput ? contentInput.closest('.url-input-wrap') : null;
+const contentInput = document.getElementById('msg');
+const urlInputWrap = null;
+const fiInrow = document.querySelector('.fi-inrow');
 
-function setSegment(mode){
-  currentSegment = mode;
-  document.querySelectorAll('#input-seg span').forEach(function(s){
-    s.classList.toggle('on', s.dataset.mode === mode);
-  });
-  if(mode === 'text'){
-    if(urlInputWrap) urlInputWrap.style.display = '';
-    fileSelectedBar.classList.remove('visible');
-    contentInput.disabled = false;
-    contentInput.placeholder = 'ここにメッセージを書く...';
-  } else if(mode === 'url'){
-    if(urlInputWrap) urlInputWrap.style.display = '';
-    fileSelectedBar.classList.remove('visible');
-    contentInput.disabled = false;
-    contentInput.placeholder = 'https://...';
-  } else if(mode === 'file'){
-    fileInput.click();
-  }
-}
+// textarea 自動拡張
+contentInput.addEventListener('input', function(){
+  contentInput.style.height = 'auto';
+  var maxH = Math.floor(window.innerHeight * 0.4);
+  contentInput.style.height = Math.min(contentInput.scrollHeight, maxH) + 'px';
+  contentInput.style.overflowY = contentInput.scrollHeight > maxH ? 'auto' : 'hidden';
+});
 
-document.querySelectorAll('#input-seg span').forEach(function(s){
-  s.addEventListener('click', function(){
-    var mode = s.dataset.mode;
-    if(mode === 'file'){
-      currentSegment = 'file';
-      document.querySelectorAll('#input-seg span').forEach(function(t){
-        t.classList.toggle('on', t.dataset.mode === 'file');
-      });
-      fileInput.click();
-    } else {
-      if(selectedFile) clearFileSelection();
-      setSegment(mode);
-    }
-  });
+// ＋ボタンでファイル選択
+document.getElementById('btn-plus').addEventListener('click', function(){
+  fileInput.click();
 });
 
 fileInput.addEventListener('change', function(){
   if(fileInput.files && fileInput.files[0]){
     selectedFile = fileInput.files[0];
     fileSelectedName.textContent = selectedFile.name;
-    if(urlInputWrap) urlInputWrap.style.display = 'none';
+    if(fiInrow) fiInrow.style.display = 'none';
     fileSelectedBar.classList.add('visible');
     currentSegment = 'file';
-    document.querySelectorAll('#input-seg span').forEach(function(s){
-      s.classList.toggle('on', s.dataset.mode === 'file');
-    });
-    contentInput.disabled = true;
-    contentInput.placeholder = 'ファイルを暗号化します';
-    contentInput.value = '';
   }
 });
 
@@ -2200,14 +2406,14 @@ fileCancelBtn.addEventListener('click', function(){
 // ============================================================
 (function(){
   var TIME_STOPS = [
-    {label:'10秒後',  v:10,  u:'s'},  {label:'30秒後',  v:30,  u:'s'},
-    {label:'1分後',   v:1,   u:'m'},  {label:'5分後',   v:5,   u:'m'},
-    {label:'10分後',  v:10,  u:'m'},  {label:'30分後',  v:30,  u:'m'},
-    {label:'1時間後', v:1,   u:'h'},  {label:'3時間後', v:3,   u:'h'},
-    {label:'6時間後', v:6,   u:'h'},  {label:'12時間後',v:12,  u:'h'},
-    {label:'1日後',   v:1,   u:'d'},  {label:'3日後',   v:3,   u:'d'},
-    {label:'1週間後', v:7,   u:'d'},  {label:'2週間後', v:14,  u:'d'},
-    {label:'30日後',  v:30,  u:'d'}
+    {label:'10秒',  v:10,  u:'s'},  {label:'30秒',  v:30,  u:'s'},
+    {label:'1分',   v:1,   u:'m'},  {label:'5分',   v:5,   u:'m'},
+    {label:'10分',  v:10,  u:'m'},  {label:'30分',  v:30,  u:'m'},
+    {label:'1時間', v:1,   u:'h'},  {label:'3時間', v:3,   u:'h'},
+    {label:'6時間', v:6,   u:'h'},  {label:'12時間',v:12,  u:'h'},
+    {label:'1日',   v:1,   u:'d'},  {label:'3日',   v:3,   u:'d'},
+    {label:'1週間', v:7,   u:'d'},  {label:'2週間', v:14,  u:'d'},
+    {label:'30日',  v:30,  u:'d'}
   ];
   var chips  = document.querySelectorAll('.preset-chip');
   var tvEl   = document.getElementById('tv');
@@ -2223,28 +2429,25 @@ fileCancelBtn.addEventListener('click', function(){
     return v;
   }
 
-  function fmtDate(sec){
-    var d = new Date(Date.now() + sec*1000);
-    var hh = String(d.getHours()).padStart(2,'0');
-    var mm = String(d.getMinutes()).padStart(2,'0');
-    return (d.getMonth()+1) + '月' + d.getDate() + '日 ' + hh + ':' + mm;
+  function ceilTv(){
+    var raw = parseFloat(tvEl.value);
+    return (isNaN(raw) || raw <= 0) ? 1 : Math.ceil(raw * 100) / 100;
   }
 
   function updateLive(){
-    var v = parseInt(tvEl.value,10)||1;
+    var v = ceilTv();
     var u = tuEl.value;
-    var sec = toSec(v, u);
     var stop = null;
     for(var k=0;k<TIME_STOPS.length;k++){
       if(TIME_STOPS[k].v===v && TIME_STOPS[k].u===u){ stop=TIME_STOPS[k]; break; }
     }
-    var suffixMap = {s:'秒後',m:'分後',h:'時間後',d:'日後'};
-    var label = stop ? stop.label : (v + (suffixMap[u]||'後'));
-    liveEl.innerHTML = '<b>' + label + '</b> — ' + fmtDate(sec) + ' にひらきます';
+    var suffixMap = {s:'秒',m:'分',h:'時間',d:'日'};
+    var label = stop ? stop.label : (v + (suffixMap[u]||''));
+    liveEl.textContent = label;
   }
 
   function nearestStopIndex(){
-    var v = parseInt(tvEl.value,10)||1;
+    var v = ceilTv();
     var u = tuEl.value;
     var sec = toSec(v, u);
     var best = 0, bestDiff = Infinity;
@@ -2277,6 +2480,16 @@ fileCancelBtn.addEventListener('click', function(){
     });
   });
 
+  function updateHeroLayers(){
+    var t = Number(slider.value)/14;
+    var skyEl = document.getElementById('hero-sky');
+    var glowEl = document.getElementById('hero-glow');
+    var nightEl = document.getElementById('hero-night');
+    if(skyEl) skyEl.style.opacity = (t*0.5).toFixed(3);
+    if(nightEl) nightEl.style.opacity = Math.max(0,(t-0.45)/0.55).toFixed(3);
+    if(glowEl) glowEl.style.opacity = (1-t*0.5).toFixed(3);
+  }
+
   // b) スライダー → tv/tu + チップ + ライブ更新
   slider.addEventListener('input', function(){
     var idx = parseInt(slider.value,10);
@@ -2285,6 +2498,7 @@ fileCancelBtn.addEventListener('click', function(){
     tuEl.value = stop.u;
     syncChipsFromTvTu();
     updateLive();
+    updateHeroLayers();
   });
 
   // c) tv/tu 手入力 → チップ全非選択 + スライダー最近傍 + ライブ更新
@@ -2305,6 +2519,14 @@ fileCancelBtn.addEventListener('click', function(){
     slider.value = nearestStopIndex();
     updateLive();
   });
+  tvEl.addEventListener('blur', function(){
+    var raw = parseFloat(tvEl.value);
+    if(!isNaN(raw) && raw > 0){
+      var rounded = Math.ceil(raw * 100) / 100;
+      tvEl.value = rounded;
+      updateLive();
+    }
+  });
 
   // 初期状態: index 0（10秒後）
   slider.value = 0;
@@ -2312,6 +2534,7 @@ fileCancelBtn.addEventListener('click', function(){
   tuEl.value = TIME_STOPS[0].u;
   syncChipsFromTvTu();
   updateLive();
+  updateHeroLayers();
 
   // 「その他」クリック → .fi-custom の show トグル（値は変えない）
   var timeOtherEl = document.getElementById('time-other');
@@ -2352,8 +2575,8 @@ document.addEventListener('DOMContentLoaded', function(){
   function closeModal(){ modal.classList.remove('open'); }
   function openModal(){ modal.classList.add('open'); }
 
-  pickerBtn.addEventListener('click', function(e){
-    e.preventDefault();
+  var sceneRow = document.querySelector('.fi-scene-row');
+  if(sceneRow) sceneRow.addEventListener('click', function(e){
     e.stopPropagation();
     openModal();
   });
@@ -2394,9 +2617,7 @@ function clearFileSelection(){
   selectedFile = null;
   fileInput.value = '';
   fileSelectedBar.classList.remove('visible');
-  if(urlInputWrap) urlInputWrap.style.display = '';
-  contentInput.disabled = false;
-  setSegment('text');
+  if(fiInrow) fiInrow.style.display = '';
 }
 
 // ドラッグ&ドロップ
@@ -2412,15 +2633,9 @@ function clearFileSelection(){
     }
     selectedFile = file;
     fileSelectedName.textContent = file.name;
-    if(urlInputWrap) urlInputWrap.style.display = 'none';
+    if(fiInrow) fiInrow.style.display = 'none';
     fileSelectedBar.classList.add('visible');
     currentSegment = 'file';
-    document.querySelectorAll('#input-seg span').forEach(function(s){
-      s.classList.toggle('on', s.dataset.mode === 'file');
-    });
-    contentInput.disabled = true;
-    contentInput.placeholder = 'ファイルを暗号化します';
-    contentInput.value = '';
   }
 
   document.addEventListener('dragenter', function(e){
@@ -2674,21 +2889,15 @@ document.getElementById('btn').addEventListener('click', function(){
   doEncrypt();
 });
 
-// Enter押下でもpreventDefaultが効くようにinputにもリスナーを追加
-document.getElementById('content-input').addEventListener('keydown', function(e){
-  if(e.key === 'Enter'){
-    e.preventDefault();
-    e.stopPropagation();
-    doEncrypt();
-  }
-});
 
 // ============================================================
-// デスクトップのみURL入力欄に自動フォーカス（モバイルはソフトキーボード抑制）
+// デスクトップのみ入力欄に自動フォーカス（モバイルはソフトキーボード抑制）
 // ============================================================
 (function(){
-  const isDesktop = window.matchMedia('(min-width: 768px) and (pointer: fine)').matches;
-  if(isDesktop) document.getElementById('content-input').focus();
+  if(window.matchMedia('(pointer: fine)').matches){
+    var msgEl = document.getElementById('msg');
+    if(msgEl) msgEl.focus();
+  }
 })();
 
 function showEncError(msg){
@@ -3189,14 +3398,15 @@ async function doEncrypt(){
   const resEl = document.getElementById('res');
   const resultSection = document.getElementById('result-section');
   const btn = document.getElementById('btn');
-  let s = parseInt(document.getElementById('tv').value, 10);
   const u = document.getElementById('tu').value;
-  if(u==='m') s*=60;
-  else if(u==='h') s*=3600;
-  else if(u==='d') s*=86400;
+  var rawV = parseFloat(document.getElementById('tv').value);
+  if(isNaN(rawV) || rawV <= 0) rawV = 1;
+  var roundedV = Math.ceil(rawV * 100) / 100;
+  var mult = u==='m' ? 60 : u==='h' ? 3600 : u==='d' ? 86400 : 1;
+  let s = Math.ceil(roundedV * mult);
 
   if(s > MAX_LOCK_S_CLI){
-    showEncError('解錠時間は最大30日までです');
+    showEncError('解鍵時間は最大30日までです');
     btn.disabled = false;
     return;
   }
@@ -3212,53 +3422,43 @@ async function doEncrypt(){
 
   btn.disabled = true;
   resEl.innerHTML = '';
+  resultSection.innerHTML = '';
 
-  showEncPopup();
-  window.startSpin();
+  var bridge = document.getElementById('brake-bridge');
+  var bRing  = document.getElementById('bridge-enc-ring');
+  var bKey   = document.getElementById('bridge-enc-key');
 
+  // Phase 1: dashoffset 327→16 over 2000ms (ease-out cubic)
+  // 2回目以降: 327 に即リセットして再アニメ
+  if(bRing) bRing.setAttribute('stroke-dashoffset', '327');
+  if(bKey)  bKey.setAttribute('transform', 'rotate(0 65 65)');
+  if(bridge) bridge.setAttribute('data-state', 'running');
+
+  var resolveP1;
+  var p1Promise = new Promise(function(res){ resolveP1 = res; });
+  var p1t0 = performance.now();
+  (function p1f(now){
+    var t = Math.min((now - p1t0) / 2000, 1);
+    var e = 1 - Math.pow(1 - t, 3);
+    if(bRing) bRing.setAttribute('stroke-dashoffset', String(327 - 311 * e));
+    if(t < 1){
+      requestAnimationFrame(p1f);
+    } else {
+      if(bRing) bRing.setAttribute('stroke-dashoffset', '16');
+      resolveP1();
+    }
+  }(performance.now()));
+
+  // 暗号化 + fetch (Phase 1 と並行)
+  var shareUrl;
   try {
     let enc;
-
-    var chainCountEst = calcChainCount(s).toLocaleString('ja-JP');
     if(selectedFile){
-      popAddLog('RSA パズル生成中 (N=2048bit)...');
-      setPopFill(0.08);
-      await logDelay('prime');
-      popAddLog('x₀ 採番中...');
-      setPopFill(0.15);
-      await logDelay('x0');
       const fileBuffer = await readFileAsArrayBuffer(selectedFile);
-      popAddLog('x² mod N を ' + chainCountEst + ' 回計算中...');
-      setPopFill(0.25);
-      await logDelay('chain');
       enc = await encryptFile(fileBuffer, selectedFile.name, selectedFile.type || 'application/octet-stream', s);
-      popAddLog('パズル施鍵完了: t=' + s + 's');
-      setPopFill(0.38);
-      await logDelay('iter');
-      popAddLog('ペイロードを暗号化 (AES-256-GCM)');
-      setPopFill(0.48);
-      await logDelay('aes');
     } else {
-      popAddLog('RSA パズル生成中 (N=2048bit)...');
-      setPopFill(0.08);
-      await logDelay('prime');
-      popAddLog('x₀ 採番中...');
-      setPopFill(0.15);
-      await logDelay('x0');
-      popAddLog('x² mod N を ' + chainCountEst + ' 回計算中...');
-      setPopFill(0.25);
-      await logDelay('chain');
       enc = await encryptContent(contentInput.value.trim(), s);
-      popAddLog('パズル施鍵完了: t=' + s + 's');
-      setPopFill(0.38);
-      await logDelay('iter');
-      popAddLog('ペイロードを暗号化 (AES-256-GCM)');
-      setPopFill(0.48);
-      await logDelay('aes');
     }
-
-    popAddLog('サーバーにパズルを保存中...');
-    setPopFill(0.50);
 
     const saveBody = {
       x0: enc.x0, N: enc.N, cc: enc.chainCount,
@@ -3279,40 +3479,69 @@ async function doEncrypt(){
     const d = await r.json();
 
     if(d.error){
-      hideEncPopup();
-      window.releaseSpin();
+      if(bridge) bridge.setAttribute('data-state', 'idle');
       showEncError(d.error);
       btn.disabled = false;
       return;
     }
 
-    popAddLog('POST /api/save → 200 OK');
-    const shareUrl = location.origin + '/' + d.id;
-    popAddLog('🔒 brake.run/' + d.id);
-
-    // releaseSpin は triggerPopupComplete の _popOnLand（着地時）に移動済み
-    triggerPopupComplete(shareUrl, resultSection, s);
+    shareUrl = location.origin + '/' + d.id;
 
   } catch(err) {
-    hideEncPopup();
-    window.releaseSpin();
+    if(bridge) bridge.setAttribute('data-state', 'idle');
     showEncError(err.message);
+    btn.disabled = false;
+    return;
   }
-  btn.disabled = false;
-};
+
+  // Phase 1 完了を待つ (fetch が早く終わった場合はここで待機)
+  await p1Promise;
+
+  // Phase 2: dashoffset 16→0 + key 0→90deg over 500ms (ease-in-out cubic)
+  await new Promise(function(resolve){
+    var p2t0 = performance.now();
+    (function p2f(now){
+      var t = Math.min((now - p2t0) / 500, 1);
+      var e = t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2;
+      if(bRing) bRing.setAttribute('stroke-dashoffset', String(16 * (1 - e)));
+      if(bKey)  bKey.setAttribute('transform', 'rotate(' + (90 * e) + ' 65 65)');
+      if(t < 1){
+        requestAnimationFrame(p2f);
+      } else {
+        if(bRing) bRing.setAttribute('stroke-dashoffset', '0');
+        if(bKey)  bKey.setAttribute('transform', 'rotate(90 65 65)');
+        resolve();
+      }
+    }(performance.now()));
+  });
+
+  // 鍵静止 → done → 下線 → 生成カード
+  if(bridge) bridge.setAttribute('data-state', 'done');
+  setTimeout(function(){
+    buildResultSection(resultSection, shareUrl, s);
+    btn.disabled = false;
+  }, 400);
+}
 
 function buildResultSection(resultSection, shareUrl, targetSeconds){
   var escapedUrl = shareUrl.replace(/"/g, '&quot;');
   resultSection.innerHTML =
+    '<div class="rs-outer" id="result-card-outer">' +
+    '<div class="rs-paper rs-paper1"></div>' +
+    '<div class="rs-paper rs-paper2"></div>' +
     '<div class="result-section" id="result-card-inner">' +
+    '<div class="rs-ribbon"></div>' +
     '<div class="rs-head">' +
     '<div class="rs-check">✓</div>' +
     '<div class="rs-title">リンクができました</div>' +
     '</div>' +
     '<div class="rs-url">' +
+    '<div class="rs-url-swap">' +
     '<span class="rs-url-text" id="result-url-text" data-url="' + escapedUrl + '">' + escapedUrl + '</span>' +
-    '<button class="rs-copy-btn" id="copy-btn" title="コピー">' +
-    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
+    '<span class="rs-url-done" id="copy-done-text">コピーしました</span>' +
+    '</div>' +
+    '<button class="rs-copy" id="copy-btn" title="コピー">' +
+    '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(60,55,48,.65)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
     '</button>' +
     '</div>' +
     '<div class="rs-bottom">' +
@@ -3322,14 +3551,19 @@ function buildResultSection(resultSection, shareUrl, targetSeconds){
     '<button class="rs-open-btn" id="result-open-btn">ひらいてみる</button>' +
     '</div>' +
     '</div>' +
+    '</div>' +
     '</div>';
   requestAnimationFrame(function(){
-    const card = document.getElementById('result-card-inner');
-    if(card) card.classList.add('show');
+    const outer = document.getElementById('result-card-outer');
+    if(outer) outer.classList.add('show');
     const copyBtn = document.getElementById('copy-btn');
     if(copyBtn) copyBtn.addEventListener('click', function(e){ e.stopPropagation(); copyUrl(); });
-    const urlTextEl = document.getElementById('result-url-text');
-    if(urlTextEl){ urlTextEl.style.cursor='pointer'; urlTextEl.addEventListener('click', function(){ copyUrl(); }); }
+    // URLバー全体クリックでコピー（ボタン以外の領域）
+    const urlBarEl = document.querySelector('.rs-url');
+    if(urlBarEl) urlBarEl.addEventListener('click', function(e){
+      if(e.target === copyBtn || copyBtn && copyBtn.contains(e.target)) return;
+      copyUrl();
+    });
     const openBtn = document.getElementById('result-open-btn');
     if(openBtn) openBtn.addEventListener('click', function(){ window.open(shareUrl, '_blank'); });
     var shareBtn = document.getElementById('result-share-btn');
@@ -3346,31 +3580,14 @@ function buildResultSection(resultSection, shareUrl, targetSeconds){
     if(qrBtn) qrBtn.addEventListener('click', function(){ showQrModal(shareUrl, targetSeconds); });
     setTimeout(function(){
       var resEl = document.getElementById('result-section');
-      var catchEl = document.querySelector('.hero-catch');
       var headerEl = document.querySelector('.hero-header');
       if(!resEl) return;
       var headerH = headerEl ? headerEl.offsetHeight : 0;
       var vp = window.innerHeight;
       var resRect = resEl.getBoundingClientRect();
       var resAbsTop = window.scrollY + resRect.top;
-      var resAbsBottom = window.scrollY + resRect.bottom;
-      // hero-catch をヘッダー直下(+16px余白)に持ってくるスクロール位置
-      var catchTarget = catchEl
-        ? Math.max(0, window.scrollY + catchEl.getBoundingClientRect().top - headerH - 16)
-        : Math.max(0, resAbsTop - headerH - 16);
-      // catchTarget でスクロールしたとき result-section 下端がビューポート内に収まるか
-      var resBottomInVp = resAbsBottom - catchTarget;
-      var target;
-      if(resBottomInVp <= vp - 16){
-        // 収まる → catch 基準（コピー〜結果まで一望）
-        target = catchTarget;
-      } else if(resRect.height <= vp - headerH - 32){
-        // 収まらない・result カードがビューポートより小さい → 下端をビューポート下端 16px 上に
-        target = Math.max(0, resAbsBottom - vp + 16);
-      } else {
-        // result カード自体がビューポートより大きい → 上端をヘッダー直下に
-        target = Math.max(0, resAbsTop - headerH - 16);
-      }
+      // 生成カード上端がヘッダー直下から vp/3 の位置に来るよう scrollTo
+      var target = Math.max(0, resAbsTop - headerH - Math.floor(vp / 3));
       window.scrollTo({ top: target, behavior:'smooth' });
     }, 120);
   });
@@ -3438,39 +3655,26 @@ function copyUrl(){
   });
 }
 function doCopiedAnim(){
-  var urlT=document.getElementById('result-url-text');
-  var copiedT=document.getElementById('result-url-copied');
-  if(!urlT||!copiedT) return;
-  if(urlT.dataset.busy==='1') return; urlT.dataset.busy='1';
-  // URL縮んで消える
-  urlT.style.transition='transform .2s ease,opacity .2s ease';
-  urlT.style.transform='translateY(-50%) scale(0.9)'; urlT.style.opacity='0';
-  urlT.style.pointerEvents='none';
-  setTimeout(function(){
-    // コピーしましたを同位置から出す（display切り替えなし・opacityのみ）
-    copiedT.style.transition='none';
-    copiedT.style.transform='translateY(-50%) scale(0.8)'; copiedT.style.opacity='0';
-    copiedT.style.pointerEvents='auto';
-    requestAnimationFrame(function(){
-      copiedT.style.transition='transform .26s cubic-bezier(.2,.9,.3,1.2),opacity .2s ease';
-      copiedT.style.transform='translateY(-50%) scale(1)'; copiedT.style.opacity='1';
-    });
-  },200);
-  setTimeout(function(){
-    copiedT.style.transition='transform .2s ease,opacity .2s ease';
-    copiedT.style.transform='translateY(-50%) scale(0.9)'; copiedT.style.opacity='0';
-    copiedT.style.pointerEvents='none';
-    setTimeout(function(){
-      urlT.style.transition='none';
-      urlT.style.transform='translateY(-50%) scale(0.9)'; urlT.style.opacity='0';
-      requestAnimationFrame(function(){
-        urlT.style.transition='transform .22s ease,opacity .2s ease';
-        urlT.style.transform='translateY(-50%) scale(1)'; urlT.style.opacity='1';
-        urlT.style.pointerEvents='';
-      });
-      urlT.dataset.busy='';
-    },180);
-  },1500);
+  var urlText = document.getElementById('result-url-text');
+  var doneText = document.getElementById('copy-done-text');
+  var copyBtn = document.getElementById('copy-btn');
+  var urlBar = document.querySelector('.rs-url');
+  if(!urlText || !doneText) return;
+  if(copyBtn && copyBtn._copyTimer){ clearTimeout(copyBtn._copyTimer); }
+  urlText.style.opacity = '0';
+  urlText.style.transform = 'scale(.8)';
+  doneText.style.opacity = '1';
+  doneText.style.transform = 'scale(1)';
+  if(urlBar) urlBar.style.background = 'rgba(239,138,99,.15)';
+  var timer = setTimeout(function(){
+    urlText.style.opacity = '';
+    urlText.style.transform = '';
+    doneText.style.opacity = '';
+    doneText.style.transform = '';
+    if(urlBar) urlBar.style.background = '';
+    if(copyBtn) copyBtn._copyTimer = null;
+  }, 1600);
+  if(copyBtn) copyBtn._copyTimer = timer;
 }
 // ============================================================
 // トップへ戻るボタン 出現・クリック制御
@@ -3493,7 +3697,7 @@ function doCopiedAnim(){
     // PC(pointer:fine)のみ、スクロール完了後に入力欄へフォーカス
     if(window.matchMedia('(pointer:fine)').matches){
       setTimeout(function(){
-        var inp = document.getElementById('content-input');
+        var inp = document.getElementById('msg');
         if(inp) inp.focus();
       }, 450);
     }

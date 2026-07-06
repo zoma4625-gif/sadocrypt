@@ -1,13 +1,8 @@
 export const HEADER_CSS = `/* ============================================================
    Brake. ロゴ共通
    ============================================================ */
-.brake-logo{font-family:'Inter','Noto Sans JP',sans-serif;font-weight:800;color:#3c3a36;letter-spacing:.02em;line-height:1}
-.brake-dot{
-  background:linear-gradient(135deg,#ef8a63 0%,#d99a70 45%,#8fa88f 100%);
-  -webkit-background-clip:text;
-  background-clip:text;
-  color:transparent;
-}
+.brake-logo{font-family:'Orbitron',sans-serif;font-weight:900;color:#3c3a36;letter-spacing:.02em;line-height:1}
+.brake-dot{color:#ef8a63;}
 
 .hero-header{
   position:fixed;
@@ -20,8 +15,10 @@ export const HEADER_CSS = `/* ==================================================
   justify-content:space-between;
   padding:28px 40px;
   width:100%;
-  background:#faf6ee;
-  border-bottom:1px solid rgba(60,55,48,.1);
+  background:rgba(253,251,245,.85);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(60,55,48,.08);
   transition:transform .25s ease;
   box-sizing:border-box;
 }
@@ -162,7 +159,6 @@ export const HEADER_HTML = `  <!-- モバイルメニューオーバーレイ（
       <button class="mobile-menu-close" id="mobile-menu-close" aria-label="メニューを閉じる">&#x2715;</button>
     </div>
     <div class="mobile-menu-links">
-      <a href="/about" id="mmlink-about">Brake.とは</a>
       <a href="/time-lock" id="mmlink-why">仕組み</a>
       <a href="/philosophy" id="mmlink-phil">なぜ？</a>
       <a href="/privacy" id="mmlink-privacy">プライバシー</a>
@@ -173,9 +169,8 @@ export const HEADER_HTML = `  <!-- モバイルメニューオーバーレイ（
 
   <!-- ヘッダー -->
   <header class="hero-header">
-    <a href="/" class="brake-logo" style="text-decoration:none;color:inherit">Brake<span class="brake-dot">.</span></a>
+    <a href="/" class="brake-logo" style="text-decoration:none">Brake<span class="brake-dot">.</span></a>
     <nav class="hero-nav">
-      <a href="/about">Brake.とは</a>
       <a href="/time-lock">仕組み</a>
       <a href="/philosophy">なぜ？</a>
       <a href="/privacy">プライバシー</a>
@@ -260,7 +255,7 @@ export const HEADER_JS = `// ===================================================
 // アクティブナビハイライト（pathname 判定・別ページのみ）
 (function(){
   var path=window.location.pathname;
-  var map={'/about':'mmlink-about','/time-lock':'mmlink-why','/philosophy':'mmlink-phil','/privacy':'mmlink-privacy'};
+  var map={'/time-lock':'mmlink-why','/philosophy':'mmlink-phil','/privacy':'mmlink-privacy'};
   if(!map[path]) return;
   var desk=document.querySelector('.hero-nav a[href="'+path+'"]');
   if(desk) desk.classList.add('nav-active');
