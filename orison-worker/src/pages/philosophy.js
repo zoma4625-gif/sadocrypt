@@ -140,19 +140,19 @@ ${HEADER_HTML}
   <div class="phil-card-grid">
     <div class="phil-card">
       <div class="phil-card-title">個人から、大切な人へ</div>
-      <div class="phil-card-desc">誕生日や記念日の0時に届く手紙。開ける瞬間に、立ち会える。</div>
+      <div class="phil-card-desc">大切なメッセージを、心の準備時間ごと送る。</div>
     </div>
     <div class="phil-card">
       <div class="phil-card-title">発信者から、ファンへ</div>
-      <div class="phil-card-desc">待てる人にだけ、先に届ける。時間をかけた人から、順に受け取る。</div>
+      <div class="phil-card-desc">待った人から順に受け取る。先に知りたい人ほど、長く待つ。</div>
     </div>
     <div class="phil-card">
       <div class="phil-card-title">企業から、世の中へ</div>
-      <div class="phil-card-desc">手間をかけてでも開こうとする、本気の相手にだけ届く。通りすがりの注目は、自然と離れていく。</div>
+      <div class="phil-card-desc">開くまでの時間が、通りすがりの注目と本気の相手をわける。</div>
     </div>
     <div class="phil-card">
       <div class="phil-card-title">いまの自分から、未来の自分へ</div>
-      <div class="phil-card-desc">1年後に開く約束や目標。書いた本人も、先には読み返せない。</div>
+      <div class="phil-card-desc">1年後にひらく約束。書いた本人も、すぐに読み返せない。</div>
     </div>
   </div>
 
