@@ -2959,6 +2959,32 @@ document.getElementById('msg').addEventListener('keydown', function(e){
   }
 })();
 
+// ============================================================
+// URLクエリ共有受け取り（?text=...&t=...）
+// ============================================================
+(function(){
+  var params = new URLSearchParams(location.search);
+  var text = params.get('text');
+  if(!text) return;
+  // アドレスバー・履歴から平文を即除去
+  history.replaceState(null, '', location.pathname);
+  // text を入力欄に投入
+  contentInput.value = text;
+  updateRunBtn();
+  if(urlLineEl) urlLineEl.classList.toggle('visible', isValidHttpUrl(text));
+  // t: 正の整数かつ上限以内のみ有効
+  var tRaw = params.get('t');
+  var tNum = tRaw !== null ? Number(tRaw) : NaN;
+  var tValid = Number.isFinite(tNum) && tNum === Math.floor(tNum) && tNum > 0 && tNum <= MAX_LOCK_S_CLI;
+  if(tValid){
+    // 時間を秒単位でセットして自動暗号化
+    document.getElementById('tv').value = tNum;
+    document.getElementById('tu').value = 's';
+    doEncrypt();
+  }
+  // t なし/不正 → テキスト投入のみ（ユーザーが時間を選んで送信）
+})();
+
 function showEncError(msg){
   var el=document.createElement('div');
   el.className='error-msg';
