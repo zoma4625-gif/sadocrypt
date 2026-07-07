@@ -1751,7 +1751,7 @@ ${HEADER_HTML}
         <div class="share-paper share-paper1"></div>
         <div class="share-paper share-paper2"></div>
         <div class="share-card-inner">
-          <p class="share-card-desc">他のアプリの共有から直接 Brake. に送れます</p>
+          <p class="share-card-desc">他のアプリの共有から<br>直接 Brake. に送れます</p>
           <button type="button" class="share-card-btn" id="share-add-btn">共有に追加</button>
         </div>
       </div>

@@ -235,7 +235,7 @@ export const HEADER_HTML = `  <!-- モバイルメニューオーバーレイ（
         <div class="mob-share-paper mob-share-paper1"></div>
         <div class="mob-share-paper mob-share-paper2"></div>
         <div class="mob-share-inner">
-          <p class="mob-share-desc">他のアプリの共有から直接 Brake. に送れます</p>
+          <p class="mob-share-desc">他のアプリの共有から<br>直接 Brake. に送れます</p>
           <button type="button" class="mob-share-btn" id="mob-share-btn">共有に追加</button>
         </div>
       </div>
