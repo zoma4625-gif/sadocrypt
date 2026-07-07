@@ -168,7 +168,7 @@ ${HEADER_CSS}
    入力行（＋ボタン + textarea）
    ============================================================ */
 .fi-inrow{position:relative;}
-.fi-plus{position:absolute;left:13px;bottom:16px;width:30px;height:30px;
+.fi-plus{position:absolute;left:11px;bottom:16px;width:30px;height:30px;
   border:none;background:none;color:rgba(60,55,48,.5);font-size:20px;
   cursor:pointer;display:flex;align-items:center;justify-content:center;
   z-index:2;}
