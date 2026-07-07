@@ -3645,7 +3645,7 @@ async function doEncrypt(){
   const u = document.getElementById('tu').value;
   var rawV = parseFloat(document.getElementById('tv').value);
   if(isNaN(rawV) || rawV <= 0) rawV = 1;
-  var roundedV = Math.ceil(rawV * 100) / 100;
+  var roundedV = parseFloat(rawV.toFixed(2));
   var mult = u==='m' ? 60 : u==='h' ? 3600 : u==='d' ? 86400 : 1;
   let s = Math.ceil(roundedV * mult);
 
