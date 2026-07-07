@@ -151,7 +151,66 @@ export const HEADER_CSS = `/* ==================================================
   .hero-header .brake-logo{font-size:1.6rem}
   .hero-nav{display:none}
   .hamburger-btn{display:flex}
-}`;
+}
+/* ============================================================
+   モバイルメニュー内「共有に追加」カード
+   ============================================================ */
+.mob-share-wrap{
+  padding:24px 24px 8px;
+  display:flex;
+  justify-content:center;
+}
+.mob-share-card{
+  position:relative;
+  width:100%;
+  max-width:240px;
+}
+.mob-share-paper{
+  position:absolute;
+  inset:0;
+  border-radius:16px;
+  pointer-events:none;
+}
+.mob-share-paper1{
+  background:#f7ddcf;
+  transform:translate(-7px,-7px);
+}
+.mob-share-paper2{
+  background:#e6ebf0;
+  transform:translate(9px,7px);
+}
+.mob-share-inner{
+  position:relative;
+  z-index:1;
+  background:#fdfbf5;
+  border:.5px solid #e8ddc8;
+  border-radius:16px;
+  padding:1.4rem 1.2rem;
+  text-align:center;
+}
+.mob-share-desc{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:12px;
+  color:#8a7a68;
+  line-height:1.85;
+  margin-bottom:1.1rem;
+}
+.mob-share-btn{
+  display:inline-block;
+  background:linear-gradient(135deg,#ef8a63,#e28a5f);
+  color:#fff;
+  border:none;
+  border-radius:20px;
+  padding:10px 24px;
+  font-family:'Noto Sans JP',sans-serif;
+  font-weight:500;
+  font-size:13px;
+  cursor:pointer;
+  transition:opacity .15s;
+  white-space:nowrap;
+}
+.mob-share-btn:hover{opacity:.85;}
+.mob-share-btn:disabled{opacity:.55;cursor:default;}`;
 
 export const HEADER_HTML = `  <!-- モバイルメニューオーバーレイ（背景） -->
   <div id="mobile-menu-overlay"></div>
@@ -165,6 +224,17 @@ export const HEADER_HTML = `  <!-- モバイルメニューオーバーレイ（
       <a href="/philosophy" id="mmlink-phil">なぜ？</a>
       <a href="/privacy" id="mmlink-privacy">プライバシー</a>
       <a href="mailto:info@brake.run" id="mmlink-contact">お問い合わせ</a>
+    </div>
+    <!-- 共有に追加カード（ナビとフッターの間） -->
+    <div class="mob-share-wrap">
+      <div class="mob-share-card" id="mob-share-card">
+        <div class="mob-share-paper mob-share-paper1"></div>
+        <div class="mob-share-paper mob-share-paper2"></div>
+        <div class="mob-share-inner">
+          <p class="mob-share-desc">他のアプリの共有から直接 Brake. に送れます</p>
+          <button type="button" class="mob-share-btn" id="mob-share-btn">共有に追加</button>
+        </div>
+      </div>
     </div>
     <div class="mobile-menu-footer">© 2026 Brake. · TIME-LOCK ENCRYPTION</div>
   </div>
@@ -185,7 +255,13 @@ export const HEADER_HTML = `  <!-- モバイルメニューオーバーレイ（
     </button>
   </header>`;
 
-export const HEADER_JS = `// ============================================================
+export const HEADER_JS = `// beforeinstallprompt をヘッダースコープで捕捉（全ページ共通）
+var _hdrInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', function(e){
+  e.preventDefault();
+  _hdrInstallPrompt = e;
+});
+// ============================================================
 // サイドパネルメニュー開閉（addEventListener使用・インラインonclick禁止）
 // ============================================================
 (function(){
@@ -263,4 +339,35 @@ export const HEADER_JS = `// ===================================================
   if(desk) desk.classList.add('nav-active');
   var mob=document.getElementById(map[path]);
   if(mob) mob.classList.add('nav-active');
+})();
+
+// ============================================================
+// モバイルメニュー内「共有に追加」カード初期化
+// ============================================================
+(function(){
+  var card = document.getElementById('mob-share-card');
+  var btn  = document.getElementById('mob-share-btn');
+  if(!card || !btn) return;
+
+  var IOS_SHORTCUT_URL = 'https://www.icloud.com/shortcuts/7aaaa3cbc6b24fd5a421e23cc27edc44';
+
+  var mq = window.matchMedia('(display-mode: standalone)');
+  if(mq.matches || window.navigator.standalone){ card.parentNode.style.display='none'; return; }
+  mq.addEventListener('change', function(e){ if(e.matches) card.parentNode.style.display='none'; });
+
+  function isIOS(){
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  }
+
+  btn.addEventListener('click', function(){
+    if(isIOS()){
+      window.open(IOS_SHORTCUT_URL, '_blank', 'noopener');
+    } else if(_hdrInstallPrompt){
+      _hdrInstallPrompt.prompt();
+      _hdrInstallPrompt.userChoice.then(function(r){
+        if(r.outcome === 'accepted') card.parentNode.style.display = 'none';
+        _hdrInstallPrompt = null;
+      });
+    }
+  });
 })();`;
