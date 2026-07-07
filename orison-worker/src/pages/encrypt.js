@@ -381,11 +381,13 @@ ${HEADER_CSS}
   background:linear-gradient(135deg,#ef8a63 0%,#d99a70 45%,#8fa88f 100%);
   box-shadow:0 8px 24px rgba(220,130,90,.35);
   cursor:pointer;
-  transition:opacity .15s,transform .1s;
+  transition:opacity .15s,transform .1s,background .55s ease,color .55s ease,box-shadow .55s ease;
 }
 .btn-run:hover{opacity:0.88;}
 .btn-run:active{transform:scale(0.98);}
 .btn-run:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+.btn-run--off{background:#f7ded3;color:#e0a892;box-shadow:none;cursor:not-allowed;}
+.btn-run--off:hover{opacity:1;}
 .form-run-wrap{ margin-top:12px; }
 .form-run-note{
   font-size:11px;
@@ -2914,8 +2916,18 @@ document.getElementById('f').addEventListener('submit', function(e){
   // submitイベントはdoEncryptを呼ばない（ボタン・Enterの各ハンドラで呼ぶ）
 });
 
+// ボタン活性化フィードバック
+var runBtn = document.getElementById('btn');
+function updateRunBtn(){
+  var empty = contentInput.value.trim().length === 0;
+  runBtn.classList.toggle('btn-run--off', empty);
+}
+updateRunBtn(); // 初期状態（空なので非活性）
+contentInput.addEventListener('input', updateRunBtn);
+
 // 「→」ボタンのクリックで暗号化を実行（type="button"なのでsubmitは発生しない）
-document.getElementById('btn').addEventListener('click', function(){
+runBtn.addEventListener('click', function(){
+  if(runBtn.classList.contains('btn-run--off')) return;
   doEncrypt();
 });
 
