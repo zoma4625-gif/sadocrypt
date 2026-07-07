@@ -242,6 +242,7 @@ index.js
 
 | 日付 | 変更内容 |
 |------|----------|
+| 2026-07-07 | fix(howto): スマホSTEP画像全6枚差し替え・テキスト復活・枠修正（encrypt.js + public/）: ①スマホ版 sp-step-01〜03.png・sp-recv-step-01〜03.png を新画像（3:4、552×736）で全て更新。②`.cflow-stage{height:320px→520px}`に拡大してステージ外クリップでテキストが消えていたバグを修正。③`.cflow-img{aspect-ratio:4/3→3/4}`を両パネル統一（旧 #panel-sender 個別指定を削除）。④受け取り側スマホ STEP01/02 も sp-recv-step-01/02.png を新規追加・参照切り替え。?v=4 でキャッシュバスト。 |
 | 2026-07-07 | feat(howto): STEPカード画像をRickroll版に差し替え（encrypt.js + public/）: 送る側STEP01（step-01.png/sp-step-01.png）・STEP02（step-02.png/sp-step-02.png）、受け取り側STEP03（recv-step-03.png/sp-recv-step-03.png）を新画像で上書き・新規配置。PC版4:3・スマホ版3:4。CSS `#panel-sender .cflow-img{aspect-ratio:3/4}` を追加しスマホ送り手カルーセルを縦枠に変更。受け取り側 STEP01/02（recv-step-01/02.png）は変更なし。?v=3 でキャッシュバスト。 |
 | 2026-07-07 | feat(encrypt): YouTube ヒントラベルを削除（encrypt.js）: 入力欄下の「動画が埋め込まれます」表示（.fi-yt-hint / .fi-yt-icon CSS・HTML・detectYouTubeId関数・ytHintEl変数・updateYtHint関数・呼び出し2箇所）を完全除去。YouTube URL → 動画埋め込みの機能（decrypt.js側）は変更なし。 |
 | 2026-07-07 | style(cards): ABOUTユースケースカード見出しスマホ改行を打ち直し（encrypt.js）: カード1「コンテンツを↓ちゃんと見て↓ほしい人に。」・カード2「商品のリリース↓や重大発表に。」・カード3「知り合いに↓待つ時間を↓贈りたい人に。」。pc-brは温存しPC版の改行は変更なし。文言追加なし。 |

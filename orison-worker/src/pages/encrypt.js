@@ -1241,7 +1241,7 @@ ${HEADER_CSS}
 }
 .cflow-stage{
   position:relative;
-  height:320px;
+  height:520px;
   transform-style:preserve-3d;
 }
 .cflow-card{
@@ -1290,9 +1290,8 @@ ${HEADER_CSS}
   z-index:1;
 }
 .cflow-card.cf-edge-hide{opacity:0!important;pointer-events:none;}
-#panel-sender .cflow-img{aspect-ratio:3/4;}
 .cflow-img{
-  aspect-ratio:4/3;
+  aspect-ratio:3/4;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -1774,7 +1773,7 @@ ${HEADER_HTML}
           <div class="cflow-viewport">
             <div class="cflow-stage">
               <div class="cflow-card cf-active">
-                <div class="cflow-img"><img src="/sp-step-01.png?v=3" alt="メッセージやURLを置く" loading="eager" decoding="async"></div>
+                <div class="cflow-img"><img src="/sp-step-01.png?v=4" alt="メッセージやURLを置く" loading="eager" decoding="async"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 01</div>
                   <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>置く</div>
@@ -1782,7 +1781,7 @@ ${HEADER_HTML}
                 </div>
               </div>
               <div class="cflow-card cf-next">
-                <div class="cflow-img"><img src="/sp-step-02.png?v=3" alt="ひらく時間を決める" loading="eager" decoding="async"></div>
+                <div class="cflow-img"><img src="/sp-step-02.png?v=4" alt="ひらく時間を決める" loading="eager" decoding="async"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 02</div>
                   <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>時間を決める</div>
@@ -1790,7 +1789,7 @@ ${HEADER_HTML}
                 </div>
               </div>
               <div class="cflow-card cf-hidden">
-                <div class="cflow-img"><img src="/step-03.png" alt="リンクを共有する" loading="eager" decoding="async"></div>
+                <div class="cflow-img"><img src="/sp-step-03.png?v=4" alt="リンクを共有する" loading="eager" decoding="async"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 03</div>
                   <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>共有</div>
@@ -1839,7 +1838,7 @@ ${HEADER_HTML}
           <div class="cflow-viewport">
             <div class="cflow-stage">
               <div class="cflow-card cf-active">
-                <div class="cflow-img"><img src="/recv-step-01.png" alt="リンクを開くと復号がはじまる" loading="lazy"></div>
+                <div class="cflow-img"><img src="/sp-recv-step-01.png?v=4" alt="リンクを開くと復号がはじまる" loading="lazy"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 01</div>
                   <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>開く</div>
@@ -1847,7 +1846,7 @@ ${HEADER_HTML}
                 </div>
               </div>
               <div class="cflow-card cf-next">
-                <div class="cflow-img"><img src="/recv-step-02.png" alt="開いたまま待つ" loading="lazy"></div>
+                <div class="cflow-img"><img src="/sp-recv-step-02.png?v=4" alt="開いたまま待つ" loading="lazy"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 02</div>
                   <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>待つ</div>
@@ -1855,7 +1854,7 @@ ${HEADER_HTML}
                 </div>
               </div>
               <div class="cflow-card cf-hidden">
-                <div class="cflow-img"><img src="/sp-recv-step-03.png?v=3" alt="復号が終わると受け取れる" loading="lazy"></div>
+                <div class="cflow-img"><img src="/sp-recv-step-03.png?v=4" alt="復号が終わると受け取れる" loading="lazy"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 03</div>
                   <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>受け取る</div>
@@ -3722,7 +3721,7 @@ function doCopiedAnim(){
   // 受け取り人側STEP画像をアイドル時にプリロード（ヒーロー完了後のみ）
   window.addEventListener('load', function() {
     var preloadRecv = function() {
-      ['/recv-step-01.png','/recv-step-02.png','/recv-step-03.png?v=3','/sp-step-01.png?v=3','/sp-step-02.png?v=3','/sp-recv-step-03.png?v=3'].forEach(function(src) {
+      ['/sp-step-01.png?v=4','/sp-step-02.png?v=4','/sp-step-03.png?v=4','/sp-recv-step-01.png?v=4','/sp-recv-step-02.png?v=4','/sp-recv-step-03.png?v=4'].forEach(function(src) {
         var img = new Image(); img.src = src;
       });
     };
