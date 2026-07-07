@@ -2653,6 +2653,20 @@ function clearFileSelection(){
   if(fiInrow) fiInrow.style.display = '';
 }
 
+// share_target POST 経由のファイルをフォームに適用する共通関数
+function applySharedFile(file){
+  if(!file) return;
+  if(file.size > MAX_FILE_SIZE){
+    showEncError('このファイルは大きすぎます（最大' + (MAX_FILE_SIZE/1024/1024) + 'MB）');
+    return;
+  }
+  selectedFile = file;
+  fileSelectedName.textContent = file.name;
+  if(fiInrow) fiInrow.style.display = 'none';
+  fileSelectedBar.classList.add('visible');
+  currentSegment = 'file';
+}
+
 // ドラッグ&ドロップ
 (function(){
   var dropOverlay = document.getElementById('drop-overlay');
@@ -2991,6 +3005,42 @@ document.getElementById('msg').addEventListener('keydown', function(e){
     doEncrypt();
   }
   // t なし/不正 → 投入のみ（ユーザーが時間を選んで送信）
+})();
+
+// ============================================================
+// share_target POST 着地（?share=pending）→ SW から共有データ受取
+// ============================================================
+(async function(){
+  if(new URLSearchParams(location.search).get('share') !== 'pending') return;
+  history.replaceState(null, '', location.pathname);
+  if(!('serviceWorker' in navigator)) return;
+  var reg = await navigator.serviceWorker.ready;
+  var sw = reg && reg.active;
+  if(!sw) return;
+  var share = await new Promise(function(resolve){
+    var ch = new MessageChannel();
+    ch.port1.onmessage = function(e){ resolve(e.data); };
+    sw.postMessage({type:'get-share'}, [ch.port2]);
+  });
+  if(!share) return;
+  var files = share.files;
+  if(files && files.length > 0){
+    applySharedFile(files[0]);
+    return;
+  }
+  // ファイルなし → テキスト/URLをマージして既存フェーズ1フローへ合流
+  var pText  = share.text  || '';
+  var pUrl   = share.url   || '';
+  var pTitle = share.title || '';
+  var merged;
+  if(pText && pUrl)       merged = pText + ' ' + pUrl;
+  else if(pUrl)           merged = pUrl;
+  else if(pText)          merged = pText;
+  else if(pTitle)         merged = pTitle;
+  else return;
+  contentInput.value = merged;
+  updateRunBtn();
+  if(urlLineEl) urlLineEl.classList.toggle('visible', isValidHttpUrl(merged));
 })();
 
 function showEncError(msg){

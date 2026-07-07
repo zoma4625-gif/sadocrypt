@@ -11,11 +11,18 @@
   ],
   "share_target": {
     "action": "/",
-    "method": "GET",
+    "method": "POST",
+    "enctype": "multipart/form-data",
     "params": {
       "title": "title",
       "text": "text",
-      "url": "url"
+      "url": "url",
+      "files": [
+        {
+          "name": "file",
+          "accept": ["image/*", "video/*", "audio/*", "text/plain", "text/html", "application/pdf", "application/zip", "application/json", "application/octet-stream"]
+        }
+      ]
     }
   }
 }
