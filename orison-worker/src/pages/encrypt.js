@@ -63,7 +63,7 @@ body{
 .hero{
   position:relative;
   width:100%;
-  min-height:100vh;
+  min-height:100svh;
   display:flex;
   flex-direction:column;
   overflow:hidden;
@@ -167,11 +167,11 @@ ${HEADER_CSS}
 /* ============================================================
    入力行（＋ボタン + textarea）
    ============================================================ */
-.fi-inrow{display:flex;align-items:flex-start;gap:10px;}
-.fi-plus{flex:none;width:34px;height:48px;border:none;background:none;
-  color:rgba(60,55,48,.5);font-size:22px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  position:relative;}
+.fi-inrow{position:relative;}
+.fi-plus{position:absolute;left:8px;bottom:8px;width:30px;height:30px;
+  border:none;background:none;color:rgba(60,55,48,.5);font-size:20px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  z-index:2;}
 .fi-plus-tip{position:absolute;bottom:calc(100% + 8px);left:0;
   background:#3c3a36;color:#fff;font-size:11px;line-height:1.5;
   padding:7px 10px;border-radius:8px;white-space:nowrap;
@@ -181,9 +181,10 @@ ${HEADER_CSS}
   border:5px solid transparent;border-top-color:#3c3a36;}
 @media(hover:hover){.fi-plus:hover .fi-plus-tip{opacity:1;}}
 @media(hover:none){.fi-plus-tip{display:none;}}
-.fi-input{flex:1;border:none;background:rgba(60,55,48,.05);border-radius:12px;
-  padding:14px 16px;font-size:16px;color:#3c3a36;outline:none;
-  resize:none;overflow:hidden;line-height:1.7;min-width:0;box-sizing:border-box;}
+.fi-input{width:100%;border:none;background:rgba(60,55,48,.05);border-radius:12px;
+  padding:14px 16px 44px 16px;font-size:16px;color:#3c3a36;outline:none;
+  resize:none;overflow:hidden;line-height:1.7;box-sizing:border-box;
+  min-height:96px;}
 /* ============================================================
    時間スライダー・ライブ表示
    ============================================================ */
