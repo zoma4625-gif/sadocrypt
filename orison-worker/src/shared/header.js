@@ -354,24 +354,45 @@ window.addEventListener('beforeinstallprompt', function(e){
   if(!card || !btn) return;
 
   var IOS_SHORTCUT_URL = 'https://www.icloud.com/shortcuts/7aaaa3cbc6b24fd5a421e23cc27edc44';
+  var wrap = card.parentNode;
 
+  // standalone（インストール済みPWA）なら不要
   var mq = window.matchMedia('(display-mode: standalone)');
-  if(mq.matches || window.navigator.standalone){ card.parentNode.style.display='none'; return; }
-  mq.addEventListener('change', function(e){ if(e.matches) card.parentNode.style.display='none'; });
+  if(mq.matches || window.navigator.standalone){ wrap.style.display='none'; return; }
+  mq.addEventListener('change', function(e){ if(e.matches) wrap.style.display='none'; });
 
-  function isIOS(){
-    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  function isMac(){
+    if(navigator.userAgentData && navigator.userAgentData.platform)
+      return navigator.userAgentData.platform === 'macOS';
+    return /Mac/.test(navigator.platform||'') && !('ontouchend' in document);
+  }
+  function isIOS(){ return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; }
+
+  // macOS は共有シート連携不可 → 非表示
+  if(isMac()){ wrap.style.display='none'; return; }
+
+  // iOS: iCloud ショートカット追加（表示はそのまま）
+  if(isIOS()){
+    btn.addEventListener('click', function(){
+      window.open(IOS_SHORTCUT_URL, '_blank', 'noopener');
+    });
+    return;
   }
 
-  btn.addEventListener('click', function(){
-    if(isIOS()){
-      window.open(IOS_SHORTCUT_URL, '_blank', 'noopener');
-    } else if(_hdrInstallPrompt){
-      _hdrInstallPrompt.prompt();
-      _hdrInstallPrompt.userChoice.then(function(r){
-        if(r.outcome === 'accepted') card.parentNode.style.display = 'none';
-        _hdrInstallPrompt = null;
-      });
-    }
-  });
+  // Android / Windows Chrome 等: beforeinstallprompt が発火したときだけ表示
+  wrap.style.display='none';
+  function wireInstall(){
+    wrap.style.display='';
+    btn.addEventListener('click', function(){
+      if(_hdrInstallPrompt){
+        _hdrInstallPrompt.prompt();
+        _hdrInstallPrompt.userChoice.then(function(r){
+          if(r.outcome === 'accepted') wrap.style.display='none';
+          _hdrInstallPrompt = null;
+        });
+      }
+    });
+  }
+  if(_hdrInstallPrompt){ wireInstall(); }
+  else { window.addEventListener('beforeinstallprompt', wireInstall); }
 })();`;

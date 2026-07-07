@@ -137,9 +137,7 @@ ${HEADER_CSS}
   width:224px;
   z-index:3;
 }
-@media(min-width:880px){
-  .share-card{ display:block; }
-}
+/* PC カードの表示は JS が制御（macOS 非表示・beforeinstallprompt 検出時のみ表示） */
 .share-paper{
   position:absolute;
   inset:0;
@@ -3956,36 +3954,50 @@ function doCopiedAnim(){
   var btn  = document.getElementById('share-add-btn');
   if(!card || !btn) return;
 
-  // standalone（インストール済みPWA）なら非表示
-  var mq = window.matchMedia('(display-mode: standalone)');
-  if(mq.matches || window.navigator.standalone){ card.style.display = 'none'; return; }
-  mq.addEventListener('change', function(e){ if(e.matches) card.style.display = 'none'; });
-
-  // iCloudショートカットURL（確定後に差し込む）
   var IOS_SHORTCUT_URL = 'https://www.icloud.com/shortcuts/7aaaa3cbc6b24fd5a421e23cc27edc44';
 
-  function isIOS(){
-    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  // standalone（インストール済みPWA）なら不要
+  var mq = window.matchMedia('(display-mode: standalone)');
+  if(mq.matches || window.navigator.standalone) return;
+  mq.addEventListener('change', function(e){ if(e.matches) card.style.display='none'; });
+
+  function isMac(){
+    if(navigator.userAgentData && navigator.userAgentData.platform)
+      return navigator.userAgentData.platform === 'macOS';
+    return /Mac/.test(navigator.platform||'') && !('ontouchend' in document);
+  }
+  function isIOS(){ return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; }
+
+  // macOS は共有シート連携不可 → 非表示
+  if(isMac()) return;
+
+  // PC カードは ≥880px のみ意味がある
+  function show(){ if(window.matchMedia('(min-width:880px)').matches) card.style.display='block'; }
+
+  // iOS: iCloud ショートカット追加
+  if(isIOS()){
+    show();
+    btn.addEventListener('click', function(){
+      window.open(IOS_SHORTCUT_URL, '_blank', 'noopener');
+    });
+    return;
   }
 
-  btn.addEventListener('click', function(){
-    if(isIOS()){
-      if(IOS_SHORTCUT_URL){
-        window.open(IOS_SHORTCUT_URL, '_blank', 'noopener');
-      } else {
-        btn.textContent = '準備中…';
-        btn.disabled = true;
+  // Android / Windows Chrome 等: beforeinstallprompt が発火したときだけ表示
+  function wireInstall(){
+    show();
+    btn.addEventListener('click', function(){
+      if(_deferredInstallPrompt){
+        _deferredInstallPrompt.prompt();
+        _deferredInstallPrompt.userChoice.then(function(r){
+          if(r.outcome === 'accepted') card.style.display='none';
+          _deferredInstallPrompt = null;
+        });
       }
-    } else if(_deferredInstallPrompt){
-      // Android / PC Chrome — PWAインストールプロンプトを発火
-      _deferredInstallPrompt.prompt();
-      _deferredInstallPrompt.userChoice.then(function(r){
-        if(r.outcome === 'accepted') card.style.display = 'none';
-        _deferredInstallPrompt = null;
-      });
-    }
-    // その他（beforeinstallpromptなし）は静かに何もしない
-  });
+    });
+  }
+  if(_deferredInstallPrompt){ wireInstall(); }
+  else { window.addEventListener('beforeinstallprompt', wireInstall); }
 })();
 
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js'); }
