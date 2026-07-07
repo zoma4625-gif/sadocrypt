@@ -2540,7 +2540,7 @@ fileCancelBtn.addEventListener('click', function(){
 
   function ceilTv(){
     var raw = parseFloat(tvEl.value);
-    return (isNaN(raw) || raw <= 0) ? 1 : Math.ceil(raw * 100) / 100;
+    return (isNaN(raw) || raw <= 0) ? 1 : parseFloat(raw.toFixed(2));
   }
 
   function updateLive(){
@@ -2643,7 +2643,7 @@ fileCancelBtn.addEventListener('click', function(){
     if(isNaN(raw) || raw <= 0){
       tvEl.value = 1;
     } else {
-      tvEl.value = Math.min(Math.ceil(raw * 100) / 100, max);
+      tvEl.value = Math.min(parseFloat(raw.toFixed(2)), max);
     }
     updateLive();
   });
@@ -2651,7 +2651,9 @@ fileCancelBtn.addEventListener('click', function(){
     if(e.key === 'Enter'){
       e.preventDefault();
       tvEl.blur();
+      var saved = tvEl.value;
       tuEl.focus();
+      if(tvEl.value !== saved) tvEl.value = saved;
     }
   });
 
