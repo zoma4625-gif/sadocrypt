@@ -1384,6 +1384,8 @@ ${HEADER_CSS}
 @media(max-width:680px){
   .sender-pc{display:none;}
   .sender-mob{display:block;}
+  .cflow-stage{height:calc(96vw + 100px);}
+  .cflow-wrap{padding-bottom:0;}
   .cflow-btn{top:calc(24px + 48vw);}
   .cflow-dots{top:calc(132px + 96vw);bottom:auto;}
 }

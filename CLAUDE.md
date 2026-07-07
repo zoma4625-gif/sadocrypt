@@ -242,6 +242,7 @@ index.js
 
 | 日付 | 変更内容 |
 |------|----------|
+| 2026-07-07 | fix(howto): スマホカルーセル下余白を詰める（encrypt.js）: 3:4縦長化によるステージ底部空き（520px固定 vs 実カード~443px）と旧 `padding-bottom:44px`（dots at bottom:0 時代の残置）の二重余白でドット下に141pxの隙間。`@media(max-width:680px)` で `cflow-stage{height:calc(96vw+100px)}` に動的化・`cflow-wrap{padding-bottom:0}` で除去。修正後はドット下約51px（6px wrap内+45px section padding）に縮小。PC版無影響。 |
 | 2026-07-07 | fix(howto): スマホカルーセル三角ボタン・ドット位置修正（encrypt.js）: 3:4縦長化で.cflow-wrap基準top:50%がずれた問題を修正。ボタン: `top:calc(24px+48vw)` でvw単位追従（画像縦中央に正確配置）。ドット: `bottom:0→top:calc(132px+96vw)` でカード下端+20pxに追従。両方とも @media(max-width:680px) 内のみ、PC版無影響。 |
 | 2026-07-07 | fix(howto): スマホSTEP画像全6枚差し替え・テキスト復活・枠修正（encrypt.js + public/）: ①スマホ版 sp-step-01〜03.png・sp-recv-step-01〜03.png を新画像（3:4、552×736）で全て更新。②`.cflow-stage{height:320px→520px}`に拡大してステージ外クリップでテキストが消えていたバグを修正。③`.cflow-img{aspect-ratio:4/3→3/4}`を両パネル統一（旧 #panel-sender 個別指定を削除）。④受け取り側スマホ STEP01/02 も sp-recv-step-01/02.png を新規追加・参照切り替え。?v=4 でキャッシュバスト。 |
 | 2026-07-07 | feat(howto): STEPカード画像をRickroll版に差し替え（encrypt.js + public/）: 送る側STEP01（step-01.png/sp-step-01.png）・STEP02（step-02.png/sp-step-02.png）、受け取り側STEP03（recv-step-03.png/sp-recv-step-03.png）を新画像で上書き・新規配置。PC版4:3・スマホ版3:4。CSS `#panel-sender .cflow-img{aspect-ratio:3/4}` を追加しスマホ送り手カルーセルを縦枠に変更。受け取り側 STEP01/02（recv-step-01/02.png）は変更なし。?v=3 でキャッシュバスト。 |
