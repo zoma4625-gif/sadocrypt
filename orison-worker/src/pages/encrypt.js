@@ -2527,14 +2527,9 @@ fileCancelBtn.addEventListener('click', function(){
   }
 
   // c) tv/tu 手入力 → チップ全非選択 + スライダー最近傍 + ライブ更新
+  // 値の書き戻しは行わない（IME組み込み破壊・カーソルリセット・重複入力の原因になるため）
+  // 正規化・上限クリップはすべて blur 確定時に実施する
   tvEl.addEventListener('input', function(){
-    var v = normalizeTvInput(tvEl.value);
-    if(v!==tvEl.value) tvEl.value=v;
-    var max=30*24*60*60;
-    if(tuEl.value==='m') max=Math.floor(max/60);
-    if(tuEl.value==='h') max=Math.floor(max/3600);
-    if(tuEl.value==='d') max=30;
-    if(Number(tvEl.value)>max) tvEl.value=max;
     chips.forEach(function(c){ c.classList.remove('active'); });
     slider.value = nearestStopIndex();
     updateLive();
@@ -2545,13 +2540,18 @@ fileCancelBtn.addEventListener('click', function(){
     updateLive();
   });
   tvEl.addEventListener('blur', function(){
-    tvEl.value = normalizeTvInput(tvEl.value);
-    var raw = parseFloat(tvEl.value);
-    if(!isNaN(raw) && raw > 0){
-      var rounded = Math.ceil(raw * 100) / 100;
-      tvEl.value = rounded;
-      updateLive();
+    var norm = normalizeTvInput(tvEl.value);
+    var raw = parseFloat(norm);
+    var max = 30*24*60*60;
+    if(tuEl.value==='m') max = Math.floor(max/60);
+    if(tuEl.value==='h') max = Math.floor(max/3600);
+    if(tuEl.value==='d') max = 30;
+    if(isNaN(raw) || raw <= 0){
+      tvEl.value = 1;
+    } else {
+      tvEl.value = Math.min(Math.ceil(raw * 100) / 100, max);
     }
+    updateLive();
   });
   tvEl.addEventListener('keydown', function(e){
     if(e.key === 'Enter'){
