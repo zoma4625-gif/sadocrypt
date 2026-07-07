@@ -185,6 +185,10 @@ ${HEADER_CSS}
   padding:14px 16px 52px 16px;font-size:16px;color:#3c3a36;outline:none;
   resize:none;overflow:hidden;line-height:1.5;box-sizing:border-box;
   min-height:72px;}
+.fi-url-line{height:2px;width:100%;background:linear-gradient(90deg,#ef8a63,#a8bba0);
+  border-radius:0 0 8px 8px;opacity:0;transition:opacity .5s ease;pointer-events:none;}
+.fi-url-line.visible{opacity:1;}
+@media(prefers-reduced-motion:reduce){.fi-url-line{transition:none;}}
 /* ============================================================
    時間スライダー・ライブ表示
    ============================================================ */
@@ -1631,6 +1635,7 @@ ${HEADER_HTML}
             <textarea id="msg" class="fi-input" rows="1"
               placeholder="メッセージ、URLを入力…"></textarea>
           </div>
+          <div class="fi-url-line" id="fi-url-line"></div>
           <div class="file-selected-bar" id="file-selected-bar">
             <span style="font-size:14px">📎</span>
             <span class="file-selected-name" id="file-selected-name"></span>
@@ -2378,12 +2383,15 @@ const contentInput = document.getElementById('msg');
 const urlInputWrap = null;
 const fiInrow = document.querySelector('.fi-inrow');
 
-// textarea 自動拡張
+// textarea 自動拡張 + URL下線
+var urlLineEl = document.getElementById('fi-url-line');
+function isValidHttpUrl(s){try{var u=new URL(s.trim());return u.protocol==='https:'||u.protocol==='http:';}catch{return false;}}
 contentInput.addEventListener('input', function(){
   contentInput.style.height = 'auto';
   var maxH = Math.floor(window.innerHeight * 0.4);
   contentInput.style.height = Math.min(contentInput.scrollHeight, maxH) + 'px';
   contentInput.style.overflowY = contentInput.scrollHeight > maxH ? 'auto' : 'hidden';
+  if(urlLineEl) urlLineEl.classList.toggle('visible', isValidHttpUrl(contentInput.value));
 });
 
 // ＋ボタンでファイル選択
