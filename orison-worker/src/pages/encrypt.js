@@ -122,7 +122,69 @@ ${HEADER_CSS}
 .hero-form-wrap{
   width:100%;
   max-width:560px;
+  position:relative; /* share-card の絶対配置基準 */
 }
+
+/* ============================================================
+   共有に追加カード（PC右余白）
+   ============================================================ */
+.share-card{
+  display:none; /* JS + メディアクエリで表示制御 */
+  position:absolute;
+  left:calc(100% + 24px);
+  top:24px;
+  width:224px;
+  z-index:3;
+}
+@media(min-width:880px){
+  .share-card{ display:block; }
+}
+.share-paper{
+  position:absolute;
+  inset:0;
+  border-radius:16px;
+  pointer-events:none;
+}
+.share-paper1{
+  background:#f7ddcf;
+  transform:translate(-8px,-8px);
+}
+.share-paper2{
+  background:#e6ebf0;
+  transform:translate(10px,8px);
+}
+.share-card-inner{
+  position:relative;
+  z-index:1;
+  background:#fdfbf5;
+  border:.5px solid #e8ddc8;
+  border-radius:16px;
+  padding:1.5rem 1.4rem;
+  text-align:center;
+}
+.share-card-desc{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:12.5px;
+  color:#8a7a68;
+  line-height:1.85;
+  margin-bottom:1.2rem;
+}
+.share-card-btn{
+  display:inline-block;
+  background:linear-gradient(135deg,#ef8a63,#e28a5f);
+  color:#fff;
+  border:none;
+  border-radius:20px;
+  padding:10px 24px;
+  font-family:'Noto Sans JP',sans-serif;
+  font-weight:500;
+  font-size:13px;
+  cursor:pointer;
+  transition:opacity .15s;
+  white-space:nowrap;
+}
+.share-card-btn:hover{ opacity:.85; }
+.share-card-btn:disabled{ opacity:.55; cursor:default; }
 
 /* ============================================================
    フォーム領域（白カード）
@@ -1678,6 +1740,17 @@ ${HEADER_HTML}
         <div id="res"></div>
       </div>
       </div><!-- /form-card-wrap -->
+
+      <!-- 共有に追加カード（PC右余白・position:absolute で流れに非影響） -->
+      <div class="share-card" id="share-card">
+        <div class="share-paper share-paper1"></div>
+        <div class="share-paper share-paper2"></div>
+        <div class="share-card-inner">
+          <p class="share-card-desc">他のアプリの共有から直接 Brake. に送れます</p>
+          <button type="button" class="share-card-btn" id="share-add-btn">共有に追加</button>
+        </div>
+      </div>
+
       <!-- ブリッジ（フォームカードと生成カードを繋ぐ導線） -->
       <div class="brake-bridge" id="brake-bridge" data-state="idle">
         <div class="bridge-line-top"></div>
@@ -1922,6 +1995,12 @@ ${HEADER_HTML}
 </div>
 
 <script>
+// beforeinstallprompt を最速で捕捉（add-to-home 促進用）
+var _deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', function(e){
+  e.preventDefault();
+  _deferredInstallPrompt = e;
+});
 // startSpin/releaseSpin スタブ（LP では hero-bg.js 未使用のため）
 if(!window.startSpin)   window.startSpin   = function(){};
 if(!window.releaseSpin) window.releaseSpin = function(){};
@@ -3864,6 +3943,46 @@ function doCopiedAnim(){
       setTimeout(preloadRecv, 1500);
     }
   });
+// ============================================================
+// 共有に追加カード — 初期化
+// ============================================================
+(function(){
+  var card = document.getElementById('share-card');
+  var btn  = document.getElementById('share-add-btn');
+  if(!card || !btn) return;
+
+  // standalone（インストール済みPWA）なら非表示
+  var mq = window.matchMedia('(display-mode: standalone)');
+  if(mq.matches || window.navigator.standalone){ card.style.display = 'none'; return; }
+  mq.addEventListener('change', function(e){ if(e.matches) card.style.display = 'none'; });
+
+  // iCloudショートカットURL（確定後に差し込む）
+  var IOS_SHORTCUT_URL = '';
+
+  function isIOS(){
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  }
+
+  btn.addEventListener('click', function(){
+    if(isIOS()){
+      if(IOS_SHORTCUT_URL){
+        window.open(IOS_SHORTCUT_URL, '_blank', 'noopener');
+      } else {
+        btn.textContent = '準備中…';
+        btn.disabled = true;
+      }
+    } else if(_deferredInstallPrompt){
+      // Android / PC Chrome — PWAインストールプロンプトを発火
+      _deferredInstallPrompt.prompt();
+      _deferredInstallPrompt.userChoice.then(function(r){
+        if(r.outcome === 'accepted') card.style.display = 'none';
+        _deferredInstallPrompt = null;
+      });
+    }
+    // その他（beforeinstallpromptなし）は静かに何もしない
+  });
+})();
+
 if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js'); }
 </script>
 <div id="scene-modal" class="scene-modal">
