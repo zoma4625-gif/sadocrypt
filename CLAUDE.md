@@ -242,6 +242,8 @@ index.js
 
 | 日付 | 変更内容 |
 |------|----------|
+| 2026-07-07 | style(form): ＋ボタン left を 16px → 13px に微調整（目測補正・encrypt.js のみ）。 |
+| 2026-07-07 | fix(decrypt): キャッシュヒット時の結果表示バグを修正（decrypt.js）: コミット 309ab03（scenes.js 導入）でキャッシュヒット分岐だけ旧スピナー経由（`startSpinner→triggerCollapse`）のままになっていた先祖返りを修正。`startSpinner`/`pendingDoneCallback`/`triggerCollapse` を除去し、通常完了パスと同じ `result-stage.classList.add('visible')` → `showResult()` の直呼びに変更。`scene-stage` はキャッシュ時は `display:none` のままで非表示処理不要。`decryptWithXFinal` 失敗時のキャッシュ削除（`localStorage.removeItem(CACHE_KEY)`）は維持。 |
 | 2026-06-11 | 復号画面を改善: ①UI更新間隔を1000回→5000回に拡大しオーバーヘッドを削減（復号速度向上）、②数字に「hash」単位を追加、③ドットリング型スピナーとプログレスバーを追加 |
 | 2026-06-11 | ベンチマーク実測値を更新: 500万回あたり13.29秒（約376,223回/秒）に基づき `BENCHMARK_SPEED` を 1,179,742 → 376,223 に修正 |
 | 2026-06-11 | ベンチマークツール追加: `/benchmark` ページで1024bit RSA相当のNを使い500万回の2乗チェーンを実行し、実測時間・速度・平均タイム・計測履歴を表示 |

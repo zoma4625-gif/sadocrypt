@@ -788,9 +788,9 @@ async function run(){
       // 完了キャッシュヒット時は途中保存も削除してからスキップ
       try{localStorage.removeItem(RESUME_KEY);}catch(_){}
       const decBuf=await decryptWithXFinal(cached);
-      startSpinner();
-      pendingDoneCallback=function(){showResult(decBuf);};
-      triggerCollapse();
+      var rs=document.getElementById('result-stage');
+      if(rs) rs.classList.add('visible');
+      showResult(decBuf);
       return;
     }catch(e){
       localStorage.removeItem(CACHE_KEY);
