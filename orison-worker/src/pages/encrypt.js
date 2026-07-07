@@ -3957,7 +3957,7 @@ function doCopiedAnim(){
   mq.addEventListener('change', function(e){ if(e.matches) card.style.display = 'none'; });
 
   // iCloudショートカットURL（確定後に差し込む）
-  var IOS_SHORTCUT_URL = '';
+  var IOS_SHORTCUT_URL = 'https://www.icloud.com/shortcuts/7aaaa3cbc6b24fd5a421e23cc27edc44';
 
   function isIOS(){
     return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
