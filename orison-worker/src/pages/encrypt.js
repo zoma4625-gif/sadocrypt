@@ -26,6 +26,7 @@ export const HTML_ENCRYPT = `<!DOCTYPE html>
 <link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
 <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
+<link rel="manifest" href="/manifest.json">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Brake.","url":"https://brake.run","description":"ファイルやURLに“時間の鍵”をかける。設定した時間が来るまで誰も解読できない、タイムロック暗号化サービス。","applicationCategory":"SecurityApplication","operatingSystem":"Any","inLanguage":"ja","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2960,29 +2961,36 @@ document.getElementById('msg').addEventListener('keydown', function(e){
 })();
 
 // ============================================================
-// URLクエリ共有受け取り（?text=...&t=...）
+// URLクエリ共有受け取り（?text=...&t=... / share_target: ?title=...&text=...&url=...）
 // ============================================================
 (function(){
   var params = new URLSearchParams(location.search);
-  var text = params.get('text');
-  if(!text) return;
+  // share_target（title/text/url）とフェーズ1（text）を統合してマージ
+  var pText  = params.get('text')  || '';
+  var pUrl   = params.get('url')   || '';
+  var pTitle = params.get('title') || '';
+  var merged;
+  if(pText && pUrl)       merged = pText + ' ' + pUrl;
+  else if(pUrl)           merged = pUrl;
+  else if(pText)          merged = pText;
+  else if(pTitle)         merged = pTitle;
+  else return; // text/url/title すべてなし → 通常着地
   // アドレスバー・履歴から平文を即除去
   history.replaceState(null, '', location.pathname);
-  // text を入力欄に投入
-  contentInput.value = text;
+  // 入力欄に投入
+  contentInput.value = merged;
   updateRunBtn();
-  if(urlLineEl) urlLineEl.classList.toggle('visible', isValidHttpUrl(text));
-  // t: 正の整数かつ上限以内のみ有効
+  if(urlLineEl) urlLineEl.classList.toggle('visible', isValidHttpUrl(merged));
+  // t: 正の整数かつ上限以内のみ有効（フェーズ1専用。share_target では通常送られない）
   var tRaw = params.get('t');
   var tNum = tRaw !== null ? Number(tRaw) : NaN;
   var tValid = Number.isFinite(tNum) && tNum === Math.floor(tNum) && tNum > 0 && tNum <= MAX_LOCK_S_CLI;
   if(tValid){
-    // 時間を秒単位でセットして自動暗号化
     document.getElementById('tv').value = tNum;
     document.getElementById('tu').value = 's';
     doEncrypt();
   }
-  // t なし/不正 → テキスト投入のみ（ユーザーが時間を選んで送信）
+  // t なし/不正 → 投入のみ（ユーザーが時間を選んで送信）
 })();
 
 function showEncError(msg){
@@ -3806,6 +3814,7 @@ function doCopiedAnim(){
       setTimeout(preloadRecv, 1500);
     }
   });
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js'); }
 </script>
 <div id="scene-modal" class="scene-modal">
   <div class="scene-modal-box">
