@@ -454,16 +454,18 @@ ${HEADER_CSS}
 .btn-run:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
 .btn-run--off{background:#f7ded3;color:#e0a892;box-shadow:none;cursor:not-allowed;}
 .btn-run--off:hover{opacity:1;}
-.form-run-wrap{ margin-top:12px; }
+.form-run-wrap{ margin-top:12px; position:relative; }
 #run-hint{
+  position:absolute;
+  left:0;
+  right:0;
+  top:calc(100% + 4px);
   font-size:12px;
   color:rgba(60,55,48,.55);
   text-align:center;
-  margin-top:8px;
   opacity:0;
   transition:opacity .35s ease;
   pointer-events:none;
-  min-height:1.4em;
 }
 #run-hint.visible{ opacity:1; }
 .form-run-note{
