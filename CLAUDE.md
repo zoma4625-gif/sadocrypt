@@ -242,6 +242,7 @@ index.js
 
 | 日付 | 変更内容 |
 |------|----------|
+| 2026-07-07 | style(cards): ABOUTユースケースカード見出しにスマホ改行制御（encrypt.js）: カード1「コンテンツを↓ちゃんと見てほしい↓人に。」・カード2「商品のリリースや↓重大発表に。」・カード3「知り合いに↓待つ時間を贈りたい↓人に。」に sp-br を挿入。既存 pc-br は維持。カード4「ほかにも」は変更なし。 |
 | 2026-07-07 | style(btn): 試すボタンを丸ボタン（縦3段）に変更（encrypt.js）: ピル型 → 円形（border-radius:50%/92px）。中身を SVG山記号・「Brake.」Orbitron 900 15px・「を試す」11px の縦3段に変更。position を top 基準 → bottom:24px/right:24px に変更（モバイル:16px）。クリック動作・スクロール挙動は変更なし。 |
 | 2026-07-07 | fix(about): ABOUT説明文のスマホ改行制御（encrypt.js）: `.sp-br{display:none}/@media(max-width:680px){display:inline}` を新設。「リンクを生成します。」直後・「暗号化できます」直後の2箇所に `<br class="sp-br">` を挿入。PC版は非表示・文言変更なし。 |
 | 2026-07-07 | fix(showcase): スマホ版ショーケース三角ボタン連打でのiOSズーム誤認を修正（encrypt.js）: `.cflow-btn` に `touch-action:manipulation` を追加。ダブルタップズームのみ無効化し通常タップ・ページ全体のピンチズームは維持。 |

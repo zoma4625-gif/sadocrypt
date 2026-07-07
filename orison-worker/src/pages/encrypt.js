@@ -1703,21 +1703,21 @@ ${HEADER_HTML}
     <div class="who-grid">
       <div class="who-card">
         <div class="who-card-head">
-          <div class="who-card-title">コンテンツをちゃんと<br class="pc-br">見てほしい人に。</div>
+          <div class="who-card-title">コンテンツを<br class="sp-br">ちゃんと<br class="pc-br">見てほしい<br class="sp-br">人に。</div>
           <span class="who-card-icon">🔍</span>
         </div>
         <div class="who-card-desc">閲覧の難易度を上げ、意味のあるコンテンツがスクロールに流されるのを防ぎます。</div>
       </div>
       <div class="who-card">
         <div class="who-card-head">
-          <div class="who-card-title">商品のリリースや重大発表に。</div>
+          <div class="who-card-title">商品のリリースや<br class="sp-br">重大発表に。</div>
           <span class="who-card-icon">🚀</span>
         </div>
         <div class="who-card-desc">解禁時間を設計し、待つことができる人たちの間でだけ情報が共有されます。</div>
       </div>
       <div class="who-card">
         <div class="who-card-head">
-          <div class="who-card-title">知り合いに待つ時間を<br class="pc-br">贈りたい人に。</div>
+          <div class="who-card-title">知り合いに<br class="sp-br">待つ時間を<br class="pc-br">贈りたい<br class="sp-br">人に。</div>
           <span class="who-card-icon">⏳</span>
         </div>
         <div class="who-card-desc">情報量にブレーキをかけ、待ってる間にひと呼吸。</div>
