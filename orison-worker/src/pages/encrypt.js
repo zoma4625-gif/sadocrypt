@@ -168,7 +168,7 @@ ${HEADER_CSS}
    入力行（＋ボタン + textarea）
    ============================================================ */
 .fi-inrow{position:relative;}
-.fi-plus{position:absolute;left:8px;bottom:8px;width:30px;height:30px;
+.fi-plus{position:absolute;left:16px;bottom:16px;width:30px;height:30px;
   border:none;background:none;color:rgba(60,55,48,.5);font-size:20px;
   cursor:pointer;display:flex;align-items:center;justify-content:center;
   z-index:2;}
@@ -182,7 +182,7 @@ ${HEADER_CSS}
 @media(hover:hover){.fi-plus:hover .fi-plus-tip{opacity:1;}}
 @media(hover:none){.fi-plus-tip{display:none;}}
 .fi-input{width:100%;border:none;background:rgba(60,55,48,.05);border-radius:12px;
-  padding:14px 16px 44px 16px;font-size:16px;color:#3c3a36;outline:none;
+  padding:14px 16px 52px 16px;font-size:16px;color:#3c3a36;outline:none;
   resize:none;overflow:hidden;line-height:1.7;box-sizing:border-box;
   min-height:96px;}
 /* ============================================================
@@ -1623,7 +1623,7 @@ ${HEADER_HTML}
           <div class="fi-inrow">
             <button type="button" class="fi-plus" id="btn-plus" aria-label="ファイルを追加">＋<span class="fi-plus-tip">ファイル（画像・動画・音声・文書、5MBまで）を追加</span></button>
             <textarea id="msg" class="fi-input" rows="1"
-              placeholder="ここにメッセージ・URLを書く..."></textarea>
+              placeholder="メッセージ、URLを入力…"></textarea>
           </div>
           <div class="fi-yt-hint" id="fi-yt-hint">
             <svg class="fi-yt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="13" rx="3"/><polygon points="10,10 16,12.5 10,15" fill="currentColor" stroke="none"/></svg>
