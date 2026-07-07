@@ -2511,7 +2511,7 @@ fileCancelBtn.addEventListener('click', function(){
 });
 
 // ============================================================
-// 時間: TIME_STOPS + チップ + スライダー + ライブ表示 三者同期
+// 時間: SSOT（currentValue/currentUnit）+ チップ + スライダー + ライブ表示
 // ============================================================
 (function(){
   var TIME_STOPS = [
@@ -2530,6 +2530,16 @@ fileCancelBtn.addEventListener('click', function(){
   var slider = document.getElementById('time-slider');
   var liveEl = document.getElementById('time-live');
 
+  // ── SSOT（確定済みの真の値） ──
+  var currentValue = 10;  // 数値（ceil2 正規化済み）
+  var currentUnit  = 's'; // 's'|'m'|'h'|'d'
+
+  // FP誤差なし 2桁切り上げ: ceil2(1.5555)=1.56、ceil2(1.55)=1.55
+  function ceil2(v){
+    if(!isFinite(v) || v <= 0) return 1;
+    return Math.ceil(Number((v * 100).toFixed(4))) / 100;
+  }
+
   function toSec(v, u){
     if(u==='s') return v;
     if(u==='m') return v*60;
@@ -2537,78 +2547,6 @@ fileCancelBtn.addEventListener('click', function(){
     if(u==='d') return v*86400;
     return v;
   }
-
-  function ceilTv(){
-    var raw = parseFloat(tvEl.value);
-    return (isNaN(raw) || raw <= 0) ? 1 : parseFloat(raw.toFixed(2));
-  }
-
-  function updateLive(){
-    var v = ceilTv();
-    var u = tuEl.value;
-    var stop = null;
-    for(var k=0;k<TIME_STOPS.length;k++){
-      if(TIME_STOPS[k].v===v && TIME_STOPS[k].u===u){ stop=TIME_STOPS[k]; break; }
-    }
-    var suffixMap = {s:'秒',m:'分',h:'時間',d:'日'};
-    var label = stop ? stop.label : (v + (suffixMap[u]||''));
-    liveEl.textContent = label;
-  }
-
-  function nearestStopIndex(){
-    var v = ceilTv();
-    var u = tuEl.value;
-    var sec = toSec(v, u);
-    var best = 0, bestDiff = Infinity;
-    for(var i=0;i<TIME_STOPS.length;i++){
-      var d = Math.abs(toSec(TIME_STOPS[i].v, TIME_STOPS[i].u) - sec);
-      if(d < bestDiff){ bestDiff=d; best=i; }
-    }
-    return best;
-  }
-
-  function syncChipsFromTvTu(){
-    var tv = tvEl.value, tu = tuEl.value;
-    chips.forEach(function(c){
-      c.classList.toggle('active', c.getAttribute('data-tv')===tv && c.getAttribute('data-tu')===tu);
-    });
-  }
-
-  // a) チップクリック → スライダー + tv/tu + ライブ更新
-  chips.forEach(function(chip){
-    chip.addEventListener('click', function(){
-      tvEl.value = chip.getAttribute('data-tv');
-      tuEl.value = chip.getAttribute('data-tu');
-      var idx = -1;
-      for(var i=0;i<TIME_STOPS.length;i++){
-        if(TIME_STOPS[i].v===parseInt(tvEl.value,10) && TIME_STOPS[i].u===tuEl.value){ idx=i; break; }
-      }
-      if(idx>=0) slider.value = idx;
-      syncChipsFromTvTu();
-      updateLive();
-    });
-  });
-
-  function updateHeroLayers(){
-    var t = Number(slider.value)/14;
-    var skyEl = document.getElementById('hero-sky');
-    var glowEl = document.getElementById('hero-glow');
-    var nightEl = document.getElementById('hero-night');
-    if(skyEl) skyEl.style.opacity = (t*0.5).toFixed(3);
-    if(nightEl) nightEl.style.opacity = Math.max(0,(t-0.45)/0.55).toFixed(3);
-    if(glowEl) glowEl.style.opacity = (1-t*0.5).toFixed(3);
-  }
-
-  // b) スライダー → tv/tu + チップ + ライブ更新
-  slider.addEventListener('input', function(){
-    var idx = parseInt(slider.value,10);
-    var stop = TIME_STOPS[idx];
-    tvEl.value = stop.v;
-    tuEl.value = stop.u;
-    syncChipsFromTvTu();
-    updateLive();
-    updateHeroLayers();
-  });
 
   // tv 入力値の正規化（全角数字・読点句点カンマ→半角ピリオド・複数小数点除去）
   function normalizeTvInput(raw){
@@ -2620,53 +2558,123 @@ fileCancelBtn.addEventListener('click', function(){
     return v;
   }
 
-  // c) tv/tu 手入力 → チップ全非選択 + スライダー最近傍 + ライブ更新
-  // 値の書き戻しは行わない（IME組み込み破壊・カーソルリセット・重複入力の原因になるため）
-  // 正規化・上限クリップはすべて blur 確定時に実施する
-  tvEl.addEventListener('input', function(){
-    chips.forEach(function(c){ c.classList.remove('active'); });
-    slider.value = nearestStopIndex();
-    updateLive();
-  });
-  tuEl.addEventListener('change', function(){
-    chips.forEach(function(c){ c.classList.remove('active'); });
-    slider.value = nearestStopIndex();
-    updateLive();
-  });
-  tvEl.addEventListener('blur', function(){
-    var norm = normalizeTvInput(tvEl.value);
-    var raw = parseFloat(norm);
-    var max = 30*24*60*60;
-    if(tuEl.value==='m') max = Math.floor(max/60);
-    if(tuEl.value==='h') max = Math.floor(max/3600);
-    if(tuEl.value==='d') max = 30;
-    if(isNaN(raw) || raw <= 0){
-      tvEl.value = 1;
-    } else {
-      tvEl.value = Math.min(parseFloat(raw.toFixed(2)), max);
+  function updateHeroLayers(){
+    var t = Number(slider.value)/14;
+    var skyEl   = document.getElementById('hero-sky');
+    var glowEl  = document.getElementById('hero-glow');
+    var nightEl = document.getElementById('hero-night');
+    if(skyEl)   skyEl.style.opacity   = (t*0.5).toFixed(3);
+    if(nightEl) nightEl.style.opacity = Math.max(0,(t-0.45)/0.55).toFixed(3);
+    if(glowEl)  glowEl.style.opacity  = (1-t*0.5).toFixed(3);
+  }
+
+  // 秒数から最近傍 TIME_STOPS インデックスを返す
+  function nearestIdx(v, u){
+    var sec = toSec(v, u), best = 0, bestDiff = Infinity;
+    for(var i=0;i<TIME_STOPS.length;i++){
+      var d = Math.abs(toSec(TIME_STOPS[i].v, TIME_STOPS[i].u) - sec);
+      if(d < bestDiff){ bestDiff=d; best=i; }
     }
-    updateLive();
+    return best;
+  }
+
+  // SSOT → liveEl / slider / chips を描画。writeBack=true のとき tvEl/tuEl も同期。
+  function renderFromTruth(writeBack){
+    var v = currentValue, u = currentUnit;
+    var stop = null;
+    for(var k=0;k<TIME_STOPS.length;k++){
+      if(TIME_STOPS[k].v===v && TIME_STOPS[k].u===u){ stop=TIME_STOPS[k]; break; }
+    }
+    var suffixMap = {s:'秒',m:'分',h:'時間',d:'日'};
+    liveEl.textContent = stop ? stop.label : (v + (suffixMap[u]||''));
+    slider.value = nearestIdx(v, u);
+    chips.forEach(function(c){
+      c.classList.toggle('active', Number(c.getAttribute('data-tv'))===v && c.getAttribute('data-tu')===u);
+    });
+    if(writeBack){ tvEl.value = v; tuEl.value = u; }
+    updateHeroLayers();
+  }
+
+  // 手入力中のプレビュー（tvEl は書き換えない・currentValue も更新しない）
+  function renderPreview(){
+    var norm    = normalizeTvInput(tvEl.value);
+    var raw     = parseFloat(norm);
+    var preview = (isFinite(raw) && raw > 0) ? ceil2(raw) : currentValue;
+    var u       = tuEl.value;
+    var stop = null;
+    for(var k=0;k<TIME_STOPS.length;k++){
+      if(TIME_STOPS[k].v===preview && TIME_STOPS[k].u===u){ stop=TIME_STOPS[k]; break; }
+    }
+    var suffixMap = {s:'秒',m:'分',h:'時間',d:'日'};
+    liveEl.textContent = stop ? stop.label : (preview + (suffixMap[u]||''));
+    slider.value = nearestIdx(preview, u);
+    chips.forEach(function(c){ c.classList.remove('active'); });
+    updateHeroLayers();
+  }
+
+  // 入力確定: SSOT を更新 → 全 DOM に書き戻し
+  function confirmInput(){
+    var norm = normalizeTvInput(tvEl.value);
+    var raw  = parseFloat(norm);
+    currentUnit = tuEl.value;
+    var max = 30*24*60*60;
+    if(currentUnit==='m') max = Math.floor(max/60);
+    if(currentUnit==='h') max = Math.floor(max/3600);
+    if(currentUnit==='d') max = 30;
+    currentValue = (isFinite(raw) && raw > 0) ? Math.min(ceil2(raw), max) : 1;
+    renderFromTruth(true);
+  }
+
+  // a) チップクリック
+  chips.forEach(function(chip){
+    chip.addEventListener('click', function(){
+      currentValue = Number(chip.getAttribute('data-tv'));
+      currentUnit  = chip.getAttribute('data-tu');
+      renderFromTruth(true);
+    });
   });
+
+  // b) スライダー操作（ユーザーが物理的に動かした場合のみ）
+  slider.addEventListener('input', function(){
+    var stop = TIME_STOPS[parseInt(slider.value,10)];
+    currentValue = stop.v;
+    currentUnit  = stop.u;
+    renderFromTruth(true);
+  });
+
+  // c) tv 手入力（tvEl は書き換えない・プレビューのみ更新）
+  tvEl.addEventListener('input', function(){
+    renderPreview();
+  });
+
+  // d) 単位変更（確定済み currentValue を保持し単位だけ更新）
+  tuEl.addEventListener('change', function(){
+    currentUnit = tuEl.value;
+    renderFromTruth(true);
+  });
+
+  // e) blur 確定
+  tvEl.addEventListener('blur', function(){
+    confirmInput();
+  });
+
+  // f) Enter 確定 → 単位欄へフォーカス移動
   tvEl.addEventListener('keydown', function(e){
     if(e.key === 'Enter'){
       e.preventDefault();
-      tvEl.blur();
-      var saved = tvEl.value;
+      confirmInput();
       tuEl.focus();
-      if(tvEl.value !== saved) tvEl.value = saved;
     }
   });
 
-  // 初期状態: index 0（10秒後）
+  // 初期化
+  currentValue = TIME_STOPS[0].v;
+  currentUnit  = TIME_STOPS[0].u;
   slider.value = 0;
-  tvEl.value = TIME_STOPS[0].v;
-  tuEl.value = TIME_STOPS[0].u;
-  syncChipsFromTvTu();
-  updateLive();
-  updateHeroLayers();
+  renderFromTruth(true);
 
   // 「その他」クリック → .fi-custom の show トグル（値は変えない）
-  var timeOtherEl = document.getElementById('time-other');
+  var timeOtherEl  = document.getElementById('time-other');
   var timeCustomEl = document.getElementById('time-custom');
   if(timeOtherEl && timeCustomEl){
     timeOtherEl.addEventListener('click', function(){
@@ -3644,10 +3652,9 @@ async function doEncrypt(){
   const btn = document.getElementById('btn');
   const u = document.getElementById('tu').value;
   var rawV = parseFloat(document.getElementById('tv').value);
-  if(isNaN(rawV) || rawV <= 0) rawV = 1;
-  var roundedV = parseFloat(rawV.toFixed(2));
+  if(!isFinite(rawV) || rawV <= 0) rawV = 1;
   var mult = u==='m' ? 60 : u==='h' ? 3600 : u==='d' ? 86400 : 1;
-  let s = Math.ceil(roundedV * mult);
+  let s = Math.ceil(rawV * mult);
 
   if(s > MAX_LOCK_S_CLI){
     showEncError('解鍵時間は最大30日までです');
