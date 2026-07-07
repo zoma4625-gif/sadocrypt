@@ -2919,6 +2919,23 @@ document.getElementById('btn').addEventListener('click', function(){
   doEncrypt();
 });
 
+// textarea Enter 分岐
+document.getElementById('msg').addEventListener('keydown', function(e){
+  if(e.key !== 'Enter') return;
+  // IME変換中は何もしない
+  if(e.isComposing || e.keyCode === 229) return;
+  // Shift+Enter は常に改行（デフォルト動作）
+  if(e.shiftKey) return;
+  // タッチデバイスは改行（ソフトキーボード体験を壊さない）
+  if(!window.matchMedia('(pointer:fine)').matches) return;
+  // PC・素のEnter: 単体URLなら暗号化、それ以外は改行
+  var val = document.getElementById('msg').value.trim();
+  if(isValidHttpUrl(val)){
+    e.preventDefault();
+    doEncrypt();
+  }
+});
+
 
 // ============================================================
 // デスクトップのみ入力欄に自動フォーカス（モバイルはソフトキーボード抑制）
