@@ -1290,6 +1290,7 @@ ${HEADER_CSS}
   z-index:1;
 }
 .cflow-card.cf-edge-hide{opacity:0!important;pointer-events:none;}
+#panel-sender .cflow-img{aspect-ratio:3/4;}
 .cflow-img{
   aspect-ratio:4/3;
   display:flex;
@@ -1749,13 +1750,13 @@ ${HEADER_HTML}
       <!-- PC: 3カラムグリッド -->
       <div class="howto-cols sender-pc">
         <div class="howto-col">
-          <div class="howto-col-img"><img src="/step-01.png" alt="メッセージやURLを置く" loading="eager" decoding="async"></div>
+          <div class="howto-col-img"><img src="/step-01.png?v=3" alt="メッセージやURLを置く" loading="eager" decoding="async"></div>
           <div class="howto-col-step">STEP 01</div>
           <div class="howto-col-title"><span>置く</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
           <div class="howto-col-desc">渡したいもの（URL・テキスト・ファイル）を<br class="pc-br">ドロップする。</div>
         </div>
         <div class="howto-col">
-          <div class="howto-col-img"><img src="/step-02.png" alt="ひらく時間を決める" loading="eager" decoding="async"></div>
+          <div class="howto-col-img"><img src="/step-02.png?v=3" alt="ひらく時間を決める" loading="eager" decoding="async"></div>
           <div class="howto-col-step">STEP 02</div>
           <div class="howto-col-title"><span>時間を決める</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
           <div class="howto-col-desc">復号にかかる時間を指定。</div>
@@ -1773,7 +1774,7 @@ ${HEADER_HTML}
           <div class="cflow-viewport">
             <div class="cflow-stage">
               <div class="cflow-card cf-active">
-                <div class="cflow-img"><img src="/step-01.png" alt="メッセージやURLを置く" loading="eager" decoding="async"></div>
+                <div class="cflow-img"><img src="/sp-step-01.png?v=3" alt="メッセージやURLを置く" loading="eager" decoding="async"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 01</div>
                   <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>置く</div>
@@ -1781,7 +1782,7 @@ ${HEADER_HTML}
                 </div>
               </div>
               <div class="cflow-card cf-next">
-                <div class="cflow-img"><img src="/step-02.png" alt="ひらく時間を決める" loading="eager" decoding="async"></div>
+                <div class="cflow-img"><img src="/sp-step-02.png?v=3" alt="ひらく時間を決める" loading="eager" decoding="async"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 02</div>
                   <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>時間を決める</div>
@@ -1826,7 +1827,7 @@ ${HEADER_HTML}
           <div class="howto-col-desc">ブラウザを開いたまま待つ。</div>
         </div>
         <div class="howto-col">
-          <div class="howto-col-img"><img src="/recv-step-03.png" alt="復号が終わると受け取れる" loading="lazy"></div>
+          <div class="howto-col-img"><img src="/recv-step-03.png?v=3" alt="復号が終わると受け取れる" loading="lazy"></div>
           <div class="howto-col-step">STEP 03</div>
           <div class="howto-col-title"><span>受け取る</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
           <div class="howto-col-desc">復号が終わると自動でリンクに遷移する。</div>
@@ -1854,7 +1855,7 @@ ${HEADER_HTML}
                 </div>
               </div>
               <div class="cflow-card cf-hidden">
-                <div class="cflow-img"><img src="/recv-step-03.png" alt="復号が終わると受け取れる" loading="lazy"></div>
+                <div class="cflow-img"><img src="/sp-recv-step-03.png?v=3" alt="復号が終わると受け取れる" loading="lazy"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 03</div>
                   <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>受け取る</div>
@@ -3721,7 +3722,7 @@ function doCopiedAnim(){
   // 受け取り人側STEP画像をアイドル時にプリロード（ヒーロー完了後のみ）
   window.addEventListener('load', function() {
     var preloadRecv = function() {
-      ['/recv-step-01.png','/recv-step-02.png','/recv-step-03.png'].forEach(function(src) {
+      ['/recv-step-01.png','/recv-step-02.png','/recv-step-03.png?v=3','/sp-step-01.png?v=3','/sp-step-02.png?v=3','/sp-recv-step-03.png?v=3'].forEach(function(src) {
         var img = new Image(); img.src = src;
       });
     };
