@@ -242,6 +242,9 @@ index.js
 
 | 日付 | 変更内容 |
 |------|----------|
+| 2026-07-07 | style(btn): 試すボタンを丸ボタン（縦3段）に変更（encrypt.js）: ピル型 → 円形（border-radius:50%/92px）。中身を SVG山記号・「Brake.」Orbitron 900 15px・「を試す」11px の縦3段に変更。position を top 基準 → bottom:24px/right:24px に変更（モバイル:16px）。クリック動作・スクロール挙動は変更なし。 |
+| 2026-07-07 | fix(about): ABOUT説明文のスマホ改行制御（encrypt.js）: `.sp-br{display:none}/@media(max-width:680px){display:inline}` を新設。「リンクを生成します。」直後・「暗号化できます」直後の2箇所に `<br class="sp-br">` を挿入。PC版は非表示・文言変更なし。 |
+| 2026-07-07 | fix(showcase): スマホ版ショーケース三角ボタン連打でのiOSズーム誤認を修正（encrypt.js）: `.cflow-btn` に `touch-action:manipulation` を追加。ダブルタップズームのみ無効化し通常タップ・ページ全体のピンチズームは維持。 |
 | 2026-07-07 | style(form): 入力欄の高さ縮小・行間縮小（encrypt.js）: `min-height:96px→72px`（75%縮小、過剰余白解消）・`line-height:1.7→1.5`（行間を詰め日本語読みやすさ下限）。`padding-bottom:52px`・auto-expand・＋ボタン位置は変更なし。 |
 | 2026-07-07 | style(form): ＋ボタン left を 16px → 13px に微調整（目測補正・encrypt.js のみ）。 |
 | 2026-07-07 | fix(decrypt): キャッシュヒット時の結果表示バグを修正（decrypt.js）: コミット 309ab03（scenes.js 導入）でキャッシュヒット分岐だけ旧スピナー経由（`startSpinner→triggerCollapse`）のままになっていた先祖返りを修正。`startSpinner`/`pendingDoneCallback`/`triggerCollapse` を除去し、通常完了パスと同じ `result-stage.classList.add('visible')` → `showResult()` の直呼びに変更。`scene-stage` はキャッシュ時は `display:none` のままで非表示処理不要。`decryptWithXFinal` 失敗時のキャッシュ削除（`localStorage.removeItem(CACHE_KEY)`）は維持。 |

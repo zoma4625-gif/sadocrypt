@@ -1355,6 +1355,7 @@ ${HEADER_CSS}
   transition:background 200ms;
   -webkit-tap-highlight-color:transparent;
   outline:none;
+  touch-action:manipulation;
 }
 .cflow-btn:active{background:rgba(60,55,48,.12);}
 .cflow-prev{left:4px;}
@@ -1551,12 +1552,14 @@ ${HEADER_CSS}
 /* ===== トップへ戻るボタン ===== */
 #brake-top-btn{
   position:fixed;
-  top:max(100px,calc(100vh - 124px));
+  bottom:24px;
   right:24px;
+  width:92px;height:92px;
+  border-radius:50%;
   background:linear-gradient(135deg,#ef8a63 0%,#d99a70 45%,#8fa88f 100%);
-  color:#fff;font-size:12px;font-weight:600;font-family:'Noto Sans JP',sans-serif;border:none;
-  border-radius:999px;padding:12px 20px;
-  box-shadow:0 8px 24px rgba(220,130,90,.35);
+  color:#fff;border:none;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  box-shadow:0 6px 18px rgba(239,138,99,.35);
   cursor:pointer;z-index:900;
   opacity:0;transform:translateY(20px);
   transition:opacity .35s ease,transform .35s ease,box-shadow .2s;
@@ -1566,9 +1569,11 @@ ${HEADER_CSS}
 #brake-top-btn.visible{opacity:1;transform:translateY(0);pointer-events:auto;}
 #brake-top-btn:hover{box-shadow:0 8px 32px rgba(220,130,90,.5);}
 @media(max-width:680px){
-  #brake-top-btn{top:max(84px,calc(100vh - 92px));right:16px;}
+  #brake-top-btn{bottom:16px;right:16px;}
 }
 @media(max-width:767px){ .pc-br{ display:none; } }
+.sp-br{display:none;}
+@media(max-width:680px){.sp-br{display:inline;}}
 </style>
 </head>
 <body>
@@ -1694,7 +1699,7 @@ ${HEADER_HTML}
   <div class="whats-inner">
     <div class="whats-col-eyebrow">ABOUT</div>
     <div class="whats-heading">Brake.は、タイムロック暗号を使った<br class="pc-br">暗号化Webサービスです。</div>
-    <div class="whats-col-body">URLやテキストを暗号化し、「1分後」「1時間後」「1日後」にしか開けないリンクを生成します。<br class="pc-br">画像、動画、音声、文書なども暗号化できます（最大5MBまで）。</div>
+    <div class="whats-col-body">URLやテキストを暗号化し、「1分後」「1時間後」「1日後」にしか開けないリンクを生成します。<br class="pc-br"><br class="sp-br">画像、動画、音声、文書なども暗号化できます<br class="sp-br">（最大5MBまで）。</div>
     <div class="who-grid">
       <div class="who-card">
         <div class="who-card-head">
@@ -1899,7 +1904,7 @@ ${HEADER_HTML}
 </footer>
 
 <!-- トップへ戻るボタン -->
-<a id="brake-top-btn" href="#top" aria-label="TOPへ戻る"><span style="font-family:'Orbitron',sans-serif;font-weight:900">Brake.</span> を試す ↑</a>
+<a id="brake-top-btn" href="#top" aria-label="Brake.を試す"><svg width="20" height="10" viewBox="0 0 20 10" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,9 10,2 18,9"/></svg><span style="font-family:'Orbitron',sans-serif;font-weight:900;font-size:15px;line-height:1">Brake.</span><span style="font-size:11px;line-height:1">を試す</span></a>
 
 <!-- ドラッグ&ドロップオーバーレイ -->
 <div id="drop-overlay">
