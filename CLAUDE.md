@@ -242,6 +242,7 @@ index.js
 
 | 日付 | 変更内容 |
 |------|----------|
+| 2026-07-07 | fix(form): カスタム時間 小数点2桁入力修正＋Enter で単位選択へフォーカス（encrypt.js）: ①`type="number"` → `type="text"` に変更。`type="number"` では入力途中の "5." が invalid number 扱いで `tvEl.value=""` になり小数点が消える問題を解消。`inputmode="decimal"` は維持（スマホ数値キーボード）。②`normalizeTvInput` に `v.replace(/[^0-9.]/g,'')` を追加し英字等を除去。③`tvEl` の `keydown` で `e.key==='Enter'` 時に `tvEl.blur()`（バリデーション実行）→ `tuEl.focus()`（単位 select へフォーカス移動）。スマホ「完了」キーは blur を発生させるが Enter を発行しないため keydown は効かない（blur バリデーションは維持）。カスタム時間以外は無変更。 |
 | 2026-07-07 | fix(howto): スマホカルーセル下余白を詰める（encrypt.js）: 3:4縦長化によるステージ底部空き（520px固定 vs 実カード~443px）と旧 `padding-bottom:44px`（dots at bottom:0 時代の残置）の二重余白でドット下に141pxの隙間。`@media(max-width:680px)` で `cflow-stage{height:calc(96vw+100px)}` に動的化・`cflow-wrap{padding-bottom:0}` で除去。修正後はドット下約51px（6px wrap内+45px section padding）に縮小。PC版無影響。 |
 | 2026-07-07 | fix(howto): スマホカルーセル三角ボタン・ドット位置修正（encrypt.js）: 3:4縦長化で.cflow-wrap基準top:50%がずれた問題を修正。ボタン: `top:calc(24px+48vw)` でvw単位追従（画像縦中央に正確配置）。ドット: `bottom:0→top:calc(132px+96vw)` でカード下端+20pxに追従。両方とも @media(max-width:680px) 内のみ、PC版無影響。 |
 | 2026-07-07 | fix(howto): スマホSTEP画像全6枚差し替え・テキスト復活・枠修正（encrypt.js + public/）: ①スマホ版 sp-step-01〜03.png・sp-recv-step-01〜03.png を新画像（3:4、552×736）で全て更新。②`.cflow-stage{height:320px→520px}`に拡大してステージ外クリップでテキストが消えていたバグを修正。③`.cflow-img{aspect-ratio:4/3→3/4}`を両パネル統一（旧 #panel-sender 個別指定を削除）。④受け取り側スマホ STEP01/02 も sp-recv-step-01/02.png を新規追加・参照切り替え。?v=4 でキャッシュバスト。 |

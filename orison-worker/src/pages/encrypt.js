@@ -1643,7 +1643,7 @@ ${HEADER_HTML}
             <span id="time-other">カスタム</span>
           </div>
           <div class="fi-custom" id="time-custom">
-            <input type="number" id="tv" value="10" min="0.01" max="2592000" step="0.01" inputmode="decimal" autocomplete="off">
+            <input type="text" id="tv" value="10" inputmode="decimal" autocomplete="off">
             <select id="tu">
               <option value="s">秒</option>
               <option value="m">分</option>
@@ -2509,6 +2509,7 @@ fileCancelBtn.addEventListener('click', function(){
   function normalizeTvInput(raw){
     var v = raw.replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-0xFEE0);});
     v = v.replace(/[、。，．,]/g,'.');
+    v = v.replace(/[^0-9.]/g,'');
     var first = v.indexOf('.');
     if(first !== -1) v = v.slice(0, first+1) + v.slice(first+1).replace(/\./g,'');
     return v;
@@ -2539,6 +2540,13 @@ fileCancelBtn.addEventListener('click', function(){
       var rounded = Math.ceil(raw * 100) / 100;
       tvEl.value = rounded;
       updateLive();
+    }
+  });
+  tvEl.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      tvEl.blur();
+      tuEl.focus();
     }
   });
 
