@@ -183,8 +183,8 @@ ${HEADER_CSS}
 @media(hover:none){.fi-plus-tip{display:none;}}
 .fi-input{width:100%;border:none;background:rgba(60,55,48,.05);border-radius:12px;
   padding:14px 16px 52px 16px;font-size:16px;color:#3c3a36;outline:none;
-  resize:none;overflow:hidden;line-height:1.7;box-sizing:border-box;
-  min-height:96px;}
+  resize:none;overflow:hidden;line-height:1.5;box-sizing:border-box;
+  min-height:72px;}
 /* ============================================================
    時間スライダー・ライブ表示
    ============================================================ */

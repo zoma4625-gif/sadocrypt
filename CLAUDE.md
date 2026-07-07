@@ -242,6 +242,7 @@ index.js
 
 | 日付 | 変更内容 |
 |------|----------|
+| 2026-07-07 | style(form): 入力欄の高さ縮小・行間縮小（encrypt.js）: `min-height:96px→72px`（75%縮小、過剰余白解消）・`line-height:1.7→1.5`（行間を詰め日本語読みやすさ下限）。`padding-bottom:52px`・auto-expand・＋ボタン位置は変更なし。 |
 | 2026-07-07 | style(form): ＋ボタン left を 16px → 13px に微調整（目測補正・encrypt.js のみ）。 |
 | 2026-07-07 | fix(decrypt): キャッシュヒット時の結果表示バグを修正（decrypt.js）: コミット 309ab03（scenes.js 導入）でキャッシュヒット分岐だけ旧スピナー経由（`startSpinner→triggerCollapse`）のままになっていた先祖返りを修正。`startSpinner`/`pendingDoneCallback`/`triggerCollapse` を除去し、通常完了パスと同じ `result-stage.classList.add('visible')` → `showResult()` の直呼びに変更。`scene-stage` はキャッシュ時は `display:none` のままで非表示処理不要。`decryptWithXFinal` 失敗時のキャッシュ削除（`localStorage.removeItem(CACHE_KEY)`）は維持。 |
 | 2026-06-11 | 復号画面を改善: ①UI更新間隔を1000回→5000回に拡大しオーバーヘッドを削減（復号速度向上）、②数字に「hash」単位を追加、③ドットリング型スピナーとプログレスバーを追加 |
