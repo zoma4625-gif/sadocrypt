@@ -196,7 +196,11 @@ export const HEADER_CSS = `/* ==================================================
   margin-bottom:1.1rem;
 }
 .mob-share-btn{
-  display:inline-block;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  box-sizing:border-box;
   background:linear-gradient(135deg,#ef8a63,#e28a5f);
   color:#fff;
   border:none;
