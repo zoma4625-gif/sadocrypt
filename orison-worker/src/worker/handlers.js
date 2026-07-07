@@ -101,14 +101,28 @@ export async function handleSave(request, env) {
     }
 }
 
-// 有効期限切れエラーページ HTML
+// 失効／不正IDエラーページ HTML（琥珀ダーク世界観）
 export function buildExpiredHtml() {
-    return '<!DOCTYPE html><html lang=ja><head><meta charset=UTF-8><title>Brake. – Error</title>' +
-        '<link rel="icon" href="/favicon.ico" sizes="48x48"><link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">' +
-        '<style>body{background:#000;color:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif}' +
-        '.c{text-align:center}.m{font-size:28px;margin-bottom:12px}h1{font-size:13px;font-weight:400;margin-bottom:8px}p{font-size:11px;color:rgba(255,255,255,.2)}</style>' +
-        '<body><div class=c><div class=m>&#x229E;</div><h1>このパズルは存在しないか、有効期限が切れています</h1>' +
-        '<p>The puzzle does not exist or has expired.</p></div></body></html>';
+    const logo = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" style="display:block;width:100%;height:100%"><rect x="32" y="0" width="64" height="32" fill="#c9956b"/><rect x="64" y="32" width="32" height="64" fill="#c4a882"/><rect x="0" y="64" width="64" height="32" fill="#9aaa94"/><rect x="0" y="0" width="32" height="64" fill="#8e9ea8"/><rect x="32" y="32" width="32" height="32" fill="#5a5249"/></svg>';
+    return '<!DOCTYPE html><html lang=ja><head><meta charset=UTF-8><title>Brake. – このリンクは開けません</title>' +
+        '<link rel="icon" href="/favicon.ico?v=2" sizes="48x48"><link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">' +
+        '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
+        '<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500&family=Orbitron:wght@900&display=swap" rel="stylesheet">' +
+        '<meta name="robots" content="noindex,nofollow">' +
+        '<style>*{margin:0;padding:0;box-sizing:border-box}body{background:linear-gradient(160deg,#efe6d8 0%,#e6d9c6 50%,#dccbb2 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:"Noto Sans JP",sans-serif;-webkit-font-smoothing:antialiased}' +
+        '.wrap{text-align:center;padding:40px 24px;display:flex;flex-direction:column;align-items:center;gap:0}' +
+        '.logo-mark{width:48px;height:48px;border-radius:8px;overflow:hidden;margin-bottom:16px}' +
+        '.wordmark{font-family:"Orbitron",sans-serif;font-weight:900;font-size:1.5rem;color:#5a5249;letter-spacing:.02em;margin-bottom:32px}' +
+        '.wordmark span{color:#c9865e}' +
+        'h1{font-size:18px;font-weight:500;color:#3c3a36;margin-bottom:12px;line-height:1.6}' +
+        'p{font-size:14px;color:rgba(60,55,48,.6);margin-bottom:40px;line-height:1.7}' +
+        'a{display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#ef8a63,#d99a70,#8fa88f);color:#fff;text-decoration:none;border-radius:10px;font-size:14px;font-weight:500;transition:opacity .15s}' +
+        'a:hover{opacity:.85}</style>' +
+        '<body><div class="wrap"><div class="logo-mark">' + logo + '</div>' +
+        '<div class="wordmark">Brake<span>.</span></div>' +
+        '<h1>このリンクは、もう開けません。</h1>' +
+        '<p>削除されたか、対応する時間が過ぎたようです。</p>' +
+        '<a href="https://brake.run">Brake. をひらく</a></div></body></html>';
 }
 
 /**

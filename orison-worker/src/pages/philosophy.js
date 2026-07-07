@@ -12,19 +12,19 @@ export const HTML_PHILOSOPHY = `<!DOCTYPE html>
 <meta property="og:title" content="なぜ、待たせるのか | Brake.">
 <meta property="og:description" content="Brake.の思想。情報が一瞬で消費される時代に、「待つ」という余白をもう一度。">
 <meta property="og:url" content="https://brake.run/philosophy">
-<meta property="og:image" content="https://brake.run/og.png">
+<meta property="og:image" content="https://brake.run/og.png?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="なぜ、待たせるのか | Brake.">
 <meta name="twitter:description" content="Brake.の思想。情報が一瞬で消費される時代に、「待つ」という余白をもう一度。">
-<meta name="twitter:image" content="https://brake.run/og.png">
+<meta name="twitter:image" content="https://brake.run/og.png?v=2">
 <link rel="canonical" href="https://brake.run/philosophy">
 <link rel="alternate" hreflang="ja" href="https://brake.run/philosophy">
 <link rel="alternate" hreflang="x-default" href="https://brake.run/philosophy">
-<link rel="icon" href="/favicon.ico" sizes="48x48">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
+<link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"なぜ、待たせるのか","description":"Brake.の思想。情報が一瞬で消費される時代に、「待つ」という余白をもう一度。","url":"https://brake.run/philosophy","inLanguage":"ja","publisher":{"@type":"Organization","name":"Brake."}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

@@ -13,19 +13,19 @@ export const HTML_ENCRYPT = `<!DOCTYPE html>
 <meta property="og:title" content="Brake. – とどく時間を、えらべる">
 <meta property="og:description" content="中身を入れて、ひらく時間を決めるだけ。設定した時間が来るまで誰も開けられないリンクを生成します。タイムロック暗号化サービス Brake.">
 <meta property="og:url" content="https://brake.run/">
-<meta property="og:image" content="https://brake.run/og.png">
+<meta property="og:image" content="https://brake.run/og.png?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Brake. – とどく時間を、えらべる">
 <meta name="twitter:description" content="中身を入れて、ひらく時間を決めるだけ。設定した時間が来るまで誰も開けられないリンクを生成します。タイムロック暗号化サービス Brake.">
-<meta name="twitter:image" content="https://brake.run/og.png">
+<meta name="twitter:image" content="https://brake.run/og.png?v=2">
 <link rel="canonical" href="https://brake.run/">
 <link rel="alternate" hreflang="ja" href="https://brake.run/">
 <link rel="alternate" hreflang="x-default" href="https://brake.run/">
-<link rel="icon" href="/favicon.ico" sizes="48x48">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
+<link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Brake.","url":"https://brake.run","description":"ファイルやURLに“時間の鍵”をかける。設定した時間が来るまで誰も解読できない、タイムロック暗号化サービス。","applicationCategory":"SecurityApplication","operatingSystem":"Any","inLanguage":"ja","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -1750,19 +1750,19 @@ ${HEADER_HTML}
       <!-- PC: 3カラムグリッド -->
       <div class="howto-cols sender-pc">
         <div class="howto-col">
-          <div class="howto-col-img"><img src="/step-01.png" alt="メッセージやURLを置く" loading="lazy"></div>
+          <div class="howto-col-img"><img src="/step-01.png" alt="メッセージやURLを置く" loading="eager" decoding="async"></div>
           <div class="howto-col-step">STEP 01</div>
           <div class="howto-col-title"><span>置く</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
           <div class="howto-col-desc">渡したいもの（URL・テキスト・ファイル）を<br class="pc-br">ドロップする。</div>
         </div>
         <div class="howto-col">
-          <div class="howto-col-img"><img src="/step-02.png" alt="ひらく時間を決める" loading="lazy"></div>
+          <div class="howto-col-img"><img src="/step-02.png" alt="ひらく時間を決める" loading="eager" decoding="async"></div>
           <div class="howto-col-step">STEP 02</div>
           <div class="howto-col-title"><span>時間を決める</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
           <div class="howto-col-desc">復号にかかる時間を指定。</div>
         </div>
         <div class="howto-col">
-          <div class="howto-col-img"><img src="/step-03.png" alt="リンクを共有する" loading="lazy"></div>
+          <div class="howto-col-img"><img src="/step-03.png" alt="リンクを共有する" loading="eager" decoding="async"></div>
           <div class="howto-col-step">STEP 03</div>
           <div class="howto-col-title"><span>共有</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div>
           <div class="howto-col-desc">生成されたリンクを送るだけ。</div>
@@ -1774,7 +1774,7 @@ ${HEADER_HTML}
           <div class="cflow-viewport">
             <div class="cflow-stage">
               <div class="cflow-card cf-active">
-                <div class="cflow-img"><img src="/step-01.png" alt="メッセージやURLを置く" loading="lazy"></div>
+                <div class="cflow-img"><img src="/step-01.png" alt="メッセージやURLを置く" loading="eager" decoding="async"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 01</div>
                   <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>置く</div>
@@ -1782,7 +1782,7 @@ ${HEADER_HTML}
                 </div>
               </div>
               <div class="cflow-card cf-next">
-                <div class="cflow-img"><img src="/step-02.png" alt="ひらく時間を決める" loading="lazy"></div>
+                <div class="cflow-img"><img src="/step-02.png" alt="ひらく時間を決める" loading="eager" decoding="async"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 02</div>
                   <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>時間を決める</div>
@@ -1790,7 +1790,7 @@ ${HEADER_HTML}
                 </div>
               </div>
               <div class="cflow-card cf-hidden">
-                <div class="cflow-img"><img src="/step-03.png" alt="リンクを共有する" loading="lazy"></div>
+                <div class="cflow-img"><img src="/step-03.png" alt="リンクを共有する" loading="eager" decoding="async"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 03</div>
                   <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>共有</div>
@@ -3473,13 +3473,14 @@ async function doEncrypt(){
 
   var resolveP1;
   var p1Promise = new Promise(function(res){ resolveP1 = res; });
+  var p1RafId;
   var p1t0 = performance.now();
   (function p1f(now){
     var t = Math.min((now - p1t0) / 2000, 1);
     var e = 1 - Math.pow(1 - t, 3);
     if(bRing) bRing.setAttribute('stroke-dashoffset', String(327 - 311 * e));
     if(t < 1){
-      requestAnimationFrame(p1f);
+      p1RafId = requestAnimationFrame(p1f);
     } else {
       if(bRing) bRing.setAttribute('stroke-dashoffset', '16');
       resolveP1();
@@ -3516,6 +3517,8 @@ async function doEncrypt(){
     const d = await r.json();
 
     if(d.error){
+      cancelAnimationFrame(p1RafId);
+      if(bRing) bRing.setAttribute('stroke-dashoffset', '327');
       if(bridge) bridge.setAttribute('data-state', 'idle');
       showEncError(d.error);
       btn.disabled = false;
@@ -3525,6 +3528,8 @@ async function doEncrypt(){
     shareUrl = location.origin + '/' + d.id;
 
   } catch(err) {
+    cancelAnimationFrame(p1RafId);
+    if(bRing) bRing.setAttribute('stroke-dashoffset', '327');
     if(bridge) bridge.setAttribute('data-state', 'idle');
     showEncError(err.message);
     btn.disabled = false;
@@ -3740,6 +3745,19 @@ function doCopiedAnim(){
     }
   });
 })();
+  // 受け取り人側STEP画像をアイドル時にプリロード（ヒーロー完了後のみ）
+  window.addEventListener('load', function() {
+    var preloadRecv = function() {
+      ['/recv-step-01.png','/recv-step-02.png','/recv-step-03.png'].forEach(function(src) {
+        var img = new Image(); img.src = src;
+      });
+    };
+    if(typeof requestIdleCallback === 'function') {
+      requestIdleCallback(preloadRecv);
+    } else {
+      setTimeout(preloadRecv, 1500);
+    }
+  });
 </script>
 <div id="scene-modal" class="scene-modal">
   <div class="scene-modal-box">

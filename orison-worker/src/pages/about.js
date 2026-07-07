@@ -22,9 +22,9 @@ export const HTML_ABOUT = `<!DOCTYPE html>
 <link rel="canonical" href="https://brake.run/about">
 <link rel="alternate" hreflang="ja" href="https://brake.run/about">
 <link rel="alternate" hreflang="x-default" href="https://brake.run/about">
-<link rel="icon" href="/favicon.ico" sizes="48x48">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
+<link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"Brake.とは","description":"Brake.は、タイムロック暗号を使った暗号化Webサービスです。URLやファイルに「時間の鍵」をかけ、指定した時間が来るまで誰も開けられないリンクを生成します。","url":"https://brake.run/about","inLanguage":"ja","publisher":{"@type":"Organization","name":"Brake."}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

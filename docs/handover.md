@@ -198,7 +198,7 @@ git add -A
 | 開発ドメイン | `dev.brake.run` |
 | 旧ドメイン | `sadocrypt.com`（redirect 等の設定は CF ダッシュボードで管理） |
 | Worker 名 | `orison` |
-| KV バインディング | `PUZZLES`（ID: `b973caae74e74b2fb2f603c0d4bbbea5`） |
+| KV バインディング | `PUZZLES`（ID: `<KV_NAMESPACE_ID>`） |
 | CI/CD | GitHub Actions（master push → `npx wrangler deploy`） |
 | 必要シークレット | `CLOUDFLARE_API_TOKEN`（GitHub リポジトリの Secrets に設定済み） |
 | ルーティング設定 | `wrangler.toml` に `custom_domain = true` で定義（CF ダッシュボードとの二重管理に注意） |
@@ -217,7 +217,7 @@ routes = [
 
 [[kv_namespaces]]
 binding = "PUZZLES"
-id = "b973caae74e74b2fb2f603c0d4bbbea5"
+id = "<KV_NAMESPACE_ID>"
 
 [assets]
 directory = "public"
