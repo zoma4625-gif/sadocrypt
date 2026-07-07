@@ -131,8 +131,9 @@ ${HEADER_CSS}
 .share-card{
   display:none; /* JS + メディアクエリで表示制御 */
   position:absolute;
-  left:calc(100% + 24px);
-  top:24px;
+  left:calc(100% + 40px);
+  top:50%;
+  transform:translateY(-50%);
   width:224px;
   z-index:3;
 }
