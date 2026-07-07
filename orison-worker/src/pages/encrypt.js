@@ -455,6 +455,17 @@ ${HEADER_CSS}
 .btn-run--off{background:#f7ded3;color:#e0a892;box-shadow:none;cursor:not-allowed;}
 .btn-run--off:hover{opacity:1;}
 .form-run-wrap{ margin-top:12px; }
+#run-hint{
+  font-size:12px;
+  color:rgba(60,55,48,.55);
+  text-align:center;
+  margin-top:8px;
+  opacity:0;
+  transition:opacity .35s ease;
+  pointer-events:none;
+  min-height:1.4em;
+}
+#run-hint.visible{ opacity:1; }
 .form-run-note{
   font-size:11px;
   color:rgba(60,55,48,.45);
@@ -1737,6 +1748,7 @@ ${HEADER_HTML}
           </div>
           <div class="form-run-wrap">
             <button type="button" class="btn-run" id="btn" aria-label="暗号化して生成" data-tip="暗号化して生成">時間の鍵をかける</button>
+            <div id="run-hint">メッセージかURLを入力してください</div>
             <div class="form-run-note">リンクが1つできます。渡した相手は、時間の計算が終わるまでひらけません。</div>
           </div>
         </form>
@@ -3015,16 +3027,21 @@ document.getElementById('f').addEventListener('submit', function(e){
 
 // ボタン活性化フィードバック
 var runBtn = document.getElementById('btn');
+var runHint = document.getElementById('run-hint');
 function updateRunBtn(){
   var empty = contentInput.value.trim().length === 0;
   runBtn.classList.toggle('btn-run--off', empty);
+  if(!empty && runHint) runHint.classList.remove('visible');
 }
 updateRunBtn(); // 初期状態（空なので非活性）
 contentInput.addEventListener('input', updateRunBtn);
 
 // 「→」ボタンのクリックで暗号化を実行（type="button"なのでsubmitは発生しない）
 runBtn.addEventListener('click', function(){
-  if(runBtn.classList.contains('btn-run--off')) return;
+  if(runBtn.classList.contains('btn-run--off')){
+    if(runHint) runHint.classList.add('visible');
+    return;
+  }
   doEncrypt();
 });
 
