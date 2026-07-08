@@ -158,6 +158,7 @@ export async function handleSharedPuzzle(request, env, puzzleId, htmlDecrypt) {
         cc: puzzle.cc,
         iv: puzzle.iv,
         ct: puzzle.ct,
+        target_seconds: puzzle.target_seconds || 0,
         is_file: puzzle.is_file || false,
         file_name: puzzle.file_name || null,
         mime_type: puzzle.mime_type || null,

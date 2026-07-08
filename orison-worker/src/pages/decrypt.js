@@ -583,7 +583,8 @@ function readCache(key){
     var raw=localStorage.getItem(key);
     if(!raw) return null;
     var data=JSON.parse(raw);
-    if(!data.v||!data.exp){localStorage.removeItem(key);return null;}
+    // exp が NaN/null/undefined の場合も不正エントリとして削除する（旧バグで書かれた場合も含む）
+    if(!data.v||typeof data.exp!=='number'||isNaN(data.exp)){localStorage.removeItem(key);return null;}
     if(Date.now()>data.exp){localStorage.removeItem(key);return null;}
     return data.v;
   }catch(e){
@@ -593,7 +594,10 @@ function readCache(key){
 }
 function writeCache(key,xFinalHex){
   try{
-    var ttlMs=(Number(P.target_seconds)+30*24*3600)*1000;
+    var rawSec=Number(P.target_seconds);
+    // target_seconds が欠落/NaN の場合は cc/ベンチ速度で近似、最低でも 0 を保証
+    if(!isFinite(rawSec)||rawSec<0) rawSec=Math.max(0,Number(P.cc)/376223);
+    var ttlMs=(rawSec+30*24*3600)*1000;
     localStorage.setItem(key,JSON.stringify({v:xFinalHex,exp:Date.now()+ttlMs}));
   }catch(e){}
 }
