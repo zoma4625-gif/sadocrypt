@@ -876,6 +876,14 @@ async function run(){
   let x_final;
   let workerUsed=false;
 
+  // progress/checkpoint で更新し、beforeunload で確実に保存する
+  var _latestResumeData=null;
+  window.addEventListener('beforeunload',function(){
+    if(_latestResumeData){
+      try{localStorage.setItem(RESUME_KEY,JSON.stringify(_latestResumeData));}catch(_){}
+    }
+  });
+
   // ── Worker経路（new Worker 失敗 / onerror はフォールバックへ） ──────────
   try{
     x_final=await new Promise(function(resolve,reject){
@@ -885,6 +893,7 @@ async function run(){
         if(msg.type==='progress'){
           var iNum=msg.i;
           displayBase=BigInt(iNum);
+          _latestResumeData={x:msg.x.toString(16),i:iNum.toString()};
           document.getElementById('pbar').style.width=(iNum*100/totalNum).toFixed(2)+'%';
           if(sceneHandle) sceneHandle.update(iNum/totalNum,iNum,totalNum);
           if(iNum>0) mountScene(iNum);
@@ -931,9 +940,10 @@ async function run(){
       if(sceneHandle) sceneHandle.update(p01,Number(i),totalNum);
       if(Number(i)>0) mountScene(Number(i));
       if(i<total){
+        _latestResumeData={x:x.toString(16),i:i.toString()};
         await new Promise(r=>setTimeout(r,0));
         if(Date.now()-lastSaveTime>=5000){
-          try{localStorage.setItem(RESUME_KEY,JSON.stringify({x:x.toString(16),i:i.toString()}));}catch(_){}
+          try{localStorage.setItem(RESUME_KEY,JSON.stringify(_latestResumeData));}catch(_){}
           lastSaveTime=Date.now();
         }
       }
@@ -949,6 +959,7 @@ async function run(){
   if(sceneHandle){sceneHandle.update(1.0,totalNum,totalNum);}
   await new Promise(r=>setTimeout(r,50));
 
+  _latestResumeData=null; // beforeunload で完了後の誤保存を防ぐ
   const xFinalHex=x_final.toString(16);
   writeCache(CACHE_KEY,xFinalHex);
   // 完了したので途中保存を削除

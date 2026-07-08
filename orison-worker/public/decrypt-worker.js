@@ -4,8 +4,8 @@
 //
 // main→worker: { cmd:'start', x:BigInt, N:BigInt, startIter:Number, total:Number }
 // worker→main:
-//   { type:'progress',    i:Number }               … 約150msごと
-//   { type:'checkpoint',  i:Number, x:BigInt }      … 約5秒ごと（レジューム保存用）
+//   { type:'progress',    i:Number, x:BigInt }      … 約150msごと（beforeunload用にxを含む）
+//   { type:'checkpoint',  i:Number, x:BigInt }      … 約1秒ごと（localStorage保存用）
 //   { type:'done',        x:BigInt }                … 完了時
 
 var _x, _N;
@@ -25,13 +25,13 @@ function chunk() {
     if (++c >= 1000) {
       c = 0;
       var now = Date.now();
-      // 約150msごとにprogress送信
+      // 約150msごとにprogress送信（beforeunload保存用にx付き）
       if (now - _lastProgress >= 150) {
-        self.postMessage({ type: 'progress', i: _i });
+        self.postMessage({ type: 'progress', i: _i, x: _x });
         _lastProgress = now;
       }
-      // 約5秒ごとにcheckpoint送信（レジューム保存用）
-      if (now - _lastCheckpoint >= 5000) {
+      // 約1秒ごとにcheckpoint送信（localStorage保存用）
+      if (now - _lastCheckpoint >= 1000) {
         self.postMessage({ type: 'checkpoint', i: _i, x: _x });
         _lastCheckpoint = now;
       }
