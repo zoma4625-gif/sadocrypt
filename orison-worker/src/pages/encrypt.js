@@ -69,7 +69,16 @@ body{
   flex-direction:column;
   overflow:hidden;
   background:linear-gradient(172deg,rgb(253,251,245),rgb(248,244,234));
-  transition:background 0.5s linear;
+  transition:background 1.2s ease;
+}
+.hero::after{
+  content:'';
+  position:absolute;
+  left:0;right:0;bottom:0;
+  height:240px;
+  pointer-events:none;
+  background:linear-gradient(to top,rgba(240,135,106,.16),rgba(229,185,140,.06) 55%,transparent);
+  z-index:0;
 }
 ${HEADER_CSS}
 .hero-body{
@@ -91,7 +100,7 @@ ${HEADER_CSS}
   line-height:1.4;
   margin-bottom:20px;
   letter-spacing:.02em;
-  transition:color 0.5s linear;
+  transition:color 1.2s ease;
 }
 @media(max-width:680px){.hero-catch{font-size:22px;}.hero-body{padding-top:112px;}}
 @media(max-width:430px){
@@ -105,7 +114,7 @@ ${HEADER_CSS}
   color:var(--ink-soft);
   margin-bottom:48px;
   letter-spacing:.06em;
-  transition:color 0.5s linear;
+  transition:color 1.2s ease;
 }
 .hero-form-wrap{
   width:100%;
