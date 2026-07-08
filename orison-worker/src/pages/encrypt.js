@@ -68,8 +68,7 @@ body{
   display:flex;
   flex-direction:column;
   overflow:hidden;
-  background:linear-gradient(172deg,rgb(253,251,245),rgb(248,244,234));
-  transition:background 1.2s ease;
+  background:var(--iri-grad);
 }
 .hero::after{
   content:'';
@@ -77,7 +76,7 @@ body{
   left:0;right:0;bottom:0;
   height:240px;
   pointer-events:none;
-  background:linear-gradient(to top,rgba(240,135,106,.16),rgba(229,185,140,.06) 55%,transparent);
+  background:linear-gradient(to top,rgba(240,135,106,.22),rgba(229,185,140,.09) 55%,transparent);
   z-index:0;
 }
 ${HEADER_CSS}
@@ -100,7 +99,6 @@ ${HEADER_CSS}
   line-height:1.4;
   margin-bottom:20px;
   letter-spacing:.02em;
-  transition:color 1.2s ease;
 }
 @media(max-width:680px){.hero-catch{font-size:22px;}.hero-body{padding-top:112px;}}
 @media(max-width:430px){
@@ -114,7 +112,6 @@ ${HEADER_CSS}
   color:var(--ink-soft);
   margin-bottom:48px;
   letter-spacing:.06em;
-  transition:color 1.2s ease;
 }
 .hero-form-wrap{
   width:100%;
@@ -2552,42 +2549,6 @@ fileCancelBtn.addEventListener('click', function(){
     return v;
   }
 
-  // 夕焼けグラデ演出 ─ スライダー位置に応じて .hero 背景を暖色遷移させる
-  var _BG_TOP = [
-    [253,251,245],[252,232,205],[250,196,155],[210,120,110],[120,70,95]
-  ];
-  var _BG_BOT = [
-    [248,244,234],[247,214,168],[244,160,110],[170,80,85],[70,45,80]
-  ];
-  function _ease(x){ return x*x*(3-2*x); }
-  function _samp(arr, t){
-    var n=arr.length-1, x=t*n, i=Math.min(Math.floor(x),n-1), f=_ease(x-i);
-    var a=arr[i],b=arr[i+1];
-    return [a[0]+(b[0]-a[0])*f, a[1]+(b[1]-a[1])*f, a[2]+(b[2]-a[2])*f];
-  }
-  function updateHeroBg(){
-    var rawT = Number(slider.value) / (TIME_STOPS.length - 1);
-    var t = _ease(rawT);
-    var topC = _samp(_BG_TOP, t);
-    var botC = _samp(_BG_BOT, t);
-    var heroEl = document.querySelector('.hero');
-    if(heroEl){
-      heroEl.style.background = 'linear-gradient(172deg,rgb('+Math.round(topC[0])+','+Math.round(topC[1])+','+Math.round(topC[2])+') 0%,rgb('+Math.round(botC[0])+','+Math.round(botC[1])+','+Math.round(botC[2])+') 100%)';
-    }
-    // 背景が暗くなる t=0.45 以降は見出し・サブテキストを白系へ滑らかに遷移
-    var fade = Math.max(0, Math.min(1, (t - 0.45) / 0.55));
-    var catchEl = document.querySelector('.hero-catch');
-    var subEl   = document.querySelector('.hero-sub');
-    if(fade > 0){
-      var cr=Math.round(60+(255-60)*fade), cg=Math.round(58+(252-58)*fade), cb=Math.round(54+(242-54)*fade);
-      if(catchEl) catchEl.style.color = 'rgb('+cr+','+cg+','+cb+')';
-      if(subEl)   subEl.style.color   = 'rgba('+cr+','+cg+','+cb+','+(0.55+0.45*fade).toFixed(2)+')';
-    } else {
-      if(catchEl) catchEl.style.color = '';
-      if(subEl)   subEl.style.color   = '';
-    }
-  }
-
   // 秒数から最近傍 TIME_STOPS インデックスを返す
   function nearestIdx(v, u){
     var sec = toSec(v, u), best = 0, bestDiff = Infinity;
@@ -2612,7 +2573,6 @@ fileCancelBtn.addEventListener('click', function(){
       c.classList.toggle('active', Number(c.getAttribute('data-tv'))===v && c.getAttribute('data-tu')===u);
     });
     if(writeBack){ tvEl.value = v; tuEl.value = u; }
-    updateHeroBg();
   }
 
   // 手入力中のプレビュー（tvEl は書き換えない・currentValue も更新しない）
@@ -2629,7 +2589,6 @@ fileCancelBtn.addEventListener('click', function(){
     liveEl.textContent = stop ? stop.label : (preview + (suffixMap[u]||''));
     slider.value = nearestIdx(preview, u);
     chips.forEach(function(c){ c.classList.remove('active'); });
-    updateHeroBg();
   }
 
   // 入力確定: SSOT を更新 → 全 DOM に書き戻し
