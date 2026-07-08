@@ -58,34 +58,34 @@ export async function router(request, env, ctx) {
         // ベンチマークページ
         if (path === '/benchmark') {
             return new Response(HTML_BENCHMARK, {
-                headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'public, max-age=3600' }
+                headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-cache' }
             });
         }
 
         // タイムロック解説ページ
         if (path === '/time-lock') {
-            return new Response(HTML_TIME_LOCK, { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'public, max-age=3600' } });
+            return new Response(HTML_TIME_LOCK, { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-cache' } });
         }
 
         // 思想ページ
         if (path === '/philosophy') {
-            return new Response(HTML_PHILOSOPHY, { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'public, max-age=3600' } });
+            return new Response(HTML_PHILOSOPHY, { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-cache' } });
         }
 
         // 利用規約
         if (path === '/terms') {
-            return new Response(HTML_TERMS, { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'public, max-age=3600' } });
+            return new Response(HTML_TERMS, { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-cache' } });
         }
 
         // プライバシーポリシー
         if (path === '/privacy') {
-            return new Response(HTML_PRIVACY, { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'public, max-age=3600' } });
+            return new Response(HTML_PRIVACY, { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-cache' } });
         }
 
         // トップページ
         if (path === '/' || path === '') {
             return new Response(HTML_ENCRYPT, {
-                headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'public, max-age=3600' }
+                headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-cache' }
             });
         }
 
