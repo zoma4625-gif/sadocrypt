@@ -32,7 +32,14 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // 通常リクエストはネットワーク透過
+  // HTML ナビゲーション: キャッシュをバイパスして常にネットワークから取得
+  // （Cache-Control: max-age があってもハードリフレッシュが SW を迂回しないため必須）
+  if (req.mode === 'navigate') {
+    event.respondWith(fetch(req, {cache: 'no-store'}));
+    return;
+  }
+
+  // その他リクエストはネットワーク透過
   event.respondWith(fetch(req));
 });
 
