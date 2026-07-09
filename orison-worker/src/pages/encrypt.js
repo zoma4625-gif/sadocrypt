@@ -3805,55 +3805,91 @@ async function doEncrypt(){
     btn.disabled = false;
   }
 
-  // Step 1: 暗号化
+  // [1/読込] ファイル読み込み（テキスト時はスキップ）
+  var fileBuffer;
+  if(selectedFile){
+    console.log('[1/読込] 開始 size=' + selectedFile.size + ' type=' + selectedFile.type);
+    try {
+      fileBuffer = await readFileAsArrayBuffer(selectedFile);
+      console.log('[1/読込] 完了 byteLength=' + fileBuffer.byteLength);
+    } catch(err){
+      _resetBridge();
+      showEncError('[1/読込] ' + err.message);
+      return;
+    }
+  }
+
+  // [2/暗号化] crypto.subtle.encrypt
+  console.log('[2/暗号化] 開始');
   var enc;
   try {
     if(selectedFile){
-      var fileBuffer = await readFileAsArrayBuffer(selectedFile);
       enc = await encryptFile(fileBuffer, selectedFile.name, selectedFile.type || 'application/octet-stream', s);
     } else {
       enc = await encryptContent(contentInput.value.trim(), s);
     }
+    console.log('[2/暗号化] 完了 ct.length=' + enc.ct.length);
   } catch(err){
     _resetBridge();
-    showEncError('暗号化エラー: ' + err.message);
+    showEncError('[2/暗号化] ' + err.message);
     return;
   }
 
-  // Step 2: 保存
-  var saveBody = {
-    x0: enc.x0, N: enc.N, cc: enc.chainCount,
-    iv: enc.iv, ct: enc.ct, target_seconds: s,
-    scene: selectedScene
-  };
-  if(enc.is_file){
-    saveBody.is_file = true;
-    saveBody.file_name = enc.file_name;
-    saveBody.mime_type = enc.mime_type;
+  // [3/構築] saveBody 組み立て・JSON化
+  var bodyStr;
+  try {
+    var saveBody = {
+      x0: enc.x0, N: enc.N, cc: enc.chainCount,
+      iv: enc.iv, ct: enc.ct, target_seconds: s,
+      scene: selectedScene
+    };
+    if(enc.is_file){
+      saveBody.is_file = true;
+      saveBody.file_name = enc.file_name;
+      saveBody.mime_type = enc.mime_type;
+    }
+    bodyStr = JSON.stringify(saveBody);
+    console.log('[3/構築] 完了 bodySize=' + bodyStr.length + 'bytes');
+  } catch(err){
+    _resetBridge();
+    showEncError('[3/構築] ' + err.message);
+    return;
+  }
+
+  // [4/送信] fetch('/api/save') – 文字列body＋明示Content-Typeで統一（Blobは不使用）
+  var r;
+  console.log('[4/送信] 開始');
+  try {
+    r = await fetch('/api/save', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: bodyStr
+    });
+    console.log('[4/送信] 完了 status=' + r.status);
+  } catch(err){
+    _resetBridge();
+    showEncError('[4/送信] ' + err.message);
+    return;
+  }
+
+  // [5/応答] レスポンス解析
+  var d;
+  try {
+    d = await r.json();
+    console.log('[5/応答] 完了 id=' + d.id + ' error=' + d.error);
+  } catch(err){
+    _resetBridge();
+    showEncError('[5/応答] ' + err.message);
+    return;
   }
 
   var shareUrl;
-  try {
-    // Blob 渡しで Safari の大容量 JSON 文字列 fetch 問題を回避
-    var r = await fetch('/api/save', {
-      method: 'POST',
-      body: new Blob([JSON.stringify(saveBody)], {type: 'application/json'})
-    });
-    var d = await r.json();
-
-    if(d.error){
-      _resetBridge();
-      showEncError(d.error);
-      return;
-    }
-
-    shareUrl = location.origin + '/' + d.id;
-
-  } catch(err) {
+  if(d.error){
     _resetBridge();
-    showEncError('送信エラー: ' + err.message);
+    showEncError(d.error);
     return;
   }
+  shareUrl = location.origin + '/' + d.id;
 
   // Phase 1 完了を待つ (fetch が早く終わった場合はここで待機)
   await p1Promise;
