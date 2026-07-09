@@ -4168,10 +4168,10 @@ function doCopiedAnim(){
 })();
 
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('/sw.js').then(function(reg){
-    // 毎回 SW 更新チェックを即時実行（旧 SW 残存を防ぐ）
-    reg.update();
-  });
+  // reg.update() は削除: 毎回 sw.js をネットワークフェッチするため /api/save POST と競合し
+  // iOS/Mac Safari で [4/送信] が遅延・失敗する原因になっていた。
+  // ブラウザはナビゲーション時に SW の更新チェックを自動実行するため reg.update() は不要。
+  navigator.serviceWorker.register('/sw.js');
 }
 </script>
 <div id="scene-modal" class="scene-modal">
