@@ -455,6 +455,10 @@ body{
   flex-shrink:0;
 }
 .letter-foot-btns{display:flex;gap:8px;flex-shrink:0;}
+.letter-sig{display:flex;justify-content:space-between;align-items:flex-end;margin-top:8px;flex-wrap:wrap;gap:4px 12px;}
+.letter-via{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;color:#c9997e;text-decoration:none;flex-shrink:0;transition:color .15s;}
+.letter-via:hover{color:#c56b47}
+.letter-via-dot{color:#ef8a63}
 
 /* 便箋: ボタン */
 .letter-btn{
@@ -1012,6 +1016,7 @@ function renderResult(decBuf){
   var now=new Date();
   var dateStr=now.getFullYear()+'.'+('0'+(now.getMonth()+1)).slice(-2)+'.'+('0'+now.getDate()).slice(-2)+' '+('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2);
   var dateLabel=dateStr+' にひらきました';
+  var viaLink='<a class="letter-via" href="https://brake.run/">via Brake<span class="letter-via-dot">.</span></a>';
 
   // ダウンロードリンク生成ヘルパー
   function dlLink(blobUrl,fname,label){
@@ -1068,8 +1073,8 @@ function renderResult(decBuf){
       },400);
     }
 
-    // 最下部に日時ラベル
-    inner+='<div style="margin-top:8px;text-align:left"><div class="letter-date">'+escHtml(dateLabel)+'</div></div>';
+    // 最下部に日時ラベル＋via リンク
+    inner+='<div class="letter-sig"><div class="letter-date">'+escHtml(dateLabel)+'</div>'+viaLink+'</div>';
 
   }else{
     // テキスト / URL
@@ -1086,7 +1091,7 @@ function renderResult(decBuf){
         inner+='<div class="letter-date">'+escHtml(dateLabel)+'</div>';
         inner+='<div class="letter-foot-btns" style="justify-content:flex-end"><button class="letter-btn2" id="letter-copy-btn">URLコピー</button>';
         inner+='<a href="'+escHtml(content)+'" target="_blank" rel="noopener" class="letter-btn">YouTubeで見る →</a>';
-        inner+='</div></div>';
+        inner+=viaLink+'</div></div>';
         card.innerHTML=inner;
         (function(videoId,rawUrl){
           var thumb=document.getElementById('yt-thumb');
@@ -1139,7 +1144,7 @@ function renderResult(decBuf){
       inner+='<div class="letter-foot-btns">';
       inner+='<button class="letter-btn2" id="letter-copy-btn">コピー</button>';
       inner+='<a href="'+escHtml(content)+'" target="_blank" class="letter-btn">ひらく →</a>';
-      inner+='</div></div>';
+      inner+=viaLink+'</div></div>';
       // コピーボタン配線
       (function(cpContent){
         setTimeout(function(){
@@ -1168,7 +1173,7 @@ function renderResult(decBuf){
       inner='<div class="letter-body" id="letter-text-body"></div>';
       inner+='<div class="letter-foot">';
       inner+='<div class="letter-date">'+escHtml(dateLabel)+'</div>';
-      inner+='<div class="letter-foot-btns"><button class="letter-btn2" id="letter-copy-btn">コピー</button></div>';
+      inner+='<div class="letter-foot-btns"><button class="letter-btn2" id="letter-copy-btn">コピー</button>'+viaLink+'</div>';
       inner+='</div>';
       card.innerHTML=inner;
       // XSS回避: textContent で設定
