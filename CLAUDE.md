@@ -242,6 +242,7 @@ index.js
 
 | 日付 | 変更内容 |
 |------|----------|
+| 2026-07-09 | fix(decrypt): LINE WebView で旧緑デザインが一瞬表示されるFOUC修正（decrypt.js）: 根本原因は `#dec-card`（旧サイバーパンク緑カード）が初期HTMLで可視状態だったこと。LINE WebView はJS実行が遅く、HTML表示〜JS適用の空白期間に旧デザインが見えていた（通常Safari/Chromeでは空白が数msで気づかない）。修正: ①`#dec-card` に `style="display:none"` を追加し初期非表示化。②JS側の scenes.js 分岐を if/else に変更: scenes.js 利用時は dec-card を触らず（非表示のまま）、scenes.js が使えないフォールバック時だけ `display:block` で明示表示。キャッシュヒット・エラー時のパスも dec-card を触らず正しく動作。 |
 | 2026-07-09 | style(form): 時間表示とカスタムボタンの縦中心揃え（encrypt.js）: `.fi-durrow` の `align-items:baseline` → `align-items:center` に変更。大きい時間テキスト（26px）のベースラインにボタンが揃って下寄りに見えていた問題を解消。 |
 | 2026-07-09 | feat(form): 5MB超画像のクライアントサイド圧縮を追加（encrypt.js）: `compressImage(file)` 関数を実装（Canvas + toBlob、長辺 2400→2000→1600px × JPEG品質 0.9→0.8→0.7→0.6 の段階的試行。透過PNG は JPEG 化せず縮小のみ。全段階で 5MB 超なら null 返却）。5MB 超のファイル選択時に `applyFileWithCheck()` が画像か否かで分岐: 画像は圧縮確認バー（`.img-compress-bar`）を表示、非画像は従来エラー。圧縮成功後は `applyFile(compressed, origMB)` で `file-selected-bar` に「元名.jpg (8.2MB → 4.6MB)」形式で表示。`applyFile()` ヘルパーで共通設定処理を一本化。`fileInput.change`・`applySharedFile`・`applyDroppedFile` の3経路を `applyFileWithCheck` に統一。`clearFileSelection` で `compressBar` も同時非表示。EXIFメタデータはCanvas再エンコードで除去される（副次的プライバシー効果）。 |
 | 2026-07-09 | fix(form): 送信ボタン活性条件にファイル選択を追加（encrypt.js）: 活性判定を「入力欄が空でない OR selectedFile が存在する」に変更（旧: テキストのみ条件）。`updateRunBtn()` を `fileInput` change・`applySharedFile`・`applyDroppedFile`・`clearFileSelection` の4箇所に追加。run-hint 文言を「メッセージ・URLを入力するか、ファイルを選択してください」に更新（テキスト・ファイル両方ない時のみ表示される条件と整合）。 |

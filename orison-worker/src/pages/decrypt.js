@@ -488,8 +488,8 @@ body{
 <!-- シーン全画面ステージ（scenes.js が制御） -->
 <div id="scene-stage" style="position:fixed;inset:0;z-index:50;background:#050505;display:none"></div>
 
-<!-- 復号中カード -->
-<div class="dec-card" id="dec-card">
+<!-- 復号中カード（JSフォールバック専用。scenes.js使用時は非表示のまま） -->
+<div class="dec-card" id="dec-card" style="display:none">
   <div class="dc-corner dc-tl"></div>
   <div class="dc-corner dc-tr"></div>
   <div class="dc-corner dc-bl"></div>
@@ -813,8 +813,11 @@ async function run(){
   var remainTimer = null;
   var rate = 376223;
   if(window.BRAKE_SCENES && stage){
-    document.getElementById('dec-card').style.display = 'none';
     stage.style.display = 'block';
+    // dec-card は初期 display:none のまま（scenes.js が全画面を覆う）
+  } else {
+    // scenes.js が使えない場合のみ旧カードを表示
+    document.getElementById('dec-card').style.display = 'block';
   }
 
   // 2乗チェーン計算（ブラウザで逐次実行）
