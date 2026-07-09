@@ -456,6 +456,8 @@ body{
 }
 .letter-foot-btns{display:flex;gap:8px;flex-shrink:0;}
 .letter-sig{display:flex;justify-content:space-between;align-items:flex-end;margin-top:8px;}
+.letter-foot--text{align-items:flex-end;}
+.letter-foot--text .letter-btn2{padding:4px 12px;}
 .letter-via-ext{text-align:center;margin-top:14px;}
 .letter-via-inner{margin-top:4px;}
 .letter-via{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;color:#c9997e;text-decoration:underline;text-underline-offset:2px;transition:color .15s;}
@@ -1182,7 +1184,7 @@ function renderResult(decBuf){
     }else{
       // テキストタイプ
       inner='<div class="letter-body" id="letter-text-body"></div>';
-      inner+='<div class="letter-foot">';
+      inner+='<div class="letter-foot letter-foot--text">';
       inner+='<div class="letter-date">'+escHtml(dateLabel)+'</div>';
       inner+='<div class="letter-foot-btns"><button class="letter-btn2" id="letter-copy-btn">コピー</button></div>';
       inner+='</div>';
