@@ -3797,51 +3797,61 @@ async function doEncrypt(){
   }(performance.now()));
 
   // 暗号化 + fetch (Phase 1 と並行)
-  var shareUrl;
+  // 失敗時のアニメリセット共通処理
+  function _resetBridge(){
+    cancelAnimationFrame(p1RafId);
+    if(bRing) bRing.setAttribute('stroke-dashoffset', '327');
+    if(bridge) bridge.setAttribute('data-state', 'idle');
+    btn.disabled = false;
+  }
+
+  // Step 1: 暗号化
+  var enc;
   try {
-    let enc;
     if(selectedFile){
-      const fileBuffer = await readFileAsArrayBuffer(selectedFile);
+      var fileBuffer = await readFileAsArrayBuffer(selectedFile);
       enc = await encryptFile(fileBuffer, selectedFile.name, selectedFile.type || 'application/octet-stream', s);
     } else {
       enc = await encryptContent(contentInput.value.trim(), s);
     }
+  } catch(err){
+    _resetBridge();
+    showEncError('暗号化エラー: ' + err.message);
+    return;
+  }
 
-    const saveBody = {
-      x0: enc.x0, N: enc.N, cc: enc.chainCount,
-      iv: enc.iv, ct: enc.ct, target_seconds: s,
-      scene: selectedScene
-    };
-    if(enc.is_file){
-      saveBody.is_file = true;
-      saveBody.file_name = enc.file_name;
-      saveBody.mime_type = enc.mime_type;
-    }
+  // Step 2: 保存
+  var saveBody = {
+    x0: enc.x0, N: enc.N, cc: enc.chainCount,
+    iv: enc.iv, ct: enc.ct, target_seconds: s,
+    scene: selectedScene
+  };
+  if(enc.is_file){
+    saveBody.is_file = true;
+    saveBody.file_name = enc.file_name;
+    saveBody.mime_type = enc.mime_type;
+  }
 
-    const r = await fetch('/api/save', {
+  var shareUrl;
+  try {
+    // Blob 渡しで Safari の大容量 JSON 文字列 fetch 問題を回避
+    var r = await fetch('/api/save', {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(saveBody)
+      body: new Blob([JSON.stringify(saveBody)], {type: 'application/json'})
     });
-    const d = await r.json();
+    var d = await r.json();
 
     if(d.error){
-      cancelAnimationFrame(p1RafId);
-      if(bRing) bRing.setAttribute('stroke-dashoffset', '327');
-      if(bridge) bridge.setAttribute('data-state', 'idle');
+      _resetBridge();
       showEncError(d.error);
-      btn.disabled = false;
       return;
     }
 
     shareUrl = location.origin + '/' + d.id;
 
   } catch(err) {
-    cancelAnimationFrame(p1RafId);
-    if(bRing) bRing.setAttribute('stroke-dashoffset', '327');
-    if(bridge) bridge.setAttribute('data-state', 'idle');
-    showEncError(err.message);
-    btn.disabled = false;
+    _resetBridge();
+    showEncError('送信エラー: ' + err.message);
     return;
   }
 

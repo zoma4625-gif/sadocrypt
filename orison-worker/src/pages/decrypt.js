@@ -399,7 +399,7 @@ body{
   width:100%;max-width:420px;
   background:rgba(255,250,242,.97);
   border-radius:12px;
-  padding:24px 24px 18px;
+  padding:24px 24px 12px;
   box-shadow:0 14px 40px rgba(80,55,25,.22),0 2px 6px rgba(80,55,25,.12);
   font-family:'Noto Sans JP',sans-serif;
   z-index:1;
@@ -457,7 +457,7 @@ body{
 .letter-foot-btns{display:flex;gap:8px;flex-shrink:0;}
 .letter-sig{display:flex;justify-content:space-between;align-items:flex-end;margin-top:8px;}
 .letter-via-ext{text-align:center;margin-top:14px;}
-.letter-via-inner{margin-top:6px;}
+.letter-via-inner{margin-top:4px;}
 .letter-via{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;color:#c9997e;text-decoration:underline;text-underline-offset:2px;transition:color .15s;}
 .letter-via:hover{color:#c56b47}
 
