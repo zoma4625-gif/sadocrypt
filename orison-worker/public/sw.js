@@ -39,8 +39,8 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // その他リクエストはネットワーク透過
-  event.respondWith(fetch(req));
+  // その他（/api/save 等）は respondWith を呼ばずブラウザのネイティブ処理に任せる
+  // iOS Safari は SW が大きい POST を再フェッチすると Load failed になるため catch-all 禁止
 });
 
 // ページからの pending share 要求に応答
