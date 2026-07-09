@@ -1,4 +1,4 @@
-const CACHE_NAME = 'brake-pwa-v1';
+const CACHE_NAME = 'brake-pwa-v2';
 const _pendingShares = new Map();
 
 self.addEventListener('install', () => {
@@ -17,7 +17,8 @@ self.addEventListener('fetch', event => {
   const req = event.request;
   const url = new URL(req.url);
 
-  // share_target POST を捌く（action: "/"・method: "POST"）
+  // share_target POST のみ介入（action: "/"・method: "POST"）
+  // /api/save 等の POST は絶対に respondWith しない（iOS Safari: 大きい POST 再フェッチ = Load failed）
   if (url.pathname === '/' && req.method === 'POST') {
     event.respondWith(
       req.formData().then(data => {
@@ -32,15 +33,8 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  // HTML ナビゲーション: キャッシュをバイパスして常にネットワークから取得
-  // （Cache-Control: max-age があってもハードリフレッシュが SW を迂回しないため必須）
-  if (req.mode === 'navigate') {
-    event.respondWith(fetch(req, {cache: 'no-store'}));
-    return;
-  }
-
-  // その他（/api/save 等）は respondWith を呼ばずブラウザのネイティブ処理に任せる
-  // iOS Safari は SW が大きい POST を再フェッチすると Load failed になるため catch-all 禁止
+  // それ以外はすべてブラウザのネイティブ処理に任せる（respondWith 呼ばない）
+  // navigate も含めて素通し — Workers が Cache-Control: no-cache を返すため SW 介入不要
 });
 
 // ページからの pending share 要求に応答

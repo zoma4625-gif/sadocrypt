@@ -4121,7 +4121,12 @@ function doCopiedAnim(){
   else { window.addEventListener('beforeinstallprompt', wireInstall); }
 })();
 
-if('serviceWorker' in navigator){ navigator.serviceWorker.register('/sw.js'); }
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('/sw.js').then(function(reg){
+    // 毎回 SW 更新チェックを即時実行（旧 SW 残存を防ぐ）
+    reg.update();
+  });
+}
 </script>
 <div id="scene-modal" class="scene-modal">
   <div class="scene-modal-box">
