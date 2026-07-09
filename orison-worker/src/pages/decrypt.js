@@ -455,10 +455,10 @@ body{
   flex-shrink:0;
 }
 .letter-foot-btns{display:flex;gap:8px;flex-shrink:0;}
-.letter-via-row{text-align:right;margin-top:8px;}
-.letter-via{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.06em;color:#c9997e;text-decoration:none;transition:color .15s;}
+.letter-sig{display:flex;justify-content:space-between;align-items:flex-end;margin-top:8px;}
+.letter-via-ext{text-align:center;margin-top:14px;}
+.letter-via{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;color:#c9997e;text-decoration:underline;text-underline-offset:2px;transition:color .15s;}
 .letter-via:hover{color:#c56b47}
-.letter-via-dot{color:#ef8a63}
 
 /* 便箋: ボタン */
 .letter-btn{
@@ -1016,7 +1016,15 @@ function renderResult(decBuf){
   var now=new Date();
   var dateStr=now.getFullYear()+'.'+('0'+(now.getMonth()+1)).slice(-2)+'.'+('0'+now.getDate()).slice(-2)+' '+('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2);
   var dateLabel=dateStr+' にひらきました';
-  var viaLink='<a class="letter-via" href="https://brake.run/">via Brake<span class="letter-via-dot">.</span></a>';
+  var viaLink='<a class="letter-via" href="https://brake.run/">via Brake.</a>';
+  var showViaOutside=false;
+  function showViaExt(){
+    var el=document.createElement('div');
+    el.className='letter-via-ext';
+    el.innerHTML=viaLink;
+    var c=document.getElementById('letter-card');
+    if(c&&c.parentNode) c.parentNode.insertBefore(el,c.nextSibling);
+  }
 
   // ダウンロードリンク生成ヘルパー
   function dlLink(blobUrl,fname,label){
@@ -1073,9 +1081,8 @@ function renderResult(decBuf){
       },400);
     }
 
-    // 最下部に日時ラベル
-    inner+='<div style="margin-top:8px;text-align:left"><div class="letter-date">'+escHtml(dateLabel)+'</div></div>';
-    inner+='<div class="letter-via-row">'+viaLink+'</div>';
+    // 最下部に日時ラベル＋via（開封記録行の右端）
+    inner+='<div class="letter-sig"><div class="letter-date">'+escHtml(dateLabel)+'</div>'+viaLink+'</div>';
 
   }else{
     // テキスト / URL
@@ -1092,8 +1099,9 @@ function renderResult(decBuf){
         inner+='<div class="letter-date">'+escHtml(dateLabel)+'</div>';
         inner+='<div class="letter-foot-btns" style="justify-content:flex-end"><button class="letter-btn2" id="letter-copy-btn">URLコピー</button>';
         inner+='<a href="'+escHtml(content)+'" target="_blank" rel="noopener" class="letter-btn">YouTubeで見る →</a>';
-        inner+='</div></div><div class="letter-via-row">'+viaLink+'</div>';
+        inner+='</div></div>';
         card.innerHTML=inner;
+        showViaExt();
         (function(videoId,rawUrl){
           var thumb=document.getElementById('yt-thumb');
           var facade=document.getElementById('yt-facade');
@@ -1145,7 +1153,8 @@ function renderResult(decBuf){
       inner+='<div class="letter-foot-btns">';
       inner+='<button class="letter-btn2" id="letter-copy-btn">コピー</button>';
       inner+='<a href="'+escHtml(content)+'" target="_blank" class="letter-btn">ひらく →</a>';
-      inner+='</div></div><div class="letter-via-row">'+viaLink+'</div>';
+      inner+='</div></div>';
+      showViaOutside=true;
       // コピーボタン配線
       (function(cpContent){
         setTimeout(function(){
@@ -1175,8 +1184,9 @@ function renderResult(decBuf){
       inner+='<div class="letter-foot">';
       inner+='<div class="letter-date">'+escHtml(dateLabel)+'</div>';
       inner+='<div class="letter-foot-btns"><button class="letter-btn2" id="letter-copy-btn">コピー</button></div>';
-      inner+='</div><div class="letter-via-row">'+viaLink+'</div>';
+      inner+='</div>';
       card.innerHTML=inner;
+      showViaExt();
       // XSS回避: textContent で設定
       document.getElementById('letter-text-body').textContent=content;
       // コピーボタン配線
@@ -1202,6 +1212,7 @@ function renderResult(decBuf){
   }
 
   card.innerHTML=inner;
+  if(showViaOutside) showViaExt();
 }
 
 function escHtml(s){

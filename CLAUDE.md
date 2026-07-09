@@ -242,7 +242,8 @@ index.js
 
 | 日付 | 変更内容 |
 |------|----------|
-| 2026-07-09 | feat(result): 復号完了カードに「via Brake.」導線を追加（decrypt.js）: カード内最下部・独立行・右寄せ（`.letter-via-row{text-align:right;margin-top:8px}`）に配置。「Brake」後のピリオドをコーラル #ef8a63、リンク本体は薄暖色 #c9997e、ホバーで #c56b47。下線なし・新タブなし（同タブ遷移）。テキスト/URL/YouTube/ファイル（画像・動画・音声・その他）の全7タイプで同一位置に出力。ボタン行とは分離して窮屈さなし。 |
+| 2026-07-09 | style(result): via Brake. の見た目修正（decrypt.js）: `<span class="letter-via-dot">` を除去し「via Brake.」全文字を同色（#c9997e）に統一。`.letter-via` に `text-decoration:underline;text-underline-offset:2px` を追加して通常リンクの佇まいに変更。`.letter-via-dot{color:#ef8a63}` ルールを削除。 |
+| 2026-07-09 | feat(result): 復号完了カードに「via Brake.」導線を追加 ・位置を種別ごとに最適化（decrypt.js）: ファイル系（画像/動画/音声/その他）は `.letter-sig`（flex space-between）で開封日時行の右端に配置。テキスト/URL/YouTube はカード外直下に `showViaExt()` で `.letter-via-ext`（text-align:center / margin-top:14px）を DOM 挿入（カード種別で統一せず最適位置を選択）。`showViaOutside` フラグで URL の catch-all innerHTML タイミングにも対応。 |
 | 2026-07-09 | fix(sw): iOS Safari でのファイル暗号化「Load failed」を修正（public/sw.js）: 根本原因は catch-all `event.respondWith(fetch(req))` が `/api/save` など全POSTリクエストを横取りしていたこと。iOS Safari は SW が数MBの POST ボディを再フェッチする際に「Load failed」で落ちる既知の制限がある。修正: catch-all を削除し、respondWith を呼ばない場合はブラウザのネイティブネットワーク処理に任せる設計に変更（SW が respondWith を呼ばないリクエストはブラウザが自動的に通常フェッチする）。share_target POST（`/` へのPOST）と navigate のみ respondWith を維持。 |
 | 2026-07-09 | fix(decrypt): LINE WebView で旧緑デザインが一瞬表示されるFOUC修正（decrypt.js）: 根本原因は `#dec-card`（旧サイバーパンク緑カード）が初期HTMLで可視状態だったこと。LINE WebView はJS実行が遅く、HTML表示〜JS適用の空白期間に旧デザインが見えていた（通常Safari/Chromeでは空白が数msで気づかない）。修正: ①`#dec-card` に `style="display:none"` を追加し初期非表示化。②JS側の scenes.js 分岐を if/else に変更: scenes.js 利用時は dec-card を触らず（非表示のまま）、scenes.js が使えないフォールバック時だけ `display:block` で明示表示。キャッシュヒット・エラー時のパスも dec-card を触らず正しく動作。 |
 | 2026-07-09 | style(form): 時間表示とカスタムボタンの縦中心揃え（encrypt.js）: `.fi-durrow` の `align-items:baseline` → `align-items:center` に変更。大きい時間テキスト（26px）のベースラインにボタンが揃って下寄りに見えていた問題を解消。 |
