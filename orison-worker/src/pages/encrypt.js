@@ -3807,11 +3807,12 @@ async function doEncrypt(){
 
   // [1/読込] ファイル読み込み（テキスト時はスキップ）
   var fileBuffer;
+  var _t0 = performance.now();
   if(selectedFile){
-    console.log('[1/読込] 開始 size=' + selectedFile.size + ' type=' + selectedFile.type);
+    console.log('[1/読込] 開始 size=' + selectedFile.size + ' type=' + selectedFile.type + ' t=0ms');
     try {
       fileBuffer = await readFileAsArrayBuffer(selectedFile);
-      console.log('[1/読込] 完了 byteLength=' + fileBuffer.byteLength);
+      console.log('[1/読込] 完了 byteLength=' + fileBuffer.byteLength + ' t=' + Math.round(performance.now()-_t0) + 'ms');
     } catch(err){
       _resetBridge();
       showEncError('[1/読込] ' + err.message);
@@ -3819,8 +3820,8 @@ async function doEncrypt(){
     }
   }
 
-  // [2/暗号化] crypto.subtle.encrypt
-  console.log('[2/暗号化] 開始');
+  // [2/暗号化] prime生成 + crypto.subtle.encrypt
+  console.log('[2/暗号化] 開始 t=' + Math.round(performance.now()-_t0) + 'ms');
   var enc;
   try {
     if(selectedFile){
@@ -3828,7 +3829,7 @@ async function doEncrypt(){
     } else {
       enc = await encryptContent(contentInput.value.trim(), s);
     }
-    console.log('[2/暗号化] 完了 ct.length=' + enc.ct.length);
+    console.log('[2/暗号化] 完了 ct.length=' + enc.ct.length + ' t=' + Math.round(performance.now()-_t0) + 'ms');
   } catch(err){
     _resetBridge();
     showEncError('[2/暗号化] ' + err.message);
@@ -3849,7 +3850,7 @@ async function doEncrypt(){
       saveBody.mime_type = enc.mime_type;
     }
     bodyStr = JSON.stringify(saveBody);
-    console.log('[3/構築] 完了 bodySize=' + bodyStr.length + 'bytes');
+    console.log('[3/構築] 完了 bodySize=' + bodyStr.length + 'bytes t=' + Math.round(performance.now()-_t0) + 'ms');
   } catch(err){
     _resetBridge();
     showEncError('[3/構築] ' + err.message);
@@ -3858,14 +3859,14 @@ async function doEncrypt(){
 
   // [4/送信] fetch('/api/save') – 文字列body＋明示Content-Typeで統一（Blobは不使用）
   var r;
-  console.log('[4/送信] 開始');
+  console.log('[4/送信] 開始 t=' + Math.round(performance.now()-_t0) + 'ms');
   try {
     r = await fetch('/api/save', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
       body: bodyStr
     });
-    console.log('[4/送信] 完了 status=' + r.status);
+    console.log('[4/送信] 完了 status=' + r.status + ' t=' + Math.round(performance.now()-_t0) + 'ms');
   } catch(err){
     _resetBridge();
     showEncError('[4/送信] ' + err.message);
@@ -3876,7 +3877,7 @@ async function doEncrypt(){
   var d;
   try {
     d = await r.json();
-    console.log('[5/応答] 完了 id=' + d.id + ' error=' + d.error);
+    console.log('[5/応答] 完了 id=' + d.id + ' error=' + d.error + ' t=' + Math.round(performance.now()-_t0) + 'ms');
   } catch(err){
     _resetBridge();
     showEncError('[5/応答] ' + err.message);
