@@ -265,7 +265,7 @@ ${HEADER_CSS}
 /* ============================================================
    所要時間表示行 + カスタム入力
    ============================================================ */
-.fi-durrow{display:flex;align-items:baseline;justify-content:center;gap:10px;margin-top:12px;}
+.fi-durrow{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:12px;}
 .fi-durnote{text-align:center;font-size:11px;color:rgba(60,55,48,.45);margin-top:6px;}
 #time-other{font-size:12px;border-radius:999px;padding:6px 14px;background:#fff;border:1px solid rgba(60,55,48,.15);color:rgba(60,55,48,.6);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background .12s,color .12s,border-color .12s;}
 #time-other.on{background:var(--accent-grad);color:#fff;border-color:transparent;}
@@ -320,6 +320,36 @@ ${HEADER_CSS}
   flex-shrink:0;
 }
 .file-cancel-btn:hover{color:var(--ink)}
+.img-compress-bar{
+  display:none;
+  align-items:center;
+  gap:8px;
+  padding:0 0 8px;
+  font-size:12px;
+  color:var(--ink-soft);
+}
+.img-compress-bar.visible{display:flex}
+.img-compress-msg{
+  flex:1;
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:12px;
+  line-height:1.5;
+}
+.img-compress-btn{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:11px;
+  padding:4px 10px;
+  border-radius:999px;
+  border:1px solid rgba(60,55,48,.2);
+  background:rgba(60,55,48,.06);
+  color:var(--ink);
+  cursor:pointer;
+  white-space:nowrap;
+  flex-shrink:0;
+  transition:background .15s;
+}
+.img-compress-btn:hover{background:rgba(60,55,48,.12)}
+.img-compress-btn:disabled{opacity:.5;cursor:not-allowed}
 .form-bar{
   display:flex;
   align-items:center;
@@ -1711,6 +1741,11 @@ ${HEADER_HTML}
             <span class="file-selected-name" id="file-selected-name"></span>
             <button type="button" class="file-cancel-btn" id="file-cancel-btn" title="ファイルを取り消す">✕</button>
           </div>
+          <div class="img-compress-bar" id="img-compress-bar">
+            <span class="img-compress-msg" id="img-compress-msg"></span>
+            <button type="button" class="img-compress-btn" id="img-compress-btn">圧縮して続ける</button>
+            <button type="button" class="file-cancel-btn" id="img-compress-cancel" title="キャンセル">✕</button>
+          </div>
           <div class="fi-sec">ひらくまでの時間</div>
           <input type="range" id="time-slider" min="0" max="14" step="1" value="0">
           <div class="fi-durrow">
@@ -1739,7 +1774,7 @@ ${HEADER_HTML}
           </div>
           <div class="form-run-wrap">
             <button type="button" class="btn-run" id="btn" aria-label="暗号化して生成" data-tip="暗号化して生成">時間の鍵をかける</button>
-            <div id="run-hint">メッセージかURLを入力してください</div>
+            <div id="run-hint">メッセージ・URLを入力するか、ファイルを選択してください</div>
             <div class="form-run-note">リンクが1つできます。渡した相手は、時間の計算が終わるまでひらけません。</div>
           </div>
         </form>
@@ -2462,11 +2497,15 @@ async function encryptFile(fileBuffer, fileName, mimeType, targetSeconds) {
 // ============================================================
 let selectedFile = null;
 let currentSegment = 'text';
+var _pendingCompressFile = null;
 
 const fileInput = document.getElementById('file-input');
 const fileSelectedBar = document.getElementById('file-selected-bar');
 const fileSelectedName = document.getElementById('file-selected-name');
 const fileCancelBtn = document.getElementById('file-cancel-btn');
+const compressBar = document.getElementById('img-compress-bar');
+const compressMsgEl = document.getElementById('img-compress-msg');
+const compressBtnEl = document.getElementById('img-compress-btn');
 const contentInput = document.getElementById('msg');
 const urlInputWrap = null;
 const fiInrow = document.querySelector('.fi-inrow');
@@ -2488,13 +2527,7 @@ document.getElementById('btn-plus').addEventListener('click', function(){
 });
 
 fileInput.addEventListener('change', function(){
-  if(fileInput.files && fileInput.files[0]){
-    selectedFile = fileInput.files[0];
-    fileSelectedName.textContent = selectedFile.name;
-    if(fiInrow) fiInrow.style.display = 'none';
-    fileSelectedBar.classList.add('visible');
-    currentSegment = 'file';
-  }
+  if(fileInput.files && fileInput.files[0]) applyFileWithCheck(fileInput.files[0]);
 });
 
 fileCancelBtn.addEventListener('click', function(){
@@ -2731,23 +2764,114 @@ document.addEventListener('DOMContentLoaded', function(){
 
 function clearFileSelection(){
   selectedFile = null;
+  _pendingCompressFile = null;
   fileInput.value = '';
   fileSelectedBar.classList.remove('visible');
+  if(compressBar) compressBar.classList.remove('visible');
   if(fiInrow) fiInrow.style.display = '';
+  updateRunBtn();
 }
+
+// ファイルをフォームに適用（共通）
+function applyFile(file, origMB){
+  selectedFile = file;
+  var sizeStr = origMB ? ' (' + origMB + 'MB → ' + (file.size/1024/1024).toFixed(1) + 'MB)' : '';
+  fileSelectedName.textContent = file.name + sizeStr;
+  if(fiInrow) fiInrow.style.display = 'none';
+  fileSelectedBar.classList.add('visible');
+  currentSegment = 'file';
+  updateRunBtn();
+}
+
+// サイズ・種別チェックして applyFile または 圧縮確認 へ振り分け
+function applyFileWithCheck(file){
+  if(file.size <= MAX_FILE_SIZE){
+    applyFile(file);
+    return;
+  }
+  if(!file.type.startsWith('image/')){
+    showEncError('このファイルは大きすぎます（最大' + (MAX_FILE_SIZE/1024/1024) + 'MB）');
+    return;
+  }
+  _pendingCompressFile = file;
+  if(compressBar && compressMsgEl){
+    var mb = (file.size/1024/1024).toFixed(1);
+    compressMsgEl.textContent = file.name + '（' + mb + 'MB）は5MBを超えています。圧縮して送れます（画質が少し下がります）';
+    compressBar.classList.add('visible');
+  }
+}
+
+// Canvas で画像を圧縮して 5MB 以下の File を返す（失敗時は null）
+function compressImage(file){
+  return new Promise(function(resolve){
+    var img = new Image();
+    var objUrl = URL.createObjectURL(file);
+    img.onload = function(){
+      URL.revokeObjectURL(objUrl);
+      var isTransparent = file.type === 'image/png';
+      var outType = isTransparent ? 'image/png' : 'image/jpeg';
+      var qualities = isTransparent ? [1] : [0.9, 0.8, 0.7, 0.6];
+      var maxSizes = [2400, 2000, 1600];
+      var origW = img.naturalWidth, origH = img.naturalHeight;
+      function trySize(si){
+        if(si >= maxSizes.length){ resolve(null); return; }
+        var scale = Math.min(1, maxSizes[si] / Math.max(origW, origH));
+        var w = Math.round(origW * scale), h = Math.round(origH * scale);
+        var canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        function tryQuality(qi){
+          if(qi >= qualities.length){ trySize(si + 1); return; }
+          canvas.toBlob(function(blob){
+            if(!blob){ trySize(si + 1); return; }
+            if(blob.size <= MAX_FILE_SIZE){
+              var ext = outType === 'image/png' ? '.png' : '.jpg';
+              var name = file.name.replace(/\.[^.]+$/, '') + ext;
+              resolve(new File([blob], name, {type: outType}));
+            } else {
+              tryQuality(qi + 1);
+            }
+          }, outType, qualities[qi]);
+        }
+        tryQuality(0);
+      }
+      trySize(0);
+    };
+    img.onerror = function(){ URL.revokeObjectURL(objUrl); resolve(null); };
+    img.src = objUrl;
+  });
+}
+
+// 圧縮確認バーのボタン配線
+(function(){
+  if(!compressBtnEl) return;
+  compressBtnEl.addEventListener('click', async function(){
+    if(!_pendingCompressFile) return;
+    var file = _pendingCompressFile;
+    var origMB = (file.size/1024/1024).toFixed(1);
+    compressBtnEl.textContent = '圧縮中...';
+    compressBtnEl.disabled = true;
+    var compressed = await compressImage(file);
+    if(compressBar) compressBar.classList.remove('visible');
+    _pendingCompressFile = null;
+    compressBtnEl.textContent = '圧縮して続ける';
+    compressBtnEl.disabled = false;
+    if(!compressed){
+      showEncError('この画像は圧縮しても5MBを超えます。別の画像をお試しください。');
+      return;
+    }
+    applyFile(compressed, origMB);
+  });
+  document.getElementById('img-compress-cancel').addEventListener('click', function(){
+    _pendingCompressFile = null;
+    if(compressBar) compressBar.classList.remove('visible');
+  });
+})();
 
 // share_target POST 経由のファイルをフォームに適用する共通関数
 function applySharedFile(file){
   if(!file) return;
-  if(file.size > MAX_FILE_SIZE){
-    showEncError('このファイルは大きすぎます（最大' + (MAX_FILE_SIZE/1024/1024) + 'MB）');
-    return;
-  }
-  selectedFile = file;
-  fileSelectedName.textContent = file.name;
-  if(fiInrow) fiInrow.style.display = 'none';
-  fileSelectedBar.classList.add('visible');
-  currentSegment = 'file';
+  applyFileWithCheck(file);
 }
 
 // ドラッグ&ドロップ
@@ -2757,15 +2881,7 @@ function applySharedFile(file){
 
   function applyDroppedFile(file){
     if(!file) return;
-    if(file.size > MAX_FILE_SIZE){
-      showEncError('このファイルは大きすぎます（最大' + (MAX_FILE_SIZE/1024/1024) + 'MB）');
-      return;
-    }
-    selectedFile = file;
-    fileSelectedName.textContent = file.name;
-    if(fiInrow) fiInrow.style.display = 'none';
-    fileSelectedBar.classList.add('visible');
-    currentSegment = 'file';
+    applyFileWithCheck(file);
   }
 
   document.addEventListener('dragenter', function(e){
@@ -3018,7 +3134,7 @@ document.getElementById('f').addEventListener('submit', function(e){
 var runBtn = document.getElementById('btn');
 var runHint = document.getElementById('run-hint');
 function updateRunBtn(){
-  var empty = contentInput.value.trim().length === 0;
+  var empty = contentInput.value.trim().length === 0 && !selectedFile;
   runBtn.classList.toggle('btn-run--off', empty);
   if(!empty && runHint) runHint.classList.remove('visible');
 }
