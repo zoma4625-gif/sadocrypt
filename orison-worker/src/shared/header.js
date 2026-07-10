@@ -1,3 +1,5 @@
+import { T, LANG_SWITCH_JS } from '../i18n.js';
+
 export const LOGO_MARK_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" style="display:block;width:100%;height:100%"><rect x="32" y="0" width="64" height="32" fill="#f0876a"/><rect x="64" y="32" width="32" height="64" fill="#e5b98c"/><rect x="0" y="64" width="64" height="32" fill="#a8bba0"/><rect x="0" y="0" width="32" height="64" fill="#8fa5b0"/><rect x="32" y="32" width="32" height="32" fill="#3c3a36"/></svg>';
 
 export const HEADER_CSS = `/* ============================================================
@@ -216,18 +218,21 @@ export const HEADER_CSS = `/* ==================================================
 .mob-share-btn:hover{opacity:.85;}
 .mob-share-btn:disabled{opacity:.55;cursor:default;}`;
 
-export const HEADER_HTML = `  <!-- モバイルメニューオーバーレイ（背景） -->
+export function HEADER_HTML(lang) { return `  <!-- モバイルメニューオーバーレイ（背景） -->
   <div id="mobile-menu-overlay"></div>
   <!-- サイドパネル -->
   <div id="mobile-menu">
     <div class="mobile-menu-header">
-      <button class="mobile-menu-close" id="mobile-menu-close" aria-label="メニューを閉じる">&#x2715;</button>
+      <button class="mobile-menu-close" id="mobile-menu-close" aria-label="${T('nav.menu.close', lang)}">&#x2715;</button>
     </div>
     <div class="mobile-menu-links">
-      <a href="/time-lock" id="mmlink-why">仕組み</a>
-      <a href="/philosophy" id="mmlink-phil">なぜ？</a>
-      <a href="/privacy" id="mmlink-privacy">プライバシー</a>
-      <a href="mailto:info@brake.run" id="mmlink-contact">お問い合わせ</a>
+      <a href="/time-lock" id="mmlink-why">${T('nav.howto', lang)}</a>
+      <a href="/philosophy" id="mmlink-phil">${T('nav.why', lang)}</a>
+      <a href="/privacy" id="mmlink-privacy">${T('nav.privacy', lang)}</a>
+      <a href="mailto:info@brake.run" id="mmlink-contact">${T('nav.contact', lang)}</a>
+    </div>
+    <div style="padding:12px 24px 0;display:flex;justify-content:center">
+      <button id="lang-switch-btn" style="background:none;border:1px solid rgba(60,55,48,.25);border-radius:999px;padding:3px 10px;font-size:11px;font-family:inherit;color:rgba(60,55,48,.6);cursor:pointer;letter-spacing:.08em;" aria-label="Switch language">${T('nav.lang', lang)}</button>
     </div>
     <!-- 共有に追加カード（ナビとフッターの間） -->
     <div class="mob-share-wrap">
@@ -235,8 +240,8 @@ export const HEADER_HTML = `  <!-- モバイルメニューオーバーレイ（
         <div class="mob-share-paper mob-share-paper1"></div>
         <div class="mob-share-paper mob-share-paper2"></div>
         <div class="mob-share-inner">
-          <p class="mob-share-desc">他のアプリの共有から<br>直接 Brake. に送れます</p>
-          <button type="button" class="mob-share-btn" id="mob-share-btn">共有に追加</button>
+          <p class="mob-share-desc">${T('nav.share.desc', lang).replace('\n', '<br>')}</p>
+          <button type="button" class="mob-share-btn" id="mob-share-btn">${T('nav.share.add', lang)}</button>
         </div>
       </div>
     </div>
@@ -247,19 +252,20 @@ export const HEADER_HTML = `  <!-- モバイルメニューオーバーレイ（
   <header class="hero-header">
     <a href="/" style="text-decoration:none;display:inline-flex;align-items:center;gap:8px"><div style="border-radius:6px;overflow:hidden;width:26px;height:26px;flex-shrink:0">${LOGO_MARK_SVG}</div><span class="brake-logo">Brake<span class="brake-dot">.</span></span></a>
     <nav class="hero-nav">
-      <a href="/time-lock">仕組み</a>
-      <a href="/philosophy">なぜ？</a>
-      <a href="/privacy">プライバシー</a>
-      <a href="mailto:info@brake.run">お問い合わせ</a>
+      <a href="/time-lock">${T('nav.howto', lang)}</a>
+      <a href="/philosophy">${T('nav.why', lang)}</a>
+      <a href="/privacy">${T('nav.privacy', lang)}</a>
+      <a href="mailto:info@brake.run">${T('nav.contact', lang)}</a>
+      <button id="lang-switch-btn" style="background:none;border:1px solid rgba(60,55,48,.25);border-radius:999px;padding:3px 10px;font-size:11px;font-family:inherit;color:rgba(60,55,48,.6);cursor:pointer;letter-spacing:.08em;" aria-label="Switch language">${T('nav.lang', lang)}</button>
     </nav>
-    <button class="hamburger-btn" id="hamburger-btn" aria-label="メニューを開く">
+    <button class="hamburger-btn" id="hamburger-btn" aria-label="${T('nav.menu.open', lang)}">
       <span></span>
       <span></span>
       <span></span>
     </button>
-  </header>`;
+  </header>`; }
 
-export const HEADER_JS = `// beforeinstallprompt をヘッダースコープで捕捉（全ページ共通）
+export function HEADER_JS(lang) { return `// beforeinstallprompt をヘッダースコープで捕捉（全ページ共通）
 var _hdrInstallPrompt = null;
 window.addEventListener('beforeinstallprompt', function(e){
   e.preventDefault();
@@ -395,4 +401,5 @@ window.addEventListener('beforeinstallprompt', function(e){
   }
   if(_hdrInstallPrompt){ wireInstall(); }
   else { window.addEventListener('beforeinstallprompt', wireInstall); }
-})();`;
+})();
+${LANG_SWITCH_JS(lang)}`; }`;
