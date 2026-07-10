@@ -1,31 +1,33 @@
 import { HEADER_CSS, HEADER_HTML, HEADER_JS } from '../shared/header.js';
 import { FOOTER } from '../shared/footer.js';
+import { T, LANG_SWITCH_JS } from '../i18n.js';
 
-export const HTML_PHILOSOPHY = `<!DOCTYPE html>
-<html lang="ja">
+export function HTML_PHILOSOPHY(lang) { return `<!DOCTYPE html>
+<html lang="${lang}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>なぜ、待たせるのか | Brake.</title>
-<meta name="description" content="Brake.の思想。情報が一瞬で消費される時代に、「待つ」という余白をもう一度。">
+<title>${T('phil.title', lang)}</title>
+<meta name="description" content="${T('phil.desc', lang)}">
 <meta property="og:type" content="article">
-<meta property="og:title" content="なぜ、待たせるのか | Brake.">
-<meta property="og:description" content="Brake.の思想。情報が一瞬で消費される時代に、「待つ」という余白をもう一度。">
+<meta property="og:title" content="${T('phil.og.title', lang)}">
+<meta property="og:description" content="${T('phil.desc', lang)}">
 <meta property="og:url" content="https://brake.run/philosophy">
 <meta property="og:image" content="https://brake.run/og.png?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="なぜ、待たせるのか | Brake.">
-<meta name="twitter:description" content="Brake.の思想。情報が一瞬で消費される時代に、「待つ」という余白をもう一度。">
+<meta name="twitter:title" content="${T('phil.og.title', lang)}">
+<meta name="twitter:description" content="${T('phil.desc', lang)}">
 <meta name="twitter:image" content="https://brake.run/og.png?v=2">
 <link rel="canonical" href="https://brake.run/philosophy">
 <link rel="alternate" hreflang="ja" href="https://brake.run/philosophy">
+<link rel="alternate" hreflang="en" href="https://brake.run/philosophy">
 <link rel="alternate" hreflang="x-default" href="https://brake.run/philosophy">
 <link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
 <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"なぜ、待たせるのか","description":"Brake.の思想。情報が一瞬で消費される時代に、「待つ」という余白をもう一度。","url":"https://brake.run/philosophy","inLanguage":"ja","publisher":{"@type":"Organization","name":"Brake."}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","headline":"${T('phil.h1', lang)}","description":"${T('phil.desc', lang)}","url":"https://brake.run/philosophy","inLanguage":"${lang}","publisher":{"@type":"Organization","name":"Brake."}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Orbitron:wght@900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -116,56 +118,56 @@ ${HEADER_CSS}
 <body>
 <div style="position:fixed;top:-140px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(ellipse,rgba(239,138,99,.5) 0%,transparent 68%);filter:blur(46px);pointer-events:none;z-index:0;"></div>
 <div style="position:fixed;bottom:-80px;left:-120px;width:380px;height:380px;border-radius:50%;background:radial-gradient(ellipse,rgba(143,168,143,.42) 0%,transparent 68%);filter:blur(42px);pointer-events:none;z-index:0;"></div>
-${HEADER_HTML}
+${HEADER_HTML(lang)}
 <div class="phil-wrap">
 
-  <div class="tl-eyebrow">WHY TIME-LOCK CRYPTOGRAPHY?</div>
-  <h1 class="phil-h1">なぜ、あえて「待たせる」のか</h1>
+  <div class="tl-eyebrow">${T('phil.eyebrow', lang)}</div>
+  <h1 class="phil-h1">${T('phil.h1', lang)}</h1>
 
-  <p class="phil-body">手紙は届くまでに数日かかりました。写真は現像に出して数日、続きは翌週の放送まで。何かを開くまでの時間は、少し前まで、あらゆるものについていました。</p>
-  <p class="phil-body">いま、届いたものはその場で開けます。それ自体は便利になっただけです。ただ、開くのが速くなったぶん、届く量は処理できる量を超えました。次から次へ届き、開き、応え、また次が届く。個人の意志ではもう止まりません。</p>
-  <p class="phil-body">Brake. は、この流れの一箇所に時間の鍵をかけます。決めた時刻まで、誰にも──送った本人にも──開けられないメッセージ。機能はそれだけです。</p>
+  <p class="phil-body">${T('phil.p1', lang)}</p>
+  <p class="phil-body">${T('phil.p2', lang)}</p>
+  <p class="phil-body">${T('phil.p3', lang)}</p>
 
-  <h2 class="phil-h2">送る人にとって</h2>
-  <p class="phil-body">すぐ開けるものは、片手間に開かれます。開けないものは、開ける瞬間を待つことになります。同じ中身でも、届き方が変わります。</p>
-  <p class="phil-body">また、待ち時間は受け手を選びます。急いでいる人は離れ、待てる人だけが開く。誰にでも届く必要がないものを、待てる相手にだけ届けられます。</p>
+  <h2 class="phil-h2">${T('phil.h2.sender', lang)}</h2>
+  <p class="phil-body">${T('phil.p4', lang)}</p>
+  <p class="phil-body">${T('phil.p5', lang)}</p>
 
-  <h2 class="phil-h2">受け取る人にとって</h2>
-  <p class="phil-body">開けられるものは、開けるまで頭の隅に残ります。未読、未開封、あとで見るつもりのまま。Brake. のメッセージは時が来るまで開けようがないので、気にかける必要そのものがありません。</p>
-  <p class="phil-body">鍵の計算が進むあいだ、画面の前で何かをする必要はありません。お茶を淹れても、席を外しても、計算は進みます。</p>
+  <h2 class="phil-h2">${T('phil.h2.receiver', lang)}</h2>
+  <p class="phil-body">${T('phil.p6', lang)}</p>
+  <p class="phil-body">${T('phil.p7', lang)}</p>
 
-  <h2 class="phil-h2">待つことを、取り戻す</h2>
-  <p class="phil-body">速くする道具は揃っています。Brake. は逆向きの道具です。決めた時間まで開かない、それを暗号で保証する。仕組みの詳細は「<a href="/time-lock" style="color:#c9865e;text-underline-offset:3px">仕組み</a>」のページにあります。</p>
+  <h2 class="phil-h2">${T('phil.h2.reclaim', lang)}</h2>
+  <p class="phil-body">${T('phil.p8', lang)}</p>
 
   <div class="phil-card-grid">
     <div class="phil-card">
-      <div class="phil-card-title">個人から、大切な人へ</div>
-      <div class="phil-card-desc">想いのこもったメッセージを、心の準備時間ごと送る。</div>
+      <div class="phil-card-title">${T('phil.card1.title', lang)}</div>
+      <div class="phil-card-desc">${T('phil.card1.desc', lang)}</div>
     </div>
     <div class="phil-card">
-      <div class="phil-card-title">発信者から、ファンへ</div>
-      <div class="phil-card-desc">待った人から順に受け取る。先に知りたい人ほど、長く待つ。</div>
+      <div class="phil-card-title">${T('phil.card2.title', lang)}</div>
+      <div class="phil-card-desc">${T('phil.card2.desc', lang)}</div>
     </div>
     <div class="phil-card">
-      <div class="phil-card-title">企業から、世の中へ</div>
-      <div class="phil-card-desc">開くまでの時間が、通りすがりの注目と本気の相手をわける。</div>
+      <div class="phil-card-title">${T('phil.card3.title', lang)}</div>
+      <div class="phil-card-desc">${T('phil.card3.desc', lang)}</div>
     </div>
     <div class="phil-card">
-      <div class="phil-card-title">いまの自分から、未来の自分へ</div>
-      <div class="phil-card-desc">1年後にひらく約束。書いた本人も、すぐに読み返せない。</div>
+      <div class="phil-card-title">${T('phil.card4.title', lang)}</div>
+      <div class="phil-card-desc">${T('phil.card4.desc', lang)}</div>
     </div>
   </div>
 
   <div class="phil-cta">
     <a href="/" class="phil-cta-btn">
-      <span class="phil-cta-logo">Brake.</span><span class="phil-cta-text">を試す →</span>
+      <span class="phil-cta-logo">Brake.</span><span class="phil-cta-text">${T('phil.cta', lang)}</span>
     </a>
   </div>
 
 </div>
-${FOOTER}
+${FOOTER(lang)}
 <script>
-${HEADER_JS}
+${HEADER_JS(lang)}
 </script>
 </body>
-</html>`;
+</html>`; }
