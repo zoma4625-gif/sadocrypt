@@ -567,9 +567,6 @@ body{
 <!-- 便箋ステージ（明転レイヤー）-->
 <div id="result-stage">
   <div class="letter-card" id="letter-card"></div>
-  <div style="text-align:center;padding:24px 0 32px">
-    <button id="lang-switch-btn" style="background:none;border:1px solid rgba(60,55,48,.2);border-radius:999px;padding:2px 10px;font-size:11px;font-family:inherit;color:rgba(60,55,48,.4);cursor:pointer;letter-spacing:.06em;line-height:1.6" aria-label="Switch language">${T('nav.lang', lang)}</button>
-  </div>
 </div>
 
 <script type="application/json" id="puzzle-data">__PUZZLE__</script>

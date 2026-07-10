@@ -398,4 +398,4 @@ window.addEventListener('beforeinstallprompt', function(e){
   if(_hdrInstallPrompt){ wireInstall(); }
   else { window.addEventListener('beforeinstallprompt', wireInstall); }
 })();
-${LANG_SWITCH_JS(lang)}`; }`;
+${LANG_SWITCH_JS(lang)}`; }

@@ -1606,59 +1606,6 @@ ${HEADER_CSS}
   margin-top:20px;
 }
 
-/* ============================================================
-   フッター（LP スコープ・ライト）
-   ============================================================ */
-.lp-footer{
-  width:100%;
-  background:#ece6d6;
-}
-.lp-footer-inner{
-  max-width:700px;
-  margin:0 auto;
-  padding:40px 24px 32px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:28px;
-  border-bottom:1px solid rgba(60,55,48,.12);
-}
-.lp-footer-logo{
-  font-family:'Orbitron',sans-serif;
-  font-weight:900;
-  font-size:2rem;
-  color:#3c3a36;
-  text-decoration:none;
-  letter-spacing:.02em;
-  line-height:1;
-}
-.lp-footer-logo-dot{color:#ef8a63;}
-.lp-footer-links{
-  display:flex;
-  flex-wrap:wrap;
-  gap:20px;
-  justify-content:center;
-}
-.lp-footer-link{
-  font-family:'Noto Sans JP',sans-serif;
-  font-size:14px;
-  color:rgba(60,55,48,.55);
-  text-decoration:none;
-  transition:color .15s;
-}
-.lp-footer-link:hover{color:#3c3a36;}
-.lp-footer-copy{
-  width:100%;
-  max-width:700px;
-  margin:0 auto;
-  padding:20px 24px 32px;
-  font-family:'Share Tech Mono',monospace;
-  font-size:11px;
-  color:rgba(60,55,48,.4);
-  letter-spacing:.15em;
-  text-transform:uppercase;
-  text-align:center;
-}
 /* ===== トップへ戻るボタン ===== */
 #brake-top-btn{
   position:fixed;
@@ -2011,21 +1958,7 @@ ${HEADER_HTML(lang)}
 <!-- ============================================================
      6. フッター
      ============================================================ -->
-<footer class="lp-footer">
-  <div class="lp-footer-inner">
-    <a href="/" style="text-decoration:none;display:inline-flex;flex-direction:column;align-items:center;gap:8px"><div style="border-radius:6px;overflow:hidden;width:32px;height:32px;flex-shrink:0">${LOGO_MARK_SVG}</div><span class="lp-footer-logo">Brake<span class="lp-footer-logo-dot">.</span></span><span style="font-family:'Noto Sans JP',sans-serif;font-size:12px;color:rgba(60,55,48,.55);letter-spacing:.06em">${T('lp.footer.tagline', lang)}</span></a>
-    <div class="lp-footer-links">
-      <a href="https://github.com/zoma4625-gif/sadocrypt" class="lp-footer-link" target="_blank" rel="noopener">${T('lp.footer.github', lang)}</a>
-      <a href="/privacy" class="lp-footer-link">${T('lp.footer.privacy', lang)}</a>
-      <a href="/terms" class="lp-footer-link">${T('lp.footer.terms', lang)}</a>
-      <a href="mailto:info@brake.run" class="lp-footer-link">${T('lp.footer.contact', lang)}</a>
-    </div>
-  </div>
-  <div style="display:flex;align-items:center;justify-content:center;gap:16px;padding:0 24px 40px">
-    <span class="lp-footer-copy" style="margin:0">© 2026 Brake. · TIME-LOCK ENCRYPTION</span>
-    <button id="lang-switch-btn" style="background:none;border:1px solid rgba(60,55,48,.2);border-radius:999px;padding:2px 10px;font-size:11px;font-family:inherit;color:rgba(60,55,48,.5);cursor:pointer;letter-spacing:.06em;line-height:1.6" aria-label="Switch language">${T('nav.lang', lang)}</button>
-  </div>
-</footer>
+${FOOTER(lang)}
 
 <!-- トップへ戻るボタン -->
 <a id="brake-top-btn" href="#top" aria-label="Brake.を試す"><svg width="20" height="10" viewBox="0 0 20 10" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="2,9 10,2 18,9"/></svg><span style="font-family:'Orbitron',sans-serif;font-weight:900;font-size:15px;line-height:1">Brake.</span><span style="font-size:11px;line-height:1">を試す</span></a>
