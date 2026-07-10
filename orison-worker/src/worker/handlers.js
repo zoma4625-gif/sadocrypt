@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { T, getLang } from '../i18n.js';
 
 export const MAX_LOCK_SECONDS = 30 * 24 * 60 * 60;  // 30日（無料版上限）
 
@@ -102,9 +103,10 @@ export async function handleSave(request, env) {
 }
 
 // 失効／不正IDエラーページ HTML（琥珀ダーク世界観）
-export function buildExpiredHtml() {
+export function buildExpiredHtml(lang) {
+    lang = lang || 'ja';
     const logo = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" style="display:block;width:100%;height:100%"><rect x="32" y="0" width="64" height="32" fill="#c9956b"/><rect x="64" y="32" width="32" height="64" fill="#c4a882"/><rect x="0" y="64" width="64" height="32" fill="#9aaa94"/><rect x="0" y="0" width="32" height="64" fill="#8e9ea8"/><rect x="32" y="32" width="32" height="32" fill="#5a5249"/></svg>';
-    return '<!DOCTYPE html><html lang=ja><head><meta charset=UTF-8><title>Brake. – このリンクは開けません</title>' +
+    return '<!DOCTYPE html><html lang=' + lang + '><head><meta charset=UTF-8><title>Brake.</title>' +
         '<link rel="icon" href="/favicon.ico?v=2" sizes="48x48"><link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">' +
         '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
         '<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500&family=Orbitron:wght@900&display=swap" rel="stylesheet">' +
@@ -120,9 +122,9 @@ export function buildExpiredHtml() {
         'a:hover{opacity:.85}</style>' +
         '<body><div class="wrap"><div class="logo-mark">' + logo + '</div>' +
         '<div class="wordmark">Brake<span>.</span></div>' +
-        '<h1>このリンクは、もう開けません。</h1>' +
-        '<p>削除されたか、対応する時間が過ぎたようです。</p>' +
-        '<a href="https://brake.run">Brake. をひらく</a></div></body></html>';
+        '<h1>' + T('err.expired.title', lang) + '</h1>' +
+        '<p>' + T('err.expired.sub', lang) + '</p>' +
+        '<a href="https://brake.run">' + T('err.expired.btn', lang) + '</a></div></body></html>';
 }
 
 /**
@@ -130,10 +132,11 @@ export function buildExpiredHtml() {
  * 共有URLの復号ページを返す
  * HTML_DECRYPT は循環インポート回避のため呼び出し元(ルーター)から引数で受け取る
  */
-export async function handleSharedPuzzle(request, env, puzzleId, htmlDecrypt) {
+export async function handleSharedPuzzle(request, env, puzzleId, htmlDecrypt, lang) {
+    lang = lang || 'ja';
     const data = await env.PUZZLES.get(puzzleId);
     if (!data) {
-        return new Response(buildExpiredHtml(),
+        return new Response(buildExpiredHtml(lang),
             { status: 404, headers: { 'Content-Type': 'text/html;charset=utf-8' } }
         );
     }
@@ -145,7 +148,7 @@ export async function handleSharedPuzzle(request, env, puzzleId, htmlDecrypt) {
         const nowSec = Math.floor(Date.now() / 1000);
         if (nowSec > puzzle.expires_at) {
             await env.PUZZLES.delete(puzzleId);
-            return new Response(buildExpiredHtml(),
+            return new Response(buildExpiredHtml(lang),
                 { status: 410, headers: { 'Content-Type': 'text/html;charset=utf-8' } }
             );
         }
@@ -164,7 +167,7 @@ export async function handleSharedPuzzle(request, env, puzzleId, htmlDecrypt) {
         mime_type: puzzle.mime_type || null,
         scene: puzzle.scene || 'auto'   // 旧データ(sceneなし)は 'auto' 扱い
     });
-    const html = htmlDecrypt.replace('__PUZZLE__', () => puzzleJSON);
+    const html = htmlDecrypt(lang).replace('__PUZZLE__', () => puzzleJSON);
 
     return new Response(html, {
         headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-store' }
