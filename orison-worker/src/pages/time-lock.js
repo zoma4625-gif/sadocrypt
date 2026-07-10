@@ -1,31 +1,33 @@
 import { HEADER_CSS, HEADER_HTML, HEADER_JS } from '../shared/header.js';
 import { FOOTER } from '../shared/footer.js';
+import { T, LANG_SWITCH_JS } from '../i18n.js';
 
-export const HTML_TIME_LOCK = `<!DOCTYPE html>
-<html lang="ja">
+export function HTML_TIME_LOCK(lang) { return `<!DOCTYPE html>
+<html lang="${lang}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>タイムロック暗号とは | Brake.</title>
-<meta name="description" content="タイムロック暗号の仕組みを解説。Rivest-Shamir-Wagner方式の逐次2乗計算で、設定した時間が経過しないと復号できない暗号を実現します。">
+<title>${T('tl.title', lang)}</title>
+<meta name="description" content="${T('tl.desc', lang)}">
 <meta property="og:type" content="article">
-<meta property="og:title" content="タイムロック暗号とは | Brake.">
-<meta property="og:description" content="タイムロック暗号の仕組みを解説。Rivest-Shamir-Wagner方式の逐次2乗計算で、設定した時間が経過しないと復号できない暗号を実現します。">
+<meta property="og:title" content="${T('tl.og.title', lang)}">
+<meta property="og:description" content="${T('tl.desc', lang)}">
 <meta property="og:url" content="https://brake.run/time-lock">
 <meta property="og:image" content="https://brake.run/og.png?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="タイムロック暗号とは | Brake.">
-<meta name="twitter:description" content="タイムロック暗号の仕組みを解説。Rivest-Shamir-Wagner方式の逐次2乗計算で、設定した時間が経過しないと復号できない暗号を実現します。">
+<meta name="twitter:title" content="${T('tl.og.title', lang)}">
+<meta name="twitter:description" content="${T('tl.desc', lang)}">
 <meta name="twitter:image" content="https://brake.run/og.png?v=2">
 <link rel="canonical" href="https://brake.run/time-lock">
 <link rel="alternate" hreflang="ja" href="https://brake.run/time-lock">
+<link rel="alternate" hreflang="en" href="https://brake.run/time-lock">
 <link rel="alternate" hreflang="x-default" href="https://brake.run/time-lock">
 <link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
 <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Brake.","url":"https://brake.run/time-lock","description":"タイムロック暗号の仕組みを解説。Rivest-Shamir-Wagner方式の逐次2乗計算で、設定した時間が経過しないと復号できない暗号を実現します。","applicationCategory":"SecurityApplication","operatingSystem":"Any","inLanguage":"ja"}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Brake.","url":"https://brake.run/time-lock","description":"${T('tl.desc', lang)}","applicationCategory":"SecurityApplication","operatingSystem":"Any","inLanguage":"${lang}"}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Noto+Sans+JP:wght@400;500;700&family=Orbitron:wght@900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
@@ -59,41 +61,41 @@ ${HEADER_CSS}
 <body>
 <div style="position:fixed;top:-140px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(ellipse,rgba(239,138,99,.5) 0%,transparent 68%);filter:blur(46px);pointer-events:none;z-index:0;"></div>
 <div style="position:fixed;bottom:-80px;left:-120px;width:380px;height:380px;border-radius:50%;background:radial-gradient(ellipse,rgba(143,168,143,.42) 0%,transparent 68%);filter:blur(42px);pointer-events:none;z-index:0;"></div>
-${HEADER_HTML}
+${HEADER_HTML(lang)}
 
 <!-- 解説本文（ヘッダー直下から上詰めで表示） -->
 <main class="content-wrap">
-  <div class="tl-eyebrow">WHAT'S TIME-LOCK CRYPTOGRAPHY?</div>
-  <h1 class="tl-h1">タイムロック暗号とは</h1>
-  <p class="tl-body">タイムロック暗号（Time-Lock Puzzle）は、<span style="color:#3c3a36;font-weight:700">「送信者を含む誰も、あらかじめ決められた時間が経過するまで復号できない」</span>ことを<span class="hl">数学的に保証</span>する暗号方式です。「情報を未来へ送る」ことを目標に、1996年に Ron Rivest、Adi Shamir、David Wagner によって提案され、技術が確立されました。Rivest と Shamir は、RSA暗号の生みの親でもあります。</p>
-  <p class="tl-body">最新鋭のコンピュータでも解くのに時間がかかる複雑なパズルをその場で生成し、パズルの答えを鍵とした錠前でリンクやファイルを<span class="hl">完全にロック</span>します。</p>
+  <div class="tl-eyebrow">${T('tl.eyebrow', lang)}</div>
+  <h1 class="tl-h1">${T('tl.h1', lang)}</h1>
+  <p class="tl-body">${T('tl.p1', lang)}</p>
+  <p class="tl-body">${T('tl.p2', lang)}</p>
 
-  <h2 class="tl-h2">仕組み</h2>
-  <p class="tl-body">パズルの中身は、シンプルな平方計算のくり返しです。x を二乗して巨大数Nで割り、その余りをまた二乗してNで割る。その余りをまた二乗して…。このプロセスを数万回〜数億回マシンにくり返させることで任意の計算負荷を発生させ、復号までにかかる時間を<span class="hl">自由に調整</span>することができます。</p>
+  <h2 class="tl-h2">${T('tl.h2.how', lang)}</h2>
+  <p class="tl-body">${T('tl.p3', lang)}</p>
   <div class="tl-code"><span>x → x² → x⁴ → x⁸ → …&nbsp;(mod N)</span><span class="tl-code-note">N&nbsp;=&nbsp;2048bit&nbsp;(約617桁)</span></div>
 
-  <h2 class="tl-h2">なぜスキップできないのか</h2>
-  <p class="tl-body">計算を速く行うには、マシンを並列化し、複数の計算機やコアで処理を分散させる方法がありますが、タイムロックの逐次計算方式にはこれが効きません。</p>
-  <p class="tl-body">前述の式を見ると、各ステップは一つ前のステップの答えを入力にしているのがわかります。<span style="color:#3c3a36;font-weight:700">一つ前の答えが分からなければ次に進めないので、並列マシンによる同時並行処理は不可能になっています。</span></p>
-  <p class="tl-body">結果として、復号にかかる時間はCPUのシングルスレッド性能と設定された計算回数だけに依存することになります。</p>
+  <h2 class="tl-h2">${T('tl.h2.skip', lang)}</h2>
+  <p class="tl-body">${T('tl.p4', lang)}</p>
+  <p class="tl-body">${T('tl.p5', lang)}</p>
+  <p class="tl-body">${T('tl.p6', lang)}</p>
 
-  <h2 class="tl-h2">Brake. での実装</h2>
-  <p class="tl-body">Brake. では、暗号化リクエストを受けとるとまずランダムな底 <code class="tl-var">x₀</code> と、2つの巨大な素数 <code class="tl-var">p, q</code> を生成します。さらに <code class="tl-var">p, q</code> の積 <code class="tl-var">N</code> を法（modulus）とした逐次平方パズル（時間鍵）が作成され、ファイルに鍵がかけられます。逐次計算をどれくらい行うかは、指定された復号時間から逆算して決定されます。</p>
-  <p class="tl-body">暗号化プロセスはすべて、ユーザーのブラウザ内（JavaScript の BigInt）だけで完結します。サーバーには暗号化されたデータと、パズルの情報だけが送られ、<span style="color:#3c3a36;font-weight:700">元データや鍵がサーバーに渡ることはありません。</span>これにより、万が一悪意のある第三者に攻撃を受けても、ファイルの中身が漏洩することはありません。</p>
-  <p class="tl-body">復号が始まると、計算はユーザーのデバイス（PC、スマホ）が行います。</p>
+  <h2 class="tl-h2">${T('tl.h2.impl', lang)}</h2>
+  <p class="tl-body">${T('tl.p7', lang)}</p>
+  <p class="tl-body">${T('tl.p8', lang)}</p>
+  <p class="tl-body">${T('tl.p9', lang)}</p>
 
   <div class="tl-cta">
     <a href="/" class="tl-cta-btn">
-      <span class="tl-cta-logo">Brake<span class="tl-cta-dot">.</span></span><span class="tl-cta-text">を試す →</span>
+      <span class="tl-cta-logo">Brake<span class="tl-cta-dot">.</span></span><span class="tl-cta-text">${T('tl.cta', lang)}</span>
     </a>
   </div>
 </main>
 
 <!-- フッター -->
-${FOOTER}
+${FOOTER(lang)}
 
 <script>
-${HEADER_JS}
+${HEADER_JS(lang)}
 </script>
 </body>
-</html>`;
+</html>`; }
