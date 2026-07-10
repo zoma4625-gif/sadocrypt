@@ -242,6 +242,7 @@ index.js
 
 | 日付 | 変更内容 |
 |------|----------|
+| 2026-07-10 | fix(encrypt): アイドル後の初回画像暗号化失敗を自動リトライで吸収（encrypt.js）: 症状=時間を置いた後の1回目だけ `[4/送信]` で `TypeError` が出て失敗、即再試行は成功。原因仮説=Safari がアイドル後に古い keep-alive / HTTP2 接続を再利用し、数MBの POST ボディ送信に失敗する既知パターン（テキスト数KBは成功、画像数MBは失敗という差と一致）。対処=`[4/送信]` の catch で `err instanceof TypeError` の場合のみ 500ms 待ってフェッチを1回リトライ。リトライ発生時は `[4/送信] リトライ err=... t=...ms` をコンソールに出力して発生頻度を観測可能に。HTTP エラー・暗号化失敗・バリデーション失敗はリトライ対象外。 |
 | 2026-07-10 | feat(scenes): 計算画面（flow）に「タップで景色に戻る」ヒントを追加（public/scenes.js）: `sceneFlow` 関数内に `.bsc-flow-hint` 要素を追加。下端固定（position:absolute;bottom:14px）、z-index:3 で `bsc-fadeB` グラデオーバーレイの上に表示。色 `rgba(255,196,138,.28)`（head の .4 より一段控えめ）、letter-spacing:.18em、MONO フォント、pointer-events:none。タップ判定・シーン切替ロジック（onTap）は変更なし。 |
 | 2026-07-10 | style(result): 画像カードのファイル名省略対応（decrypt.js）: 長いファイル名でもレイアウトが崩れないよう `.letter-fname-wrap{min-width:0;flex:1}` を追加し、`.letter-fname-wrap .letter-fname` に `white-space:nowrap;overflow:hidden;text-overflow:ellipsis` を適用。image/video/audio カードの left wrapper div を `<div class="letter-fname-wrap">` に変更（3ヶ所）。`min-width:0` は flex アイテムで ellipsis を効かせるために必須。汎用ファイルカード（`.letter-file-row` 内）・テキストカードへの影響なし。 |
 | 2026-07-10 | fix(result): 画像カードのダウンロードボタンが左に落ちる問題を修正（decrypt.js）: `.letter-foot` の `flex-wrap:wrap` を削除。ファイル名が長いとき `justify-content:space-between` の右側ボタン（`flex-shrink:0`）が次行に落ちていた。`flex-wrap:nowrap`（デフォルト）に戻すことでファイル名（左）＋ダウンロードボタン（右）が同一行横並びに。テキストカード・汎用ファイルカードへの影響なし。 |

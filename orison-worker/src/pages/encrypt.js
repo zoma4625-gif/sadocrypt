@@ -3860,17 +3860,28 @@ async function doEncrypt(){
   // [4/送信] fetch('/api/save') – 文字列body＋明示Content-Typeで統一（Blobは不使用）
   var r;
   console.log('[4/送信] 開始 t=' + Math.round(performance.now()-_t0) + 'ms');
+  var _fetchOpts = {method:'POST', headers:{'Content-Type':'application/json'}, body:bodyStr};
   try {
-    r = await fetch('/api/save', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: bodyStr
-    });
+    r = await fetch('/api/save', _fetchOpts);
     console.log('[4/送信] 完了 status=' + r.status + ' t=' + Math.round(performance.now()-_t0) + 'ms');
   } catch(err){
-    _resetBridge();
-    showEncError('[4/送信] ' + err.message);
-    return;
+    // TypeError = ネットワーク障害（keep-alive 接続再利用失敗など）→ 500ms 待って1回だけリトライ
+    if(err instanceof TypeError){
+      console.log('[4/送信] リトライ err=' + err.message + ' t=' + Math.round(performance.now()-_t0) + 'ms');
+      await new Promise(function(res){setTimeout(res,500);});
+      try {
+        r = await fetch('/api/save', _fetchOpts);
+        console.log('[4/送信] 完了(リトライ) status=' + r.status + ' t=' + Math.round(performance.now()-_t0) + 'ms');
+      } catch(err2){
+        _resetBridge();
+        showEncError('[4/送信] ' + err2.message);
+        return;
+      }
+    } else {
+      _resetBridge();
+      showEncError('[4/送信] ' + err.message);
+      return;
+    }
   }
 
   // [5/応答] レスポンス解析
