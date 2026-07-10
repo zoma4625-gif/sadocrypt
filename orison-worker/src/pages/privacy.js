@@ -1,8 +1,9 @@
 import { HEADER_CSS, HEADER_HTML, HEADER_JS } from '../shared/header.js';
 import { FOOTER } from '../shared/footer.js';
+import { T, LANG_SWITCH_JS } from '../i18n.js';
 
-export const HTML_PRIVACY = `<!DOCTYPE html>
-<html lang="ja">
+export function HTML_PRIVACY(lang) { return `<!DOCTYPE html>
+<html lang="${lang}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -96,9 +97,10 @@ ${HEADER_CSS}
 <body>
 <div style="position:fixed;top:-140px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(ellipse,rgba(239,138,99,.5) 0%,transparent 68%);filter:blur(46px);pointer-events:none;z-index:0;"></div>
 <div style="position:fixed;bottom:-80px;left:-120px;width:380px;height:380px;border-radius:50%;background:radial-gradient(ellipse,rgba(143,168,143,.42) 0%,transparent 68%);filter:blur(42px);pointer-events:none;z-index:0;"></div>
-${HEADER_HTML}
+${HEADER_HTML(lang)}
 <main style="flex:1">
 <div class="legal-wrap">
+${lang === 'en' ? `<div style="margin-bottom:24px;padding:14px 18px;border:.5px solid rgba(60,55,48,.2);border-radius:10px;background:rgba(60,55,48,.03);font-size:13px;color:rgba(60,55,48,.6);">The Japanese text is the governing version. English translation is in preparation.</div>` : ''}
 <h1 class="legal-title">Brake. プライバシーポリシー</h1>
 <p><strong>最終更新日：2026年7月1日</strong></p>
 <p><strong>施行日：2026年7月1日</strong></p>
@@ -222,9 +224,9 @@ ${HEADER_HTML}
 <p>当方は、お問い合わせ内容を確認の上、合理的な期間内にご返答するよう努めます。</p>
 </div>
 </main>
-${FOOTER}
+${FOOTER(lang)}
 <script>
-${HEADER_JS}
+${HEADER_JS(lang)}
 </script>
 </body>
-</html>`;
+</html>`; }
