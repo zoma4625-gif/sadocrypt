@@ -447,7 +447,7 @@ body{
   display:flex;justify-content:space-between;align-items:center;
   margin-top:14px;padding-top:12px;
   border-top:1px solid rgba(90,60,30,.14);
-  gap:8px;flex-wrap:wrap;
+  gap:8px;
 }
 .letter-date{
   font-family:'JetBrains Mono',monospace;font-size:10px;
