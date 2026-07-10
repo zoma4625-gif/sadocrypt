@@ -31,13 +31,15 @@
 
   /* ---------- 文言ローテーション(共通) ---------- */
   var MSGS = [
-    { t: '計算がすすんでいます', w: 30, d: 8000 },
-    { t: 'ひらくまで、待っています', w: 20, d: 12000 },
-    { t: 'すこしずつ、近づいています', w: 15, d: 10000 },
-    { t: 'この画面は、閉じても大丈夫です', w: 10, d: 14000 },
-    { t: '途中でやめても、続きから再開できます', w: 10, d: 14000 },
-    { t: '誰にも、先回りはできません', w: 15, d: 18000 }
+    { t: '計算がすすんでいます',           te: 'Computing…',                         w: 30, d: 8000 },
+    { t: 'ひらくまで、待っています',        te: 'Waiting for the moment to arrive.',  w: 20, d: 12000 },
+    { t: 'すこしずつ、近づいています',      te: 'Getting closer, step by step.',      w: 15, d: 10000 },
+    { t: 'この画面は、閉じても大丈夫です',  te: 'You can close this tab and return later.', w: 10, d: 14000 },
+    { t: '途中でやめても、続きから再開できます', te: 'Progress is saved — pick up where you left off.', w: 10, d: 14000 },
+    { t: '誰にも、先回りはできません',      te: 'No one can skip ahead.',             w: 15, d: 18000 }
   ];
+  function msgText(m) { return (window._BRAKE_LANG === 'en' && m.te) ? m.te : m.t; }
+  function L(ja, en) { return window._BRAKE_LANG === 'en' ? en : ja; }
 
   /* ---------- 共通CSS ---------- */
   var cssInjected = false;
@@ -220,13 +222,13 @@
       /* フェードアウト800ms + 無言の間500ms → 次の文言 */
       H.to(function () {
         if (stopped) return;
-        el.textContent = m.t;
+        el.textContent = msgText(m);
         el.style.opacity = '1';
       }, 1300);
       H.to(cycle, m.d + (Math.random() * 6000 - 3000) + 1300);
     }
-    var first = { t: 'ひらくのを待っています', d: 10000 };
-    el.textContent = first.t;
+    var first = { t: 'ひらくのを待っています', te: 'Waiting to open…', d: 10000 };
+    el.textContent = msgText(first);
     el.style.opacity = '1';
     H.to(cycle, first.d + (Math.random() * 6000 - 3000));
     return {
@@ -290,13 +292,13 @@
       /* フェードアウト800ms + 無言の間500ms */
       H.to(function () {
         if (stopped) return;
-        msg.textContent = m.t;
+        msg.textContent = msgText(m);
         msg.style.opacity = '1';
       }, 1300);
       H.to(cycle, m.d + (Math.random() * 6000 - 3000) + 1300);
     }
     var first = pick();
-    msg.textContent = first.t;
+    msg.textContent = msgText(first);
     msg.style.opacity = '1';
     H.to(cycle, first.d + (Math.random() * 6000 - 3000));
 
@@ -332,7 +334,7 @@
         wash.style.transition = 'opacity 1.4s ease';
         wash.style.opacity = '1';
         bloom.style.opacity = '1';
-        H.to(function () { showFin(H, root, '日が、のぼりました', true); }, 1400);
+        H.to(function () { showFin(H, root, L('日が、のぼりました', 'The sun has risen.'), true); }, 1400);
         H.to(function () { if (cb) cb(); }, 3400);
       },
       destroy: function () { H._teardown(); }
@@ -350,7 +352,7 @@
     var glow = div('bsc-glowfaint');
     var head = div('bsc-flow-head'); head.textContent = 'SEQUENTIAL SQUARING';
     var fT = div('bsc-fadeT'), fB = div('bsc-fadeB');
-    var hint = div('bsc-flow-hint'); hint.textContent = 'タップで景色に戻る';
+    var hint = div('bsc-flow-hint'); hint.textContent = L('タップで景色に戻る', 'Tap to switch scene');
     var log = div('bsc-flow-log');
     var colA = div('bsc-flow-inner');
     var colB = null;
@@ -469,7 +471,7 @@
             }, 150);
           }
         }, 25);
-        H.to(function () { showFin(H, root, '計算が、終わりました'); }, 2400);
+        H.to(function () { showFin(H, root, L('計算が、終わりました', 'Calculation complete.')); }, 2400);
         H.to(function () { if (cb) cb(); }, 4300);
       },
       destroy: function () { H._teardown(); }
@@ -543,7 +545,7 @@
         sub.textContent = '/ ' + fmt(lastTotal) + ' SQUARINGS';
         H.to(function () {
           center.style.opacity = '0';
-          showFin(H, root, '計算が、終わりました');
+          showFin(H, root, L('計算が、終わりました', 'Calculation complete.'));
         }, 1300);
         H.to(function () { if (cb) cb(); }, 3200);
       },
@@ -609,7 +611,7 @@
         }
         H.to(function () {
           center.style.opacity = '0';
-          showFin(H, root, 'すべて、灯りました', false, MOB ? 40 : null);
+          showFin(H, root, L('すべて、灯りました', 'All lights are on.'), false, MOB ? 40 : null);
         }, 1400);
         H.to(function () { if (cb) cb(); }, 3300);
       },
@@ -671,7 +673,7 @@
           if (pts.length > 200) pts.splice(0, pts.length - 200);
           draw();
         }, 60);
-        H.to(function () { showFin(H, root, '鼓動が、届きました'); }, 1200);
+        H.to(function () { showFin(H, root, L('鼓動が、届きました', 'The pulse arrived.')); }, 1200);
         H.to(function () { if (cb) cb(); }, 3100);
       },
       destroy: function () { H._teardown(); }
@@ -746,7 +748,7 @@
         }, 30);
         H.to(function () {
           center.style.opacity = '0';
-          showFin(H, root, '一周、まわりました');
+          showFin(H, root, L('一周、まわりました', 'One full orbit.'));
         }, 1300);
         H.to(function () { if (cb) cb(); }, 3200);
       },
@@ -821,7 +823,7 @@
         H.to(function () { wash.style.opacity = '1'; }, 300);
         H.to(function () {
           bottom.style.opacity = '0';
-          showFin(H, root, '満天に、なりました', false, MOB ? 40 : null);
+          showFin(H, root, L('満天に、なりました', 'The sky is full of stars.'), false, MOB ? 40 : null);
         }, 1400);
         H.to(function () { if (cb) cb(); }, 3300);
       },
@@ -896,7 +898,7 @@
         }, 80);
         H.to(function () {
           center.style.opacity = '0';
-          showFin(H, root, '時が、満ちました');
+          showFin(H, root, L('時が、満ちました', 'Time is fulfilled.'));
         }, 1500);
         H.to(function () { if (cb) cb(); }, 3400);
       },
@@ -975,7 +977,7 @@
         }, 30);
         H.to(function () {
           bottom.style.opacity = '0';
-          showFin(H, root, '水面が、ひらきました', false, MOB ? 47 : null);
+          showFin(H, root, L('水面が、ひらきました', 'The surface has opened.'), false, MOB ? 47 : null);
         }, 1200);
         H.to(function () { if (cb) cb(); }, 3100);
       },
@@ -1059,7 +1061,7 @@
         }, 30);
         H.to(function () {
           top.style.opacity = '0';
-          showFin(H, root, '時が、満ちました');
+          showFin(H, root, L('時が、満ちました', 'Time is fulfilled.'));
         }, 1300);
         H.to(function () { if (cb) cb(); }, 3200);
       },
@@ -1132,8 +1134,8 @@
         }, 40);
         H.to(function () {
           bottom.style.opacity = '0';
-          if (MOB) showFin(H, root, '月が、満ちました', false, 48);
-          else showFin(H, root, '月が、満ちました', false, null, 44);
+          if (MOB) showFin(H, root, L('月が、満ちました', 'The moon is full.'), false, 48);
+          else showFin(H, root, L('月が、満ちました', 'The moon is full.'), false, null, 44);
         }, 1300);
         H.to(function () { if (cb) cb(); }, 3200);
       },
@@ -1252,7 +1254,7 @@
         }, 45);
         H.to(function () {
           bottom.style.opacity = '0';
-          showFin(H, root, '紡ぎ、あがりました', false, MOB ? 62 : 80);
+          showFin(H, root, L('紡ぎ、あがりました', 'The weave is complete.'), false, MOB ? 62 : 80);
         }, 1500);
         H.to(function () { if (cb) cb(); }, 3400);
       },
