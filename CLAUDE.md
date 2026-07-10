@@ -242,6 +242,7 @@ index.js
 
 | 日付 | 変更内容 |
 |------|----------|
+| 2026-07-10 | feat(scenes): 計算画面（flow）に「タップで景色に戻る」ヒントを追加（public/scenes.js）: `sceneFlow` 関数内に `.bsc-flow-hint` 要素を追加。下端固定（position:absolute;bottom:14px）、z-index:3 で `bsc-fadeB` グラデオーバーレイの上に表示。色 `rgba(255,196,138,.28)`（head の .4 より一段控えめ）、letter-spacing:.18em、MONO フォント、pointer-events:none。タップ判定・シーン切替ロジック（onTap）は変更なし。 |
 | 2026-07-10 | style(result): 画像カードのファイル名省略対応（decrypt.js）: 長いファイル名でもレイアウトが崩れないよう `.letter-fname-wrap{min-width:0;flex:1}` を追加し、`.letter-fname-wrap .letter-fname` に `white-space:nowrap;overflow:hidden;text-overflow:ellipsis` を適用。image/video/audio カードの left wrapper div を `<div class="letter-fname-wrap">` に変更（3ヶ所）。`min-width:0` は flex アイテムで ellipsis を効かせるために必須。汎用ファイルカード（`.letter-file-row` 内）・テキストカードへの影響なし。 |
 | 2026-07-10 | fix(result): 画像カードのダウンロードボタンが左に落ちる問題を修正（decrypt.js）: `.letter-foot` の `flex-wrap:wrap` を削除。ファイル名が長いとき `justify-content:space-between` の右側ボタン（`flex-shrink:0`）が次行に落ちていた。`flex-wrap:nowrap`（デフォルト）に戻すことでファイル名（左）＋ダウンロードボタン（右）が同一行横並びに。テキストカード・汎用ファイルカードへの影響なし。 |
 | 2026-07-09 | fix(sw): 画像暗号化「Load failed」再発を修正（public/sw.js + src/pages/encrypt.js）: 根本原因は旧 SW（catch-all付き）が Safari の大きい POST ボディ（~7MB）の再フェッチに失敗すること（テキスト~2KB は再フェッチ成功・画像~7MB は失敗 → 症状と一致）。副次的原因として `navigate` ハンドラが Safari で大きい POST の mode を誤解釈する可能性。修正: ①sw.js から `navigate` ハンドラを完全削除（Workers が Cache-Control:no-cache を返すため不要）。②CACHE_NAME を `brake-pwa-v1` → `brake-pwa-v2` に変更し旧 SW 強制更新・旧キャッシュ削除。③SW 登録コード（encrypt.js）を `reg.update()` 付きに変更し、毎ページロード時に SW 更新チェックを即時実行して旧 SW 残存状態を永続させない。 |

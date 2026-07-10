@@ -96,6 +96,8 @@
       '.bsc-flow-done .bsc-fade.bsc-hot{color:rgba(255,246,232,1);text-shadow:0 0 14px rgba(255,196,138,.95),0 0 30px rgba(255,166,87,.5);}' +
       '.bsc-flow-head{position:absolute;top:14px;left:0;right:0;text-align:center;z-index:3;font-size:11px;' +
         'letter-spacing:.3em;color:rgba(255,240,224,.4);font-family:' + MONO + ';}' +
+      '.bsc-flow-hint{position:absolute;bottom:14px;left:0;right:0;text-align:center;z-index:3;' +
+        'font-size:11px;letter-spacing:.18em;color:rgba(255,196,138,.28);pointer-events:none;font-family:' + MONO + ';}' +
       /* rain */
       '.bsc-rain-grid{position:absolute;inset:0;padding:24px;font-family:' + MONO + ';font-size:10px;line-height:2.1;' +
         'color:rgba(255,196,138,.32);overflow:hidden;column-count:4;column-gap:28px;column-fill:auto;white-space:pre;transition:opacity 1s ease;}' +
@@ -348,13 +350,14 @@
     var glow = div('bsc-glowfaint');
     var head = div('bsc-flow-head'); head.textContent = 'SEQUENTIAL SQUARING';
     var fT = div('bsc-fadeT'), fB = div('bsc-fadeB');
+    var hint = div('bsc-flow-hint'); hint.textContent = 'タップで景色に戻る';
     var log = div('bsc-flow-log');
     var colA = div('bsc-flow-inner');
     var colB = null;
     log.appendChild(colA);
     if (!MOB) { colB = div('bsc-flow-inner'); log.appendChild(colB); }
     root.appendChild(glow); root.appendChild(head); root.appendChild(fT);
-    root.appendChild(log); root.appendChild(fB);
+    root.appendChild(log); root.appendChild(fB); root.appendChild(hint);
     container.appendChild(root);
 
     var lastCur = 0;
