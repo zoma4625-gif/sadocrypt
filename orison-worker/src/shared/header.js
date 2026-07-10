@@ -231,9 +231,6 @@ export function HEADER_HTML(lang) { return `  <!-- モバイルメニューオ�
       <a href="/privacy" id="mmlink-privacy">${T('nav.privacy', lang)}</a>
       <a href="mailto:info@brake.run" id="mmlink-contact">${T('nav.contact', lang)}</a>
     </div>
-    <div style="padding:12px 24px 0;display:flex;justify-content:center">
-      <button id="lang-switch-btn" style="background:none;border:1px solid rgba(60,55,48,.25);border-radius:999px;padding:3px 10px;font-size:11px;font-family:inherit;color:rgba(60,55,48,.6);cursor:pointer;letter-spacing:.08em;" aria-label="Switch language">${T('nav.lang', lang)}</button>
-    </div>
     <!-- 共有に追加カード（ナビとフッターの間） -->
     <div class="mob-share-wrap">
       <div class="mob-share-card" id="mob-share-card">
@@ -256,7 +253,6 @@ export function HEADER_HTML(lang) { return `  <!-- モバイルメニューオ�
       <a href="/philosophy">${T('nav.why', lang)}</a>
       <a href="/privacy">${T('nav.privacy', lang)}</a>
       <a href="mailto:info@brake.run">${T('nav.contact', lang)}</a>
-      <button id="lang-switch-btn" style="background:none;border:1px solid rgba(60,55,48,.25);border-radius:999px;padding:3px 10px;font-size:11px;font-family:inherit;color:rgba(60,55,48,.6);cursor:pointer;letter-spacing:.08em;" aria-label="Switch language">${T('nav.lang', lang)}</button>
     </nav>
     <button class="hamburger-btn" id="hamburger-btn" aria-label="${T('nav.menu.open', lang)}">
       <span></span>

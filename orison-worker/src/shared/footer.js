@@ -12,5 +12,8 @@ export function FOOTER(lang) { return `<footer style="width:100%;background:#ece
       <a href="mailto:info@brake.run" style="font-family:'Noto Sans JP',sans-serif;font-size:16px;color:rgba(60,55,48,.7);text-decoration:none;transition:color .15s" onmouseover="this.style.color='#3c3a36';this.style.textDecoration='underline'" onmouseout="this.style.color='rgba(60,55,48,.7)';this.style.textDecoration='none'">${T('footer.contact', lang)}</a>
     </div>
   </div>
-  <div style="max-width:700px;margin:0 auto;padding:24px 24px 40px;border-top:1px solid rgba(60,55,48,.08);text-align:center;font-family:'Noto Sans JP',sans-serif;font-size:12px;color:rgba(60,55,48,.45);letter-spacing:.08em">${T('footer.copy', lang)}</div>
+  <div style="max-width:700px;margin:0 auto;padding:24px 24px 40px;border-top:1px solid rgba(60,55,48,.08);display:flex;align-items:center;justify-content:center;gap:16px">
+    <span style="font-family:'Noto Sans JP',sans-serif;font-size:12px;color:rgba(60,55,48,.45);letter-spacing:.08em">${T('footer.copy', lang)}</span>
+    <button id="lang-switch-btn" style="background:none;border:1px solid rgba(60,55,48,.2);border-radius:999px;padding:2px 10px;font-size:11px;font-family:inherit;color:rgba(60,55,48,.5);cursor:pointer;letter-spacing:.06em;line-height:1.6" aria-label="Switch language">${T('nav.lang', lang)}</button>
+  </div>
 </footer>`; }
