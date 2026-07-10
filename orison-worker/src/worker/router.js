@@ -6,6 +6,7 @@ import { HTML_TERMS } from '../pages/terms.js';
 import { HTML_PRIVACY } from '../pages/privacy.js';
 import { HTML_ENCRYPT } from '../pages/encrypt.js';
 import { HTML_DECRYPT } from '../pages/decrypt.js';
+import { getLang, T } from '../i18n.js';
 
 const _LOGO = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" style="display:block;width:100%;height:100%"><rect x="32" y="0" width="64" height="32" fill="#f0876a"/><rect x="64" y="32" width="32" height="64" fill="#e5b98c"/><rect x="0" y="64" width="64" height="32" fill="#a8bba0"/><rect x="0" y="0" width="32" height="64" fill="#8fa5b0"/><rect x="32" y="32" width="32" height="32" fill="#3c3a36"/></svg>';
 const _LIGHT_CSS = '<!DOCTYPE html><html lang=ja><head><meta charset=UTF-8><link rel="icon" href="/favicon.ico?v=2" sizes="48x48"><link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500&family=Orbitron:wght@900&display=swap" rel="stylesheet"><meta name="robots" content="noindex,nofollow"><style>*{margin:0;padding:0;box-sizing:border-box}body{background:linear-gradient(170deg,#fdfbf5 0%,#f8f4ea 55%,#f3ecdd 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:"Noto Sans JP",sans-serif;-webkit-font-smoothing:antialiased}.wrap{text-align:center;padding:40px 24px;display:flex;flex-direction:column;align-items:center}.logo-mark{width:48px;height:48px;border-radius:8px;overflow:hidden;margin-bottom:16px}.wordmark{font-family:"Orbitron",sans-serif;font-weight:900;font-size:1.5rem;color:#3c3a36;letter-spacing:.02em;margin-bottom:32px}.wordmark span{color:#ef8a63}h1{font-size:18px;font-weight:500;color:#3c3a36;margin-bottom:12px;line-height:1.6}p{font-size:14px;color:rgba(60,55,48,.6);margin-bottom:40px;line-height:1.7}a{display:inline-block;padding:12px 28px;background:linear-gradient(135deg,#ef8a63,#d99a70,#8fa88f);color:#fff;text-decoration:none;border-radius:10px;font-size:14px;font-weight:500;transition:opacity .15s}a:hover{opacity:.85}</style>';
@@ -20,6 +21,8 @@ export async function router(request, env, ctx) {
     if (request.method === 'OPTIONS') {
         return new Response(null, { status: 405 });
     }
+
+    const lang = getLang(request);
 
     try {
         // パズル保存API（新方式: クライアントサイド暗号化済みデータを保存）
@@ -57,34 +60,34 @@ export async function router(request, env, ctx) {
 
         // ベンチマークページ
         if (path === '/benchmark') {
-            return new Response(HTML_BENCHMARK, {
+            return new Response(HTML_BENCHMARK(lang), {
                 headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-cache' }
             });
         }
 
         // タイムロック解説ページ
         if (path === '/time-lock') {
-            return new Response(HTML_TIME_LOCK, { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-cache' } });
+            return new Response(HTML_TIME_LOCK(lang), { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-cache' } });
         }
 
         // 思想ページ
         if (path === '/philosophy') {
-            return new Response(HTML_PHILOSOPHY, { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-cache' } });
+            return new Response(HTML_PHILOSOPHY(lang), { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-cache' } });
         }
 
         // 利用規約
         if (path === '/terms') {
-            return new Response(HTML_TERMS, { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-cache' } });
+            return new Response(HTML_TERMS(lang), { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-cache' } });
         }
 
         // プライバシーポリシー
         if (path === '/privacy') {
-            return new Response(HTML_PRIVACY, { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-cache' } });
+            return new Response(HTML_PRIVACY(lang), { headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-cache' } });
         }
 
         // トップページ
         if (path === '/' || path === '') {
-            return new Response(HTML_ENCRYPT, {
+            return new Response(HTML_ENCRYPT(lang), {
                 headers: { 'Content-Type': 'text/html;charset=utf-8', 'Cache-Control': 'no-cache' }
             });
         }
@@ -100,18 +103,18 @@ export async function router(request, env, ctx) {
         // 共有URL (/:id) — 8桁小文字hexのパズルID
         const idMatch = path.match(/^\/([0-9a-f]{8})$/);
         if (idMatch) {
-            return await handleSharedPuzzle(request, env, idMatch[1], HTML_DECRYPT);
+            return await handleSharedPuzzle(request, env, idMatch[1], HTML_DECRYPT, lang);
         }
 
         // ここまで来たら本当に Not Found
         return new Response(
-            _LIGHT_CSS + '<title>Brake. – ページが見つかりません</title>' + _LIGHT_BODY + '<h1>ページが見つかりませんでした。</h1><a href="https://brake.run">トップへ戻る</a>' + _LIGHT_FOOT,
+            _LIGHT_CSS + `<title>Brake. – ${T('err.404.title', lang)}</title>` + _LIGHT_BODY + `<h1>${T('err.404.title', lang)}</h1><a href="https://brake.run">${T('err.404.btn', lang)}</a>` + _LIGHT_FOOT,
             { status: 404, headers: { 'Content-Type': 'text/html;charset=utf-8' } }
         );
 
     } catch (e) {
         return new Response(
-            _LIGHT_CSS + '<title>Brake. – エラー</title>' + _LIGHT_BODY + '<h1>うまく表示できませんでした。</h1><p>時間をおいて、もう一度お試しください。</p><a href="https://brake.run">トップへ戻る</a>' + _LIGHT_FOOT,
+            _LIGHT_CSS + `<title>Brake. – ${T('err.500.title', lang)}</title>` + _LIGHT_BODY + `<h1>${T('err.500.title', lang)}</h1><p>${T('err.500.sub', lang)}</p><a href="https://brake.run">${T('err.404.btn', lang)}</a>` + _LIGHT_FOOT,
             { status: 500, headers: { 'Content-Type': 'text/html;charset=utf-8' } }
         );
     }
