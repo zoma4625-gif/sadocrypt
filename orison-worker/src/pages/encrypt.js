@@ -2021,7 +2021,10 @@ ${HEADER_HTML(lang)}
       <a href="mailto:info@brake.run" class="lp-footer-link">${T('lp.footer.contact', lang)}</a>
     </div>
   </div>
-  <div class="lp-footer-copy">© 2026 Brake. · TIME-LOCK ENCRYPTION</div>
+  <div style="display:flex;align-items:center;justify-content:center;gap:16px;padding:0 24px 40px">
+    <span class="lp-footer-copy" style="margin:0">© 2026 Brake. · TIME-LOCK ENCRYPTION</span>
+    <button id="lang-switch-btn" style="background:none;border:1px solid rgba(60,55,48,.2);border-radius:999px;padding:2px 10px;font-size:11px;font-family:inherit;color:rgba(60,55,48,.5);cursor:pointer;letter-spacing:.06em;line-height:1.6" aria-label="Switch language">${T('nav.lang', lang)}</button>
+  </div>
 </footer>
 
 <!-- トップへ戻るボタン -->
