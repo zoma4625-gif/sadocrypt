@@ -1,9 +1,11 @@
-export const HTML_BENCHMARK = `<!DOCTYPE html>
-<html lang="ja">
+import { T, LANG_SWITCH_JS } from '../i18n.js';
+
+export function HTML_BENCHMARK(lang) { return `<!DOCTYPE html>
+<html lang="${lang}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Brake. – ベンチマーク</title>
+<title>${T('bench.title', lang)}</title>
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
 <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
@@ -60,93 +62,93 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:var(--bg);color:va
   <div class=header>
     <div class=mark>&#x229E;</div>
     <div class=title><strong>sado</strong>crypt</div>
-    <p class=sub>2乗チェーン ベンチマーク — 2048bit / 500万回試行</p>
+    <p class=sub>${T('bench.sub', lang)}</p>
   </div>
 
   <!-- 実行前 -->
   <div id=pre-card class=card>
-    <div class=card-label>Benchmark</div>
+    <div class=card-label>${T('bench.pre.label', lang)}</div>
     <div class=stat-row>
-      <span class=stat-label>試行回数</span>
-      <span class=stat-val>5,000,000 回</span>
+      <span class=stat-label>${T('bench.pre.iter', lang)}</span>
+      <span class=stat-val>5,000,000</span>
     </div>
     <div class=stat-row>
-      <span class=stat-label>アルゴリズム</span>
+      <span class=stat-label>${T('bench.pre.algo', lang)}</span>
       <span class=stat-val>x² mod N（BigInt）</span>
     </div>
     <div class=stat-row>
-      <span class=stat-label>モジュラスサイズ</span>
+      <span class=stat-label>${T('bench.pre.mod', lang)}</span>
       <span class=stat-val>2048 bit</span>
     </div>
     <div class=stat-row>
-      <span class=stat-label>並列化</span>
-      <span class="stat-val dim">不可（逐次計算）</span>
+      <span class=stat-label>${T('bench.pre.para', lang)}</span>
+      <span class="stat-val dim">${T('bench.pre.para.v', lang)}</span>
     </div>
-    <button id=start-btn class="btn primary" onclick="startBenchmark()">計測開始</button>
+    <button id=start-btn class="btn primary" onclick="startBenchmark()">${T('bench.pre.btn', lang)}</button>
   </div>
 
   <!-- 実行中 -->
   <div id=running-card class="card hidden">
-    <div class=card-label>計測中...</div>
+    <div class=card-label>${T('bench.run.label', lang)}</div>
     <div class=spin-wrap>
       <div class=spinner></div>
-      <span id=run-status>準備中...</span>
+      <span id=run-status>${T('bench.run.ready', lang)}</span>
     </div>
     <div class=progress-wrap>
       <div class=progress-bar-bg><div id=pbar class=progress-bar></div></div>
       <div id=plabel class=progress-label>0 / 5,000,000</div>
     </div>
     <div class=stat-row>
-      <span class=stat-label>経過時間</span>
-      <span class=stat-val><span id=elapsed-time>0.00</span> 秒</span>
+      <span class=stat-label>${T('bench.run.elapsed', lang)}</span>
+      <span class=stat-val><span id=elapsed-time>0.00</span> ${T('bench.run.unit.s', lang)}</span>
     </div>
     <div class=stat-row>
-      <span class=stat-label>現在の速度</span>
-      <span class=stat-val><span id=cur-speed>—</span> 回/秒</span>
+      <span class=stat-label>${T('bench.run.speed', lang)}</span>
+      <span class=stat-val><span id=cur-speed>—</span> ${T('bench.run.unit.ps', lang)}</span>
     </div>
   </div>
 
   <!-- 結果 -->
   <div id=result-card class="card hidden">
-    <div class=card-label>結果</div>
+    <div class=card-label>${T('bench.res.label', lang)}</div>
     <div class=result-grid>
       <div class="result-box accent">
         <div class=val id=res-time>—</div>
-        <div class=lbl>実測時間（秒）</div>
+        <div class=lbl>${T('bench.res.time', lang)}</div>
       </div>
       <div class=result-box>
         <div class=val id=res-speed>—</div>
-        <div class=lbl>回/秒</div>
+        <div class=lbl>${T('bench.res.ops', lang)}</div>
       </div>
       <div class=result-box>
         <div class=val id=res-1sec>—</div>
-        <div class=lbl>1秒あたり</div>
+        <div class=lbl>${T('bench.res.1sec', lang)}</div>
       </div>
       <div class=result-box>
         <div class=val id=res-1min>—</div>
-        <div class=lbl>1分あたり</div>
+        <div class=lbl>${T('bench.res.1min', lang)}</div>
       </div>
     </div>
     <div style="margin-top:20px">
       <div class=stat-row>
-        <span class=stat-label>試行回数</span>
-        <span class=stat-val>5,000,000 回</span>
+        <span class=stat-label>${T('bench.res.iter', lang)}</span>
+        <span class=stat-val>5,000,000</span>
       </div>
       <div class=stat-row>
-        <span class=stat-label>平均タイム / 1回</span>
+        <span class=stat-label>${T('bench.res.avg', lang)}</span>
         <span class=stat-val><span id=res-avg>—</span> μs</span>
       </div>
       <div class=stat-row>
-        <span class=stat-label>モジュラスサイズ</span>
+        <span class=stat-label>${T('bench.res.mod', lang)}</span>
         <span class=stat-val>2048 bit</span>
       </div>
     </div>
-    <button class="btn primary" style="margin-top:20px" onclick="startBenchmark()">再計測</button>
+    <button class="btn primary" style="margin-top:20px" onclick="startBenchmark()">${T('bench.res.btn', lang)}</button>
   </div>
 
   <!-- 計測履歴 -->
   <div id=history-card class="card hidden">
-    <div class=card-label>計測履歴</div>
+    <div class=card-label>${T('bench.hist.label', lang)}</div>
     <div id=history-list class=history></div>
   </div>
 
@@ -154,9 +156,11 @@ body{font-family:'Inter','Noto Sans JP',sans-serif;background:var(--bg);color:va
 </div>
 
 <script>
+${LANG_SWITCH_JS(lang)}
 // ============================================================
 // 2乗チェーン ベンチマーク（BigInt版）
 // ============================================================
+var _l = window._BRAKE_LANG || 'ja';
 
 const TRIAL_COUNT = 5_000_000n;
 const MODULUS_BITS = 2048;
@@ -249,7 +253,7 @@ async function startBenchmark() {
   document.getElementById('pre-card').classList.add('hidden');
   document.getElementById('result-card').classList.add('hidden');
   document.getElementById('running-card').classList.remove('hidden');
-  document.getElementById('run-status').textContent = '素数生成中...';
+  document.getElementById('run-status').textContent = _l==='en' ? 'Generating primes…' : '素数生成中...';
   document.getElementById('pbar').style.width = '0%';
   document.getElementById('plabel').textContent = '0 / 5,000,000';
   document.getElementById('cur-speed').textContent = '—';
@@ -270,7 +274,7 @@ async function startBenchmark() {
     if (gcd(x0, N) === 1n) break;
   }
 
-  document.getElementById('run-status').textContent = '計測中...';
+  document.getElementById('run-status').textContent = _l==='en' ? 'Measuring…' : '計測中...';
 
   // 経過時間タイマー開始
   startTime = performance.now();
@@ -336,11 +340,11 @@ function renderHistory() {
   list.innerHTML = runHistory.map((r, i) =>
     '<div class=history-item>' +
     '<span class=run-num>#' + (i + 1) + '</span>' +
-    '<span class=run-speed>' + fmt(r.speed) + ' 回/秒</span>' +
-    '<span class=run-time>' + r.sec.toFixed(3) + ' 秒</span>' +
+    '<span class=run-speed>' + fmt(r.speed) + (_l==='en' ? ' ops/s' : ' 回/秒') + '</span>' +
+    '<span class=run-time>' + r.sec.toFixed(3) + (_l==='en' ? ' s' : ' 秒') + '</span>' +
     '</div>'
   ).reverse().join('');
 }
 </script>
 </body>
-</html>`;
+</html>`; }
