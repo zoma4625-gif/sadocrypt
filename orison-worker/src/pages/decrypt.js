@@ -427,6 +427,9 @@ body{
 /* 便箋: ファイル名 / サイズ */
 .letter-fname{font-size:12px;color:rgba(58,44,28,.85);font-weight:700;}
 .letter-fsize{font-size:10px;color:rgba(90,60,30,.45);font-family:'JetBrains Mono',monospace;margin-top:2px;}
+/* 画像/動画/音声カードのファイル名ラッパー（ellipsis 用） */
+.letter-fname-wrap{min-width:0;flex:1;}
+.letter-fname-wrap .letter-fname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 
 /* 便箋: その他ファイル行 */
 .letter-file-row{
@@ -1054,19 +1057,19 @@ function renderResult(decBuf){
     if(mime.startsWith('image/')){
       inner='<img src="'+blobUrl+'" class="letter-media" alt="'+escHtml(fname)+'">';
       inner+='<div class="letter-foot">';
-      inner+='<div><div class="letter-fname">'+escHtml(fname)+'</div><div class="letter-fsize">'+sizeStr+'</div></div>';
+      inner+='<div class="letter-fname-wrap"><div class="letter-fname">'+escHtml(fname)+'</div><div class="letter-fsize">'+sizeStr+'</div></div>';
       inner+='<div class="letter-foot-btns">'+dlLink(blobUrl,fname,'ダウンロード')+'</div>';
       inner+='</div>';
     }else if(mime.startsWith('video/')){
       inner='<video src="'+blobUrl+'" class="letter-video" controls></video>';
       inner+='<div class="letter-foot">';
-      inner+='<div><div class="letter-fname">'+escHtml(fname)+'</div><div class="letter-fsize">'+sizeStr+'</div></div>';
+      inner+='<div class="letter-fname-wrap"><div class="letter-fname">'+escHtml(fname)+'</div><div class="letter-fsize">'+sizeStr+'</div></div>';
       inner+='<div class="letter-foot-btns">'+dlLink(blobUrl,fname,'ダウンロード')+'</div>';
       inner+='</div>';
     }else if(mime.startsWith('audio/')){
       inner='<audio src="'+blobUrl+'" class="letter-audio" controls></audio>';
       inner+='<div class="letter-foot">';
-      inner+='<div><div class="letter-fname">'+escHtml(fname)+'</div><div class="letter-fsize">'+sizeStr+'</div></div>';
+      inner+='<div class="letter-fname-wrap"><div class="letter-fname">'+escHtml(fname)+'</div><div class="letter-fsize">'+sizeStr+'</div></div>';
       inner+='<div class="letter-foot-btns">'+dlLink(blobUrl,fname,'ダウンロード')+'</div>';
       inner+='</div>';
     }else{
