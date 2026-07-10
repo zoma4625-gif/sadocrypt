@@ -1,33 +1,35 @@
 import { HEADER_CSS, HEADER_HTML, HEADER_JS, LOGO_MARK_SVG } from '../shared/header.js';
 import { FOOTER } from '../shared/footer.js';
+import { T, LANG_SWITCH_JS } from '../i18n.js';
 
-export const HTML_ENCRYPT = `<!DOCTYPE html>
-<html lang="ja">
+export function HTML_ENCRYPT(lang) { return `<!DOCTYPE html>
+<html lang="${lang}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#fdfbf5">
-<title>Brake. – とどく時間を、えらべる</title>
-<meta name="description" content="中身を入れて、ひらく時間を決めるだけ。設定した時間が来るまで誰も開けられないリンクを生成します。タイムロック暗号化サービス Brake.">
+<title>${T('lp.title', lang)}</title>
+<meta name="description" content="${T('lp.desc', lang)}">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Brake. – とどく時間を、えらべる">
-<meta property="og:description" content="中身を入れて、ひらく時間を決めるだけ。設定した時間が来るまで誰も開けられないリンクを生成します。タイムロック暗号化サービス Brake.">
+<meta property="og:title" content="${T('lp.title', lang)}">
+<meta property="og:description" content="${T('lp.desc', lang)}">
 <meta property="og:url" content="https://brake.run/">
 <meta property="og:image" content="https://brake.run/og.png?v=2">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Brake. – とどく時間を、えらべる">
-<meta name="twitter:description" content="中身を入れて、ひらく時間を決めるだけ。設定した時間が来るまで誰も開けられないリンクを生成します。タイムロック暗号化サービス Brake.">
+<meta name="twitter:title" content="${T('lp.title', lang)}">
+<meta name="twitter:description" content="${T('lp.desc', lang)}">
 <meta name="twitter:image" content="https://brake.run/og.png?v=2">
 <link rel="canonical" href="https://brake.run/">
 <link rel="alternate" hreflang="ja" href="https://brake.run/">
+<link rel="alternate" hreflang="en" href="https://brake.run/">
 <link rel="alternate" hreflang="x-default" href="https://brake.run/">
 <link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
 <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
 <link rel="manifest" href="/manifest.json">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Brake.","url":"https://brake.run","description":"ファイルやURLに“時間の鍵”をかける。設定した時間が来るまで誰も解読できない、タイムロック暗号化サービス。","applicationCategory":"SecurityApplication","operatingSystem":"Any","inLanguage":"ja","offers":{"@type":"Offer","price":"0","priceCurrency":"JPY"}}</script>
+<script type=”application/ld+json”>{“@context”:”https://schema.org”,”@type”:”WebApplication”,”name”:”Brake.”,”url”:”https://brake.run”,”description”:”${T('lp.desc', lang)}”,”applicationCategory”:”SecurityApplication”,”operatingSystem”:”Any”,”inLanguage”:”${lang}”,”offers”:{“@type”:”Offer”,”price”:”0”,”priceCurrency”:”JPY”}}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Orbitron:wght@900&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho:wght@600&family=Share+Tech+Mono&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -1716,12 +1718,12 @@ ${HEADER_CSS}
      1. ヒーロー
      ============================================================ -->
 <section class="hero">
-${HEADER_HTML}
+${HEADER_HTML(lang)}
 
   <!-- ヒーロー本文 -->
   <div class="hero-body">
-    <h1 class="hero-catch">とどく時間を、えらべる。</h1>
-    <div class="hero-sub">中身を入れて、ひらく時間を決めるだけ。</div>
+    <h1 class="hero-catch">${T('lp.hero.catch', lang)}</h1>
+    <div class="hero-sub">${T('lp.hero.sub', lang)}</div>
 
     <!-- 暗号化フォーム（既存のまま流用） -->
     <div class="hero-form-wrap">
@@ -1733,49 +1735,49 @@ ${HEADER_HTML}
           <div class="fi-inrow">
             <button type="button" class="fi-plus" id="btn-plus" aria-label="ファイルを追加">＋<span class="fi-plus-tip">ファイル（画像・動画・音声・文書、5MBまで）を追加</span></button>
             <textarea id="msg" class="fi-input" rows="1"
-              placeholder="メッセージ、URLを入力…"></textarea>
+              placeholder="${T('form.placeholder', lang)}"></textarea>
           </div>
           <div class="fi-url-line" id="fi-url-line"></div>
           <div class="file-selected-bar" id="file-selected-bar">
             <span style="font-size:14px">📎</span>
             <span class="file-selected-name" id="file-selected-name"></span>
-            <button type="button" class="file-cancel-btn" id="file-cancel-btn" title="ファイルを取り消す">✕</button>
+            <button type="button" class="file-cancel-btn" id="file-cancel-btn" title="${T('form.file.cancel', lang)}">✕</button>
           </div>
           <div class="img-compress-bar" id="img-compress-bar">
             <span class="img-compress-msg" id="img-compress-msg"></span>
-            <button type="button" class="img-compress-btn" id="img-compress-btn">圧縮して続ける</button>
-            <button type="button" class="file-cancel-btn" id="img-compress-cancel" title="キャンセル">✕</button>
+            <button type="button" class="img-compress-btn" id="img-compress-btn">${T('form.compress.btn', lang)}</button>
+            <button type="button" class="file-cancel-btn" id="img-compress-cancel" title="${T('form.compress.cancel', lang)}">✕</button>
           </div>
-          <div class="fi-sec">ひらくまでの時間</div>
+          <div class="fi-sec">${T('form.time.label', lang)}</div>
           <input type="range" id="time-slider" min="0" max="14" step="1" value="0">
           <div class="fi-durrow">
             <div id="time-live"></div>
-            <span id="time-other">カスタム</span>
+            <span id="time-other">${T('form.time.custom', lang)}</span>
           </div>
           <div class="fi-custom" id="time-custom">
             <input type="text" id="tv" value="10" inputmode="decimal" autocomplete="off">
             <select id="tu">
-              <option value="s">秒</option>
-              <option value="m">分</option>
-              <option value="h">時間</option>
-              <option value="d">日</option>
+              <option value="s">${T('form.time.unit.s', lang)}</option>
+              <option value="m">${T('form.time.unit.m', lang)}</option>
+              <option value="h">${T('form.time.unit.h', lang)}</option>
+              <option value="d">${T('form.time.unit.d', lang)}</option>
             </select>
-            <span>後にひらく</span>
+            <span>${T('form.time.custom.after', lang)}</span>
           </div>
-          <div class="fi-durnote">相手がひらいてから、この時間の計算が終わるとひらきます</div>
-          <div class="fi-sec">待っているあいだの画面</div>
+          <div class="fi-durnote">${T('form.time.note', lang)}</div>
+          <div class="fi-sec">${T('form.scene.label', lang)}</div>
           <div class="fi-scene-row">
             <div class="fi-scene-thumb" id="scene-thumb"><div class="t" style="background:linear-gradient(to top,#2a1f14,#0a0806 60%,#040404);position:relative;"><div style="position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:40px;height:18px;background:radial-gradient(ellipse,rgba(255,166,87,.4),transparent 70%);"></div><div style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:rgba(255,240,224,.9);"></div></div></div>
             <div class="fi-scene-name">
-              <span id="scene-name-label">夜明け</span>
-              <small>受け取った人が待つあいだに表示されます</small>
+              <span id="scene-name-label">${T('form.scene.dawn', lang)}</span>
+              <small>${T('form.scene.hint', lang)}</small>
             </div>
-            <button type="button" class="fi-scene-change" id="scene-picker-btn">えらぶ ▾</button>
+            <button type="button" class="fi-scene-change" id="scene-picker-btn">${T('form.scene.pick', lang)}</button>
           </div>
           <div class="form-run-wrap">
-            <button type="button" class="btn-run" id="btn" aria-label="暗号化して生成" data-tip="暗号化して生成">時間の鍵をかける</button>
-            <div id="run-hint">メッセージ・URLを入力するか、ファイルを選択してください</div>
-            <div class="form-run-note">リンクが1つできます。渡した相手は、時間の計算が終わるまでひらけません。</div>
+            <button type="button" class="btn-run" id="btn" aria-label="${T('form.cta.aria', lang)}" data-tip="${T('form.cta.tip', lang)}">${T('form.cta', lang)}</button>
+            <div id="run-hint">${T('form.hint.empty', lang)}</div>
+            <div class="form-run-note">${T('form.cta.note', lang)}</div>
           </div>
         </form>
         <div id="res"></div>
@@ -1787,8 +1789,8 @@ ${HEADER_HTML}
         <div class="share-paper share-paper1"></div>
         <div class="share-paper share-paper2"></div>
         <div class="share-card-inner">
-          <p class="share-card-desc">他のアプリの共有から<br>直接 Brake. に送れます</p>
-          <button type="button" class="share-card-btn" id="share-add-btn">共有に追加</button>
+          <p class="share-card-desc">${T('share.card.desc', lang)}</p>
+          <button type="button" class="share-card-btn" id="share-add-btn">${T('share.card.btn', lang)}</button>
         </div>
       </div>
 
@@ -2011,12 +2013,12 @@ ${HEADER_HTML}
      ============================================================ -->
 <footer class="lp-footer">
   <div class="lp-footer-inner">
-    <a href="/" style="text-decoration:none;display:inline-flex;flex-direction:column;align-items:center;gap:8px"><div style="border-radius:6px;overflow:hidden;width:32px;height:32px;flex-shrink:0">${LOGO_MARK_SVG}</div><span class="lp-footer-logo">Brake<span class="lp-footer-logo-dot">.</span></span><span style="font-family:'Noto Sans JP',sans-serif;font-size:12px;color:rgba(60,55,48,.55);letter-spacing:.06em">とどく時間を、えらべる。</span></a>
+    <a href="/" style="text-decoration:none;display:inline-flex;flex-direction:column;align-items:center;gap:8px"><div style="border-radius:6px;overflow:hidden;width:32px;height:32px;flex-shrink:0">${LOGO_MARK_SVG}</div><span class="lp-footer-logo">Brake<span class="lp-footer-logo-dot">.</span></span><span style="font-family:'Noto Sans JP',sans-serif;font-size:12px;color:rgba(60,55,48,.55);letter-spacing:.06em">${T('lp.footer.tagline', lang)}</span></a>
     <div class="lp-footer-links">
-      <a href="https://github.com/zoma4625-gif/sadocrypt" class="lp-footer-link" target="_blank" rel="noopener">GitHub</a>
-      <a href="/privacy" class="lp-footer-link">プライバシーポリシー</a>
-      <a href="/terms" class="lp-footer-link">利用規約</a>
-      <a href="mailto:info@brake.run" class="lp-footer-link">お問い合わせ</a>
+      <a href="https://github.com/zoma4625-gif/sadocrypt" class="lp-footer-link" target="_blank" rel="noopener">${T('lp.footer.github', lang)}</a>
+      <a href="/privacy" class="lp-footer-link">${T('lp.footer.privacy', lang)}</a>
+      <a href="/terms" class="lp-footer-link">${T('lp.footer.terms', lang)}</a>
+      <a href="mailto:info@brake.run" class="lp-footer-link">${T('lp.footer.contact', lang)}</a>
     </div>
   </div>
   <div class="lp-footer-copy">© 2026 Brake. · TIME-LOCK ENCRYPTION</div>
@@ -3942,22 +3944,22 @@ function buildResultSection(resultSection, shareUrl, targetSeconds){
     '<div class="rs-ribbon"></div>' +
     '<div class="rs-head">' +
     '<div class="rs-check">✓</div>' +
-    '<div class="rs-title">リンクができました</div>' +
+    '<div class="rs-title">${T('result.title', lang)}</div>' +
     '</div>' +
     '<div class="rs-url">' +
     '<div class="rs-url-swap">' +
     '<span class="rs-url-text" id="result-url-text" data-url="' + escapedUrl + '">' + escapedUrl + '</span>' +
-    '<span class="rs-url-done" id="copy-done-text">コピーしました</span>' +
+    '<span class="rs-url-done" id="copy-done-text">${T('result.copy.done', lang)}</span>' +
     '</div>' +
-    '<button class="rs-copy" id="copy-btn" title="コピー">' +
+    '<button class="rs-copy" id="copy-btn" title="${T('result.copy.tip', lang)}">' +
     '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(60,55,48,.65)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
     '</button>' +
     '</div>' +
     '<div class="rs-bottom">' +
-    '<div class="rs-qr" id="qr-thumb-btn" title="QRコードを拡大"><div id="qr-thumb-inner"></div></div>' +
+    '<div class="rs-qr" id="qr-thumb-btn" title="${T('result.qr.title', lang)}"><div id="qr-thumb-inner"></div></div>' +
     '<div class="rs-buttons">' +
-    '<button class="rs-share-btn" id="result-share-btn">共有</button>' +
-    '<button class="rs-open-btn" id="result-open-btn">ひらいてみる</button>' +
+    '<button class="rs-share-btn" id="result-share-btn">${T('result.share', lang)}</button>' +
+    '<button class="rs-open-btn" id="result-open-btn">${T('result.open', lang)}</button>' +
     '</div>' +
     '</div>' +
     '</div>' +
@@ -4048,7 +4050,7 @@ function showQrModal(url, targetSeconds){
 }
 
 // ============================================================
-${HEADER_JS}
+${HEADER_JS(lang)}
 
 // ============================================================
 // URLコピー（アニメーション付き）
@@ -4206,4 +4208,4 @@ if('serviceWorker' in navigator){
   </div>
 </div>
 </body>
-</html>`;
+</html>`; }

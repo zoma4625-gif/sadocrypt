@@ -1,9 +1,11 @@
-export const HTML_DECRYPT = `<!DOCTYPE html>
-<html lang="ja">
+import { T, LANG_SWITCH_JS } from '../i18n.js';
+
+export function HTML_DECRYPT(lang) { return `<!DOCTYPE html>
+<html lang="${lang}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Brake. – 復号</title>
+<title>Brake.</title>
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
 <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
@@ -526,7 +528,7 @@ body{
     <!-- ステータステキスト（復号中・完了で同一要素を使い位置を固定） -->
     <div class="dec-status-wrap" id="dec-status-wrap">
       <div class="dec-status-sub" id="dec-status-sub">DECRYPTING</div>
-      <div class="dec-label" id="dec-label">復号しています...</div>
+      <div class="dec-label" id="dec-label">${T('dec.status.dec', lang)}</div>
     </div>
 
     <!-- ハッシュカウンタ -->
@@ -569,6 +571,8 @@ body{
 
 <script type="application/json" id="puzzle-data">__PUZZLE__</script>
 <script>
+${LANG_SWITCH_JS(lang)}
+var _l = window._BRAKE_LANG || 'ja';
 const P=JSON.parse(document.getElementById('puzzle-data').textContent);
 const CACHE_KEY='sadocrypt_cache_'+P.id;
 const RESUME_KEY='brake_resume_'+P.id;
@@ -811,7 +815,7 @@ async function run(){
     }
   }
 
-  document.title = '復号しています… | Brake.';
+  document.title = _l === 'en' ? 'Decrypting… | Brake.' : '復号しています… | Brake.';
 
   // スピナー開始
   startSpinner();
@@ -1010,7 +1014,7 @@ async function run(){
 // 結果表示（便箋カード）
 // ============================================================
 function showResult(decBuf){
-  document.title='復号しました | Brake.';
+  document.title=_l==='en'?'Decrypted | Brake.':'復号しました | Brake.';
   renderResult(decBuf);
 }
 
@@ -1020,8 +1024,10 @@ function renderResult(decBuf){
 
   // 復号完了時刻
   var now=new Date();
-  var dateStr=now.getFullYear()+'.'+('0'+(now.getMonth()+1)).slice(-2)+'.'+('0'+now.getDate()).slice(-2)+' '+('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2);
-  var dateLabel=dateStr+' にひらきました';
+  var dateStr=_l==='en'
+    ? new Intl.DateTimeFormat('en',{year:'numeric',month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'}).format(now)
+    : now.getFullYear()+'.'+('0'+(now.getMonth()+1)).slice(-2)+'.'+('0'+now.getDate()).slice(-2)+' '+('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2);
+  var dateLabel=_l==='en'?(dateStr+' — opened'):(dateStr+' にひらきました');
   var viaLink='<a class="letter-via" href="https://brake.run/">via Brake.</a>';
   var showViaOutside=false;
   function showViaExt(){
@@ -1033,6 +1039,12 @@ function renderResult(decBuf){
   }
 
   // ダウンロードリンク生成ヘルパー
+  var DL_LABEL = _l==='en'?'Download':'ダウンロード';
+  var COPY_LABEL = _l==='en'?'Copy':'コピー';
+  var COPIED_LABEL = _l==='en'?'Copied':'コピー済';
+  var URLCOPY_LABEL = _l==='en'?'Copy URL':'URLコピー';
+  var OPEN_LABEL = _l==='en'?'Open →':'ひらく →';
+  var YT_LABEL = _l==='en'?'Watch on YouTube →':'YouTubeで見る →';
   function dlLink(blobUrl,fname,label){
     return '<a href="'+blobUrl+'" download="'+escHtml(fname)+'" class="letter-btn">'+escHtml(label)+'</a>';
   }
@@ -1058,19 +1070,19 @@ function renderResult(decBuf){
       inner='<img src="'+blobUrl+'" class="letter-media" alt="'+escHtml(fname)+'">';
       inner+='<div class="letter-foot">';
       inner+='<div class="letter-fname-wrap"><div class="letter-fname">'+escHtml(fname)+'</div><div class="letter-fsize">'+sizeStr+'</div></div>';
-      inner+='<div class="letter-foot-btns">'+dlLink(blobUrl,fname,'ダウンロード')+'</div>';
+      inner+='<div class="letter-foot-btns">'+dlLink(blobUrl,fname,DL_LABEL)+'</div>';
       inner+='</div>';
     }else if(mime.startsWith('video/')){
       inner='<video src="'+blobUrl+'" class="letter-video" controls></video>';
       inner+='<div class="letter-foot">';
       inner+='<div class="letter-fname-wrap"><div class="letter-fname">'+escHtml(fname)+'</div><div class="letter-fsize">'+sizeStr+'</div></div>';
-      inner+='<div class="letter-foot-btns">'+dlLink(blobUrl,fname,'ダウンロード')+'</div>';
+      inner+='<div class="letter-foot-btns">'+dlLink(blobUrl,fname,DL_LABEL)+'</div>';
       inner+='</div>';
     }else if(mime.startsWith('audio/')){
       inner='<audio src="'+blobUrl+'" class="letter-audio" controls></audio>';
       inner+='<div class="letter-foot">';
       inner+='<div class="letter-fname-wrap"><div class="letter-fname">'+escHtml(fname)+'</div><div class="letter-fsize">'+sizeStr+'</div></div>';
-      inner+='<div class="letter-foot-btns">'+dlLink(blobUrl,fname,'ダウンロード')+'</div>';
+      inner+='<div class="letter-foot-btns">'+dlLink(blobUrl,fname,DL_LABEL)+'</div>';
       inner+='</div>';
     }else{
       // その他ファイル（文書等）
@@ -1079,7 +1091,7 @@ function renderResult(decBuf){
       inner+='<div><div class="letter-fname">'+escHtml(fname)+'</div>';
       inner+='<div class="letter-fsize">'+sizeStr+'　·　'+ext+'</div></div></div>';
       inner+='<div class="letter-foot" style="justify-content:flex-end">';
-      inner+='<div class="letter-foot-btns">'+dlLink(blobUrl,fname,'ダウンロード')+'</div>';
+      inner+='<div class="letter-foot-btns">'+dlLink(blobUrl,fname,DL_LABEL)+'</div>';
       inner+='</div>';
       // 自動ダウンロード（その他形式のみ）
       setTimeout(function(){
@@ -1103,8 +1115,8 @@ function renderResult(decBuf){
         inner='<div class="yt-facade" id="yt-facade"><img id="yt-thumb" alt=""><div class="yt-play">'+playSvg+'</div></div>';
         inner+='<div class="letter-foot">';
         inner+='<div class="letter-date">'+escHtml(dateLabel)+'</div>';
-        inner+='<div class="letter-foot-btns" style="justify-content:flex-end"><button class="letter-btn2" id="letter-copy-btn">URLコピー</button>';
-        inner+='<a href="'+escHtml(content)+'" target="_blank" rel="noopener" class="letter-btn">YouTubeで見る →</a>';
+        inner+='<div class="letter-foot-btns" style="justify-content:flex-end"><button class="letter-btn2" id="letter-copy-btn">'+URLCOPY_LABEL+'</button>';
+        inner+='<a href="'+escHtml(content)+'" target="_blank" rel="noopener" class="letter-btn">'+YT_LABEL+'</a>';
         inner+='</div></div>';
         card.innerHTML=inner;
         showViaExt();
@@ -1134,15 +1146,15 @@ function renderResult(decBuf){
           if(copyBtn){
             copyBtn.addEventListener('click',function(){
               navigator.clipboard.writeText(rawUrl).then(function(){
-                copyBtn.textContent='コピー済';
-                setTimeout(function(){copyBtn.textContent='URLコピー';},1500);
+                copyBtn.textContent=COPIED_LABEL;
+                setTimeout(function(){copyBtn.textContent=URLCOPY_LABEL;},1500);
               }).catch(function(){
                 var ta=document.createElement('textarea');ta.value=rawUrl;
                 document.body.appendChild(ta);ta.select();
                 try{document.execCommand('copy');}catch(e2){}
                 document.body.removeChild(ta);
-                copyBtn.textContent='コピー済';
-                setTimeout(function(){copyBtn.textContent='URLコピー';},1500);
+                copyBtn.textContent=COPIED_LABEL;
+                setTimeout(function(){copyBtn.textContent=URLCOPY_LABEL;},1500);
               });
             });
           }
@@ -1157,8 +1169,8 @@ function renderResult(decBuf){
       inner+='<div class="letter-foot">';
       inner+='<div class="letter-date">'+escHtml(dateLabel)+'</div>';
       inner+='<div class="letter-foot-btns">';
-      inner+='<button class="letter-btn2" id="letter-copy-btn">コピー</button>';
-      inner+='<a href="'+escHtml(content)+'" target="_blank" class="letter-btn">ひらく →</a>';
+      inner+='<button class="letter-btn2" id="letter-copy-btn">'+COPY_LABEL+'</button>';
+      inner+='<a href="'+escHtml(content)+'" target="_blank" class="letter-btn">'+OPEN_LABEL+'</a>';
       inner+='</div></div>';
       showViaOutside=true;
       // コピーボタン配線
@@ -1168,15 +1180,15 @@ function renderResult(decBuf){
           if(!btn) return;
           btn.addEventListener('click',function(){
             navigator.clipboard.writeText(cpContent).then(function(){
-              btn.textContent='コピー済';
-              setTimeout(function(){ btn.textContent='コピー'; },1500);
+              btn.textContent=COPIED_LABEL;
+              setTimeout(function(){ btn.textContent=COPY_LABEL; },1500);
             }).catch(function(){
               var ta=document.createElement('textarea');ta.value=cpContent;
               document.body.appendChild(ta);ta.select();
               try{document.execCommand('copy');}catch(e){}
               document.body.removeChild(ta);
-              btn.textContent='コピー済';
-              setTimeout(function(){ btn.textContent='コピー'; },1500);
+              btn.textContent=COPIED_LABEL;
+              setTimeout(function(){ btn.textContent=COPY_LABEL; },1500);
             });
           });
         },0);
@@ -1189,7 +1201,7 @@ function renderResult(decBuf){
       inner='<div class="letter-body" id="letter-text-body"></div>';
       inner+='<div class="letter-foot letter-foot--text">';
       inner+='<div class="letter-date">'+escHtml(dateLabel)+'</div>';
-      inner+='<div class="letter-foot-btns"><button class="letter-btn2" id="letter-copy-btn">コピー</button></div>';
+      inner+='<div class="letter-foot-btns"><button class="letter-btn2" id="letter-copy-btn">'+COPY_LABEL+'</button></div>';
       inner+='</div>';
       inner+='<div class="letter-via-inner">'+viaLink+'</div>';
       card.innerHTML=inner;
@@ -1232,4 +1244,4 @@ run().catch(function(e){
 });
 </script>
 </body>
-</html>`;
+</html>`; }
