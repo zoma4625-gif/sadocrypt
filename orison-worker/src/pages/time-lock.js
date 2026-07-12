@@ -59,8 +59,6 @@ ${HEADER_CSS}
 </style>
 </head>
 <body>
-<div style="position:fixed;top:-140px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(ellipse,rgba(239,138,99,.5) 0%,transparent 68%);filter:blur(46px);pointer-events:none;z-index:0;"></div>
-<div style="position:fixed;bottom:-80px;left:-120px;width:380px;height:380px;border-radius:50%;background:radial-gradient(ellipse,rgba(143,168,143,.42) 0%,transparent 68%);filter:blur(42px);pointer-events:none;z-index:0;"></div>
 ${HEADER_HTML(lang)}
 
 <!-- 解説本文（ヘッダー直下から上詰めで表示） -->

@@ -7,7 +7,7 @@ export function HTML_PRIVACY(lang) { return `<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>プライバシーポリシー | Brake.</title>
+<title>${T('privacy.title', lang)}</title>
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" href="/favicon.ico?v=2" sizes="48x48">
 <link rel="icon" href="/favicon.svg?v=2" type="image/svg+xml">
@@ -95,13 +95,11 @@ ${HEADER_CSS}
 </style>
 </head>
 <body>
-<div style="position:fixed;top:-140px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(ellipse,rgba(239,138,99,.5) 0%,transparent 68%);filter:blur(46px);pointer-events:none;z-index:0;"></div>
-<div style="position:fixed;bottom:-80px;left:-120px;width:380px;height:380px;border-radius:50%;background:radial-gradient(ellipse,rgba(143,168,143,.42) 0%,transparent 68%);filter:blur(42px);pointer-events:none;z-index:0;"></div>
 ${HEADER_HTML(lang)}
 <main style="flex:1">
 <div class="legal-wrap">
 ${lang === 'en' ? `<div style="margin-bottom:24px;padding:14px 18px;border:.5px solid rgba(60,55,48,.2);border-radius:10px;background:rgba(60,55,48,.03);font-size:13px;color:rgba(60,55,48,.6);">The Japanese text is the governing version. English translation is in preparation.</div>` : ''}
-<h1 class="legal-title">Brake. プライバシーポリシー</h1>
+<h1 class="legal-title">${T('privacy.h1', lang)}</h1>
 <p><strong>最終更新日：2026年7月1日</strong></p>
 <p><strong>施行日：2026年7月1日</strong></p>
 <hr class="legal-hr">

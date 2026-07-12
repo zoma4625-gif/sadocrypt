@@ -551,7 +551,7 @@ body{
 <!-- エラー表示 -->
 <div class="dec-err" id="dec-err">
   <div class="dec-x">&#x2715;</div>
-  <div class="dec-err-label" id="dec-em">エラー</div>
+  <div class="dec-err-label" id="dec-em">${T('dec.error.label', lang)}</div>
 </div>
 
 <!-- 1時間超の警告 -->
@@ -644,17 +644,30 @@ try {
     if(readCache(CACHE_KEY)) return;
     var h = sec / 3600;
     var label;
-    if(h < 24){
-      label = '約' + (Math.round(h * 10) / 10) + '時間';
-    } else if(sec < 2592000){
-      label = '約' + Math.round(sec / 86400) + '日';
+    if(_l === 'en'){
+      if(h < 24){
+        var hr = Math.round(h * 10) / 10;
+        label = 'about ' + hr + (hr === 1 ? ' hour' : ' hours');
+      } else if(sec < 2592000){
+        var dd = Math.round(sec / 86400);
+        label = 'about ' + dd + (dd === 1 ? ' day' : ' days');
+      } else {
+        var mm = Math.round(sec / 2592000);
+        label = 'about ' + mm + (mm === 1 ? ' month' : ' months');
+      }
     } else {
-      label = '約' + Math.round(sec / 2592000) + 'ヶ月';
+      if(h < 24){
+        label = '約' + (Math.round(h * 10) / 10) + '時間';
+      } else if(sec < 2592000){
+        label = '約' + Math.round(sec / 86400) + '日';
+      } else {
+        label = '約' + Math.round(sec / 2592000) + 'ヶ月';
+      }
     }
     var el = document.getElementById('dec-time-warn-text');
     var wrap = document.getElementById('dec-time-warn');
     if(el && wrap){
-      el.textContent = 'このリンクの解読には ' + label + ' かかる見込みです';
+      el.textContent = '${T('dec.warn.long', lang)}' + label + '${T('dec.warn.long2', lang)}';
       wrap.style.display = 'block';
     }
   })();
@@ -881,15 +894,23 @@ async function run(){
     if(done>0&&elapsed>0) rate=done/elapsed;
     var eta=(totalNum-iNum)/rate;
     var opensAt=new Date(Date.now()+eta*1000);
-    var opensAtText=opensAt.getFullYear()+'年'+(opensAt.getMonth()+1)+'月'+opensAt.getDate()+'日 '+String(opensAt.getHours())+':'+('0'+opensAt.getMinutes()).slice(-2)+' にひらきます';
+    var opensAtText;
+    if(_l==='en'){
+      var opMo=new Intl.DateTimeFormat('en-US',{month:'short'}).format(opensAt);
+      var opHH=String(opensAt.getHours()).padStart(2,'0');
+      var opMM=String(opensAt.getMinutes()).padStart(2,'0');
+      opensAtText='Opens on '+opMo+' '+opensAt.getDate()+', '+opensAt.getFullYear()+' at '+opHH+':'+opMM;
+    } else {
+      opensAtText=opensAt.getFullYear()+'年'+(opensAt.getMonth()+1)+'月'+opensAt.getDate()+'日 '+String(opensAt.getHours())+':'+('0'+opensAt.getMinutes()).slice(-2)+' にひらきます';
+    }
     sceneHandle=window.BRAKE_SCENES.mount(sceneId,stage,{opensAtText:opensAtText});
     remainTimer=setInterval(function(){
       if(!sceneHandle) return;
       var rem=(totalNum-Number(displayBase))/rate;
       var remText;
-      if(rem>=3600){remText='あと '+Math.ceil(rem/3600)+'時間';}
-      else if(rem>=60){remText='あと '+Math.ceil(rem/60)+'分';}
-      else{remText='あと '+Math.ceil(rem)+'秒';}
+      if(rem>=3600){remText=_l==='en'?(Math.ceil(rem/3600)+'h left'):('あと '+Math.ceil(rem/3600)+'時間');}
+      else if(rem>=60){remText=_l==='en'?(Math.ceil(rem/60)+'m left'):('あと '+Math.ceil(rem/60)+'分');}
+      else{remText=_l==='en'?(Math.ceil(rem)+'s left'):('あと '+Math.ceil(rem)+'秒');}
       sceneHandle.setRemaining(remText);
     },1000);
   }

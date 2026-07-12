@@ -1642,7 +1642,7 @@ ${HEADER_CSS}
   <div class="enc-inner" id="enc-spin-area">
     <div style="display:flex;flex-direction:column;align-items:center;gap:4px">
       <div class="enc-status" id="enc-status-label">ENCRYPTING</div>
-      <div style="font-family:'Share Tech Mono',monospace;font-size:15px;letter-spacing:2px;color:rgba(0,255,140,0.85)">暗号化しています...</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:15px;letter-spacing:2px;color:rgba(0,255,140,0.85)">${T('enc.status', lang)}</div>
     </div>
     <canvas id="enc-canvas"></canvas>
     <div class="enc-log" id="enc-log"></div>
@@ -1653,7 +1653,7 @@ ${HEADER_CSS}
         <polyline points="7,21 17,31 33,12" stroke="#000" stroke-width="3.5" stroke-linecap="square" stroke-linejoin="miter"/>
       </svg>
     </div>
-    <div class="enc-done-title">暗号化が完了しました</div>
+    <div class="enc-done-title">${T('enc.done.title', lang)}</div>
     <div class="enc-done-sub">URL GENERATED</div>
   </div>
 </div>
@@ -1680,7 +1680,7 @@ ${HEADER_HTML(lang)}
       <div class="form-card" id="form-card">
         <form id="f">
           <div class="fi-inrow">
-            <button type="button" class="fi-plus" id="btn-plus" aria-label="ファイルを追加">＋<span class="fi-plus-tip">ファイル（画像・動画・音声・文書、5MBまで）を追加</span></button>
+            <button type="button" class="fi-plus" id="btn-plus" aria-label="${T('form.file.aria', lang)}">＋<span class="fi-plus-tip">${T('form.file.tip', lang)}</span></button>
             <textarea id="msg" class="fi-input" rows="1"
               placeholder="${T('form.placeholder', lang)}"></textarea>
           </div>
@@ -1765,42 +1765,42 @@ ${HEADER_HTML(lang)}
      ============================================================ -->
 <section class="whats-section" id="whats">
   <div class="whats-inner">
-    <div class="whats-col-eyebrow">ABOUT</div>
-    <div class="whats-heading">Brake.は、タイムロック暗号を使った<br class="pc-br">暗号化Webサービスです。</div>
-    <div class="whats-col-body">URLやテキストを暗号化し、「1分後」「1時間後」「1日後」にしか開けないリンクを生成します。<br class="pc-br"><br class="sp-br">画像、動画、音声、文書なども暗号化できます<br class="sp-br">（最大5MBまで）。</div>
+    <div class="whats-col-eyebrow">${T('about.eyebrow', lang)}</div>
+    <div class="whats-heading">${T('about.heading', lang)}</div>
+    <div class="whats-col-body">${T('about.body', lang)}</div>
     <div class="who-grid">
       <div class="who-card">
         <div class="who-card-head">
-          <div class="who-card-title">コンテンツを<br class="sp-br">ちゃんと<br class="pc-br">見て<br class="sp-br">ほしい人に。</div>
+          <div class="who-card-title">${T('about.card1.title', lang)}</div>
           <span class="who-card-icon">🔍</span>
         </div>
-        <div class="who-card-desc">閲覧の難易度を上げ、意味のあるコンテンツがスクロールに流されるのを防ぎます。</div>
+        <div class="who-card-desc">${T('about.card1.desc', lang)}</div>
       </div>
       <div class="who-card">
         <div class="who-card-head">
-          <div class="who-card-title">商品のリリース<br class="sp-br">や重大発表に。</div>
+          <div class="who-card-title">${T('about.card2.title', lang)}</div>
           <span class="who-card-icon">🚀</span>
         </div>
-        <div class="who-card-desc">解禁時間を設計し、待つことができる人たちの間でだけ情報が共有されます。</div>
+        <div class="who-card-desc">${T('about.card2.desc', lang)}</div>
       </div>
       <div class="who-card">
         <div class="who-card-head">
-          <div class="who-card-title">知り合いに<br class="sp-br">待つ時間を<br class="pc-br"><br class="sp-br">贈りたい人に。</div>
+          <div class="who-card-title">${T('about.card3.title', lang)}</div>
           <span class="who-card-icon">⏳</span>
         </div>
-        <div class="who-card-desc">情報量にブレーキをかけ、待ってる間にひと呼吸。</div>
+        <div class="who-card-desc">${T('about.card3.desc', lang)}</div>
       </div>
       <div class="who-card">
         <div class="who-card-head">
-          <div class="who-card-title">ほかにも</div>
+          <div class="who-card-title">${T('about.card4.title', lang)}</div>
           <span class="who-card-icon">💡</span>
         </div>
-        <div class="who-card-desc">使い方は、あなた次第。サプライズやタイムカプセルにも。</div>
+        <div class="who-card-desc">${T('about.card4.desc', lang)}</div>
       </div>
     </div>
     <div class="whats-links">
-      <a href="/time-lock" class="whats-link" style="display:inline-flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>タイムロック暗号とは？ →</a>
-      <a href="/philosophy" class="whats-link" style="display:inline-flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M21 11.5a8.38 8.38 0 01-9 8.5 8.5 8.5 0 01-3.8-.9L3 20l1.9-5.2A8.38 8.38 0 013 11.5 8.5 8.5 0 0112 3a8.38 8.38 0 019 8.5z"/></svg>なぜ待たせるのか →</a>
+      <a href="/time-lock" class="whats-link" style="display:inline-flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="9"/><path d="M12 8h.01M11 12h1v4h1"/></svg>${T('about.link.timelock', lang)}</a>
+      <a href="/philosophy" class="whats-link" style="display:inline-flex;align-items:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><path d="M21 11.5a8.38 8.38 0 01-9 8.5 8.5 8.5 0 01-3.8-.9L3 20l1.9-5.2A8.38 8.38 0 013 11.5 8.5 8.5 0 0112 3a8.38 8.38 0 019 8.5z"/></svg>${T('about.link.why', lang)}</a>
     </div>
   </div>
 </section>
@@ -1810,13 +1810,13 @@ ${HEADER_HTML(lang)}
      ============================================================ -->
 <section class="howto-section" id="howto">
   <div class="howto-section-inner">
-    <div class="howto-section-eyebrow">HOW TO</div>
-    <h2 class="howto-section-main-heading">置いて、決めて、送る。</h2>
+    <div class="howto-section-eyebrow">${T('howto.eyebrow', lang)}</div>
+    <h2 class="howto-section-main-heading">${T('howto.heading', lang)}</h2>
 
     <!-- トグル -->
     <div class="howto-toggle">
-      <button class="howto-toggle-btn active" onclick="switchHowto('sender',this)">送る人</button>
-      <button class="howto-toggle-btn" onclick="switchHowto('receiver',this)">受け取る人</button>
+      <button class="howto-toggle-btn active" onclick="switchHowto('sender',this)">${T('howto.tab.sender', lang)}</button>
+      <button class="howto-toggle-btn" onclick="switchHowto('receiver',this)">${T('howto.tab.receiver', lang)}</button>
     </div>
 
     <!-- 送る人パネル -->
@@ -1824,22 +1824,22 @@ ${HEADER_HTML(lang)}
       <!-- PC: 3カラムグリッド -->
       <div class="howto-cols sender-pc">
         <div class="howto-col">
-          <div class="howto-col-img"><img src="/step-01.png?v=3" alt="メッセージやURLを置く" loading="eager" decoding="async"></div>
+          <div class="howto-col-img"><img src="/step-01.png?v=3" alt="${T('howto.alt.s01', lang)}" loading="eager" decoding="async"></div>
           <div class="howto-col-step">STEP 01</div>
-          <div class="howto-col-title"><span>置く</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
-          <div class="howto-col-desc">渡したいもの（URL・テキスト・ファイル）を<br class="pc-br">ドロップする。</div>
+          <div class="howto-col-title"><span>${T('howto.s01.title', lang)}</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+          <div class="howto-col-desc">${T('howto.s01.desc', lang)}</div>
         </div>
         <div class="howto-col">
-          <div class="howto-col-img"><img src="/step-02.png?v=3" alt="ひらく時間を決める" loading="eager" decoding="async"></div>
+          <div class="howto-col-img"><img src="/step-02.png?v=3" alt="${T('howto.alt.s02', lang)}" loading="eager" decoding="async"></div>
           <div class="howto-col-step">STEP 02</div>
-          <div class="howto-col-title"><span>時間を決める</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-          <div class="howto-col-desc">復号にかかる時間を指定。</div>
+          <div class="howto-col-title"><span>${T('howto.s02.title', lang)}</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="howto-col-desc">${T('howto.s02.desc', lang)}</div>
         </div>
         <div class="howto-col">
-          <div class="howto-col-img"><img src="/step-03.png" alt="リンクを共有する" loading="eager" decoding="async"></div>
+          <div class="howto-col-img"><img src="/step-03.png" alt="${T('howto.alt.s03', lang)}" loading="eager" decoding="async"></div>
           <div class="howto-col-step">STEP 03</div>
-          <div class="howto-col-title"><span>共有</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div>
-          <div class="howto-col-desc">生成されたリンクを送るだけ。</div>
+          <div class="howto-col-title"><span>${T('howto.s03.title', lang)}</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg></div>
+          <div class="howto-col-desc">${T('howto.s03.desc', lang)}</div>
         </div>
       </div>
       <!-- スマホ: 3D カバーフローカルーセル（送る人） -->
@@ -1848,32 +1848,32 @@ ${HEADER_HTML(lang)}
           <div class="cflow-viewport">
             <div class="cflow-stage">
               <div class="cflow-card cf-active">
-                <div class="cflow-img"><img src="/sp-step-01.png?v=4" alt="メッセージやURLを置く" loading="eager" decoding="async"></div>
+                <div class="cflow-img"><img src="/sp-step-01.png?v=4" alt="${T('howto.alt.s01', lang)}" loading="eager" decoding="async"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 01</div>
-                  <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>置く</div>
-                  <div class="cflow-desc">渡したいもの（URL・テキスト・ファイル）を<br class="pc-br">ドロップする。</div>
+                  <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>${T('howto.s01.title', lang)}</div>
+                  <div class="cflow-desc">${T('howto.s01.desc', lang)}</div>
                 </div>
               </div>
               <div class="cflow-card cf-next">
-                <div class="cflow-img"><img src="/sp-step-02.png?v=4" alt="ひらく時間を決める" loading="eager" decoding="async"></div>
+                <div class="cflow-img"><img src="/sp-step-02.png?v=4" alt="${T('howto.alt.s02', lang)}" loading="eager" decoding="async"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 02</div>
-                  <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>時間を決める</div>
-                  <div class="cflow-desc">復号にかかる時間を指定。</div>
+                  <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${T('howto.s02.title', lang)}</div>
+                  <div class="cflow-desc">${T('howto.s02.desc', lang)}</div>
                 </div>
               </div>
               <div class="cflow-card cf-hidden">
-                <div class="cflow-img"><img src="/sp-step-03.png?v=4" alt="リンクを共有する" loading="eager" decoding="async"></div>
+                <div class="cflow-img"><img src="/sp-step-03.png?v=4" alt="${T('howto.alt.s03', lang)}" loading="eager" decoding="async"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 03</div>
-                  <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>共有</div>
-                  <div class="cflow-desc">生成されたリンクを送るだけ。</div>
+                  <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>${T('howto.s03.title', lang)}</div>
+                  <div class="cflow-desc">${T('howto.s03.desc', lang)}</div>
                 </div>
               </div>
             </div>
-            <button class="cflow-btn cflow-prev" aria-label="前へ">&#9664;</button>
-            <button class="cflow-btn cflow-next" aria-label="次へ">&#9654;</button>
+            <button class="cflow-btn cflow-prev" aria-label="${T('howto.carousel.prev', lang)}">&#9664;</button>
+            <button class="cflow-btn cflow-next" aria-label="${T('howto.carousel.next', lang)}">&#9654;</button>
           </div>
           <div class="cflow-dots">
             <span class="cflow-dot active"></span>
@@ -1889,22 +1889,22 @@ ${HEADER_HTML(lang)}
       <!-- PC: 3カラムグリッド -->
       <div class="howto-cols sender-pc">
         <div class="howto-col">
-          <div class="howto-col-img"><img src="/recv-step-01.png" alt="リンクを開くと復号がはじまる" loading="lazy"></div>
+          <div class="howto-col-img"><img src="/recv-step-01.png" alt="${T('howto.alt.r01', lang)}" loading="lazy"></div>
           <div class="howto-col-step">STEP 01</div>
-          <div class="howto-col-title"><span>開く</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
-          <div class="howto-col-desc">リンクを踏むとその場で復号がはじまる。</div>
+          <div class="howto-col-title"><span>${T('howto.r01.title', lang)}</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+          <div class="howto-col-desc">${T('howto.r01.desc', lang)}</div>
         </div>
         <div class="howto-col">
-          <div class="howto-col-img"><img src="/recv-step-02.png" alt="開いたまま待つ" loading="lazy"></div>
+          <div class="howto-col-img"><img src="/recv-step-02.png" alt="${T('howto.alt.r02', lang)}" loading="lazy"></div>
           <div class="howto-col-step">STEP 02</div>
-          <div class="howto-col-title"><span>待つ</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-          <div class="howto-col-desc">ブラウザを開いたまま待つ。</div>
+          <div class="howto-col-title"><span>${T('howto.r02.title', lang)}</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="howto-col-desc">${T('howto.r02.desc', lang)}</div>
         </div>
         <div class="howto-col">
-          <div class="howto-col-img"><img src="/recv-step-03.png?v=3" alt="復号が終わると受け取れる" loading="lazy"></div>
+          <div class="howto-col-img"><img src="/recv-step-03.png?v=3" alt="${T('howto.alt.r03', lang)}" loading="lazy"></div>
           <div class="howto-col-step">STEP 03</div>
-          <div class="howto-col-title"><span>受け取る</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
-          <div class="howto-col-desc">復号が終わると自動でリンクに遷移する。</div>
+          <div class="howto-col-title"><span>${T('howto.r03.title', lang)}</span><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
+          <div class="howto-col-desc">${T('howto.r03.desc', lang)}</div>
         </div>
       </div>
       <!-- スマホ: 3D カバーフローカルーセル（受け取る人） -->
@@ -1913,32 +1913,32 @@ ${HEADER_HTML(lang)}
           <div class="cflow-viewport">
             <div class="cflow-stage">
               <div class="cflow-card cf-active">
-                <div class="cflow-img"><img src="/sp-recv-step-01.png?v=4" alt="リンクを開くと復号がはじまる" loading="lazy"></div>
+                <div class="cflow-img"><img src="/sp-recv-step-01.png?v=4" alt="${T('howto.alt.r01', lang)}" loading="lazy"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 01</div>
-                  <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>開く</div>
-                  <div class="cflow-desc">リンクを踏むとその場で復号がはじまる。</div>
+                  <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>${T('howto.r01.title', lang)}</div>
+                  <div class="cflow-desc">${T('howto.r01.desc', lang)}</div>
                 </div>
               </div>
               <div class="cflow-card cf-next">
-                <div class="cflow-img"><img src="/sp-recv-step-02.png?v=4" alt="開いたまま待つ" loading="lazy"></div>
+                <div class="cflow-img"><img src="/sp-recv-step-02.png?v=4" alt="${T('howto.alt.r02', lang)}" loading="lazy"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 02</div>
-                  <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>待つ</div>
-                  <div class="cflow-desc">ブラウザを開いたまま待つ。</div>
+                  <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>${T('howto.r02.title', lang)}</div>
+                  <div class="cflow-desc">${T('howto.r02.desc', lang)}</div>
                 </div>
               </div>
               <div class="cflow-card cf-hidden">
-                <div class="cflow-img"><img src="/sp-recv-step-03.png?v=4" alt="復号が終わると受け取れる" loading="lazy"></div>
+                <div class="cflow-img"><img src="/sp-recv-step-03.png?v=4" alt="${T('howto.alt.r03', lang)}" loading="lazy"></div>
                 <div class="cflow-meta">
                   <div class="cflow-step">STEP 03</div>
-                  <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>受け取る</div>
-                  <div class="cflow-desc">復号が終わると自動でリンクに遷移する。</div>
+                  <div class="cflow-title"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#00ff8c" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>${T('howto.r03.title', lang)}</div>
+                  <div class="cflow-desc">${T('howto.r03.desc', lang)}</div>
                 </div>
               </div>
             </div>
-            <button class="cflow-btn cflow-prev" aria-label="前へ">&#9664;</button>
-            <button class="cflow-btn cflow-next" aria-label="次へ">&#9654;</button>
+            <button class="cflow-btn cflow-prev" aria-label="${T('howto.carousel.prev', lang)}">&#9664;</button>
+            <button class="cflow-btn cflow-next" aria-label="${T('howto.carousel.next', lang)}">&#9654;</button>
           </div>
           <div class="cflow-dots">
             <span class="cflow-dot active"></span>
@@ -2340,7 +2340,7 @@ function switchHowto(panel, btn) {
 function runCryptoWorker(chainCount) {
   return new Promise(function(resolve, reject) {
     if (typeof Worker === 'undefined') {
-      reject(new Error('お使いのブラウザはWeb Workerに対応していません。最新のブラウザをご利用ください。'));
+      reject(new Error(${JSON.stringify(T('form.err.noworker', lang))}));
       return;
     }
     const w = new Worker('/crypto-worker.js');
@@ -2384,7 +2384,7 @@ function readFileAsArrayBuffer(file){
   return new Promise(function(resolve,reject){
     const reader=new FileReader();
     reader.onload=function(e){resolve(e.target.result);};
-    reader.onerror=function(){reject(new Error('ファイルの読み込みに失敗しました'));};
+    reader.onerror=function(){reject(new Error(${JSON.stringify(T('form.err.readfail', lang))}));};
     reader.readAsArrayBuffer(file);
   });
 }
@@ -2638,9 +2638,9 @@ fileCancelBtn.addEventListener('click', function(){
 var selectedScene = 'dawn';
 document.addEventListener('DOMContentLoaded', function(){
   var TILE_NAMES = {
-    'auto':'おまかせ','dawn':'夜明け','rain':'計算機','moon':'月',
-    'stars':'星空','rings':'年輪','candle':'ローソク','pulse':'鼓動',
-    'orbit':'軌道','ripple':'波紋','wall':'パネル','weave':'織'
+    'auto':'${T('scene.name.auto', lang)}','dawn':'${T('scene.name.dawn', lang)}','rain':'${T('scene.name.rain', lang)}','moon':'${T('scene.name.moon', lang)}',
+    'stars':'${T('scene.name.stars', lang)}','rings':'${T('scene.name.rings', lang)}','candle':'${T('scene.name.candle', lang)}','pulse':'${T('scene.name.pulse', lang)}',
+    'orbit':'${T('scene.name.orbit', lang)}','ripple':'${T('scene.name.ripple', lang)}','wall':'${T('scene.name.wall', lang)}','weave':'${T('scene.name.weave', lang)}'
   };
   var pickerBtn = document.getElementById('scene-picker-btn');
   var pickerLabel = document.getElementById('scene-name-label');
@@ -2728,13 +2728,13 @@ function applyFileWithCheck(file){
     return;
   }
   if(!file.type.startsWith('image/')){
-    showEncError('このファイルは大きすぎます（最大' + (MAX_FILE_SIZE/1024/1024) + 'MB）');
+    showEncError('${T('form.file.toobig', lang)}' + (MAX_FILE_SIZE/1024/1024) + '${T('form.file.toobig.mb', lang)}');
     return;
   }
   _pendingCompressFile = file;
   if(compressBar && compressMsgEl){
     var mb = (file.size/1024/1024).toFixed(1);
-    compressMsgEl.textContent = file.name + '（' + mb + 'MB）は5MBを超えています。圧縮して送れます（画質が少し下がります）';
+    compressMsgEl.textContent = file.name + '${T('form.file.compress.msg1', lang)}' + mb + '${T('form.file.compress.msg2', lang)}';
     compressBar.classList.add('visible');
   }
 }
@@ -2787,15 +2787,15 @@ function compressImage(file){
     if(!_pendingCompressFile) return;
     var file = _pendingCompressFile;
     var origMB = (file.size/1024/1024).toFixed(1);
-    compressBtnEl.textContent = '圧縮中...';
+    compressBtnEl.textContent = '${T('form.compress.ing', lang)}';
     compressBtnEl.disabled = true;
     var compressed = await compressImage(file);
     if(compressBar) compressBar.classList.remove('visible');
     _pendingCompressFile = null;
-    compressBtnEl.textContent = '圧縮して続ける';
+    compressBtnEl.textContent = '${T('form.compress.btn', lang)}';
     compressBtnEl.disabled = false;
     if(!compressed){
-      showEncError('この画像は圧縮しても5MBを超えます。別の画像をお試しください。');
+      showEncError('${T('form.file.img.fail', lang)}');
       return;
     }
     applyFile(compressed, origMB);
@@ -3465,7 +3465,7 @@ function _rareStep(now){
       _rareTextDone=true;
       if(_popDotInterval){ clearInterval(_popDotInterval); _popDotInterval=null; }
       if(_popDotsEl) _popDotsEl.textContent='';
-      if(_popStatusEl){ _popStatusEl.textContent='暗号化しました'; _popStatusEl.style.color=RARE_GREEN; _popStatusEl.style.fontSize='17px'; }
+      if(_popStatusEl){ _popStatusEl.textContent='${T('enc.popup.done', lang)}'; _popStatusEl.style.color=RARE_GREEN; _popStatusEl.style.fontSize='17px'; }
     }
   } else if(t<t4){
     // ④ 目フェードイン（細めで出現）
@@ -3520,7 +3520,7 @@ function _popAnimLoop(now){
       if(_popDotInterval){ clearInterval(_popDotInterval); _popDotInterval=null; }
       if(_popDotsEl) _popDotsEl.textContent='';
       if(_popStatusEl){
-        _popStatusEl.textContent='暗号化しました';
+        _popStatusEl.textContent='${T('enc.popup.done', lang)}';
         _popStatusEl.style.color='#00ff8c';
         _popStatusEl.style.fontSize='17px';
       }
@@ -3605,7 +3605,7 @@ function showEncPopup(){
     'font-family:"Noto Sans JP",sans-serif;font-size:15px;'+
     'letter-spacing:0.5px;color:var(--ink);'+
     'transition:color .4s,font-size .4s;white-space:nowrap;';
-  statusMain.textContent='暗号化しています';
+  statusMain.textContent='${T('enc.popup.status', lang)}';
   var statusDots=document.createElement('span');
   statusDots.style.cssText=
     'display:inline-block;width:18px;text-align:left;flex-shrink:0;'+
@@ -3690,17 +3690,17 @@ async function doEncrypt(){
   let s = Math.ceil(rawV * mult);
 
   if(s > MAX_LOCK_S_CLI){
-    showEncError('解鍵時間は最大30日までです');
+    showEncError('${T('form.err.maxlock', lang)}');
     btn.disabled = false;
     return;
   }
 
   if(!selectedFile && !contentInput.value.trim()){
-    showEncError('URLまたはファイルを指定してください');
+    showEncError('${T('form.err.needinput', lang)}');
     return;
   }
   if(selectedFile && selectedFile.size > MAX_FILE_SIZE){
-    showEncError('このファイルは大きすぎます（最大' + (MAX_FILE_SIZE/1024/1024) + 'MB）');
+    showEncError('${T('form.file.toobig', lang)}' + (MAX_FILE_SIZE/1024/1024) + '${T('form.file.toobig.mb', lang)}');
     return;
   }
 
@@ -4126,20 +4126,20 @@ if('serviceWorker' in navigator){
 </script>
 <div id="scene-modal" class="scene-modal">
   <div class="scene-modal-box">
-    <div class="scene-modal-title">受け手が待つあいだの画面をえらぶ</div>
+    <div class="scene-modal-title">${T('scene.modal.title', lang)}</div>
     <div class="scene-grid" id="scene-grid">
-      <div class="scene-tile sel" data-scene="dawn"><div class="scene-thumb" style="background:linear-gradient(to top,#2a1f14,#0a0806 60%,#040404);"><div style="position:absolute;bottom:-24px;left:50%;transform:translateX(-50%);width:90px;height:40px;background:radial-gradient(ellipse,rgba(255,166,87,.4),transparent 70%);"></div><div class="scene-dot-breath" style="position:absolute;top:18px;left:50%;transform:translateX(-50%);width:7px;height:7px;border-radius:50%;background:rgba(255,240,224,.9);"></div></div><div class="scene-tile-name">夜明け</div></div>
-      <div class="scene-tile" data-scene="rain"><div class="scene-thumb" style="font-family:'JetBrains Mono',monospace;font-size:6px;line-height:1.7;color:rgba(255,196,138,.4);padding:6px;">a3f0 91c2<br>7b2e 04d…<br>e19a 5c77<br>30b8 f2a…<br>c4d1 88e0<br>5f27 b3c…</div><div class="scene-tile-name">計算機</div></div>
-      <div class="scene-tile" data-scene="moon"><div class="scene-thumb"><div style="position:absolute;top:14px;left:50%;transform:translateX(-50%);width:34px;height:34px;border-radius:50%;background:rgba(255,236,208,.85);box-shadow:-8px 0 0 -4px #050505 inset;"></div><div style="position:absolute;top:8px;left:16px;width:2px;height:2px;border-radius:50%;background:rgba(255,235,205,.5);"></div><div style="position:absolute;top:40px;right:14px;width:2px;height:2px;border-radius:50%;background:rgba(255,235,205,.4);"></div></div><div class="scene-tile-name">月</div></div>
-      <div class="scene-tile" data-scene="stars"><div class="scene-thumb" id="scene-thumb-stars"></div><div class="scene-tile-name">星空</div></div>
-      <div class="scene-tile" data-scene="rings"><div class="scene-thumb"><svg viewBox="0 0 120 64" style="position:absolute;inset:0;width:100%;height:100%;"><circle cx="60" cy="32" r="8" fill="none" stroke="rgba(255,180,90,.4)" stroke-width="1"/><circle cx="60" cy="32" r="14" fill="none" stroke="rgba(255,166,87,.28)" stroke-width=".8"/><circle cx="60" cy="32" r="20" fill="none" stroke="rgba(255,196,110,.32)" stroke-width="1.2"/><circle cx="60" cy="32" r="26" fill="none" stroke="rgba(255,166,87,.22)" stroke-width=".8"/></svg></div><div class="scene-tile-name">年輪</div></div>
-      <div class="scene-tile" data-scene="candle"><div class="scene-thumb"><svg viewBox="0 0 120 64" style="position:absolute;inset:0;width:100%;height:100%;"><ellipse cx="60" cy="18" rx="3" ry="7" fill="rgba(255,226,170,.9)"/><rect x="53" y="26" width="14" height="26" rx="2" fill="rgba(255,240,224,.16)" stroke="rgba(255,196,138,.35)" stroke-width=".6"/><rect x="40" y="52" width="40" height="2" rx="1" fill="rgba(255,166,87,.25)"/></svg></div><div class="scene-tile-name">ローソク</div></div>
-      <div class="scene-tile" data-scene="pulse"><div class="scene-thumb"><svg viewBox="0 0 120 64" style="position:absolute;inset:0;width:100%;height:100%;"><path d="M0 32 L30 32 L38 32 L44 14 L50 46 L56 32 L120 32" fill="none" stroke="rgba(255,196,138,.7)" stroke-width="1.2"/></svg></div><div class="scene-tile-name">鼓動</div></div>
-      <div class="scene-tile" data-scene="orbit"><div class="scene-thumb"><svg viewBox="0 0 120 64" style="position:absolute;inset:0;width:100%;height:100%;"><circle cx="60" cy="32" r="22" fill="none" stroke="rgba(255,166,87,.2)" stroke-width="1" stroke-dasharray="2 3"/><circle cx="60" cy="10" r="2.5" fill="rgba(255,240,224,.9)"/></svg></div><div class="scene-tile-name">軌道</div></div>
-      <div class="scene-tile" data-scene="ripple"><div class="scene-thumb"><svg viewBox="0 0 120 64" style="position:absolute;inset:0;width:100%;height:100%;"><circle cx="45" cy="26" r="6" fill="none" stroke="rgba(255,210,170,.5)" stroke-width=".8"/><circle cx="45" cy="27" r="12" fill="none" stroke="rgba(255,210,170,.3)" stroke-width=".8"/><circle cx="80" cy="42" r="8" fill="none" stroke="rgba(255,210,170,.35)" stroke-width=".8"/></svg></div><div class="scene-tile-name">波紋</div></div>
-      <div class="scene-tile" data-scene="wall"><div class="scene-thumb" style="display:grid;grid-template-columns:repeat(8,1fr);grid-auto-rows:1fr;gap:2px;padding:6px;"><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,196,138,.7)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span></div><div class="scene-tile-name">パネル</div></div>
-      <div class="scene-tile" data-scene="weave"><div class="scene-thumb"><svg viewBox="0 0 120 64" style="position:absolute;inset:0;width:100%;height:100%;"><line x1="25" y1="16" x2="95" y2="16" stroke="rgba(255,184,100,.3)" stroke-width="3"/><line x1="25" y1="22" x2="95" y2="22" stroke="rgba(255,198,100,.3)" stroke-width="3"/><line x1="25" y1="28" x2="95" y2="28" stroke="rgba(255,170,100,.3)" stroke-width="3"/><line x1="25" y1="34" x2="70" y2="34" stroke="rgba(255,196,138,.55)" stroke-width="3"/><circle cx="70" cy="34" r="2" fill="rgba(255,240,224,.95)"/></svg></div><div class="scene-tile-name">織</div></div>
-      <div class="scene-tile" data-scene="auto"><div class="scene-thumb" style="display:flex;align-items:center;justify-content:center;"><div style="font-family:'JetBrains Mono',monospace;font-size:22px;color:rgba(255,196,138,.7);">?</div></div><div class="scene-tile-name">おまかせ</div></div>
+      <div class="scene-tile sel" data-scene="dawn"><div class="scene-thumb" style="background:linear-gradient(to top,#2a1f14,#0a0806 60%,#040404);"><div style="position:absolute;bottom:-24px;left:50%;transform:translateX(-50%);width:90px;height:40px;background:radial-gradient(ellipse,rgba(255,166,87,.4),transparent 70%);"></div><div class="scene-dot-breath" style="position:absolute;top:18px;left:50%;transform:translateX(-50%);width:7px;height:7px;border-radius:50%;background:rgba(255,240,224,.9);"></div></div><div class="scene-tile-name">${T('scene.name.dawn', lang)}</div></div>
+      <div class="scene-tile" data-scene="rain"><div class="scene-thumb" style="font-family:'JetBrains Mono',monospace;font-size:6px;line-height:1.7;color:rgba(255,196,138,.4);padding:6px;">a3f0 91c2<br>7b2e 04d…<br>e19a 5c77<br>30b8 f2a…<br>c4d1 88e0<br>5f27 b3c…</div><div class="scene-tile-name">${T('scene.name.rain', lang)}</div></div>
+      <div class="scene-tile" data-scene="moon"><div class="scene-thumb"><div style="position:absolute;top:14px;left:50%;transform:translateX(-50%);width:34px;height:34px;border-radius:50%;background:rgba(255,236,208,.85);box-shadow:-8px 0 0 -4px #050505 inset;"></div><div style="position:absolute;top:8px;left:16px;width:2px;height:2px;border-radius:50%;background:rgba(255,235,205,.5);"></div><div style="position:absolute;top:40px;right:14px;width:2px;height:2px;border-radius:50%;background:rgba(255,235,205,.4);"></div></div><div class="scene-tile-name">${T('scene.name.moon', lang)}</div></div>
+      <div class="scene-tile" data-scene="stars"><div class="scene-thumb" id="scene-thumb-stars"></div><div class="scene-tile-name">${T('scene.name.stars', lang)}</div></div>
+      <div class="scene-tile" data-scene="rings"><div class="scene-thumb"><svg viewBox="0 0 120 64" style="position:absolute;inset:0;width:100%;height:100%;"><circle cx="60" cy="32" r="8" fill="none" stroke="rgba(255,180,90,.4)" stroke-width="1"/><circle cx="60" cy="32" r="14" fill="none" stroke="rgba(255,166,87,.28)" stroke-width=".8"/><circle cx="60" cy="32" r="20" fill="none" stroke="rgba(255,196,110,.32)" stroke-width="1.2"/><circle cx="60" cy="32" r="26" fill="none" stroke="rgba(255,166,87,.22)" stroke-width=".8"/></svg></div><div class="scene-tile-name">${T('scene.name.rings', lang)}</div></div>
+      <div class="scene-tile" data-scene="candle"><div class="scene-thumb"><svg viewBox="0 0 120 64" style="position:absolute;inset:0;width:100%;height:100%;"><ellipse cx="60" cy="18" rx="3" ry="7" fill="rgba(255,226,170,.9)"/><rect x="53" y="26" width="14" height="26" rx="2" fill="rgba(255,240,224,.16)" stroke="rgba(255,196,138,.35)" stroke-width=".6"/><rect x="40" y="52" width="40" height="2" rx="1" fill="rgba(255,166,87,.25)"/></svg></div><div class="scene-tile-name">${T('scene.name.candle', lang)}</div></div>
+      <div class="scene-tile" data-scene="pulse"><div class="scene-thumb"><svg viewBox="0 0 120 64" style="position:absolute;inset:0;width:100%;height:100%;"><path d="M0 32 L30 32 L38 32 L44 14 L50 46 L56 32 L120 32" fill="none" stroke="rgba(255,196,138,.7)" stroke-width="1.2"/></svg></div><div class="scene-tile-name">${T('scene.name.pulse', lang)}</div></div>
+      <div class="scene-tile" data-scene="orbit"><div class="scene-thumb"><svg viewBox="0 0 120 64" style="position:absolute;inset:0;width:100%;height:100%;"><circle cx="60" cy="32" r="22" fill="none" stroke="rgba(255,166,87,.2)" stroke-width="1" stroke-dasharray="2 3"/><circle cx="60" cy="10" r="2.5" fill="rgba(255,240,224,.9)"/></svg></div><div class="scene-tile-name">${T('scene.name.orbit', lang)}</div></div>
+      <div class="scene-tile" data-scene="ripple"><div class="scene-thumb"><svg viewBox="0 0 120 64" style="position:absolute;inset:0;width:100%;height:100%;"><circle cx="45" cy="26" r="6" fill="none" stroke="rgba(255,210,170,.5)" stroke-width=".8"/><circle cx="45" cy="27" r="12" fill="none" stroke="rgba(255,210,170,.3)" stroke-width=".8"/><circle cx="80" cy="42" r="8" fill="none" stroke="rgba(255,210,170,.35)" stroke-width=".8"/></svg></div><div class="scene-tile-name">${T('scene.name.ripple', lang)}</div></div>
+      <div class="scene-tile" data-scene="wall"><div class="scene-thumb" style="display:grid;grid-template-columns:repeat(8,1fr);grid-auto-rows:1fr;gap:2px;padding:6px;"><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.28)"></span><span style="display:block;border-radius:2px;background:rgba(255,196,138,.7)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span><span style="display:block;border-radius:2px;background:rgba(255,166,87,.1)"></span></div><div class="scene-tile-name">${T('scene.name.wall', lang)}</div></div>
+      <div class="scene-tile" data-scene="weave"><div class="scene-thumb"><svg viewBox="0 0 120 64" style="position:absolute;inset:0;width:100%;height:100%;"><line x1="25" y1="16" x2="95" y2="16" stroke="rgba(255,184,100,.3)" stroke-width="3"/><line x1="25" y1="22" x2="95" y2="22" stroke="rgba(255,198,100,.3)" stroke-width="3"/><line x1="25" y1="28" x2="95" y2="28" stroke="rgba(255,170,100,.3)" stroke-width="3"/><line x1="25" y1="34" x2="70" y2="34" stroke="rgba(255,196,138,.55)" stroke-width="3"/><circle cx="70" cy="34" r="2" fill="rgba(255,240,224,.95)"/></svg></div><div class="scene-tile-name">${T('scene.name.weave', lang)}</div></div>
+      <div class="scene-tile" data-scene="auto"><div class="scene-thumb" style="display:flex;align-items:center;justify-content:center;"><div style="font-family:'JetBrains Mono',monospace;font-size:22px;color:rgba(255,196,138,.7);">?</div></div><div class="scene-tile-name">${T('scene.name.auto', lang)}</div></div>
     </div>
   </div>
 </div>

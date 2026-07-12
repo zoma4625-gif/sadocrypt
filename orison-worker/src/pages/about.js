@@ -159,8 +159,6 @@ ${HEADER_CSS}
 </style>
 </head>
 <body>
-<div style="position:fixed;top:-140px;right:-100px;width:500px;height:500px;border-radius:50%;background:radial-gradient(ellipse,rgba(239,138,99,.5) 0%,transparent 68%);filter:blur(46px);pointer-events:none;z-index:0;"></div>
-<div style="position:fixed;bottom:-80px;left:-120px;width:380px;height:380px;border-radius:50%;background:radial-gradient(ellipse,rgba(143,168,143,.42) 0%,transparent 68%);filter:blur(42px);pointer-events:none;z-index:0;"></div>
 ${HEADER_HTML}
 <main style="flex:1;position:relative;z-index:2;">
   <div class="about-wrap">
@@ -173,7 +171,7 @@ ${HEADER_HTML}
           <div class="who-card-title">コンテンツをちゃんと<br>見てほしい人に。</div>
           <span class="who-card-icon">🔍</span>
         </div>
-        <div class="who-card-desc">閲覧の難易度を上げ、意味のあるコンテンツがスクロールに流されるのを防ぎます。</div>
+        <div class="who-card-desc">閲覧の敷居を上げ、意味のあるコンテンツがスクロールに流されるのを防ぎます。</div>
       </div>
       <div class="who-card">
         <div class="who-card-head">

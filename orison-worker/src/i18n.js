@@ -45,7 +45,7 @@ const DICT = {
 
   /* ── LP フォーム ─────────────────────────────────────── */
   'form.placeholder': { ja: 'メッセージ、URLを入力…', en: 'Type a message or URL…' },
-  'form.file.aria':   { ja: 'ファイルを追加', en: 'Add file' },
+  'form.file.aria':   { ja: 'ファイルを追加', en: 'Add a file (image, video, audio, or document — up to 5MB)' },
   'form.file.tip':    { ja: 'ファイル（画像・動画・音声・文書、5MBまで）を追加', en: 'Attach a file (image, video, audio, document — up to 5 MB)' },
   'form.file.cancel': { ja: 'ファイルを取り消す', en: 'Remove file' },
   'form.time.label':  { ja: 'ひらくまでの時間', en: 'Time until open' },
@@ -76,7 +76,15 @@ const DICT = {
   'form.compress.ing':    { ja: '圧縮中...', en: 'Compressing…' },
   'form.file.toobig':     { ja: 'このファイルは大きすぎます（最大', en: 'This file is too large (max' },
   'form.file.toobig.mb':  { ja: 'MB）', en: ' MB)' },
-  'form.file.img.fail':   { ja: 'この画像は圧縮しても5MBを超えます。別の画像をお試しください。', en: 'This image exceeds 5 MB even after compression. Please try a smaller image.' },
+  'form.file.img.fail':   { ja: 'この画像は圧縮しても5MBを超えます。別の画像をお試しください。', en: 'Even compressed, this image exceeds 5MB. Please choose another file.' },
+  'form.file.compress.msg1': { ja: '（', en: ' (' },
+  'form.file.compress.msg2': { ja: 'MB）は5MBを超えています。圧縮して送れます（画質が少し下がります）', en: 'MB) is over 5MB. It can be compressed to send (the quality drops a little).' },
+
+  /* ── LP フォーム: バリデーション・実行時エラー ─────────── */
+  'form.err.noworker':  { ja: 'お使いのブラウザはWeb Workerに対応していません。最新のブラウザをご利用ください。', en: "This browser doesn't support Web Workers. Please use a current browser." },
+  'form.err.readfail':  { ja: 'ファイルの読み込みに失敗しました', en: "Couldn't read the file." },
+  'form.err.maxlock':   { ja: '解鍵時間は最大30日までです', en: 'The unlock time can be up to 30 days.' },
+  'form.err.needinput': { ja: 'URLまたはファイルを指定してください', en: 'Enter a message, URL, or file.' },
 
   /* ── D&D オーバーレイ ────────────────────────────────── */
   'dnd.drop':   { ja: 'ここにファイルを置く', en: 'Drop file here' },
@@ -90,6 +98,7 @@ const DICT = {
   'enc.status':       { ja: '暗号化しています...', en: 'Encrypting…' },
   'enc.done.title':   { ja: '暗号化が完了しました', en: 'Encryption complete' },
   'enc.popup.status': { ja: '暗号化しています', en: 'Encrypting' },
+  'enc.popup.done':   { ja: '暗号化しました', en: 'Encrypted.' },
 
   /* ── 結果カード ──────────────────────────────────────── */
   'result.title':     { ja: 'リンクができました', en: 'Your link is ready' },
@@ -109,42 +118,52 @@ const DICT = {
 
   /* ── ABOUT セクション ────────────────────────────────── */
   'about.eyebrow':    { ja: 'ABOUT', en: 'ABOUT' },
-  'about.heading':    { ja: 'Brake.は、タイムロック暗号を使った<br class="pc-br">暗号化Webサービスです。', en: 'Brake. is a web service that uses<br class="pc-br">time-lock cryptography.' },
-  'about.body':       { ja: 'URLやテキストを暗号化し、「1分後」「1時間後」「1日後」にしか開けないリンクを生成します。<br class="pc-br"><br class="sp-br">画像、動画、音声、文書なども暗号化できます<br class="sp-br">（最大5MBまで）。', en: 'Encrypt URLs, text, and files into a link that no one can open until a set time — 1 minute, 1 hour, or 1 day from now.<br class="pc-br"><br class="sp-br">Images, videos, audio, and documents are also supported<br class="sp-br">(up to 5 MB).' },
-  'about.card1.title':{ ja: 'コンテンツをちゃんと見てほしい人に。', en: 'For those who want content to be seen properly.' },
-  'about.card1.desc': { ja: '閲覧の難易度を上げ、意味のあるコンテンツがスクロールに流されるのを防ぎます。', en: 'Raises the bar for access, protecting meaningful content from being swiped past.' },
-  'about.card2.title':{ ja: '商品のリリースや重大発表に。', en: 'For product launches and big announcements.' },
-  'about.card2.desc': { ja: '解禁時間を設計し、待つことができる人たちの間でだけ情報が共有されます。', en: 'Design the reveal time. Only those willing to wait will receive it.' },
-  'about.card3.title':{ ja: '知り合いに待つ時間を贈りたい人に。', en: 'For gifting a moment of pause to someone you know.' },
-  'about.card3.desc': { ja: '情報量にブレーキをかけ、待ってる間にひと呼吸。', en: 'Put the brakes on information. A breath while waiting.' },
+  'about.heading':    { ja: 'Brake.は、タイムロック暗号を使った<br class="pc-br">暗号化Webサービスです。', en: 'Brake. is a web service for time-lock encryption.' },
+  'about.body':       { ja: 'URLやテキストを暗号化し、「1分後」「1時間後」「1日後」にしか開けないリンクを生成します。<br class="pc-br"><br class="sp-br">画像、動画、音声、文書なども暗号化できます<br class="sp-br">（最大5MBまで）。', en: 'Encrypt a URL or text into a link that cannot be opened until one minute, one hour, or one day has passed.<br class="pc-br"><br class="sp-br">Images, video, audio, and documents work too<br class="sp-br">(up to 5MB).' },
+  'about.card1.title':{ ja: 'コンテンツをちゃんと見てほしい人に。', en: 'For content that deserves attention.' },
+  'about.card1.desc': { ja: '閲覧の敷居を上げ、意味のあるコンテンツがスクロールに流されるのを防ぎます。', en: "It raises the cost of a glance, so what matters isn't lost to the scroll." },
+  'about.card2.title':{ ja: '商品のリリースや重大発表に。', en: 'For launches and announcements.' },
+  'about.card2.desc': { ja: '解禁時間を設計し、待つことができる人たちの間でだけ情報が共有されます。', en: 'Design the moment of release. The information is shared only among those who can wait.' },
+  'about.card3.title':{ ja: '知り合いに待つ時間を贈りたい人に。', en: 'For gifts to someone you know.' },
+  'about.card3.desc': { ja: '情報量にブレーキをかけ、待ってる間にひと呼吸。', en: 'A brake on the flow of information — one breath while you wait.' },
   'about.card4.title':{ ja: 'ほかにも', en: 'And more' },
-  'about.card4.desc': { ja: '使い方は、あなた次第。サプライズやタイムカプセルにも。', en: 'The use is up to you — surprises, time capsules, and beyond.' },
-  'about.link.timelock': { ja: 'タイムロック暗号とは？ →', en: 'What is time-lock cryptography? →' },
+  'about.card4.desc': { ja: '使い方は、あなた次第。サプライズやタイムカプセルにも。', en: "It's up to you. Surprises, time capsules, anything." },
+  'about.link.timelock': { ja: 'タイムロック暗号とは？ →', en: 'What is time-lock encryption? →' },
   'about.link.why':      { ja: 'なぜ待たせるのか →', en: 'Why make people wait? →' },
 
   /* ── HOW TO セクション ───────────────────────────────── */
   'howto.eyebrow':    { ja: 'HOW TO', en: 'HOW TO' },
-  'howto.heading':    { ja: '置いて、決めて、送る。', en: 'Drop. Set. Share.' },
+  'howto.heading':    { ja: '置いて、決めて、送る。', en: 'Place, decide, send.' },
   'howto.tab.sender': { ja: '送る人', en: 'Sender' },
-  'howto.tab.receiver':{ ja: '受け取る人', en: 'Recipient' },
+  'howto.tab.receiver':{ ja: '受け取る人', en: 'Receiver' },
   'howto.s01.step':   { ja: 'STEP 01', en: 'STEP 01' },
-  'howto.s01.title':  { ja: '置く', en: 'Drop' },
-  'howto.s01.desc':   { ja: '渡したいもの（URL・テキスト・ファイル）を<br class="pc-br">ドロップする。', en: 'Drop what you want to share —<br class="pc-br">a URL, text, or file.' },
+  'howto.s01.title':  { ja: '置く', en: 'Place' },
+  'howto.s01.desc':   { ja: '渡したいもの（URL・テキスト・ファイル）を<br class="pc-br">ドロップする。', en: 'Drop in what you want to hand over.' },
   'howto.s02.step':   { ja: 'STEP 02', en: 'STEP 02' },
-  'howto.s02.title':  { ja: '時間を決める', en: 'Set time' },
-  'howto.s02.desc':   { ja: '復号にかかる時間を指定。', en: 'Choose how long until it unlocks.' },
+  'howto.s02.title':  { ja: '時間を決める', en: 'Decide the time' },
+  'howto.s02.desc':   { ja: '復号にかかる時間を指定。', en: 'Set how long the decryption takes.' },
   'howto.s03.step':   { ja: 'STEP 03', en: 'STEP 03' },
   'howto.s03.title':  { ja: '共有', en: 'Share' },
-  'howto.s03.desc':   { ja: '生成されたリンクを送るだけ。', en: 'Send the generated link.' },
+  'howto.s03.desc':   { ja: '生成されたリンクを送るだけ。', en: 'Send the generated link to anyone.' },
   'howto.r01.step':   { ja: 'STEP 01', en: 'STEP 01' },
   'howto.r01.title':  { ja: '開く', en: 'Open' },
-  'howto.r01.desc':   { ja: 'リンクを踏むとその場で復号がはじまる。', en: 'Tapping the link starts decryption immediately.' },
+  'howto.r01.desc':   { ja: 'リンクを踏むとその場で復号がはじまる。', en: 'The decryption starts the moment you follow the link.' },
   'howto.r02.step':   { ja: 'STEP 02', en: 'STEP 02' },
   'howto.r02.title':  { ja: '待つ', en: 'Wait' },
-  'howto.r02.desc':   { ja: 'ブラウザを開いたまま待つ。', en: 'Keep the browser open and wait.' },
+  'howto.r02.desc':   { ja: 'ブラウザを開いたまま待つ。', en: 'Keep the browser open while the calculation runs.' },
   'howto.r03.step':   { ja: 'STEP 03', en: 'STEP 03' },
   'howto.r03.title':  { ja: '受け取る', en: 'Receive' },
-  'howto.r03.desc':   { ja: '復号が終わると自動でリンクに遷移する。', en: 'When done, the content appears automatically.' },
+  'howto.r03.desc':   { ja: '復号が終わると自動でリンクに遷移する。', en: 'When it finishes, the content opens on its own.' },
+
+  /* ── HOW TO: 画像alt / カルーセル ─────────────────────── */
+  'howto.alt.s01':    { ja: 'メッセージやURLを置く', en: 'Enter a message or URL' },
+  'howto.alt.s02':    { ja: 'ひらく時間を決める', en: 'Choose when it unlocks' },
+  'howto.alt.s03':    { ja: 'リンクを共有する', en: 'Share the link' },
+  'howto.alt.r01':    { ja: 'リンクを開くと復号がはじまる', en: 'Open the link to start decrypting' },
+  'howto.alt.r02':    { ja: '開いたまま待つ', en: 'Wait with the page open' },
+  'howto.alt.r03':    { ja: '復号が終わると受け取れる', en: 'Receive it once decryption finishes' },
+  'howto.carousel.prev': { ja: '前へ', en: 'Previous' },
+  'howto.carousel.next': { ja: '次へ', en: 'Next' },
 
   /* ── LP フッター ─────────────────────────────────────── */
   'lp.top-btn.label': { ja: 'Brake. を試す', en: 'Try Brake.' },
@@ -163,8 +182,9 @@ const DICT = {
   'dec.title.done':     { ja: '復号しました | Brake.', en: 'Decrypted | Brake.' },
   'dec.status.dec':     { ja: '復号しています...', en: 'Decrypting…' },
   'dec.status.done':    { ja: '復号完了', en: 'Done' },
-  'dec.warn.long':      { ja: 'このリンクの解読には ', en: 'Decrypting this link may take ' },
-  'dec.warn.long2':     { ja: ' かかる見込みです', en: '' },
+  'dec.error.label':    { ja: 'エラー', en: 'Error' },
+  'dec.warn.long':      { ja: 'このリンクの解読には ', en: 'Decrypting this link is expected to take ' },
+  'dec.warn.long2':     { ja: ' かかる見込みです', en: '.' },
   'dec.opened.at':      { ja: ' にひらきました', en: ' — opened' },
   'dec.btn.download':   { ja: 'ダウンロード', en: 'Download' },
   'dec.btn.copy':       { ja: 'コピー', en: 'Copy' },
@@ -262,6 +282,24 @@ const DICT = {
 
   /* ── terms / privacy (EN mode) ───────────────────────── */
   'legal.en.note':    { ja: '', en: 'The Japanese text below is the governing version. An English translation is in preparation.' },
+  'terms.title':      { ja: '利用規約 | Brake.', en: 'Terms of Service | Brake.' },
+  'terms.h1':          { ja: 'Brake. 利用規約', en: 'Brake. Terms of Service' },
+  'privacy.title':     { ja: 'プライバシーポリシー | Brake.', en: 'Privacy Policy | Brake.' },
+  'privacy.h1':         { ja: 'Brake. プライバシーポリシー', en: 'Brake. Privacy Policy' },
+
+  /* ── /api/save サーバーエラー（handlers.js） ─────────── */
+  'api.err.toolarge':  { ja: 'リクエストが大きすぎます', en: 'The request is too large.' },
+  'api.err.missing':   { ja: 'パラメータが不足しています', en: 'Missing parameters.' },
+  'api.err.badct':     { ja: 'ct が不正です', en: 'Invalid ct.' },
+  'api.err.badiv':     { ja: 'iv が不正です', en: 'Invalid iv.' },
+  'api.err.badN':      { ja: 'N が不正です', en: 'Invalid N.' },
+  'api.err.badx0':     { ja: 'x0 が不正です', en: 'Invalid x0.' },
+  'api.err.badcc':     { ja: 'cc が不正です', en: 'Invalid cc.' },
+  'api.err.badtarget': { ja: 'target_seconds が不正です', en: 'Invalid target_seconds.' },
+  'api.err.maxlock':   { ja: '解錠時間は最大30日までです', en: 'The unlock time can be up to 30 days.' },
+  'api.err.badfilename':{ ja: 'file_name が不正です', en: 'Invalid file_name.' },
+  'api.err.badmime':   { ja: 'mime_type が不正です', en: 'Invalid mime_type.' },
+  'api.err.savefail':  { ja: '保存に失敗しました', en: "Couldn't save." },
 
   /* ── scenes.js ────────────────────────────────────────── */
   'scene.waiting':    { ja: 'ひらくのを待っています', en: 'Your message is waiting.' },
@@ -285,6 +323,7 @@ const DICT = {
   'scene.name.ripple':{ ja: '波紋', en: 'Ripple' },
   'scene.name.wall':  { ja: 'パネル', en: 'Panels' },
   'scene.name.weave': { ja: '織', en: 'Weave' },
+  'scene.modal.title':{ ja: '受け手が待つあいだの画面をえらぶ', en: 'What the receiver sees while waiting' },
 };
 
 /* ── getLang: cookie > Accept-Language > 'ja' ───────────── */
