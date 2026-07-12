@@ -467,6 +467,12 @@ body{
 .letter-via-inner{margin-top:4px;}
 .letter-via{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;color:#c9997e;text-decoration:underline;text-underline-offset:2px;transition:color .15s;}
 .letter-via:hover{color:#c56b47}
+/* 便箋: アプリ内ブラウザ(WebView)向け保存案内 */
+.letter-webview-guide{
+  margin-top:10px;padding:10px 12px;
+  background:rgba(90,60,30,.06);border-radius:8px;
+  font-size:11px;line-height:1.6;color:rgba(90,60,30,.75);
+}
 
 /* 便箋: ボタン */
 .letter-btn{
@@ -959,6 +965,19 @@ async function run(){
   }
 
   // ── フォールバック: メインスレッドchunked計算（Worker不可・onerror時） ──
+  // Worker自走ループが使えない環境専用の最終手段。メインスレッドで動く以上、
+  // UI応答性のため定期的にイベントループへ制御を返す必要があるが、setTimeoutは
+  // 背景タブでスロットリングされる（decrypt-worker.js側のコメント参照）ため、
+  // MessageChannelによるマクロタスク投函（yieldToEventLoop）で代替する。
+  // これはタイマーではなくメッセージキューへの即時投函のため、setTimeout系の
+  // 背景タブスロットリングの対象にならない。
+  function yieldToEventLoop(){
+    return new Promise(function(resolve){
+      var ch=new MessageChannel();
+      ch.port2.onmessage=function(){ resolve(); };
+      ch.port1.postMessage(0);
+    });
+  }
   if(!workerUsed){
     let x=startX;
     let i=BigInt(startIter);
@@ -983,7 +1002,7 @@ async function run(){
       if(Number(i)>0) mountScene(Number(i));
       if(i<total){
         _latestResumeData={x:x.toString(16),i:i.toString()};
-        await new Promise(r=>setTimeout(r,0));
+        await yieldToEventLoop();
         if(Date.now()-lastSaveTime>=5000){
           try{localStorage.setItem(RESUME_KEY,JSON.stringify(_latestResumeData));}catch(_){}
           lastSaveTime=Date.now();
@@ -1039,6 +1058,26 @@ function showResult(decBuf){
   renderResult(decBuf);
 }
 
+// ============================================================
+// WebView内ダウンロード救済（LINE等のアプリ内ブラウザ対策）
+// <a download> はWebView（LINE/Facebook/Instagram/Twitter(X)/WeChat等の
+// アプリ内ブラウザ）では機能しないため、既知のUA痕跡を検出した場合のみ
+// navigator.share({files}) 経由の共有シートにフォールバックする。
+// 通常のSafari/Chromeでは何も変えず、従来どおり<a download>のまま。
+// ============================================================
+function isInAppWebView(){
+  // 正規表現は使わない: このファイルはJSテンプレートリテラル内に埋め込まれており
+  // バックスラッシュがテンプレート側で消費されるため（\bや\/が意図通り届かない）、
+  // 単純な部分文字列一致にしてエスケープの罠を避ける
+  var ua=navigator.userAgent||'';
+  return ua.indexOf('Line/')!==-1 || ua.indexOf('FBAN')!==-1 || ua.indexOf('FBAV')!==-1 || ua.indexOf('Instagram')!==-1 || ua.indexOf('Twitter')!==-1 || ua.indexOf('MicroMessenger')!==-1;
+}
+function canShareFile(file){
+  try{
+    return !!(navigator.share && navigator.canShare && navigator.canShare({files:[file]}));
+  }catch(e){ return false; }
+}
+
 function renderResult(decBuf){
   var card=document.getElementById('letter-card');
   if(!card) return;
@@ -1066,8 +1105,30 @@ function renderResult(decBuf){
   var URLCOPY_LABEL = _l==='en'?'Copy URL':'URLコピー';
   var OPEN_LABEL = _l==='en'?'Open →':'ひらく →';
   var YT_LABEL = _l==='en'?'Watch on YouTube →':'YouTubeで見る →';
-  function dlLink(blobUrl,fname,label){
-    return '<a href="'+blobUrl+'" download="'+escHtml(fname)+'" class="letter-btn">'+escHtml(label)+'</a>';
+  // WebView救済用: クリック時にBlob実体を参照できるよう配列で保持（data属性にはindexのみ持たせる）
+  var _dlBlobs=[];
+  var _inWebView=isInAppWebView();
+  var WV_GUIDE_BASE=_l==='en'
+    ? "This in-app browser can't save files. Open this page in Safari or Chrome from the menu to save it."
+    : 'このアプリ内のブラウザでは保存できません。メニューから外部ブラウザ（Safari/Chrome）で開くと保存できます。';
+  var WV_GUIDE_IMG=_l==='en'
+    ? ' You can also save images by long-pressing them.'
+    : '画像は長押しでも保存できます。';
+  function dlLink(blobUrl,fname,label,blob,mime,isImage){
+    if(!_inWebView){
+      // 通常のSafari/Chrome: 従来どおり<a download>のまま（挙動変更なし）
+      return { btn:'<a href="'+blobUrl+'" download="'+escHtml(fname)+'" class="letter-btn">'+escHtml(label)+'</a>', guide:'' };
+    }
+    // WebView: <a download>は機能しないため共有シート(navigator.share)経由のボタンに切り替える
+    var idx=_dlBlobs.push({blob:blob,fname:fname,mime:mime||'application/octet-stream'})-1;
+    var btn='<button type="button" class="letter-btn dl-share-btn" data-dlid="'+idx+'">'+escHtml(label)+'</button>';
+    var shareOK=false;
+    try{
+      var testFile=new File([blob],fname,{type:mime||'application/octet-stream'});
+      shareOK=canShareFile(testFile);
+    }catch(e){ shareOK=false; }
+    var guide=shareOK?'':('<div class="letter-webview-guide">'+escHtml(WV_GUIDE_BASE+(isImage?WV_GUIDE_IMG:''))+'</div>');
+    return { btn:btn, guide:guide };
   }
 
   // ファイルサイズ表示
@@ -1088,36 +1149,47 @@ function renderResult(decBuf){
     var ext=(fname.split('.').pop()||'').toUpperCase();
 
     if(mime.startsWith('image/')){
+      var dlImg=dlLink(blobUrl,fname,DL_LABEL,blob,mime,true);
       inner='<img src="'+blobUrl+'" class="letter-media" alt="'+escHtml(fname)+'">';
       inner+='<div class="letter-foot">';
       inner+='<div class="letter-fname-wrap"><div class="letter-fname">'+escHtml(fname)+'</div><div class="letter-fsize">'+sizeStr+'</div></div>';
-      inner+='<div class="letter-foot-btns">'+dlLink(blobUrl,fname,DL_LABEL)+'</div>';
+      inner+='<div class="letter-foot-btns">'+dlImg.btn+'</div>';
       inner+='</div>';
+      inner+=dlImg.guide;
     }else if(mime.startsWith('video/')){
+      var dlVid=dlLink(blobUrl,fname,DL_LABEL,blob,mime,false);
       inner='<video src="'+blobUrl+'" class="letter-video" controls></video>';
       inner+='<div class="letter-foot">';
       inner+='<div class="letter-fname-wrap"><div class="letter-fname">'+escHtml(fname)+'</div><div class="letter-fsize">'+sizeStr+'</div></div>';
-      inner+='<div class="letter-foot-btns">'+dlLink(blobUrl,fname,DL_LABEL)+'</div>';
+      inner+='<div class="letter-foot-btns">'+dlVid.btn+'</div>';
       inner+='</div>';
+      inner+=dlVid.guide;
     }else if(mime.startsWith('audio/')){
+      var dlAud=dlLink(blobUrl,fname,DL_LABEL,blob,mime,false);
       inner='<audio src="'+blobUrl+'" class="letter-audio" controls></audio>';
       inner+='<div class="letter-foot">';
       inner+='<div class="letter-fname-wrap"><div class="letter-fname">'+escHtml(fname)+'</div><div class="letter-fsize">'+sizeStr+'</div></div>';
-      inner+='<div class="letter-foot-btns">'+dlLink(blobUrl,fname,DL_LABEL)+'</div>';
+      inner+='<div class="letter-foot-btns">'+dlAud.btn+'</div>';
       inner+='</div>';
+      inner+=dlAud.guide;
     }else{
       // その他ファイル（文書等）
+      var dlFile=dlLink(blobUrl,fname,DL_LABEL,blob,mime,false);
       var svgFile='<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>';
       inner='<div class="letter-file-row"><div class="letter-file-icon">'+svgFile+'</div>';
       inner+='<div><div class="letter-fname">'+escHtml(fname)+'</div>';
       inner+='<div class="letter-fsize">'+sizeStr+'　·　'+ext+'</div></div></div>';
       inner+='<div class="letter-foot" style="justify-content:flex-end">';
-      inner+='<div class="letter-foot-btns">'+dlLink(blobUrl,fname,DL_LABEL)+'</div>';
+      inner+='<div class="letter-foot-btns">'+dlFile.btn+'</div>';
       inner+='</div>';
-      // 自動ダウンロード（その他形式のみ）
-      setTimeout(function(){
-        var a=document.createElement('a');a.href=blobUrl;a.download=fname;a.click();
-      },400);
+      inner+=dlFile.guide;
+      // 自動ダウンロード（その他形式のみ・WebViewでは自動起動しない。外部アプリ確認ダイアログが
+      // ユーザー操作なしに出てしまうため。WebViewでは手動タップ→共有シート/案内に委ねる）
+      if(!_inWebView){
+        setTimeout(function(){
+          var a=document.createElement('a');a.href=blobUrl;a.download=fname;a.click();
+        },400);
+      }
     }
 
     // 最下部に日時ラベル＋via（開封記録行の右端）
@@ -1252,6 +1324,37 @@ function renderResult(decBuf){
 
   card.innerHTML=inner;
   if(showViaOutside) showViaExt();
+
+  // WebView救済ボタンの配線（共有シート起動）。通常ブラウザでは.dl-share-btn自体が存在しないため無害。
+  if(_inWebView && _dlBlobs.length){
+    card.addEventListener('click',function(e){
+      var btn=e.target.closest('.dl-share-btn');
+      if(!btn) return;
+      var rec=_dlBlobs[Number(btn.getAttribute('data-dlid'))];
+      if(!rec) return;
+      (async function(){
+        try{
+          var file=new File([rec.blob],rec.fname,{type:rec.mime});
+          if(canShareFile(file)){
+            await navigator.share({files:[file]});
+            return;
+          }
+        }catch(shareErr){
+          if(shareErr && shareErr.name==='AbortError') return; // ユーザーが共有シートをキャンセルしただけ
+        }
+        // shareが使えない/失敗した場合: 案内をボタン直下に出す（まだ無ければ）
+        var foot=btn.closest('.letter-foot');
+        var already=foot && foot.nextElementSibling && foot.nextElementSibling.classList && foot.nextElementSibling.classList.contains('letter-webview-guide');
+        if(foot && !already){
+          var isImage=!!card.querySelector('.letter-media');
+          var g=document.createElement('div');
+          g.className='letter-webview-guide';
+          g.textContent=WV_GUIDE_BASE+(isImage?WV_GUIDE_IMG:'');
+          foot.insertAdjacentElement('afterend',g);
+        }
+      })();
+    });
+  }
 }
 
 function escHtml(s){
