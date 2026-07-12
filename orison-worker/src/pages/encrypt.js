@@ -1991,15 +1991,11 @@ function switchHowto(panel, btn) {
   document.querySelectorAll('.howto-toggle-btn').forEach(function(el){ el.classList.remove('active'); });
   document.getElementById('panel-' + panel).classList.add('active');
   btn.classList.add('active');
-  // 受け取る人：初回のみ index 0 にリセットして自動再生を停止（2回目以降は前回の状態を保持）
-  if(panel === 'receiver'){
-    var rWrap = document.querySelector('#panel-receiver .cflow-wrap');
-    if(rWrap && !rWrap._cfFirstShown){
-      rWrap._cfFirstShown = true;
-      if(rWrap._cfStop) rWrap._cfStop();
-      if(rWrap._cfGo)   rWrap._cfGo(0);
-    }
-  }
+  // トグルを踏むたびに、表示するパネルのショーケース（スマホ版カバーフロー）を
+  // 先頭から自動再生し直す。手動スワイプ等で自動再生を止めた後でも、
+  // トグル操作で毎回復帰する（以前は受け取る人の初回表示時のみリセットしていた）
+  var wrap = document.querySelector('#panel-' + panel + ' .cflow-wrap');
+  if(wrap && wrap._cfRestartAuto) wrap._cfRestartAuto();
 }
 
 // ============================================================
@@ -2323,9 +2319,15 @@ function switchHowto(panel, btn) {
       setTimeout(function(){ cfWheelLock = false; }, 600);
     }, {passive:true});
 
-    // switchHowto（受け取る人初回リセット）から参照できるよう公開
+    // switchHowto から参照できるよう公開
     wrap._cfGo   = cfGo;
     wrap._cfStop = cfStop;
+    // トグル操作のたびに呼ばれる: 先頭に戻して自動再生を再開する
+    wrap._cfRestartAuto = function(){
+      cfStop();
+      cfGo(0);
+      cfAutoTimer = setInterval(function(){ cfGo((cfIdx + 1) % CF_N); }, 3000);
+    };
   }
 
   // 送る人・受け取る人 各パネル内の .cflow-wrap を初期化
