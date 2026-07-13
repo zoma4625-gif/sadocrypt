@@ -463,10 +463,10 @@ body{
 .letter-sig{display:flex;justify-content:space-between;align-items:flex-end;margin-top:8px;}
 .letter-foot--text{align-items:flex-end;}
 .letter-foot--text .letter-btn2{padding:4px 12px;}
-/* URLカード専用: 日時行とボタン行を分ける（幅超過によるはみ出し防止） */
+/* URLカード専用: 日時行と(via+ボタン)行を分ける（幅超過によるはみ出し防止） */
 .letter-foot--url{flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:10px;}
 .letter-foot--url .letter-date{white-space:nowrap;}
-.letter-foot--url .letter-foot-btns{align-self:flex-end;}
+.letter-foot-row2{display:flex;align-items:center;justify-content:space-between;width:100%;gap:8px;}
 .letter-via-ext{text-align:center;margin-top:14px;}
 .letter-via-inner{margin-top:4px;}
 .letter-via{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;color:#c9997e;text-decoration:underline;text-underline-offset:2px;transition:color .15s;}
@@ -1285,11 +1285,12 @@ function renderResult(decBuf){
       inner+='<div class="letter-url-text" id="letter-url-text">'+escHtml(content)+'</div></div>';
       inner+='<div class="letter-foot letter-foot--url">';
       inner+='<div class="letter-date">'+escHtml(dateLabel)+'</div>';
+      inner+='<div class="letter-foot-row2">';
+      inner+=viaLink;
       inner+='<div class="letter-foot-btns">';
       inner+='<button class="letter-btn2" id="letter-copy-btn">'+COPY_LABEL+'</button>';
       inner+='<a href="'+escHtml(content)+'" target="_blank" class="letter-btn">'+OPEN_LABEL+'</a>';
-      inner+='</div></div>';
-      inner+='<div class="letter-via-inner">'+viaLink+'</div>';
+      inner+='</div></div></div>';
       // コピーボタン配線
       (function(cpContent){
         setTimeout(function(){
