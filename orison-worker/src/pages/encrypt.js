@@ -1631,6 +1631,11 @@ ${HEADER_CSS}
 @media(max-width:767px){ .pc-br{ display:none; } }
 .sp-br{display:none;}
 @media(max-width:680px){.sp-br{display:inline;}}
+/* 「Brake.とは」カード1見出し専用の改行: 375px未満では強制改行が「を」等の
+   一文字だけの孤立行を生むため、狭い幅では自然折り返しに戻す（実測で確認済み） */
+.sp-br1{display:none;}
+@media(max-width:680px){.sp-br1{display:inline;}}
+@media(max-width:374px){.sp-br1{display:none;}}
 </style>
 </head>
 <body>

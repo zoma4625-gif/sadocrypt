@@ -120,7 +120,7 @@ const DICT = {
   'about.eyebrow':    { ja: 'ABOUT', en: 'ABOUT' },
   'about.heading':    { ja: 'Brake.は、タイムロック暗号を使った<br class="pc-br">暗号化Webサービスです。', en: 'Brake. is a web service for time-lock encryption.' },
   'about.body':       { ja: 'URLやテキストを暗号化し、「1分後」「1時間後」「1日後」にしか開けないリンクを生成します。<br class="pc-br"><br class="sp-br">画像、動画、音声、文書なども暗号化できます<br class="sp-br">（最大5MBまで）。', en: 'Encrypt a URL or text into a link that cannot be opened until one minute, one hour, or one day has passed.<br class="pc-br"><br class="sp-br">Images, video, audio, and documents work too<br class="sp-br">(up to 5MB).' },
-  'about.card1.title':{ ja: 'コンテンツを<br class="sp-br">ちゃんと見て<br class="sp-br">ほしい人に。', en: 'For content that deserves attention.' },
+  'about.card1.title':{ ja: 'コンテンツを<br class="sp-br1">ちゃんと見て<br class="sp-br1">ほしい人に。', en: 'For content that deserves attention.' },
   'about.card1.desc': { ja: '閲覧の敷居を上げ、意味のあるコンテンツがスクロールに流されるのを防ぎます。', en: "It raises the cost of a glance, so what matters isn't lost to the scroll." },
   'about.card2.title':{ ja: '商品のリリースや重大発表に。', en: 'For launches and announcements.' },
   'about.card2.desc': { ja: '解禁時間を設計し、待つことができる人たちの間でだけ情報が共有されます。', en: 'Design the moment of release. The information is shared only among those who can wait.' },
