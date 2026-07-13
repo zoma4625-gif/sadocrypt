@@ -35,35 +35,42 @@ jobs:
     needs: deploy
 
     steps:
-      - name: Check live pages
+      - name: Check live pages (JA + EN)
         run: |
           FAILED=0
 
           check() {
-            URL="$1"; MARKER="$2"; PAGE="$3"
-            HTTP=$(curl -s -o /tmp/smoke_body -w '%{http_code}' "$URL")
+            URL="$1"; LANG="$2"; MARKER="$3"; PAGE="$4"
+            HTTP=$(curl -s -H "Accept-Language: $LANG" -o /tmp/smoke_body -w '%{http_code}' "$URL")
             if [ "$HTTP" != "200" ]; then
-              echo "FAIL [$PAGE] HTTP $HTTP (expected 200)"
+              echo "FAIL [$PAGE $LANG] HTTP $HTTP (expected 200)"
               FAILED=1
               return
             fi
             if ! grep -qF "$MARKER" /tmp/smoke_body; then
-              echo "FAIL [$PAGE] marker not found: $MARKER"
+              echo "FAIL [$PAGE $LANG] marker not found: $MARKER"
               FAILED=1
               return
             fi
-            echo "OK   [$PAGE]"
+            echo "OK   [$PAGE $LANG]"
           }
 
           sleep 15
 
-          # マーカーは各ページの生成HTMLと同期していること。
-          # src/index.js の title/meta/JSON-LD を変更したら、対応するマーカーもここで更新する。
+          # マーカーは各ページの生成HTML（src/i18n.js の DICT）と同期していること。
+          # T('key', lang) の値（ja側・en側）を変更したら、対応するマーカーもここで更新する。
+          # Accept-Language ヘッダで明示的に言語を指定する（未指定だと getLang() は en を返すため、
+          # 指定なしでは常にENページが返り、JAマーカーのcheckが全滅する＝今回の不具合の原因）。
           # 「|」は ASCII パイプ (U+007C)。全角パイプ・縦線と取り違えないこと。
-          check 'https://brake.run/'           'とどく時間を、えらべる'                '/'
-          check 'https://brake.run/time-lock'  'Rivest-Shamir-Wagner方式の逐次2乗計算' '/time-lock'
-          check 'https://brake.run/philosophy' 'なぜ、待たせるのか'                    '/philosophy'
-          check 'https://brake.run/terms'      '利用規約 | Brake.'                     '/terms'
-          check 'https://brake.run/privacy'    'プライバシーポリシー | Brake.'          '/privacy'
+          check 'https://brake.run/'           ja 'とどく時間を、えらべる'                '/'
+          check 'https://brake.run/'           en 'Choose when it arrives'               '/'
+          check 'https://brake.run/time-lock'  ja 'Rivest-Shamir-Wagner方式の逐次2乗計算' '/time-lock'
+          check 'https://brake.run/time-lock'  en 'What is Time-Lock Cryptography?'       '/time-lock'
+          check 'https://brake.run/philosophy' ja 'なぜ、待たせるのか'                    '/philosophy'
+          check 'https://brake.run/philosophy' en 'Why make people wait?'                 '/philosophy'
+          check 'https://brake.run/terms'      ja '利用規約 | Brake.'                     '/terms'
+          check 'https://brake.run/terms'      en 'Terms of Service | Brake.'             '/terms'
+          check 'https://brake.run/privacy'    ja 'プライバシーポリシー | Brake.'          '/privacy'
+          check 'https://brake.run/privacy'    en 'Privacy Policy | Brake.'               '/privacy'
 
           [ "$FAILED" -eq 0 ] || exit 1
