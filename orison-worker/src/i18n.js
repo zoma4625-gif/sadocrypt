@@ -127,7 +127,7 @@ const DICT = {
   'about.card3.title':{ ja: '知り合いに待つ時間を贈りたい人に。', en: 'For gifts to someone you know.' },
   'about.card3.desc': { ja: '情報量にブレーキを<br class="sp-br">かけ、待ってる間に<br class="sp-br">ひと呼吸。', en: 'A brake on the flow of information — one breath while you wait.' },
   'about.card4.title':{ ja: 'ほかにも', en: 'And more' },
-  'about.card4.desc': { ja: '使い方は、あなた次第。<br class="sp-br">サプライズやタイムカプセルにも。', en: "It's up to you. Surprises, time capsules, anything." },
+  'about.card4.desc': { ja: '使い方はあなた次第。<br class="sp-br">サプライズやタイムカプセルにも。', en: "It's up to you. Surprises, time capsules, anything." },
   'about.link.timelock': { ja: 'タイムロック暗号とは？ →', en: 'What is time-lock encryption? →' },
   'about.link.why':      { ja: 'なぜ待たせるのか →', en: 'Why make people wait? →' },
 
