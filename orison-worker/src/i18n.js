@@ -134,6 +134,7 @@ const DICT = {
   /* ── HOW TO セクション ───────────────────────────────── */
   'howto.eyebrow':    { ja: 'HOW TO', en: 'HOW TO' },
   'howto.heading':    { ja: '置いて、決めて、送る。', en: 'Place, decide, send.' },
+  'howto.heading.receiver': { ja: '開いて、待って、受け取る。', en: 'Open, wait, receive.' },
   'howto.tab.sender': { ja: '送る人', en: 'Sender' },
   'howto.tab.receiver':{ ja: '受け取る人', en: 'Receiver' },
   'howto.s01.step':   { ja: 'STEP 01', en: 'STEP 01' },

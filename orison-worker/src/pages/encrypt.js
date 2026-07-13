@@ -1816,7 +1816,7 @@ ${HEADER_HTML(lang)}
 <section class="howto-section" id="howto">
   <div class="howto-section-inner">
     <div class="howto-section-eyebrow">${T('howto.eyebrow', lang)}</div>
-    <h2 class="howto-section-main-heading">${T('howto.heading', lang)}</h2>
+    <h2 class="howto-section-main-heading" id="howto-heading">${T('howto.heading', lang)}</h2>
 
     <!-- トグル -->
     <div class="howto-toggle">
@@ -1991,11 +1991,58 @@ if(!window.releaseSpin) window.releaseSpin = function(){};
 // ============================================================
 // 使い方トグル
 // ============================================================
+// 見出し「置いて、決めて、送る。」⇄「開いて、待って、受け取る。」のスロットマシン風切替
+var HOWTO_HEADING_SENDER = ${JSON.stringify(T('howto.heading', lang))};
+var HOWTO_HEADING_RECEIVER = ${JSON.stringify(T('howto.heading.receiver', lang))};
+var HOWTO_SCRAMBLE_POOL = ${JSON.stringify(lang === 'en' ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン')};
+var _howtoPanel = 'sender';
+var _howtoSlotRaf = null;
+
+function slotMachineText(el, newText){
+  if(_howtoSlotRaf) cancelAnimationFrame(_howtoSlotRaf);
+  var pool = HOWTO_SCRAMBLE_POOL;
+  var targetLen = newText.length;
+  var perCharDelay = 28;   // 左から右へ1文字ずつ確定していく間隔(ms)
+  var minScramble = 140;   // 最初の1文字が確定するまでの最短スクランブル時間(ms)
+  var startTime = null;
+  function frame(now){
+    if(startTime === null) startTime = now;
+    var elapsed = now - startTime;
+    var out = '';
+    var allDone = true;
+    for(var i = 0; i < targetLen; i++){
+      var settleAt = i * perCharDelay + minScramble;
+      if(elapsed >= settleAt){
+        out += newText[i];
+      } else {
+        allDone = false;
+        out += pool.charAt(Math.floor(Math.random() * pool.length));
+      }
+    }
+    el.textContent = out;
+    if(!allDone){
+      _howtoSlotRaf = requestAnimationFrame(frame);
+    } else {
+      _howtoSlotRaf = null;
+    }
+  }
+  _howtoSlotRaf = requestAnimationFrame(frame);
+}
+
+function updateHowtoHeading(panel){
+  if(_howtoPanel === panel) return;
+  _howtoPanel = panel;
+  var headingEl = document.getElementById('howto-heading');
+  if(!headingEl) return;
+  slotMachineText(headingEl, panel === 'receiver' ? HOWTO_HEADING_RECEIVER : HOWTO_HEADING_SENDER);
+}
+
 function switchHowto(panel, btn) {
   document.querySelectorAll('.howto-panel').forEach(function(el){ el.classList.remove('active'); });
   document.querySelectorAll('.howto-toggle-btn').forEach(function(el){ el.classList.remove('active'); });
   document.getElementById('panel-' + panel).classList.add('active');
   btn.classList.add('active');
+  updateHowtoHeading(panel);
   // トグルを踏むたびに、表示するパネルのショーケース（スマホ版カバーフロー）を
   // 先頭から自動再生し直す。手動スワイプ等で自動再生を止めた後でも、
   // トグル操作で毎回復帰する（以前は受け取る人の初回表示時のみリセットしていた）
