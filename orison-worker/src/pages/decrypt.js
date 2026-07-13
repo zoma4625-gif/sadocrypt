@@ -463,6 +463,10 @@ body{
 .letter-sig{display:flex;justify-content:space-between;align-items:flex-end;margin-top:8px;}
 .letter-foot--text{align-items:flex-end;}
 .letter-foot--text .letter-btn2{padding:4px 12px;}
+/* URLカード専用: 日時行とボタン行を分ける（幅超過によるはみ出し防止） */
+.letter-foot--url{flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:10px;}
+.letter-foot--url .letter-date{white-space:nowrap;}
+.letter-foot--url .letter-foot-btns{align-self:flex-end;}
 .letter-via-ext{text-align:center;margin-top:14px;}
 .letter-via-inner{margin-top:4px;}
 .letter-via{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.06em;color:#c9997e;text-decoration:underline;text-underline-offset:2px;transition:color .15s;}
@@ -673,7 +677,10 @@ try {
     var el = document.getElementById('dec-time-warn-text');
     var wrap = document.getElementById('dec-time-warn');
     if(el && wrap){
-      el.textContent = '${T('dec.warn.long', lang)}' + label + '${T('dec.warn.long2', lang)}';
+      var powerHint = _l === 'en'
+        ? ' Long computations go better on a plugged-in device.'
+        : ' 長い計算は、電源につないだ端末が向いています。';
+      el.textContent = '${T('dec.warn.long', lang)}' + label + '${T('dec.warn.long2', lang)}' + powerHint;
       wrap.style.display = 'block';
     }
   })();
@@ -892,6 +899,22 @@ async function run(){
   var loopStartI=startIter;
 
   // シーンマウント（初回chunkで一度だけ実行。Worker・フォールバック共通）
+  // 中断からの再開を、待機シーンの片隅に静かに一言だけ知らせる（責めない・事実のみ・数秒で消える）
+  function showResumeNotice(){
+    var el=document.createElement('div');
+    el.id='resume-notice';
+    el.style.cssText='position:fixed;left:16px;bottom:16px;z-index:60;'+
+      'font-family:"Share Tech Mono",monospace;font-size:12px;letter-spacing:.06em;'+
+      'color:rgba(255,240,224,.55);opacity:0;transition:opacity 1s ease;pointer-events:none;';
+    el.textContent=_l==='en' ? 'Resumed from where it stopped.' : '中断から、続きをはじめました';
+    document.body.appendChild(el);
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ el.style.opacity='1'; }); });
+    setTimeout(function(){
+      el.style.opacity='0';
+      setTimeout(function(){ if(el.parentNode) el.parentNode.removeChild(el); },1100);
+    },4000);
+  }
+
   function mountScene(iNum){
     if(firstChunkDone||!window.BRAKE_SCENES||!stage) return;
     firstChunkDone=true;
@@ -910,6 +933,7 @@ async function run(){
       opensAtText=opensAt.getFullYear()+'年'+(opensAt.getMonth()+1)+'月'+opensAt.getDate()+'日 '+String(opensAt.getHours())+':'+('0'+opensAt.getMinutes()).slice(-2)+' にひらきます';
     }
     sceneHandle=window.BRAKE_SCENES.mount(sceneId,stage,{opensAtText:opensAtText});
+    if(savedResume) showResumeNotice();
     remainTimer=setInterval(function(){
       if(!sceneHandle) return;
       var rem=(totalNum-Number(displayBase))/rate;
@@ -1259,13 +1283,13 @@ function renderResult(decBuf){
       var svgLink='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
       inner='<div class="letter-url-row"><div class="letter-url-icon">'+svgLink+'</div>';
       inner+='<div class="letter-url-text" id="letter-url-text">'+escHtml(content)+'</div></div>';
-      inner+='<div class="letter-foot">';
+      inner+='<div class="letter-foot letter-foot--url">';
       inner+='<div class="letter-date">'+escHtml(dateLabel)+'</div>';
       inner+='<div class="letter-foot-btns">';
       inner+='<button class="letter-btn2" id="letter-copy-btn">'+COPY_LABEL+'</button>';
       inner+='<a href="'+escHtml(content)+'" target="_blank" class="letter-btn">'+OPEN_LABEL+'</a>';
       inner+='</div></div>';
-      showViaOutside=true;
+      inner+='<div class="letter-via-inner">'+viaLink+'</div>';
       // コピーボタン配線
       (function(cpContent){
         setTimeout(function(){
