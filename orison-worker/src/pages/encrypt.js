@@ -1098,6 +1098,7 @@ ${HEADER_CSS}
   letter-spacing:-0.01em;
   line-height:1.2;
   margin-bottom:32px;
+  perspective:500px;
 }
 /* トグルボタン */
 .howto-toggle{
@@ -1991,42 +1992,37 @@ if(!window.releaseSpin) window.releaseSpin = function(){};
 // ============================================================
 // 使い方トグル
 // ============================================================
-// 見出し「置いて、決めて、送る。」⇄「開いて、待って、受け取る。」のスロットマシン風切替
+// 見出し「置いて、決めて、送る。」⇄「開いて、待って、受け取る。」の切替
+// 文字自体は変えず、1文字ずつ上から回転して着地するだけの控えめな演出
+// （ランダム文字によるスクランブルは「怖い」とのフィードバックで廃止）
 var HOWTO_HEADING_SENDER = ${JSON.stringify(T('howto.heading', lang))};
 var HOWTO_HEADING_RECEIVER = ${JSON.stringify(T('howto.heading.receiver', lang))};
-var HOWTO_SCRAMBLE_POOL = ${JSON.stringify(lang === 'en' ? 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' : 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン')};
 var _howtoPanel = 'sender';
-var _howtoSlotRaf = null;
 
-function slotMachineText(el, newText){
-  if(_howtoSlotRaf) cancelAnimationFrame(_howtoSlotRaf);
-  var pool = HOWTO_SCRAMBLE_POOL;
-  var targetLen = newText.length;
-  var perCharDelay = 28;   // 左から右へ1文字ずつ確定していく間隔(ms)
-  var minScramble = 140;   // 最初の1文字が確定するまでの最短スクランブル時間(ms)
-  var startTime = null;
-  function frame(now){
-    if(startTime === null) startTime = now;
-    var elapsed = now - startTime;
-    var out = '';
-    var allDone = true;
-    for(var i = 0; i < targetLen; i++){
-      var settleAt = i * perCharDelay + minScramble;
-      if(elapsed >= settleAt){
-        out += newText[i];
-      } else {
-        allDone = false;
-        out += pool.charAt(Math.floor(Math.random() * pool.length));
-      }
-    }
-    el.textContent = out;
-    if(!allDone){
-      _howtoSlotRaf = requestAnimationFrame(frame);
-    } else {
-      _howtoSlotRaf = null;
-    }
+function rollInText(el, newText){
+  el.innerHTML = '';
+  var frag = document.createDocumentFragment();
+  var spans = [];
+  for(var i = 0; i < newText.length; i++){
+    var ch = newText.charAt(i);
+    var span = document.createElement('span');
+    span.textContent = ch;
+    span.style.display = 'inline-block';
+    span.style.transformOrigin = '50% 100%';
+    span.style.transform = 'rotateX(80deg)';
+    span.style.opacity = '0';
+    span.style.transition = 'transform .4s cubic-bezier(.22,1,.36,1) ' + (i * 26) + 'ms, opacity .3s ease ' + (i * 26) + 'ms';
+    frag.appendChild(span);
+    spans.push(span);
   }
-  _howtoSlotRaf = requestAnimationFrame(frame);
+  el.appendChild(frag);
+  void el.offsetWidth; // 強制リフロー（初期状態を確実に描画させてからtransitionへ）
+  requestAnimationFrame(function(){
+    spans.forEach(function(span){
+      span.style.transform = 'rotateX(0deg)';
+      span.style.opacity = '1';
+    });
+  });
 }
 
 function updateHowtoHeading(panel){
@@ -2034,7 +2030,7 @@ function updateHowtoHeading(panel){
   _howtoPanel = panel;
   var headingEl = document.getElementById('howto-heading');
   if(!headingEl) return;
-  slotMachineText(headingEl, panel === 'receiver' ? HOWTO_HEADING_RECEIVER : HOWTO_HEADING_SENDER);
+  rollInText(headingEl, panel === 'receiver' ? HOWTO_HEADING_RECEIVER : HOWTO_HEADING_SENDER);
 }
 
 function switchHowto(panel, btn) {
